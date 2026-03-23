@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Anthropic from '@anthropic-ai/sdk';
 
 // ─── Trades ──────────────────────────────────────────────────────────────────
@@ -917,6 +917,213 @@ const PLAYBOOKS = {
   ],
 };
 
+// ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
+const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
+const LEAD_STAGES = ['contacted', 'qualified', 'proposal', 'negotiation'];
+
+const FI = { // form input base
+  width: '100%', padding: '9px 12px', background: '#0f1117',
+  border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0',
+  fontSize: 13, outline: 'none', boxSizing: 'border-box',
+  fontFamily: "'Inter', -apple-system, sans-serif",
+};
+const FLbl = {
+  display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b',
+  marginBottom: 5, marginTop: 14, textTransform: 'uppercase', letterSpacing: '0.4px',
+};
+const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
+
+function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
+  const isEdit = !!lead;
+  const [form, setForm] = useState({
+    name: lead?.name || '',
+    contact: lead?.contact || '',
+    phone: lead?.phone || '',
+    email: lead?.email || '',
+    address: lead?.address || '',
+    value: lead?.value ? String(lead.value) : '',
+    trade: lead?.trade || defaultTrade || 'Roofing',
+    stage: lead?.stage || 'contacted',
+    source: lead?.source || 'Referral',
+    notes: lead?.notes || '',
+    callbackDate: lead?.callbackDate || '',
+  });
+  const [errors, setErrors] = useState({});
+  const [focused, setFocused] = useState(null);
+
+  const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const fi = (field) => ({
+    ...FI,
+    border: errors[field] ? '1px solid #ef4444'
+      : focused === field ? '1px solid #f97316'
+      : '1px solid #1e2535',
+  });
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = true;
+    if (!form.phone.trim()) e.phone = true;
+    if (!form.value || isNaN(Number(form.value)) || Number(form.value) <= 0) e.value = true;
+    if (!form.trade) e.trade = true;
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSave = () => {
+    if (!validate()) return;
+    onSave({
+      ...(isEdit ? lead : {}),
+      id: lead?.id || Date.now(),
+      name: form.name.trim(),
+      contact: form.contact.trim(),
+      role: lead?.role || '',
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      address: form.address.trim(),
+      trade: form.trade,
+      status: lead?.status || 'active',
+      value: Math.round(Number(form.value)),
+      stage: form.stage,
+      source: form.source,
+      callbackDate: form.callbackDate || null,
+      lastContact: lead?.lastContact || TODAY,
+      stallReason: lead?.stallReason || null,
+      notes: form.notes.trim(),
+      industry: lead?.industry || 'Residential',
+      dealAge: lead?.dealAge || 0,
+    });
+  };
+
+  return (
+    <div style={S.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={{ ...S.modal, maxWidth: 560 }}>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={S.modalTitle}>{isEdit ? 'Edit Lead' : 'Add New Lead'}</div>
+        <div style={{ ...S.modalSub, marginBottom: 4 }}>
+          {isEdit ? `Editing: ${lead.name}` : 'Required fields are marked with *'}
+        </div>
+
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Customer / Company *</label>
+            <input style={fi('name')} value={form.name} placeholder="Apex Roofing LLC"
+              onChange={e => set('name', e.target.value)}
+              onFocus={() => setFocused('name')} onBlur={() => setFocused(null)} />
+          </div>
+          <div>
+            <label style={FLbl}>Contact Name</label>
+            <input style={fi('contact')} value={form.contact} placeholder="Jane Smith"
+              onChange={e => set('contact', e.target.value)}
+              onFocus={() => setFocused('contact')} onBlur={() => setFocused(null)} />
+          </div>
+        </div>
+
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Phone *</label>
+            <input style={fi('phone')} value={form.phone} placeholder="(512) 555-0100"
+              onChange={e => set('phone', e.target.value)}
+              onFocus={() => setFocused('phone')} onBlur={() => setFocused(null)} />
+          </div>
+          <div>
+            <label style={FLbl}>Email</label>
+            <input style={fi('email')} type="email" value={form.email} placeholder="jane@company.com"
+              onChange={e => set('email', e.target.value)}
+              onFocus={() => setFocused('email')} onBlur={() => setFocused(null)} />
+          </div>
+        </div>
+
+        <label style={FLbl}>Job Address</label>
+        <input style={fi('address')} value={form.address} placeholder="1234 Oak St, Austin TX 78701"
+          onChange={e => set('address', e.target.value)}
+          onFocus={() => setFocused('address')} onBlur={() => setFocused(null)} />
+
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Estimated Value ($) *</label>
+            <input style={fi('value')} value={form.value} placeholder="15000" type="number" min="0"
+              onChange={e => set('value', e.target.value)}
+              onFocus={() => setFocused('value')} onBlur={() => setFocused(null)} />
+          </div>
+          <div>
+            <label style={FLbl}>Callback Date</label>
+            <input style={fi('callbackDate')} type="date" value={form.callbackDate}
+              onChange={e => set('callbackDate', e.target.value)}
+              onFocus={() => setFocused('callbackDate')} onBlur={() => setFocused(null)} />
+          </div>
+        </div>
+
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Trade *</label>
+            <select style={fi('trade')} value={form.trade}
+              onChange={e => set('trade', e.target.value)}
+              onFocus={() => setFocused('trade')} onBlur={() => setFocused(null)}>
+              {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={FLbl}>Lead Stage</label>
+            <select style={fi('stage')} value={form.stage}
+              onChange={e => set('stage', e.target.value)}
+              onFocus={() => setFocused('stage')} onBlur={() => setFocused(null)}>
+              {LEAD_STAGES.map(s => (
+                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <label style={FLbl}>Lead Source</label>
+        <select style={fi('source')} value={form.source}
+          onChange={e => set('source', e.target.value)}
+          onFocus={() => setFocused('source')} onBlur={() => setFocused(null)}>
+          {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+
+        <label style={FLbl}>Notes</label>
+        <textarea
+          style={{ ...FI, minHeight: 72, resize: 'vertical', lineHeight: 1.5 }}
+          value={form.notes} placeholder="Any relevant details about this lead..."
+          onChange={e => set('notes', e.target.value)}
+          onFocus={() => setFocused('notes')} onBlur={() => setFocused(null)}
+        />
+
+        {Object.keys(errors).length > 0 && (
+          <div style={{ fontSize: 12, color: '#ef4444', marginTop: 10 }}>
+            Please fill in all required fields marked with *.
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+          <button
+            style={{
+              flex: 1, padding: '10px 16px',
+              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              border: 'none', borderRadius: 8, color: '#fff',
+              fontWeight: 700, fontSize: 14, cursor: 'pointer',
+            }}
+            onClick={handleSave}
+          >
+            {isEdit ? 'Save Changes' : 'Add Lead'}
+          </button>
+          <button
+            style={{
+              padding: '10px 20px', background: 'transparent',
+              border: '1px solid #1e2535', borderRadius: 8,
+              color: '#64748b', cursor: 'pointer', fontSize: 14,
+            }}
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── CoachPanel ──────────────────────────────────────────────────────────────
 function CoachPanel({ lead, onClose }) {
   const [aiText, setAiText] = useState('');
@@ -1033,8 +1240,9 @@ Give me 3-4 specific actions I should take THIS WEEK to unblock this deal. Be ta
 }
 
 // ─── Lead Card ───────────────────────────────────────────────────────────────
-function LeadCard({ lead, onClick }) {
+function LeadCard({ lead, onClick, onEdit, onDelete }) {
   const [hovered, setHovered] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const days = diffDays(lead.callbackDate);
   const isOverdue = days !== null && days < 0;
 
@@ -1042,13 +1250,13 @@ function LeadCard({ lead, onClick }) {
     <div
       style={S.card(hovered)}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { setHovered(false); setConfirmDelete(false); }}
       onClick={() => onClick(lead)}
     >
       <div style={S.cardHeader}>
         <div>
           <div style={S.cardName}>{lead.name}</div>
-          <div style={S.cardContact}>{lead.contact} · {lead.role}</div>
+          <div style={S.cardContact}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
         <span style={S.statusBadge(lead.status)}>{lead.status}</span>
       </div>
@@ -1080,12 +1288,72 @@ function LeadCard({ lead, onClick }) {
           </span>
         </div>
       )}
+
+      {(onEdit || onDelete) && hovered && (
+        <div
+          style={{
+            display: 'flex', gap: 6, marginTop: 12, paddingTop: 10,
+            borderTop: '1px solid #1e2535',
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          {onEdit && (
+            <button
+              style={{
+                flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
+                background: 'transparent', border: '1px solid #1e2535',
+                borderRadius: 6, color: '#94a3b8', cursor: 'pointer',
+              }}
+              onClick={() => onEdit(lead)}
+            >
+              ✏ Edit
+            </button>
+          )}
+          {onDelete && !confirmDelete && (
+            <button
+              style={{
+                flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
+                background: 'transparent', border: '1px solid #1e2535',
+                borderRadius: 6, color: '#64748b', cursor: 'pointer',
+              }}
+              onClick={() => setConfirmDelete(true)}
+            >
+              🗑 Delete
+            </button>
+          )}
+          {onDelete && confirmDelete && (
+            <>
+              <span style={{ fontSize: 11, color: '#94a3b8', alignSelf: 'center', flex: 1 }}>Sure?</span>
+              <button
+                style={{
+                  padding: '5px 12px', fontSize: 12, fontWeight: 600,
+                  background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
+                  borderRadius: 6, color: '#ef4444', cursor: 'pointer',
+                }}
+                onClick={() => onDelete(lead.id)}
+              >
+                Delete
+              </button>
+              <button
+                style={{
+                  padding: '5px 12px', fontSize: 12,
+                  background: 'transparent', border: '1px solid #1e2535',
+                  borderRadius: 6, color: '#64748b', cursor: 'pointer',
+                }}
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── Pipeline Tab ─────────────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead }) {
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead }) {
   const [filter, setFilter] = useState('all');
   const [tradeFilter, setTradeFilter] = useState('all');
   const filters = ['all', 'active', 'stalled', 'cold', 'won', 'lost'];
@@ -1108,8 +1376,23 @@ function PipelineTab({ leads, onSelectLead }) {
               : `${f.charAt(0).toUpperCase() + f.slice(1)} (${leads.filter(l => l.status === f).length})`}
           </button>
         ))}
-        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#94a3b8' }}>
-          Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>{fmt(total)}</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ fontSize: 13, color: '#94a3b8' }}>
+            Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>{fmt(total)}</span>
+          </div>
+          {onAddLead && (
+            <button
+              style={{
+                padding: '6px 16px',
+                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                border: 'none', borderRadius: 7,
+                color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+              }}
+              onClick={onAddLead}
+            >
+              + Add Lead
+            </button>
+          )}
         </div>
       </div>
 
@@ -1133,7 +1416,13 @@ function PipelineTab({ leads, onSelectLead }) {
 
       <div style={S.grid}>
         {filtered.map(lead => (
-          <LeadCard key={lead.id} lead={lead} onClick={onSelectLead} />
+          <LeadCard
+            key={lead.id}
+            lead={lead}
+            onClick={onSelectLead}
+            onEdit={onEditLead}
+            onDelete={onDeleteLead}
+          />
         ))}
       </div>
     </div>
@@ -2020,7 +2309,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
 }
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
-function EmptyState({ icon, title, sub, btnLabel }) {
+function EmptyState({ icon, title, sub, btnLabel, onAction }) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -2029,12 +2318,15 @@ function EmptyState({ icon, title, sub, btnLabel }) {
       <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>{icon}</div>
       <div style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 8 }}>{title}</div>
       <div style={{ fontSize: 13, color: '#475569', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
-      <button style={{
-        padding: '10px 24px',
-        background: 'linear-gradient(135deg, #f97316, #ea580c)',
-        border: 'none', borderRadius: 8,
-        color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
-      }}>
+      <button
+        style={{
+          padding: '10px 24px',
+          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          border: 'none', borderRadius: 8,
+          color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+        }}
+        onClick={onAction}
+      >
         {btnLabel}
       </button>
     </div>
@@ -2047,6 +2339,22 @@ export default function App() {
   const [session, setSession] = useState(null);
   const [tab, setTab] = useState('pipeline');
   const [selectedLead, setSelectedLead] = useState(null);
+  const [leadModal, setLeadModal] = useState(null); // null | 'add' | lead-object (edit)
+
+  // Persistent leads for real (non-demo) users
+  const [userLeads, setUserLeads] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cl_leads');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
+  // Persist to localStorage whenever userLeads changes (non-demo only)
+  useEffect(() => {
+    if (session && !session.isDemo) {
+      localStorage.setItem('cl_leads', JSON.stringify(userLeads));
+    }
+  }, [userLeads, session]);
 
   const handleLogin = (sess) => {
     setSession(sess);
@@ -2058,6 +2366,20 @@ export default function App() {
     setSession(sess);
     setScreen('app');
     setTab('pipeline');
+  };
+
+  const handleAddLead = (leadData) => {
+    setUserLeads(prev => [leadData, ...prev]);
+    setLeadModal(null);
+  };
+
+  const handleEditLead = (leadData) => {
+    setUserLeads(prev => prev.map(l => l.id === leadData.id ? leadData : l));
+    setLeadModal(null);
+  };
+
+  const handleDeleteLead = (id) => {
+    setUserLeads(prev => prev.filter(l => l.id !== id));
   };
 
   if (screen === 'login') {
@@ -2079,10 +2401,15 @@ export default function App() {
   }
 
   const isDemo = session?.isDemo;
-  const leads = isDemo ? DEMO_LEADS : [];
+  const leads = isDemo ? DEMO_LEADS : userLeads;
   const jobs = isDemo ? DEMO_JOBS : [];
   const userTrade = session?.trade || 'Roofing';
   const companyName = session?.companyName || 'ClosedLoop';
+
+  // Only expose mutators for non-demo accounts
+  const addLeadHandler = isDemo ? null : () => setLeadModal('add');
+  const editLeadHandler = isDemo ? null : (lead) => setLeadModal(lead);
+  const deleteLeadHandler = isDemo ? null : handleDeleteLead;
 
   return (
     <div style={S.app}>
@@ -2131,8 +2458,15 @@ export default function App() {
                 title="No leads yet"
                 sub="Start building your pipeline by adding your first lead."
                 btnLabel="Add your first lead"
+                onAction={addLeadHandler}
               />
-            : <PipelineTab leads={leads} onSelectLead={setSelectedLead} />
+            : <PipelineTab
+                leads={leads}
+                onSelectLead={setSelectedLead}
+                onAddLead={addLeadHandler}
+                onEditLead={editLeadHandler}
+                onDeleteLead={deleteLeadHandler}
+              />
         )}
         {tab === 'callbacks' && (
           <CallbacksTab leads={leads} onSelectLead={setSelectedLead} />
@@ -2154,6 +2488,15 @@ export default function App() {
 
       {selectedLead && (
         <CoachPanel lead={selectedLead} onClose={() => setSelectedLead(null)} />
+      )}
+
+      {leadModal && (
+        <AddLeadModal
+          lead={leadModal === 'add' ? null : leadModal}
+          defaultTrade={userTrade}
+          onSave={leadModal === 'add' ? handleAddLead : handleEditLead}
+          onClose={() => setLeadModal(null)}
+        />
       )}
     </div>
   );
