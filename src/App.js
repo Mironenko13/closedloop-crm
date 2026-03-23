@@ -131,6 +131,49 @@ const STATUS_COLORS = {
 const STAGE_ORDER = ['contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
 const TODAY = '2026-03-23';
 
+// ─── Jobs Data ────────────────────────────────────────────────────────────────
+const ROOFING_STEPS = [
+  { id: 1, label: 'Site inspection / measurements' },
+  { id: 2, label: 'Material order & delivery' },
+  { id: 3, label: 'Install in progress' },
+  { id: 4, label: 'Final inspection' },
+  { id: 5, label: 'Invoice sent' },
+  { id: 6, label: 'Payment received' },
+];
+
+const DEMO_JOBS = [
+  {
+    id: 101, customer: 'Frank & Linda Hargrove', address: '2847 Maplewood Dr, Austin TX 78745',
+    trade: 'Roofing', value: 18400, status: 'In Progress',
+    scheduledDate: '2026-03-20', completedSteps: [1, 2, 3],
+    notes: 'GAF Timberline HDZ shingles. Crew of 4. Day 2 of 3.',
+  },
+  {
+    id: 102, customer: 'Riverside Church of God', address: '510 Oak Creek Blvd, Houston TX 77084',
+    trade: 'Roofing', value: 24750, status: 'Scheduled',
+    scheduledDate: '2026-03-28', completedSteps: [1, 2],
+    notes: 'Commercial flat roof. TPO membrane. 8,200 sq ft.',
+  },
+  {
+    id: 103, customer: 'Dmitri & Aisha Volkov', address: '91 Birchwood Ct, Dallas TX 75208',
+    trade: 'Roofing', value: 11200, status: 'Complete',
+    scheduledDate: '2026-03-14', completedSteps: [1, 2, 3, 4, 5, 6],
+    notes: 'Full tear-off and replace. CertainTeed Landmark Pro.',
+  },
+  {
+    id: 104, customer: 'Sunridge HOA — Block C', address: '3300 Sunridge Pkwy, San Antonio TX 78230',
+    trade: 'Roofing', value: 21900, status: 'In Progress',
+    scheduledDate: '2026-03-18', completedSteps: [1, 2, 3, 4],
+    notes: '14 townhome units. Owens Corning Duration. Final inspection tomorrow.',
+  },
+  {
+    id: 105, customer: 'Marco & Beth Santini', address: '668 Elmwood Ave, Plano TX 75023',
+    trade: 'Roofing', value: 9600, status: 'Scheduled',
+    scheduledDate: '2026-04-04', completedSteps: [1],
+    notes: 'Storm damage repair + partial replacement. Insurance claim approved.',
+  },
+];
+
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const S = {
   app: {
@@ -306,6 +349,41 @@ const S = {
     transition: 'width 0.5s ease',
   }),
   barCount: { fontSize: 12, color: '#64748b', width: 28, textAlign: 'right' },
+
+  // Jobs
+  jobStatusColors: {
+    Scheduled: '#6366f1',
+    'In Progress': '#f97316',
+    Complete: '#22c55e',
+  },
+  progressTrack: {
+    height: 6, background: '#1e2535', borderRadius: 3,
+    overflow: 'hidden', marginTop: 10,
+  },
+  progressFill: (pct, color) => ({
+    height: '100%', width: `${pct}%`,
+    background: color, borderRadius: 3,
+    transition: 'width 0.4s ease',
+  }),
+
+  // Checklist modal
+  checklistItem: (done) => ({
+    display: 'flex', alignItems: 'center', gap: 12,
+    padding: '10px 0', borderBottom: '1px solid #1e2535',
+    cursor: 'pointer',
+  }),
+  checkbox: (done) => ({
+    width: 20, height: 20, borderRadius: 4, flexShrink: 0,
+    border: `2px solid ${done ? '#f97316' : '#2d3748'}`,
+    background: done ? '#f97316' : 'transparent',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'all 0.15s',
+  }),
+  checkLabel: (done) => ({
+    fontSize: 13, color: done ? '#64748b' : '#cbd5e1',
+    textDecoration: done ? 'line-through' : 'none', flex: 1,
+  }),
+  checkTs: { fontSize: 11, color: '#374151', whiteSpace: 'nowrap' },
 
   // Modal
   overlay: {
@@ -797,6 +875,199 @@ function AnalyticsTab({ leads }) {
   );
 }
 
+// ─── Job Modal ────────────────────────────────────────────────────────────────
+function JobModal({ job, onClose }) {
+  const [checks, setChecks] = useState(() => {
+    const init = {};
+    ROOFING_STEPS.forEach(s => {
+      init[s.id] = job.completedSteps.includes(s.id)
+        ? { done: true, ts: '2026-03-' + String(10 + s.id).padStart(2, '0') + ' 09:00' }
+        : { done: false, ts: null };
+    });
+    return init;
+  });
+
+  const toggle = (id) => {
+    setChecks(prev => {
+      const wasDone = prev[id].done;
+      return {
+        ...prev,
+        [id]: {
+          done: !wasDone,
+          ts: wasDone ? null : new Date().toISOString().slice(0, 16).replace('T', ' '),
+        },
+      };
+    });
+  };
+
+  const doneCount = Object.values(checks).filter(c => c.done).length;
+  const total = ROOFING_STEPS.length;
+  const pct = Math.round(doneCount / total * 100);
+  const statusColor = pct === 100 ? '#22c55e' : pct > 0 ? '#f97316' : '#6366f1';
+
+  return (
+    <div style={S.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={S.modal}>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+          <div style={S.modalTitle}>{job.customer}</div>
+          <span style={{
+            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+            background: statusColor + '22', color: statusColor,
+            textTransform: 'uppercase', letterSpacing: '0.5px',
+          }}>
+            {pct === 100 ? 'Complete' : pct > 0 ? 'In Progress' : 'Scheduled'}
+          </span>
+        </div>
+        <div style={S.modalSub}>
+          {job.address} · {job.trade} · {fmt(job.value)}
+        </div>
+
+        {/* Progress bar */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontSize: 12, color: '#64748b' }}>Progress</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{doneCount}/{total} steps — {pct}%</span>
+          </div>
+          <div style={S.progressTrack}>
+            <div style={S.progressFill(pct, statusColor)} />
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div style={S.sectionLabel}>Job Notes</div>
+        <div style={{
+          fontSize: 13, color: '#94a3b8', marginBottom: 20,
+          padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+        }}>
+          {job.notes}
+        </div>
+
+        {/* Checklist */}
+        <div style={S.sectionLabel}>Roofing Checklist</div>
+        <div>
+          {ROOFING_STEPS.map((step) => {
+            const c = checks[step.id];
+            return (
+              <div key={step.id} style={S.checklistItem(c.done)} onClick={() => toggle(step.id)}>
+                <div style={S.checkbox(c.done)}>
+                  {c.done && (
+                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                      <path d="M1 4L4 7L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+                <span style={{ ...S.checkLabel(c.done) }}>
+                  <span style={{ color: '#475569', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
+                  {step.label}
+                </span>
+                {c.ts && <span style={S.checkTs}>{c.ts}</span>}
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{ marginTop: 16, fontSize: 11, color: '#374151', textAlign: 'center' }}>
+          Scheduled: {job.scheduledDate}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Jobs Tab ─────────────────────────────────────────────────────────────────
+function JobsTab({ jobs }) {
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [hovered, setHovered] = useState(null);
+  const [filter, setFilter] = useState('all');
+
+  const statuses = ['all', 'Scheduled', 'In Progress', 'Complete'];
+  const filtered = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
+
+  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#f97316', Complete: '#22c55e' }[s] || '#64748b');
+
+  return (
+    <div>
+      <div style={S.filterRow}>
+        {statuses.map(s => (
+          <button key={s} style={S.filterBtn(filter === s)} onClick={() => setFilter(s)}>
+            {s === 'all'
+              ? `All (${jobs.length})`
+              : `${s} (${jobs.filter(j => j.status === s).length})`}
+          </button>
+        ))}
+        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#94a3b8' }}>
+          Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>
+            {fmt(filtered.reduce((s, j) => s + j.value, 0))}
+          </span>
+        </div>
+      </div>
+
+      <div style={S.grid}>
+        {filtered.map(job => {
+          const doneCount = job.completedSteps.length;
+          const total = ROOFING_STEPS.length;
+          const pct = Math.round(doneCount / total * 100);
+          const color = statusColor(job.status);
+
+          return (
+            <div
+              key={job.id}
+              style={S.card(hovered === job.id)}
+              onMouseEnter={() => setHovered(job.id)}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => setSelectedJob(job)}
+            >
+              <div style={S.cardHeader}>
+                <div>
+                  <div style={S.cardName}>{job.customer}</div>
+                  <div style={S.cardContact}>{job.address}</div>
+                </div>
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                  background: color + '22', color, textTransform: 'uppercase',
+                  letterSpacing: '0.5px', whiteSpace: 'nowrap',
+                }}>
+                  {job.status}
+                </span>
+              </div>
+
+              <div style={S.cardMeta}>
+                <div style={S.metaItem}>Trade: <span style={S.metaValue}>{job.trade}</span></div>
+                <div style={S.metaItem}>Value: <span style={{ ...S.metaValue, color: '#22c55e' }}>{fmt(job.value)}</span></div>
+              </div>
+
+              {/* Progress bar */}
+              <div style={{ marginTop: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <span style={{ fontSize: 11, color: '#64748b' }}>
+                    {ROOFING_STEPS[doneCount < total ? doneCount : total - 1]?.label || 'Complete'}
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color }}>
+                    {doneCount}/{total}
+                  </span>
+                </div>
+                <div style={S.progressTrack}>
+                  <div style={S.progressFill(pct, color)} />
+                </div>
+              </div>
+
+              <div style={{ marginTop: 10, fontSize: 11, color: '#475569' }}>
+                📅 Scheduled: {job.scheduledDate}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedJob && (
+        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+      )}
+    </div>
+  );
+}
+
 // ─── App Root ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [tab, setTab] = useState('pipeline');
@@ -814,6 +1085,7 @@ export default function App() {
             { key: 'pipeline', label: 'Pipeline' },
             { key: 'callbacks', label: 'Callbacks' },
             { key: 'analytics', label: 'Analytics' },
+            { key: 'jobs', label: 'Jobs' },
           ].map(({ key, label }) => (
             <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
               {label}
@@ -831,6 +1103,9 @@ export default function App() {
         )}
         {tab === 'analytics' && (
           <AnalyticsTab leads={DEMO_LEADS} />
+        )}
+        {tab === 'jobs' && (
+          <JobsTab jobs={DEMO_JOBS} />
         )}
       </main>
 
