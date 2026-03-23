@@ -661,14 +661,18 @@ const S = {
     paddingBottom: 12, borderBottom: '1px solid #1e2535',
   },
   filterBtn: (active) => ({
-    padding: '5px 14px',
+    padding: '8px 14px',
     borderRadius: 20,
     border: `1px solid ${active ? '#f97316' : '#1e2535'}`,
     background: active ? 'rgba(249,115,22,0.12)' : 'transparent',
     color: active ? '#f97316' : '#94a3b8',
     cursor: 'pointer',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 500,
+    minHeight: 36,
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
+    WebkitTapHighlightColor: 'transparent',
   }),
   tradeFilterBtn: (active, color) => ({
     padding: '4px 12px',
@@ -827,9 +831,13 @@ const S = {
   modalTitle: { fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 },
   modalSub: { fontSize: 13, color: '#64748b', marginBottom: 20 },
   closeBtn: {
-    position: 'absolute', top: 16, right: 16,
-    background: 'transparent', border: 'none',
-    color: '#64748b', cursor: 'pointer', fontSize: 22, lineHeight: 1, padding: 4,
+    position: 'absolute', top: 12, right: 12,
+    background: 'rgba(255,255,255,0.05)', border: '1px solid #1e2535',
+    borderRadius: 8,
+    color: '#94a3b8', cursor: 'pointer', fontSize: 20, lineHeight: 1,
+    width: 40, height: 40,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    WebkitTapHighlightColor: 'transparent',
   },
   sectionLabel: {
     fontSize: 11, fontWeight: 600, color: '#f97316',
@@ -863,6 +871,61 @@ const S = {
   },
   apiKeyNote: { fontSize: 11, color: '#374151', marginTop: 10, textAlign: 'center' },
 };
+
+// ─── Mobile Hook ─────────────────────────────────────────────────────────────
+function useMobile() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return isMobile;
+}
+
+// Shared tab definitions for bottom nav
+const NAV_TABS = [
+  { key: 'pipeline',  label: 'Pipeline',  icon: '📋' },
+  { key: 'callbacks', label: 'Callbacks', icon: '📞' },
+  { key: 'analytics', label: 'Analytics', icon: '📊' },
+  { key: 'jobs',      label: 'Jobs',      icon: '🔨' },
+];
+
+function BottomNav({ tab, setTab, tabs, color }) {
+  const c = color || '#f97316';
+  return (
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      background: '#161b27', borderTop: '1px solid #1e2535',
+      display: 'flex', height: 64, zIndex: 200,
+      boxShadow: '0 -4px 12px rgba(0,0,0,0.35)',
+    }}>
+      {(tabs || NAV_TABS).map(({ key, label, icon, locked }) => (
+        <button
+          key={key}
+          onClick={() => !locked && setTab(key)}
+          style={{
+            flex: 1, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            background: 'transparent', border: 'none',
+            color: locked ? '#2d3748' : tab === key ? c : '#64748b',
+            fontSize: 10, fontWeight: 600,
+            cursor: locked ? 'not-allowed' : 'pointer',
+            gap: 3, minHeight: 64, padding: 0,
+            borderTop: tab === key && !locked ? `2px solid ${c}` : '2px solid transparent',
+            transition: 'color 0.15s',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          <span style={{ fontSize: 18, lineHeight: 1 }}>
+            {locked ? '🔒' : icon}
+          </span>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const fmt = (n) => '$' + n.toLocaleString();
@@ -1101,6 +1164,7 @@ const FLbl = {
 const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
 
 function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
+  const isMobile = useMobile();
   const isEdit = !!lead;
   const [form, setForm] = useState({
     name: lead?.name || '',
@@ -1162,69 +1226,80 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
     });
   };
 
+  const mobileOverlay = { ...S.overlay, padding: 0, alignItems: 'flex-end' };
+  const mobileModal = {
+    ...S.modal, maxWidth: '100vw', width: '100vw',
+    maxHeight: '95dvh', borderRadius: '16px 16px 0 0',
+    margin: 0,
+  };
+  const mobileInput = { ...FI, padding: '13px 14px', fontSize: 16 }; // 16px prevents iOS zoom
+  const mRow = isMobile
+    ? { display: 'grid', gridTemplateColumns: '1fr', gap: 0 }
+    : FRow;
+
   return (
-    <div style={S.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div style={{ ...S.modal, maxWidth: 560 }}>
+    <div style={isMobile ? mobileOverlay : { ...S.overlay }} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={isMobile ? mobileModal : { ...S.modal, maxWidth: 560 }}>
         <button style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={S.modalTitle}>{isEdit ? 'Edit Lead' : 'Add New Lead'}</div>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>{isEdit ? 'Edit Lead' : 'Add New Lead'}</div>
         <div style={{ ...S.modalSub, marginBottom: 4 }}>
           {isEdit ? `Editing: ${lead.name}` : 'Required fields are marked with *'}
         </div>
 
-        <div style={FRow}>
+        <div style={mRow}>
           <div>
             <label style={FLbl}>Customer / Company *</label>
-            <input style={fi('name')} value={form.name} placeholder="Apex Roofing LLC"
+            <input style={isMobile ? { ...mobileInput, ...(errors.name ? { border: '1px solid #ef4444' } : {}) } : fi('name')} value={form.name} placeholder="Apex Roofing LLC"
               onChange={e => set('name', e.target.value)}
               onFocus={() => setFocused('name')} onBlur={() => setFocused(null)} />
           </div>
           <div>
             <label style={FLbl}>Contact Name</label>
-            <input style={fi('contact')} value={form.contact} placeholder="Jane Smith"
+            <input style={isMobile ? mobileInput : fi('contact')} value={form.contact} placeholder="Jane Smith"
               onChange={e => set('contact', e.target.value)}
               onFocus={() => setFocused('contact')} onBlur={() => setFocused(null)} />
           </div>
         </div>
 
-        <div style={FRow}>
+        <div style={mRow}>
           <div>
             <label style={FLbl}>Phone *</label>
-            <input style={fi('phone')} value={form.phone} placeholder="(512) 555-0100"
+            <input style={isMobile ? { ...mobileInput, ...(errors.phone ? { border: '1px solid #ef4444' } : {}) } : fi('phone')} value={form.phone} placeholder="(512) 555-0100"
               onChange={e => set('phone', e.target.value)}
               onFocus={() => setFocused('phone')} onBlur={() => setFocused(null)} />
           </div>
           <div>
             <label style={FLbl}>Email</label>
-            <input style={fi('email')} type="email" value={form.email} placeholder="jane@company.com"
+            <input style={isMobile ? mobileInput : fi('email')} type="email" value={form.email} placeholder="jane@company.com"
               onChange={e => set('email', e.target.value)}
               onFocus={() => setFocused('email')} onBlur={() => setFocused(null)} />
           </div>
         </div>
 
         <label style={FLbl}>Job Address</label>
-        <input style={fi('address')} value={form.address} placeholder="1234 Oak St, Austin TX 78701"
+        <input style={isMobile ? mobileInput : fi('address')} value={form.address} placeholder="1234 Oak St, Austin TX 78701"
           onChange={e => set('address', e.target.value)}
           onFocus={() => setFocused('address')} onBlur={() => setFocused(null)} />
 
-        <div style={FRow}>
+        <div style={mRow}>
           <div>
             <label style={FLbl}>Estimated Value ($) *</label>
-            <input style={fi('value')} value={form.value} placeholder="15000" type="number" min="0"
+            <input style={isMobile ? { ...mobileInput, ...(errors.value ? { border: '1px solid #ef4444' } : {}) } : fi('value')} value={form.value} placeholder="15000" type="number" min="0"
               onChange={e => set('value', e.target.value)}
               onFocus={() => setFocused('value')} onBlur={() => setFocused(null)} />
           </div>
           <div>
             <label style={FLbl}>Callback Date</label>
-            <input style={fi('callbackDate')} type="date" value={form.callbackDate}
+            <input style={isMobile ? mobileInput : fi('callbackDate')} type="date" value={form.callbackDate}
               onChange={e => set('callbackDate', e.target.value)}
               onFocus={() => setFocused('callbackDate')} onBlur={() => setFocused(null)} />
           </div>
         </div>
 
-        <div style={FRow}>
+        <div style={mRow}>
           <div>
             <label style={FLbl}>Trade *</label>
-            <select style={fi('trade')} value={form.trade}
+            <select style={isMobile ? { ...mobileInput, ...(errors.trade ? { border: '1px solid #ef4444' } : {}) } : fi('trade')} value={form.trade}
               onChange={e => set('trade', e.target.value)}
               onFocus={() => setFocused('trade')} onBlur={() => setFocused(null)}>
               {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
@@ -1232,7 +1307,7 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
           </div>
           <div>
             <label style={FLbl}>Lead Stage</label>
-            <select style={fi('stage')} value={form.stage}
+            <select style={isMobile ? mobileInput : fi('stage')} value={form.stage}
               onChange={e => set('stage', e.target.value)}
               onFocus={() => setFocused('stage')} onBlur={() => setFocused(null)}>
               {LEAD_STAGES.map(s => (
@@ -1243,7 +1318,7 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
         </div>
 
         <label style={FLbl}>Lead Source</label>
-        <select style={fi('source')} value={form.source}
+        <select style={isMobile ? mobileInput : fi('source')} value={form.source}
           onChange={e => set('source', e.target.value)}
           onFocus={() => setFocused('source')} onBlur={() => setFocused(null)}>
           {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -1251,25 +1326,28 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
 
         <label style={FLbl}>Notes</label>
         <textarea
-          style={{ ...FI, minHeight: 72, resize: 'vertical', lineHeight: 1.5 }}
+          style={isMobile
+            ? { ...mobileInput, minHeight: 80, resize: 'vertical', lineHeight: 1.5 }
+            : { ...FI, minHeight: 72, resize: 'vertical', lineHeight: 1.5 }}
           value={form.notes} placeholder="Any relevant details about this lead..."
           onChange={e => set('notes', e.target.value)}
           onFocus={() => setFocused('notes')} onBlur={() => setFocused(null)}
         />
 
         {Object.keys(errors).length > 0 && (
-          <div style={{ fontSize: 12, color: '#ef4444', marginTop: 10 }}>
+          <div style={{ fontSize: 13, color: '#ef4444', marginTop: 10 }}>
             Please fill in all required fields marked with *.
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+        <div style={{ display: 'flex', gap: 10, marginTop: 20, paddingBottom: isMobile ? 8 : 0 }}>
           <button
             style={{
-              flex: 1, padding: '10px 16px',
+              flex: 1, padding: isMobile ? '14px 16px' : '10px 16px',
               background: 'linear-gradient(135deg, #f97316, #ea580c)',
               border: 'none', borderRadius: 8, color: '#fff',
-              fontWeight: 700, fontSize: 14, cursor: 'pointer',
+              fontWeight: 700, fontSize: 15, cursor: 'pointer',
+              minHeight: 48, WebkitTapHighlightColor: 'transparent',
             }}
             onClick={handleSave}
           >
@@ -1277,9 +1355,11 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
           </button>
           <button
             style={{
-              padding: '10px 20px', background: 'transparent',
+              padding: isMobile ? '14px 20px' : '10px 20px',
+              background: 'transparent',
               border: '1px solid #1e2535', borderRadius: 8,
               color: '#64748b', cursor: 'pointer', fontSize: 14,
+              minHeight: 48, WebkitTapHighlightColor: 'transparent',
             }}
             onClick={onClose}
           >
@@ -1296,6 +1376,7 @@ function CoachPanel({ lead, onClose, demoMode, tier }) {
   const [aiText, setAiText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const isMobile = useMobile();
   const goToSignup = () => { window.location.href = '/'; };
 
   const tips = PLAYBOOKS[lead.stallReason] || PLAYBOOKS.no_response;
@@ -1415,11 +1496,18 @@ Format as numbered action items, no preamble.`,
     }
   };
 
+  const coachOverlay = isMobile
+    ? { ...S.overlay, padding: 0, alignItems: 'flex-end' }
+    : S.overlay;
+  const coachModal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '95dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : S.modal;
+
   return (
-    <div style={S.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div style={S.modal}>
+    <div style={coachOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={coachModal}>
         <button style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={S.modalTitle}>{lead.name}</div>
+        <div style={{ ...S.modalTitle, paddingRight: 52 }}>{lead.name}</div>
         <div style={S.modalSub}>
           {lead.contact} · {lead.role} · {fmt(lead.value)} · {lead.stage}
           {lead.stallReason && ` · ${STALL_LABELS[lead.stallReason]}`}
@@ -1662,6 +1750,7 @@ function LeadCard({ lead, onClick, onEdit, onDelete, demoMode }) {
 function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode }) {
   const [filter, setFilter] = useState('all');
   const [tradeFilter, setTradeFilter] = useState('all');
+  const isMobile = useMobile();
   const filters = ['all', 'active', 'stalled', 'cold', 'won', 'lost'];
 
   const filtered = useMemo(() => {
@@ -1672,9 +1761,17 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
 
   const total = filtered.reduce((s, l) => s + l.value, 0);
 
+  const scrollRow = {
+    display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center',
+    overflowX: 'auto', flexWrap: 'nowrap',
+    WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
+    msOverflowStyle: 'none', paddingBottom: 4,
+  };
+
   return (
     <div>
-      <div style={S.filterRow}>
+      {/* Status filter row */}
+      <div style={isMobile ? scrollRow : S.filterRow}>
         {filters.map(f => (
           <button key={f} style={S.filterBtn(filter === f)} onClick={() => setFilter(f)}>
             {f === 'all'
@@ -1682,21 +1779,53 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               : `${f.charAt(0).toUpperCase() + f.slice(1)} (${leads.filter(l => l.status === f).length})`}
           </button>
         ))}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+        {!isMobile && (
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ fontSize: 13, color: '#94a3b8' }}>
+              Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>{fmt(total)}</span>
+            </div>
+            {(onAddLead || demoMode) && (
+              <DisabledTooltip active={demoMode} label="Sign up to add your own data">
+                <button
+                  style={{
+                    padding: '8px 16px',
+                    background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
+                    border: demoMode ? '1px solid #2d3748' : 'none',
+                    borderRadius: 7,
+                    color: demoMode ? '#3d4f63' : '#fff',
+                    fontWeight: 700, fontSize: 13,
+                    cursor: demoMode ? 'not-allowed' : 'pointer',
+                    minHeight: 36,
+                  }}
+                  onClick={demoMode ? undefined : onAddLead}
+                >
+                  + Add Lead
+                </button>
+              </DisabledTooltip>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile: total + Add Lead on own row */}
+      {isMobile && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
           <div style={{ fontSize: 13, color: '#94a3b8' }}>
-            Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>{fmt(total)}</span>
+            Total: <span style={{ color: '#f97316', fontWeight: 700 }}>{fmt(total)}</span>
           </div>
           {(onAddLead || demoMode) && (
             <DisabledTooltip active={demoMode} label="Sign up to add your own data">
               <button
                 style={{
-                  padding: '6px 16px',
+                  padding: '10px 18px',
                   background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
                   border: demoMode ? '1px solid #2d3748' : 'none',
-                  borderRadius: 7,
+                  borderRadius: 8,
                   color: demoMode ? '#3d4f63' : '#fff',
-                  fontWeight: 700, fontSize: 13,
+                  fontWeight: 700, fontSize: 14,
                   cursor: demoMode ? 'not-allowed' : 'pointer',
+                  minHeight: 44,
+                  WebkitTapHighlightColor: 'transparent',
                 }}
                 onClick={demoMode ? undefined : onAddLead}
               >
@@ -1705,9 +1834,15 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             </DisabledTooltip>
           )}
         </div>
-      </div>
+      )}
 
-      <div style={S.tradeFilterRow}>
+      {/* Trade filter row — always horizontal scroll */}
+      <div style={{
+        ...S.tradeFilterRow,
+        overflowX: 'auto', flexWrap: 'nowrap',
+        WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}>
         <button
           style={S.tradeFilterBtn(tradeFilter === 'all', '#f97316')}
           onClick={() => setTradeFilter('all')}
@@ -1725,7 +1860,10 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
         ))}
       </div>
 
-      <div style={S.grid}>
+      <div style={{
+        ...S.grid,
+        ...(isMobile ? { gridTemplateColumns: '1fr', gap: 12 } : {}),
+      }}>
         {filtered.map(lead => (
           <LeadCard
             key={lead.id}
@@ -1813,6 +1951,7 @@ function CallbacksTab({ leads, onSelectLead }) {
 
 // ─── Analytics Tab ────────────────────────────────────────────────────────────
 function AnalyticsTab({ leads, tier }) {
+  const isMobile = useMobile();
   const active = leads.filter(l => ['active', 'stalled', 'cold'].includes(l.status));
   const stalled = leads.filter(l => l.status === 'stalled');
   const won = leads.filter(l => l.status === 'won');
@@ -1851,7 +1990,10 @@ function AnalyticsTab({ leads, tier }) {
 
   return (
     <div>
-      <div style={S.statsRow}>
+      <div style={{
+        ...S.statsRow,
+        ...(isMobile ? { gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 } : {}),
+      }}>
         {[
           { val: fmt(totalPipeline), label: 'Active Pipeline' },
           { val: fmt(stalledValue), label: 'Value at Risk' },
@@ -1860,14 +2002,14 @@ function AnalyticsTab({ leads, tier }) {
           { val: `${avgDealAge}d`, label: 'Avg Deal Age' },
           { val: stalled.length, label: 'Stalled Deals' },
         ].map(({ val, label }) => (
-          <div key={label} style={S.statCard}>
-            <div style={S.statVal}>{val}</div>
+          <div key={label} style={{ ...S.statCard, ...(isMobile ? { padding: 14 } : {}) }}>
+            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 22 } : {}) }}>{val}</div>
             <div style={S.statLabel}>{label}</div>
           </div>
         ))}
       </div>
 
-      <div style={S.chartSection}>
+      <div style={{ ...S.chartSection, ...(isMobile ? { gridTemplateColumns: '1fr' } : {}) }}>
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Pipeline by Stage</div>
           {stageFunnel.map(({ stage, count, value }, i) => (
@@ -3414,6 +3556,7 @@ function DemoDashboard({ trade, onChangeTrade }) {
   const [tier, setTier] = useState('pro');
   const [tab, setTab] = useState('pipeline');
   const [selectedLead, setSelectedLead] = useState(null);
+  const isMobile = useMobile();
   const goToSignup = () => { window.location.href = '/'; };
   const tradeColor = TRADE_COLORS[trade] || '#f97316';
   const data = TRADE_DEMO_DATA[trade] || TRADE_DEMO_DATA['Roofing'];
@@ -3473,52 +3616,63 @@ function DemoDashboard({ trade, onChangeTrade }) {
       {/* Tier selector bar */}
       <div style={{
         background: '#0d1117', borderBottom: '1px solid #1e2535',
-        padding: '10px 24px',
-        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+        padding: isMobile ? '8px 12px' : '10px 24px',
+        display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap',
+        overflowX: isMobile ? 'auto' : 'visible',
+        scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
       }}>
-        <span style={{ fontSize: 11, color: '#475569', fontWeight: 600, marginRight: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          Preview tier:
+        <span style={{ fontSize: 10, color: '#475569', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+          Tier:
         </span>
         {Object.entries(TIER_META).map(([key, meta]) => (
           <button
             key={key}
             onClick={() => handleTierChange(key)}
             style={{
-              padding: '5px 16px', borderRadius: 20, border: 'none',
-              fontWeight: 600, fontSize: 12, cursor: 'pointer',
+              padding: isMobile ? '7px 14px' : '5px 16px', borderRadius: 20, border: 'none',
+              fontWeight: 600, fontSize: isMobile ? 13 : 12, cursor: 'pointer',
               background: tier === key ? meta.color : '#1a1f2e',
               color: tier === key ? '#fff' : '#64748b',
-              transition: 'all 0.15s',
-              outline: tier === key ? `2px solid ${meta.color}44` : 'none',
-              outlineOffset: 1,
+              transition: 'all 0.15s', flexShrink: 0,
+              outline: tier === key ? `2px solid ${meta.color}44` : 'none', outlineOffset: 1,
+              minHeight: isMobile ? 36 : 'auto',
+              WebkitTapHighlightColor: 'transparent',
             }}
           >
             {meta.label}
           </button>
         ))}
-        <span style={{ marginLeft: 8, fontSize: 12, color: '#475569' }}>
-          — {TIER_META[tier].desc}
-        </span>
+        {!isMobile && (
+          <span style={{ marginLeft: 8, fontSize: 12, color: '#475569' }}>
+            — {TIER_META[tier].desc}
+          </span>
+        )}
       </div>
 
       {/* Starter: lead limit warning */}
       {tier === 'starter' && (
         <div style={{
           background: 'rgba(234,179,8,0.08)', borderBottom: '1px solid rgba(234,179,8,0.2)',
-          padding: '9px 24px',
+          padding: isMobile ? '8px 12px' : '9px 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexWrap: 'wrap', gap: 8,
         }}>
-          <span style={{ fontSize: 13, color: '#eab308', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: isMobile ? 12 : 13, color: '#eab308', display: 'flex', alignItems: 'center', gap: 6 }}>
             <span>⚠</span>
-            <span>You've used <strong>8 of 10 leads</strong> on the Starter plan (80%). Upgrade to unlock unlimited leads.</span>
+            <span>
+              {isMobile
+                ? <><strong>8 of 10 leads</strong> used (80%) — upgrade for unlimited</>
+                : <>You've used <strong>8 of 10 leads</strong> on the Starter plan (80%). Upgrade to unlock unlimited leads.</>
+              }
+            </span>
           </span>
           <button
             onClick={goToSignup}
             style={{
-              padding: '4px 14px', background: '#eab308', border: 'none',
+              padding: isMobile ? '8px 14px' : '4px 14px', background: '#eab308', border: 'none',
               borderRadius: 6, color: '#0f1117', fontWeight: 700,
               fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
+              minHeight: isMobile ? 36 : 'auto',
             }}
           >
             Upgrade to Pro
@@ -3529,74 +3683,82 @@ function DemoDashboard({ trade, onChangeTrade }) {
       {/* Header */}
       <header style={{
         background: '#161b27', borderBottom: '1px solid #1e2535',
-        padding: '0 24px', display: 'flex', alignItems: 'center', gap: 12,
-        height: 54, flexWrap: 'wrap',
+        padding: isMobile ? '0 12px' : '0 24px',
+        display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12,
+        height: isMobile ? 52 : 54,
       }}>
         <button
           onClick={onChangeTrade}
           style={{
             background: 'transparent', border: '1px solid #1e2535',
-            borderRadius: 6, color: '#64748b', fontSize: 12,
-            cursor: 'pointer', padding: '5px 12px', whiteSpace: 'nowrap',
+            borderRadius: 6, color: '#64748b', fontSize: isMobile ? 13 : 12,
+            cursor: 'pointer', padding: isMobile ? '8px 10px' : '5px 12px',
+            whiteSpace: 'nowrap', minHeight: isMobile ? 38 : 'auto',
+            WebkitTapHighlightColor: 'transparent',
           }}
         >
-          ← Change trade
+          ← {isMobile ? 'Back' : 'Change trade'}
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: tradeColor, letterSpacing: '-0.5px' }}>
-            {TRADE_ICONS[trade]} {trade} Demo
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          <span style={{ fontSize: isMobile ? 15 : 16, fontWeight: 700, color: tradeColor, letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
+            {TRADE_ICONS[trade]} {isMobile ? trade : `${trade} Demo`}
           </span>
           <span style={{
             fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
             background: tierColor + '20', color: tierColor,
-            border: `1px solid ${tierColor}33`, letterSpacing: '0.5px',
+            border: `1px solid ${tierColor}33`, letterSpacing: '0.5px', whiteSpace: 'nowrap',
           }}>
             {TIER_META[tier].label.toUpperCase()}
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: 2, marginLeft: 'auto', flexWrap: 'wrap' }}>
-          {allTabs.map(({ key, label, locked }) => (
-            <DisabledTooltip
-              key={key}
-              active={locked}
-              label={`${label} — upgrade to access`}
-            >
-              <button
-                style={{
-                  padding: '6px 14px', borderRadius: 6, border: 'none',
-                  cursor: locked ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
-                  background: tab === key ? tierColor : 'transparent',
-                  color: locked ? '#2d3748' : tab === key ? '#fff' : '#94a3b8',
-                  transition: 'all 0.15s',
-                  display: 'flex', alignItems: 'center', gap: 5,
-                }}
-                onClick={() => !locked && setTab(key)}
-              >
-                {locked && <span style={{ fontSize: 10 }}>🔒</span>}
-                {label}
-              </button>
-            </DisabledTooltip>
-          ))}
-        </div>
+        {/* Desktop: tab buttons in header */}
+        {!isMobile && (
+          <div style={{ display: 'flex', gap: 2, marginLeft: 'auto' }}>
+            {allTabs.map(({ key, label, locked }) => (
+              <DisabledTooltip key={key} active={locked} label={`${label} — upgrade to access`}>
+                <button
+                  style={{
+                    padding: '6px 14px', borderRadius: 6, border: 'none',
+                    cursor: locked ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
+                    background: tab === key ? tierColor : 'transparent',
+                    color: locked ? '#2d3748' : tab === key ? '#fff' : '#94a3b8',
+                    transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
+                  }}
+                  onClick={() => !locked && setTab(key)}
+                >
+                  {locked && <span style={{ fontSize: 10 }}>🔒</span>}
+                  {label}
+                </button>
+              </DisabledTooltip>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={goToSignup}
           style={{
-            marginLeft: 8, padding: '6px 16px',
+            marginLeft: isMobile ? 'auto' : 8,
+            padding: isMobile ? '8px 12px' : '6px 16px',
             background: 'linear-gradient(135deg, #f97316, #ea580c)',
             border: 'none', borderRadius: 7,
-            color: '#fff', fontWeight: 700, fontSize: 12,
+            color: '#fff', fontWeight: 700, fontSize: isMobile ? 12 : 12,
             cursor: 'pointer', whiteSpace: 'nowrap',
+            minHeight: isMobile ? 38 : 'auto',
+            WebkitTapHighlightColor: 'transparent',
           }}
         >
-          Start Free Trial →
+          {isMobile ? 'Sign Up' : 'Start Free Trial →'}
         </button>
       </header>
 
       {/* Content */}
-      <main style={{ padding: 24, maxWidth: 1400, margin: '0 auto', paddingBottom: 88 }}>
+      <main style={{
+        padding: isMobile ? '16px 12px' : 24,
+        maxWidth: 1400, margin: '0 auto',
+        paddingBottom: isMobile ? 80 : 88,
+      }}>
         {tab === 'pipeline' && (
           <PipelineTab
             leads={data.leads}
@@ -3621,33 +3783,46 @@ function DemoDashboard({ trade, onChangeTrade }) {
         )}
       </main>
 
-      {/* Sticky CTA bar */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: '#161b27', borderTop: '1px solid #1e2535',
-        padding: '13px 24px',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        gap: 20, zIndex: 100,
-        boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
-      }}>
-        <span style={{ fontSize: 14, color: '#cbd5e1' }}>
-          Like what you see?{' '}
-          <span style={{ color: '#f97316', fontWeight: 600 }}>Start your 14-day free trial</span>
-          {' '}— no credit card required
-        </span>
-        <button
-          onClick={goToSignup}
-          style={{
-            padding: '8px 22px',
-            background: 'linear-gradient(135deg, #f97316, #ea580c)',
-            border: 'none', borderRadius: 8,
-            color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Get Started Free
-        </button>
-      </div>
+      {/* Mobile: BottomNav replaces sticky CTA */}
+      {isMobile ? (
+        <BottomNav
+          tab={tab}
+          setTab={setTab}
+          color={tierColor}
+          tabs={allTabs.map(t => ({
+            ...t,
+            icon: NAV_TABS.find(n => n.key === t.key)?.icon || '•',
+          }))}
+        />
+      ) : (
+        /* Desktop: sticky CTA bar */
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          background: '#161b27', borderTop: '1px solid #1e2535',
+          padding: '13px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 20, zIndex: 100,
+          boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+        }}>
+          <span style={{ fontSize: 14, color: '#cbd5e1' }}>
+            Like what you see?{' '}
+            <span style={{ color: '#f97316', fontWeight: 600 }}>Start your 14-day free trial</span>
+            {' '}— no credit card required
+          </span>
+          <button
+            onClick={goToSignup}
+            style={{
+              padding: '8px 22px',
+              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Get Started Free
+          </button>
+        </div>
+      )}
 
       {selectedLead && (
         <CoachPanel
@@ -3722,6 +3897,8 @@ export default function App() {
     setUserLeads(prev => prev.filter(l => l.id !== id));
   };
 
+  const isMobile = useMobile();
+
   if (screen === 'login') {
     return (
       <LoginScreen
@@ -3753,9 +3930,12 @@ export default function App() {
 
   return (
     <div style={S.app}>
-      <header style={S.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={S.logo}>{companyName}</span>
+      <header style={{
+        ...S.header,
+        ...(isMobile ? { padding: '0 16px', height: 52 } : {}),
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={S.logo}>ClosedLoop</span>
           {isDemo && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
@@ -3765,32 +3945,40 @@ export default function App() {
               DEMO
             </span>
           )}
+          {!isMobile && companyName !== 'ClosedLoop' && (
+            <span style={S.logoSub}>{companyName}</span>
+          )}
         </div>
-        <div style={S.tabs}>
-          {[
-            { key: 'pipeline', label: 'Pipeline' },
-            { key: 'callbacks', label: 'Callbacks' },
-            { key: 'analytics', label: 'Analytics' },
-            { key: 'jobs', label: 'Jobs' },
-          ].map(({ key, label }) => (
-            <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
-              {label}
-            </button>
-          ))}
-        </div>
+
+        {/* Desktop tabs */}
+        {!isMobile && (
+          <div style={S.tabs}>
+            {NAV_TABS.map(({ key, label }) => (
+              <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
         <button
           onClick={() => { setScreen('login'); setSession(null); }}
           style={{
-            marginLeft: 16, background: 'transparent', border: 'none',
-            color: '#475569', cursor: 'pointer', fontSize: 12,
-            padding: '4px 8px', borderRadius: 6,
+            marginLeft: 'auto', background: 'transparent', border: 'none',
+            color: '#475569', cursor: 'pointer', fontSize: isMobile ? 13 : 12,
+            padding: isMobile ? '8px 4px' : '4px 8px', borderRadius: 6,
+            minHeight: isMobile ? 44 : 'auto',
+            WebkitTapHighlightColor: 'transparent',
           }}
         >
           Sign out
         </button>
       </header>
 
-      <main style={S.body}>
+      <main style={{
+        ...S.body,
+        ...(isMobile ? { padding: '16px 12px', paddingBottom: 80 } : {}),
+      }}>
         {tab === 'pipeline' && (
           leads.length === 0
             ? <EmptyState
@@ -3825,6 +4013,9 @@ export default function App() {
             : <JobsTab jobs={jobs} />
         )}
       </main>
+
+      {/* Mobile bottom navigation */}
+      {isMobile && <BottomNav tab={tab} setTab={setTab} />}
 
       {selectedLead && (
         <CoachPanel lead={selectedLead} onClose={() => setSelectedLead(null)} />
