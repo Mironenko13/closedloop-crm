@@ -889,6 +889,7 @@ const NAV_TABS = [
   { key: 'callbacks', label: 'Callbacks', icon: '📞' },
   { key: 'analytics', label: 'Analytics', icon: '📊' },
   { key: 'jobs',      label: 'Jobs',      icon: '🔨' },
+  { key: 'photos',    label: 'Photos',    icon: '📸' },
 ];
 
 function BottomNav({ tab, setTab, tabs, color }) {
@@ -3545,6 +3546,230 @@ function TradeSelectScreen({ onSelect }) {
   );
 }
 
+// ─── Photo Log Tab ────────────────────────────────────────────────────────────
+const DEMO_PHOTOS = [
+  { id: '1', phase: 'before',  caption: 'NE corner damage',              takenBy: 'Dave M.', time: '8:14 AM',  clientFacing: true  },
+  { id: '2', phase: 'before',  caption: 'Flashing separation',           takenBy: 'Dave M.', time: '8:21 AM',  clientFacing: false },
+  { id: '3', phase: 'during',  caption: 'Old shingles removed',          takenBy: 'Dave M.', time: '10:02 AM', clientFacing: false },
+  { id: '4', phase: 'during',  caption: 'Ice & water barrier installed', takenBy: 'Dave M.', time: '11:30 AM', clientFacing: true  },
+  { id: '5', phase: 'damage',  caption: 'Deck rot — 4×8 section',        takenBy: 'Dave M.', time: '9:02 AM',  clientFacing: true  },
+  { id: '6', phase: 'after',   caption: 'Completed — south face',        takenBy: 'Dave M.', time: '3:45 PM',  clientFacing: true  },
+];
+
+const PHASE_META = {
+  before: { label: 'Before', color: '#3b82f6' },
+  during: { label: 'During', color: '#f59e0b' },
+  after:  { label: 'After',  color: '#22c55e' },
+  damage: { label: 'Damage', color: '#ef4444' },
+};
+
+function PhotoLogTab({ tier }) {
+  const isMobile = useMobile();
+  const [phaseFilter, setPhaseFilter] = useState('all');
+
+  const filtered = phaseFilter === 'all'
+    ? DEMO_PHOTOS
+    : DEMO_PHOTOS.filter(p => p.phase === phaseFilter);
+
+  const clientCount = DEMO_PHOTOS.filter(p => p.clientFacing).length;
+
+  // Locked for Starter — section is visible but blurred with an overlay
+  const isLocked = tier === 'starter';
+
+  const gridCols = isMobile ? '1fr' : 'repeat(auto-fill, minmax(220px, 1fr))';
+
+  return (
+    <div>
+      {/* Section header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: 16, flexWrap: 'wrap', gap: 8,
+      }}>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Photo Log</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+            Job site documentation &amp; client report photos
+          </div>
+        </div>
+        <DisabledTooltip active label="Available on Starter and above">
+          <button
+            style={{
+              padding: '7px 14px', borderRadius: 7,
+              background: '#1a1f2e', border: '1px solid #2d3748',
+              color: '#475569', fontSize: 12, fontWeight: 600,
+              cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: 6,
+            }}
+            disabled
+          >
+            <span style={{ fontSize: 14 }}>📷</span>
+            + Add Photo
+          </button>
+        </DisabledTooltip>
+      </div>
+
+      {/* Tier callout */}
+      <div style={{
+        background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)',
+        borderRadius: 8, padding: '10px 14px', marginBottom: 20,
+        display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap',
+      }}>
+        <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>📸</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#f97316', marginBottom: 4 }}>
+            Photo Log — tier features
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 6 : 16 }}>
+            {[
+              { tier: 'Starter', color: '#64748b', desc: 'Photo upload + captions' },
+              { tier: 'Pro',     color: '#f97316', desc: 'Client-facing toggle + PDF export' },
+              { tier: 'Business',color: '#6366f1', desc: 'Crew attribution + bulk download' },
+            ].map(({ tier: t, color, desc }) => (
+              <span key={t} style={{ fontSize: 12, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10, background: color + '22', color, border: `1px solid ${color}33` }}>{t}</span>
+                {desc}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Locked overlay wrapper */}
+      <div style={{ position: 'relative' }}>
+        {isLocked && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 10,
+            background: 'rgba(15,17,23,0.72)',
+            backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)',
+            borderRadius: 10,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 10,
+          }}>
+            <span style={{ fontSize: 32 }}>🔒</span>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0' }}>Photo Log — Pro feature</div>
+            <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', maxWidth: 260 }}>
+              Upgrade to Pro or Business to access the photo log.
+            </div>
+            <button
+              onClick={() => { window.location.href = '/'; }}
+              style={{
+                marginTop: 4, padding: '7px 20px',
+                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                border: 'none', borderRadius: 7,
+                color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+              }}
+            >
+              Upgrade to Pro
+            </button>
+          </div>
+        )}
+
+        {/* Phase filter pills */}
+        <div style={{
+          display: 'flex', gap: 6, marginBottom: 16,
+          overflowX: 'auto', flexWrap: 'nowrap',
+          WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
+        }}>
+          <button
+            style={S.filterBtn(phaseFilter === 'all')}
+            onClick={() => setPhaseFilter('all')}
+          >
+            All ({DEMO_PHOTOS.length})
+          </button>
+          {Object.entries(PHASE_META).map(([key, meta]) => {
+            const count = DEMO_PHOTOS.filter(p => p.phase === key).length;
+            return (
+              <button
+                key={key}
+                style={{
+                  ...S.filterBtn(phaseFilter === key),
+                  ...(phaseFilter === key ? { background: meta.color, borderColor: meta.color } : {}),
+                }}
+                onClick={() => setPhaseFilter(key)}
+              >
+                {meta.label} ({count})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Photo grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 14 }}>
+          {filtered.map(photo => {
+            const phase = PHASE_META[photo.phase];
+            return (
+              <div
+                key={photo.id}
+                style={{
+                  background: '#161b27', border: '1px solid #1e2535',
+                  borderRadius: 10, overflow: 'hidden',
+                }}
+              >
+                {/* Thumbnail placeholder */}
+                <div style={{
+                  height: 130, background: '#0d1117',
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  gap: 8, position: 'relative',
+                  borderBottom: '1px solid #1e2535',
+                }}>
+                  {/* Phase badge on thumbnail */}
+                  <span style={{
+                    position: 'absolute', top: 8, left: 8,
+                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+                    background: phase.color + '33', color: phase.color,
+                    border: `1px solid ${phase.color}44`, letterSpacing: '0.4px',
+                    textTransform: 'uppercase',
+                  }}>
+                    {phase.label}
+                  </span>
+                  {/* PDF badge */}
+                  {photo.clientFacing && (
+                    <span style={{
+                      position: 'absolute', top: 8, right: 8,
+                      fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 10,
+                      background: 'rgba(99,102,241,0.2)', color: '#818cf8',
+                      border: '1px solid rgba(99,102,241,0.3)', letterSpacing: '0.4px',
+                    }}>
+                      PDF
+                    </span>
+                  )}
+                  {/* Camera icon SVG */}
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2d3748" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                  <span style={{ fontSize: 11, color: '#374151' }}>{photo.time}</span>
+                </div>
+
+                {/* Card body */}
+                <div style={{ padding: '10px 12px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', marginBottom: 4 }}>
+                    {photo.caption}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748b' }}>
+                    📷 {photo.takenBy}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          marginTop: 16, padding: '9px 14px',
+          background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.18)',
+          borderRadius: 7, fontSize: 12, color: '#94a3b8',
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}>
+          <span style={{ color: '#818cf8', fontWeight: 600 }}>{clientCount}</span>
+          {' '}photo{clientCount !== 1 ? 's' : ''} marked for client PDF report
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
   starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
@@ -3567,6 +3792,7 @@ function DemoDashboard({ trade, onChangeTrade }) {
     { key: 'callbacks', label: 'Callbacks', locked: false },
     { key: 'analytics', label: 'Analytics', locked: tier === 'starter' },
     { key: 'jobs',      label: 'Jobs',      locked: tier === 'starter' },
+    { key: 'photos',    label: 'Photos',    locked: false },
     { key: 'team',      label: 'Team',      locked: tier !== 'business' },
   ].filter(t => tier === 'business' || t.key !== 'team');
 
@@ -3777,6 +4003,9 @@ function DemoDashboard({ trade, onChangeTrade }) {
         )}
         {tab === 'jobs' && (
           <JobsTab jobs={data.jobs} />
+        )}
+        {tab === 'photos' && (
+          <PhotoLogTab tier={tier} />
         )}
         {tab === 'team' && (
           <TeamTab />
