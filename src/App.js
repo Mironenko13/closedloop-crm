@@ -8,7 +8,7 @@ const TRADE_LIST = [
   'Masonry', 'Painting', 'Flooring', 'Insulation', 'Drywall',
   'Landscaping', 'Concrete', 'Fencing', 'Carpentry', 'Waterproofing',
   'Solar', 'Garage Doors', 'Demolition', 'Septic', 'Tree Service',
-  'Pressure Washing',
+  'Pressure Washing', 'Seal Coating', 'Real Estate',
 ];
 
 const TRADE_COLORS = {
@@ -38,6 +38,8 @@ const TRADE_COLORS = {
   'Septic': '#65a30d',
   'Tree Service': '#15803d',
   'Pressure Washing': '#0891b2',
+  'Seal Coating': '#57534e',
+  'Real Estate': '#10b981',
 };
 
 const TRADE_CHECKLISTS = {
@@ -335,6 +337,28 @@ const TRADE_CHECKLISTS = {
     { id: 7, label: 'Final walkthrough' },
     { id: 8, label: 'Invoice sent' },
     { id: 9, label: 'Payment received' },
+  ],
+  'Seal Coating': [
+    { id: 1, label: 'Inspect surface for cracks and damage' },
+    { id: 2, label: 'Clean and degrease surface' },
+    { id: 3, label: 'Fill cracks and potholes' },
+    { id: 4, label: 'Edge and trim around borders' },
+    { id: 5, label: 'Apply first coat of sealer' },
+    { id: 6, label: 'Apply second coat if required' },
+    { id: 7, label: 'Block off area for curing time' },
+    { id: 8, label: 'Final inspection with client' },
+  ],
+  'Real Estate': [
+    { id: 1,  label: 'Initial client consultation' },
+    { id: 2,  label: 'Property valuation / CMA' },
+    { id: 3,  label: 'Listing agreement signed' },
+    { id: 4,  label: 'Photos and staging arranged' },
+    { id: 5,  label: 'MLS listing live' },
+    { id: 6,  label: 'Showings scheduled' },
+    { id: 7,  label: 'Offer received and reviewed' },
+    { id: 8,  label: 'Inspection contingency cleared' },
+    { id: 9,  label: 'Closing date confirmed' },
+    { id: 10, label: 'Keys handed over' },
   ],
 };
 
@@ -1164,7 +1188,7 @@ const FLbl = {
 };
 const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
 
-function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
+function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
   const isMobile = useMobile();
   const isEdit = !!lead;
   const [form, setForm] = useState({
@@ -1303,6 +1327,9 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
             <select style={isMobile ? { ...mobileInput, ...(errors.trade ? { border: '1px solid #ef4444' } : {}) } : fi('trade')} value={form.trade}
               onChange={e => set('trade', e.target.value)}
               onFocus={() => setFocused('trade')} onBlur={() => setFocused(null)}>
+              {customTrade && !TRADE_LIST.includes(customTrade) && (
+                <option value={customTrade}>{customTrade} ✨</option>
+              )}
               {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
@@ -2085,8 +2112,10 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose }) {
-  const steps = TRADE_CHECKLISTS[job.trade] || TRADE_CHECKLISTS['Roofing'];
+function JobModal({ job, onClose, customChecklist }) {
+  const steps = TRADE_CHECKLISTS[job.trade]
+    || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
+    || TRADE_CHECKLISTS['Roofing'];
   const tradeColor = TRADE_COLORS[job.trade] || '#f97316';
 
   const [checks, setChecks] = useState(() => {
@@ -2196,7 +2225,7 @@ function JobModal({ job, onClose }) {
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
-function JobsTab({ jobs }) {
+function JobsTab({ jobs, customChecklist }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -2249,7 +2278,9 @@ function JobsTab({ jobs }) {
 
       <div style={S.grid}>
         {filtered.map(job => {
-          const steps = TRADE_CHECKLISTS[job.trade] || TRADE_CHECKLISTS['Roofing'];
+          const steps = TRADE_CHECKLISTS[job.trade]
+            || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
+            || TRADE_CHECKLISTS['Roofing'];
           const doneCount = job.completedSteps.length;
           const total = steps.length;
           const pct = Math.round(doneCount / total * 100);
@@ -2314,7 +2345,7 @@ function JobsTab({ jobs }) {
       </div>
 
       {selectedJob && (
-        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} customChecklist={customChecklist} />
       )}
     </div>
   );
@@ -2728,6 +2759,11 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
     trade: '', plan: 'pro',
   });
   const [errors, setErrors] = useState({});
+  const [customTradeInput, setCustomTradeInput] = useState('');
+  const [customTradeConfig, setCustomTradeConfig] = useState(null);
+  const [customTradeLoading, setCustomTradeLoading] = useState(false);
+  const [customTradeError, setCustomTradeError] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
@@ -2757,6 +2793,39 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
     setStep(s => s + 1);
   };
 
+  const handleGenerateCustomTrade = async () => {
+    const tradeName = customTradeInput.trim();
+    if (!tradeName) return;
+    setCustomTradeLoading(true);
+    setCustomTradeError('');
+    setCustomTradeConfig(null);
+    try {
+      const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        setCustomTradeError('Set REACT_APP_ANTHROPIC_API_KEY in your .env to enable this feature.');
+        setCustomTradeLoading(false);
+        return;
+      }
+      const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+      const prompt = `You are configuring a contractor CRM for a "${tradeName}" business.\nReturn ONLY valid JSON with no markdown, no explanation, no backticks. Format:\n{\n  "checklist": ["step 1", "step 2", ...],\n  "pipeline": ["Stage 1", "Stage 2", ...]\n}`;
+      const msg = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+      });
+      const raw = msg.content[0].text.trim();
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.checklist) || !Array.isArray(parsed.pipeline)) throw new Error('bad shape');
+      setCustomTradeConfig(parsed);
+      set('trade', tradeName);
+      setErrors({});
+    } catch {
+      setCustomTradeError("Couldn't generate that trade — try being more specific.");
+    } finally {
+      setCustomTradeLoading(false);
+    }
+  };
+
   const handleComplete = () => {
     onComplete({
       isDemo: false,
@@ -2765,6 +2834,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
       email: form.email,
       trade: form.trade,
       plan: form.plan,
+      customTradeConfig: customTradeConfig || null,
     });
   };
 
@@ -2861,12 +2931,71 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                 <div
                   key={trade}
                   style={A.tradeCard(form.trade === trade, TRADE_COLORS[trade])}
-                  onClick={() => { set('trade', trade); setErrors({}); }}
+                  onClick={() => { set('trade', trade); setErrors({}); setCustomTradeConfig(null); setShowCustomInput(false); }}
                 >
                   {trade}
                 </div>
               ))}
             </div>
+
+            {/* Custom trade section */}
+            {!showCustomInput ? (
+              <button
+                onClick={() => { setShowCustomInput(true); setErrors({}); }}
+                style={{
+                  width: '100%', marginBottom: 16, padding: '9px 12px',
+                  background: 'transparent',
+                  border: '1px dashed #2d3748',
+                  borderRadius: 8, color: '#64748b',
+                  fontSize: 13, cursor: 'pointer', textAlign: 'center',
+                }}
+              >
+                ✨ My trade isn't listed — generate it with AI
+              </button>
+            ) : (
+              <div style={{
+                background: '#0f1117', border: '1px solid #1e2535',
+                borderRadius: 8, padding: '14px', marginBottom: 16,
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 10 }}>
+                  ✨ Custom Trade Generator
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <input
+                    value={customTradeInput}
+                    onChange={e => { setCustomTradeInput(e.target.value); setCustomTradeError(''); }}
+                    placeholder="e.g. Tile Setter, Irrigation, Sign Hanging"
+                    style={{
+                      ...A.input, flex: 1, fontSize: 13, padding: '9px 12px',
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && handleGenerateCustomTrade()}
+                  />
+                  <button
+                    onClick={handleGenerateCustomTrade}
+                    disabled={customTradeLoading || !customTradeInput.trim()}
+                    style={{
+                      padding: '9px 16px',
+                      background: customTradeLoading ? '#1e2535' : 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                      border: 'none', borderRadius: 7,
+                      color: customTradeLoading ? '#64748b' : '#fff',
+                      fontWeight: 700, fontSize: 13,
+                      cursor: customTradeLoading || !customTradeInput.trim() ? 'not-allowed' : 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {customTradeLoading ? '⟳ Generating…' : 'Generate'}
+                  </button>
+                </div>
+                {customTradeError && (
+                  <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 6 }}>{customTradeError}</div>
+                )}
+                {customTradeConfig && (
+                  <div style={{ fontSize: 11, color: '#22c55e', marginBottom: 6 }}>
+                    ✓ Trade "{form.trade}" generated — {customTradeConfig.checklist.length} checklist steps, {customTradeConfig.pipeline.length} pipeline stages
+                  </div>
+                )}
+              </div>
+            )}
 
             <button style={A.btn} onClick={handleNext}>Next →</button>
             <button style={A.btnSecondary} onClick={() => setStep(1)}>← Back</button>
@@ -2945,6 +3074,7 @@ const TRADE_ICONS = {
   'Concrete': '🏛', 'Fencing': '🚧', 'Carpentry': '🪚', 'Waterproofing': '💧',
   'Solar': '☀️', 'Garage Doors': '🚪', 'Demolition': '💥', 'Septic': '⚗️',
   'Tree Service': '🌳', 'Pressure Washing': '💦',
+  'Seal Coating': '🛣️', 'Real Estate': '🏡',
 };
 
 // compact lead builder
@@ -3437,6 +3567,44 @@ const TRADE_DEMO_DATA = {
       dj(4,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Tree Service',3400,'Scheduled','2026-04-02',[1,2],'2 elms + 3 stumps. Crew booked 4/2.'),
     ],
   },
+  'Seal Coating': {
+    leads: [
+      dl(1,'Westbrook Apartment Complex','Tony Vasquez','Property Mgr','active',8400,'proposal','2026-03-25',null,'Full parking lot, 60-space. Two coats required. Demo well received.','Commercial',10,'Seal Coating'),
+      dl(2,'Meadowfield HOA','Linda Barnes','HOA President','stalled',14200,'negotiation','2026-03-21','budget_freeze','8,000 sq ft access roads + parking. Annual board vote needed.','HOA',37,'Seal Coating'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',2800,'qualified','2026-03-27',null,'Driveway + apron, 1,200 sq ft. Ready to schedule.','Residential',7,'Seal Coating'),
+      dl(4,'Atlas Industrial Park','Ray Torres','Plant Mgr','stalled',22000,'proposal','2026-03-20','no_response','Loading dock + 3 parking areas. No reply after 2 quotes.','Industrial',31,'Seal Coating'),
+      dl(5,'Northview Church','Pastor Ellison','Admin','stalled',6400,'contacted','2026-03-22','price_objection','Main lot + overflow, 4,500 sq ft. $400 over expectation.','Institutional',22,'Seal Coating'),
+      dl(6,'Weber Residence','Bill Weber','Homeowner','cold',1900,'contacted','2026-04-15','timing','1-car driveway. Wants spring. No urgency.','Residential',44,'Seal Coating'),
+      dl(7,'Clearbrook Office Park','Donna Pierce','Property Mgr','won',11600,'won',null,null,'Closed! 3 lots fully coated. Crew out 3/27.','Commercial',18,'Seal Coating'),
+      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',17800,'negotiation','2026-03-26',null,'4 entrance drives + bus loop. Near contract.','Institutional',14,'Seal Coating'),
+      dl(9,'Torres Condo HOA','Miguel Torres','HOA Mgr','lost',9200,'lost',null,'competitor','Went with the lower bid — no two-coat guarantee.','HOA',42,'Seal Coating'),
+    ],
+    jobs: [
+      dj(1,'Westbrook Apt Complex','1200 Westbrook Blvd, Dallas TX 75205','Seal Coating',8400,'In Progress','2026-03-22',[1,2,3,4],'First coat done. Second coat tomorrow AM.'),
+      dj(2,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Seal Coating',2800,'Scheduled','2026-03-28',[1,2],'Driveway + apron. Surface clean. Ready to coat.'),
+      dj(3,'Clearbrook Office Park','501 Commerce Dr, Dallas TX 75201','Seal Coating',11600,'Complete','2026-03-20',[1,2,3,4,5,6,7,8],'3 lots fully sealed. Curing complete. Client signed off.'),
+      dj(4,'Lakewood School District','800 Lake Rd, Lakewood TX 75087','Seal Coating',17800,'Scheduled','2026-04-01',[1,2],'Contracts signed. Crew booked 4/1.'),
+    ],
+  },
+  'Real Estate': {
+    leads: [
+      dl(1,'The Hargrove Family','Frank Hargrove','Seller','active',14400,'Listed','2026-03-25',null,'4/3 colonial, $485k. Open house scheduled 3/29. Strong interest.','Residential',10,'Real Estate'),
+      dl(2,'Westbrook Investment LLC','Tony Vasquez','Investor','stalled',28000,'Consultation','2026-03-21','budget_freeze','Mixed-use duplex, $940k. Financing fell through on buyer side.','Commercial',33,'Real Estate'),
+      dl(3,'Morrison Residence','Carl Morrison','Seller','active',9200,'Under Contract','2026-03-27',null,'3/2 ranch, $310k. Inspection cleared. Closing 4/15.','Residential',7,'Real Estate'),
+      dl(4,'Clearbrook Retail Strip','Donna Pierce','Owner','stalled',44000,'Consultation','2026-03-20','no_response','6-unit retail strip, $1.47M. Three calls unanswered.','Commercial',26,'Real Estate'),
+      dl(5,'Weber Estate Sale','Bill Weber','Heir','stalled',18000,'Listed','2026-03-22','price_objection','Estate property, $595k. Family disputes current asking price.','Residential',20,'Real Estate'),
+      dl(6,'Torres Family','Miguel Torres','Buyer','cold',6800,'Lead','2026-04-10','timing','First-time buyer. Pre-approval pending. Not ready until May.','Residential',52,'Real Estate'),
+      dl(7,'Kowalski Property','Brian Kowalski','Seller','won',22000,'Closed',null,null,'Closed! $735k. Commission earned 3/22.','Residential',30,'Real Estate'),
+      dl(8,'Ridgecrest Partners','Tom Park','Investor','active',52000,'Closing','2026-03-26',null,'12-unit apartment building, $1.74M. Final walkthrough done.','Commercial',12,'Real Estate'),
+      dl(9,'Highland Park Condo','Sarah Chen','Seller','lost',11000,'Consultation',null,null,'Signed with another agent. Pricing disagreement.','Residential',41,'Real Estate'),
+    ],
+    jobs: [
+      dj(1,'The Hargrove Family','312 Maple Lane, Austin TX 78731','Real Estate',14400,'In Progress','2026-03-29',[1,2,3,4,5],'Open house scheduled. Photos and staging complete.'),
+      dj(2,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Real Estate',9200,'In Progress','2026-04-15',[1,2,3,4,5,6,7,8],'Under contract. Inspection cleared. Closing 4/15.'),
+      dj(3,'Brian & Nancy Kowalski','18 Westover Ct, Plano TX 75093','Real Estate',22000,'Complete','2026-03-22',[1,2,3,4,5,6,7,8,9,10],'Closed at $735k. Commission received.'),
+      dj(4,'Ridgecrest Partners','4200 Commerce Blvd, Dallas TX 75201','Real Estate',52000,'In Progress','2026-03-28',[1,2,3,4,5,6,7,8],'Final walkthrough done. Closing docs prepared.'),
+    ],
+  },
   'Pressure Washing': {
     leads: [
       dl(1,'Bay Area Car Wash','Lena Torres','Owner','won',4200,'won',null,null,'Closed! Full lot + canopy wash. 3/27.','Commercial',29,'Pressure Washing'),
@@ -3459,9 +3627,32 @@ const TRADE_DEMO_DATA = {
 };
 
 // ─── Trade Select Screen ───────────────────────────────────────────────────────
+const CUSTOM_TRADE_DEMO = {
+  checklist: [
+    'Site assessment and water source check',
+    'Design layout and zone mapping',
+    'Trenching and pipe installation',
+    'Head and emitter placement',
+    'Controller and valve installation',
+    'System pressure test and flush',
+    'Zone programming and timer setup',
+    'Final walkthrough with client',
+  ],
+  pipeline: ['Lead', 'Site Visit', 'Design', 'Installation', 'Testing', 'Complete'],
+};
+
 function TradeSelectScreen({ onSelect }) {
   const [hovered, setHovered] = useState(null);
+  const [showCustom, setShowCustom] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const [customResult, setCustomResult] = useState(null); // {name, checklist, pipeline}
+  const [customError, setCustomError] = useState('');
   const goToSignup = () => { window.location.href = '/'; };
+
+  const handleTryIt = () => {
+    setCustomResult({ name: 'Irrigation', ...CUSTOM_TRADE_DEMO });
+    setCustomError('');
+  };
 
   return (
     <div style={{
@@ -3488,7 +3679,7 @@ function TradeSelectScreen({ onSelect }) {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
           gap: 10,
-          marginBottom: 48,
+          marginBottom: 16,
         }}>
           {TRADE_LIST.map(trade => {
             const color = TRADE_COLORS[trade];
@@ -3522,7 +3713,141 @@ function TradeSelectScreen({ onSelect }) {
               </div>
             );
           })}
+
+          {/* Custom trade tile */}
+          <div
+            style={{
+              background: showCustom ? 'rgba(99,102,241,0.1)' : '#161b27',
+              border: `1px dashed ${showCustom ? '#6366f1' : '#2d3748'}`,
+              borderRadius: 10, padding: '16px 10px',
+              cursor: 'pointer', textAlign: 'center',
+              transition: 'all 0.15s',
+            }}
+            onClick={() => { setShowCustom(true); setCustomResult(null); setCustomError(''); }}
+          >
+            <div style={{ fontSize: 26, marginBottom: 8 }}>✨</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: showCustom ? '#818cf8' : '#64748b', lineHeight: 1.3 }}>
+              + Add your<br/>trade
+            </div>
+          </div>
         </div>
+
+        {/* Custom trade panel */}
+        {showCustom && (
+          <div style={{
+            background: '#161b27', border: '1px solid #1e2535',
+            borderRadius: 12, padding: '20px 20px',
+            marginBottom: 32,
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>
+              ✨ Custom Trade Generator
+            </div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 14 }}>
+              AI builds your job checklist and pipeline stages automatically.
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+              <input
+                value={customInput}
+                onChange={e => { setCustomInput(e.target.value); setCustomError(''); setCustomResult(null); }}
+                placeholder="e.g. Irrigation, Tile Setter, Sign Hanging"
+                style={{
+                  flex: 1, minWidth: 200, padding: '9px 12px',
+                  background: '#0f1117', border: '1px solid #2d3748',
+                  borderRadius: 7, color: '#e2e8f0', fontSize: 13,
+                  outline: 'none',
+                }}
+              />
+              <button
+                onClick={handleTryIt}
+                style={{
+                  padding: '9px 16px', background: 'rgba(99,102,241,0.15)',
+                  border: '1px solid rgba(99,102,241,0.35)',
+                  borderRadius: 7, color: '#818cf8',
+                  fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
+                }}
+              >
+                Try it (Irrigation)
+              </button>
+              <DisabledTooltip active label="Sign up to generate your own trade">
+                <button
+                  style={{
+                    padding: '9px 16px',
+                    background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                    border: 'none', borderRadius: 7,
+                    color: '#fff', fontWeight: 700, fontSize: 13,
+                    cursor: 'not-allowed', opacity: 0.5, whiteSpace: 'nowrap',
+                  }}
+                  disabled
+                >
+                  Generate
+                </button>
+              </DisabledTooltip>
+            </div>
+
+            {customError && (
+              <div style={{ fontSize: 12, color: '#ef4444', marginBottom: 10 }}>
+                {customError}
+              </div>
+            )}
+
+            {customResult && (
+              <div style={{
+                background: '#0f1117', border: '1px solid rgba(99,102,241,0.25)',
+                borderRadius: 8, padding: '14px 16px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+                  <div>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>
+                      ✨ {customResult.name}
+                    </span>
+                    <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: 'rgba(99,102,241,0.2)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)' }}>
+                      AI Generated
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => onSelect(customResult.name, customResult)}
+                    style={{
+                      padding: '7px 18px',
+                      background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                      border: 'none', borderRadius: 7,
+                      color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+                    }}
+                  >
+                    View {customResult.name} Demo →
+                  </button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                      Job Checklist ({customResult.checklist.length} steps)
+                    </div>
+                    {customResult.checklist.map((step, i) => (
+                      <div key={i} style={{ fontSize: 12, color: '#94a3b8', padding: '3px 0', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 10, color: '#475569', minWidth: 16 }}>{i + 1}.</span>
+                        {step}
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                      Pipeline Stages
+                    </div>
+                    {customResult.pipeline.map((stage, i) => (
+                      <div key={i} style={{ fontSize: 12, color: '#94a3b8', padding: '3px 0', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 10, background: '#6366f120', color: '#818cf8', borderRadius: 4, padding: '1px 5px', minWidth: 18, textAlign: 'center' }}>{i + 1}</span>
+                        {stage}
+                      </div>
+                    ))}
+                    <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 6, fontSize: 11, color: '#94a3b8' }}>
+                      🔒 Sign up to generate your own trade with real data
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Bottom CTA */}
         <div style={{ textAlign: 'center' }}>
@@ -3777,14 +4102,21 @@ const TIER_META = {
   business:{ label: 'Business',color: '#6366f1', desc: 'Team management + export' },
 };
 
-function DemoDashboard({ trade, onChangeTrade }) {
+function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
   const [tier, setTier] = useState('pro');
   const [tab, setTab] = useState('pipeline');
   const [selectedLead, setSelectedLead] = useState(null);
   const isMobile = useMobile();
   const goToSignup = () => { window.location.href = '/'; };
-  const tradeColor = TRADE_COLORS[trade] || '#f97316';
-  const data = TRADE_DEMO_DATA[trade] || TRADE_DEMO_DATA['Roofing'];
+  const tradeColor = TRADE_COLORS[trade] || '#6366f1';
+  // For custom trades, remap Roofing sample data to the custom trade name
+  const data = TRADE_DEMO_DATA[trade] || (() => {
+    const base = TRADE_DEMO_DATA['Roofing'];
+    return {
+      leads: base.leads.map(l => ({ ...l, trade })),
+      jobs: base.jobs.map(j => ({ ...j, trade })),
+    };
+  })();
 
   // Build available tabs based on tier
   const allTabs = [
@@ -3928,7 +4260,7 @@ function DemoDashboard({ trade, onChangeTrade }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
           <span style={{ fontSize: isMobile ? 15 : 16, fontWeight: 700, color: tradeColor, letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
-            {TRADE_ICONS[trade]} {isMobile ? trade : `${trade} Demo`}
+            {TRADE_ICONS[trade] || '✨'} {isMobile ? trade : `${trade} Demo`}
           </span>
           <span style={{
             fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
@@ -4002,7 +4334,7 @@ function DemoDashboard({ trade, onChangeTrade }) {
           <AnalyticsTab leads={data.leads} tier={tier} />
         )}
         {tab === 'jobs' && (
-          <JobsTab jobs={data.jobs} />
+          <JobsTab jobs={data.jobs} customChecklist={customTradeConfig?.checklist} />
         )}
         {tab === 'photos' && (
           <PhotoLogTab tier={tier} />
@@ -4069,10 +4401,23 @@ function DemoDashboard({ trade, onChangeTrade }) {
 // ─── Demo Page ────────────────────────────────────────────────────────────────
 function DemoPage() {
   const [selectedTrade, setSelectedTrade] = useState(null);
+  const [customTradeConfig, setCustomTradeConfig] = useState(null);
+
+  const handleSelect = (trade, config) => {
+    setSelectedTrade(trade);
+    setCustomTradeConfig(config || null);
+  };
+
   if (!selectedTrade) {
-    return <TradeSelectScreen onSelect={setSelectedTrade} />;
+    return <TradeSelectScreen onSelect={handleSelect} />;
   }
-  return <DemoDashboard trade={selectedTrade} onChangeTrade={() => setSelectedTrade(null)} />;
+  return (
+    <DemoDashboard
+      trade={selectedTrade}
+      onChangeTrade={() => { setSelectedTrade(null); setCustomTradeConfig(null); }}
+      customTradeConfig={customTradeConfig}
+    />
+  );
 }
 
 // ─── App Root ─────────────────────────────────────────────────────────────────
@@ -4151,6 +4496,7 @@ export default function App() {
   const jobs = isDemo ? DEMO_JOBS : [];
   const userTrade = session?.trade || 'Roofing';
   const companyName = session?.companyName || 'ClosedLoop';
+  const userCustomChecklist = session?.customTradeConfig?.checklist || null;
 
   // Only expose mutators for non-demo accounts
   const addLeadHandler = isDemo ? null : () => setLeadModal('add');
@@ -4239,7 +4585,7 @@ export default function App() {
                 sub={`Add your first ${userTrade} job to start tracking progress.`}
                 btnLabel="Add your first job"
               />
-            : <JobsTab jobs={jobs} />
+            : <JobsTab jobs={jobs} customChecklist={userCustomChecklist} />
         )}
       </main>
 
@@ -4254,6 +4600,7 @@ export default function App() {
         <AddLeadModal
           lead={leadModal === 'add' ? null : leadModal}
           defaultTrade={userTrade}
+          customTrade={!TRADE_LIST.includes(userTrade) ? userTrade : null}
           onSave={leadModal === 'add' ? handleAddLead : handleEditLead}
           onClose={() => setLeadModal(null)}
         />
