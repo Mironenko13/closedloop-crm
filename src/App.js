@@ -1556,7 +1556,6 @@ export default function App() {
       <header style={S.header}>
         <div>
           <span style={S.logo}>ClosedLoop</span>
-          <span style={S.logoSub}>Sales Recovery CRM</span>
         </div>
         <div style={S.tabs}>
           {[
