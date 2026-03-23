@@ -1030,22 +1030,57 @@ function getDemoResponse(lead) {
   if (DEMO_AI_RESPONSES[specificKey]) return DEMO_AI_RESPONSES[specificKey];
   if (DEMO_AI_RESPONSES[generalKey]) return DEMO_AI_RESPONSES[generalKey];
 
-  // Fallback: every action item references trade, stall reason, stage, and deal value by name
+  // Fallback: status-based advice, every item references trade/contact/value/stage explicitly
   const trade = lead.trade;
-  const stall = STALL_LABELS[lead.stallReason] || 'Unknown Reason';
   const stage = lead.stage;
-  const val = lead.value ? `$${lead.value.toLocaleString()}` : 'this deal';
-  const days = lead.dealAge;
-  const contact = lead.contact || 'the contact';
-  const status = (lead.status || 'stalled').toUpperCase();
+  const val = lead.value ? `$${lead.value.toLocaleString()}` : 'the project value';
+  const contact = lead.contact || 'your contact';
+  const hasStall = !!(lead.stallReason && STALL_LABELS[lead.stallReason]);
+  const stall = hasStall ? STALL_LABELS[lead.stallReason] : null;
 
-  return `1. This ${trade} deal at the ${stage} stage has been ${status} for ${days} days — the ${stall} objection needs a direct confrontation this week, not another follow-up email. Call ${contact} and open with: "I want to understand exactly what's holding this back — is the ${stall.toLowerCase()} the real issue, or is there something else I should know about?" In ${trade} contracting, surface-level objections at the ${stage} stage almost always have a more specific concern underneath them.
+  if (lead.status === 'won') {
+    return `1. The ${val} ${trade} job is closed — call ${contact} this week to confirm the installation schedule is locked and every crew, material delivery, and permit is staged correctly. A smooth start on a ${trade} job of this size is your best referral-generating move.
 
-2. On a ${val} ${trade} job at the ${stage} stage, the ${stall} objection responds to proof, not persuasion. Send ${contact} one concrete piece of evidence before the call: a photo of a similar completed ${trade} project, a reference from a comparable job, or a written spec comparison showing exactly what's in your ${val} price. Generic follow-ups on stalled ${trade} deals get ignored — specific, documented proof gets responses.
+2. Ask ${contact} directly for two referrals before the ${stage} job starts: "Do you know anyone else in the area dealing with a similar ${trade} issue? I'd rather get your recommendation than knock doors." Referral requests immediately after a ${val} close, before any work has started, close at a higher rate than post-completion asks.
 
-3. Reframe the ${val} ${trade} proposal around the cost of the ${stall.toLowerCase()} continuing. Ask ${contact}: "What does it cost you — in time, risk, or ongoing expense — if this ${trade} work gets pushed another 30 days?" Get them to quantify the consequence of inaction at the ${stage} stage. This shifts the conversation from your price to their problem.
+3. While you have ${contact}'s attention on the ${trade} project, identify one scope add-on — extended warranty, preventive maintenance agreement, or a second phase of work — and present it as a natural extension of what they've already approved. A ${val} ${trade} customer who just signed is far more receptive than a cold prospect.
 
-4. Create a specific, real deadline for this ${val} ${trade} deal at ${stage}: reference your crew or material schedule to explain why acting this week matters. "I have [specific availability] that works for your project — if we don't lock it in this week, I can't guarantee that window." ${trade} customers at the ${stage} stage respond to concrete scheduling constraints. Send it, then go quiet for 48 hours.`;
+4. Document this ${trade} job for marketing from day one: take before photos at start, progress photos at key milestones, and a completed job photo at the end. Ask ${contact} for a written testimonial at final walkthrough. A ${val} ${trade} job with documented before/after photos and a named customer review is worth 10 cold leads in your next proposal cycle.`;
+  }
+
+  if (lead.status === 'lost') {
+    return `1. Wait 2 weeks from when this ${val} ${trade} deal was marked lost, then call ${contact} with a single question — no pitch: "Did the project move forward with another contractor, or did it get put on hold?" Half the time a lost ${trade} deal at the ${stage} stage stalls with the other contractor or never starts. You want to be the first call when that happens.
+
+2. If ${contact} went with a competitor on this ${val} ${trade} job, send a short note 30 days after their start date: "Hope the ${trade} project is going smoothly — I'm always here if anything comes up." ${trade} contractors who misquote scope, run slow, or leave messes create re-opening opportunities. Position yourself as the backup without saying so.
+
+3. Ask ${contact} directly what you could have done differently on this ${val} ${trade} proposal. "I'd genuinely like to know what the other contractor offered that we didn't — not to argue, just to improve." Most people will tell you. That answer tells you exactly how to win the next ${trade} job from this customer or a referral from them.
+
+4. Put ${contact} on a 90-day re-engagement sequence: one touchpoint per month with something useful — a ${trade} industry update, a photo of completed local work similar to their ${stage}-stage project, or a seasonal maintenance reminder. You lost the ${val} job today; you're building to win the next ${trade} project from this customer in 6–12 months.`;
+  }
+
+  if (lead.status === 'active' && !hasStall) {
+    return `1. This ${val} ${trade} deal is active at the ${stage} stage — the fastest way to advance it is to give ${contact} a specific next step with a deadline attached, not another open-ended follow-up. Call this week and say: "I want to make sure your ${trade} project stays on schedule — what's the one thing we need to resolve to move from ${stage} to the next step this week?"
+
+2. At the ${stage} stage on a ${val} ${trade} job, the rep who controls the timeline controls the close. Send ${contact} a written summary of exactly where the project stands and what the next 2 steps are: what you need from them, and what you'll deliver. ${trade} customers at ${stage} who receive a clear written path forward move faster than those waiting on a verbal follow-up.
+
+3. Identify the single decision-maker who can push this ${val} ${trade} deal past the ${stage} stage and make sure they have everything they need to say yes. If ${contact} isn't that person, ask: "Is there anyone else who needs to be comfortable with this before we move forward?" Surface any hidden approvers now, not at the contract stage.
+
+4. Create a soft deadline tied to your ${trade} crew or material availability: "I want to hold a start date for your ${trade} project — if you can confirm by [date], I can lock in the slot. Otherwise I can't guarantee availability on your preferred timeline." A ${val} ${trade} deal at the ${stage} stage moves faster when there's a real scheduling stake, not just an open calendar.`;
+  }
+
+  // Active + stall signal, or stalled/cold
+  const stallDesc = stall ? `the ${stall} signal` : 'the current blocker';
+  const stallContext = stall
+    ? `the ${stall} issue`
+    : `what's holding this back`;
+
+  return `1. This ${val} ${trade} deal at the ${stage} stage is showing ${stallDesc} — call ${contact} this week and surface it directly: "I want to make sure I understand exactly what's holding this ${trade} project back. Is ${stallContext} the real issue, or is there something else I should know?" ${trade} deals at ${stage} that stall often have a more specific concern underneath the stated reason.
+
+2. On a ${val} ${trade} job at the ${stage} stage, the ${stallDesc} responds to proof and specificity, not pressure. Send ${contact} one concrete piece of evidence before you call: a photo of a comparable completed ${trade} project, a reference from a similar ${stage}-stage job, or a written comparison showing exactly what's in your ${val} scope. Stalled ${trade} deals at ${stage} move when you replace doubt with documented confidence.
+
+3. Reframe the ${val} ${trade} project around the cost of delay for ${contact}. Ask: "What does it cost you — in risk, inconvenience, or ongoing expense — if this ${trade} work gets pushed another 30 days past ${stage}?" Get a specific answer. This shifts the ${contact} conversation from your price to their consequence, which is the right frame for advancing a ${trade} deal past a ${stallDesc}.
+
+4. Create a real deadline for this ${val} ${trade} deal at ${stage}: reference a concrete constraint on your crew or material schedule. "I have a ${trade} crew available the week of [date] — I'd like to hold that for your project if you can confirm this week. If not, that slot goes to the next job." ${contact} needs a specific reason to decide now. Give them a real one, then go quiet.`;
 }
 
 
@@ -1301,6 +1336,36 @@ function CoachPanel({ lead, onClose, demoMode, tier }) {
         ? 'TODAY'
         : `UPCOMING in ${cbDays} day${cbDays !== 1 ? 's' : ''}`;
 
+      const hasStall = !!(lead.stallReason && STALL_LABELS[lead.stallReason]);
+      const stallLabel = hasStall ? STALL_LABELS[lead.stallReason] : null;
+      const statusUp = (lead.status || 'unknown').toUpperCase();
+
+      // Status-aware coaching goal — never mention stall reason for deals that don't have one
+      let coachingGoal;
+      let stallLine = '';
+      let instruction4;
+      if (lead.status === 'won') {
+        coachingGoal = `This deal is WON. Give advice on how to maximize the relationship from here: secure a referral, explore upsell or add-on work, or turn this ${lead.trade} customer into a repeat client.`;
+        instruction4 = `Focus on post-close relationship tactics specific to ${lead.trade} contractors`;
+      } else if (lead.status === 'lost') {
+        coachingGoal = `This deal was LOST. Give a win-back strategy focused on re-opening the door without relitigating the original sale.`;
+        instruction4 = `Give specific win-back tactics that work in the ${lead.trade} industry`;
+      } else if (lead.status === 'active' && !hasStall) {
+        coachingGoal = `This deal is ACTIVE and moving — give advice on how to advance it from the ${lead.stage} stage to close as quickly as possible. Focus entirely on momentum and advancement tactics, not recovery.`;
+        instruction4 = `Give stage-advancement tactics specific to ${lead.trade} contracting at the ${lead.stage} stage`;
+      } else if (lead.status === 'active' && hasStall) {
+        coachingGoal = `This deal is ACTIVE but showing a ${stallLabel} signal at the ${lead.stage} stage — give advice on how to address that before it fully stalls and keep the deal advancing.`;
+        stallLine = `- Stall Signal: ${stallLabel}`;
+        instruction4 = `Address the ${stallLabel} signal with tactics specific to ${lead.trade} contracting`;
+      } else {
+        // stalled, cold, or unknown
+        coachingGoal = `This deal is ${statusUp} at the ${lead.stage} stage${hasStall ? ` due to ${stallLabel}` : ''} — give a specific recovery plan to unblock it this week.`;
+        if (hasStall) stallLine = `- Stall Reason: ${stallLabel}`;
+        instruction4 = hasStall
+          ? `Address the ${stallLabel} objection with tactics specific to ${lead.trade} contracting`
+          : `Give re-engagement tactics specific to ${lead.trade} contracting at the ${lead.stage} stage`;
+      }
+
       const stream = await client.messages.stream({
         model: 'claude-opus-4-6',
         max_tokens: 700,
@@ -1308,24 +1373,25 @@ function CoachPanel({ lead, onClose, demoMode, tier }) {
         system: `You are an expert sales coach specializing in the ${lead.trade} contracting industry.`,
         messages: [{
           role: 'user',
-          content: `You are advising a sales rep on this specific stalled deal:
+          content: `You are advising a sales rep on this deal:
 - Company: ${lead.name} (${lead.industry})
 - Contact: ${lead.contact}, ${lead.role}
 - Trade: ${lead.trade}
 - Deal Value: ${fmt(lead.value)}
 - Current Stage: ${lead.stage}
-- Status: ${(lead.status || 'unknown').toUpperCase()}
-- Stall Reason: ${STALL_LABELS[lead.stallReason] || 'None specified'}
-- Days Since Last Activity: ${lead.dealAge}
+- Status: ${statusUp}
+${stallLine ? stallLine + '\n' : ''}- Days Since Last Activity: ${lead.dealAge}
 - Callback Status: ${callbackStatus}
 - Notes: ${lead.notes}
 
-Give 4 highly specific action items this rep should take THIS WEEK to advance or recover this deal. Your advice must:
-1. Reference the specific trade (mention ${lead.trade}-specific knowledge)
-2. Address the exact stall reason (${STALL_LABELS[lead.stallReason] || 'None specified'}) with tactics that work in contracting
-3. Be different based on whether the deal is ${(lead.status || 'unknown').toUpperCase()}
-4. Reference the deal value (${fmt(lead.value)}) and stage (${lead.stage}) appropriately
-5. Be direct and tactical — no generic sales advice
+${coachingGoal}
+
+Give 4 highly specific action items this rep should take THIS WEEK. Requirements:
+1. Reference ${lead.trade}-specific knowledge in every action item
+2. Name ${lead.contact} directly in at least 2 action items
+3. Reference the ${fmt(lead.value)} deal value or ${lead.stage} stage in at least 2 action items
+4. ${instruction4}
+5. Zero generic sales advice — every sentence must be specific to this ${lead.trade} deal
 
 Format as numbered action items, no preamble.`,
         }],
