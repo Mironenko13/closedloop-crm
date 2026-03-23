@@ -1546,16 +1546,558 @@ function JobsTab({ jobs }) {
   );
 }
 
+// ─── Auth Styles ─────────────────────────────────────────────────────────────
+const A = {
+  page: {
+    minHeight: '100vh',
+    background: '#0f1117',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  card: {
+    background: '#161b27',
+    border: '1px solid #1e2535',
+    borderRadius: 16,
+    padding: '40px 40px',
+    width: '100%',
+    maxWidth: 440,
+  },
+  logo: {
+    fontSize: 28,
+    fontWeight: 800,
+    color: '#f97316',
+    letterSpacing: '-1px',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  tagline: {
+    fontSize: 13,
+    color: '#475569',
+    textAlign: 'center',
+    marginBottom: 36,
+  },
+  label: {
+    display: 'block',
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#94a3b8',
+    marginBottom: 6,
+    marginTop: 18,
+  },
+  input: {
+    width: '100%',
+    padding: '10px 14px',
+    background: '#0f1117',
+    border: '1px solid #1e2535',
+    borderRadius: 8,
+    color: '#e2e8f0',
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  inputFocus: {
+    border: '1px solid #f97316',
+  },
+  btn: {
+    width: '100%',
+    padding: '11px 16px',
+    marginTop: 24,
+    background: 'linear-gradient(135deg, #f97316, #ea580c)',
+    border: 'none',
+    borderRadius: 8,
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 700,
+    cursor: 'pointer',
+    letterSpacing: '0.2px',
+  },
+  btnSecondary: {
+    width: '100%',
+    padding: '11px 16px',
+    marginTop: 10,
+    background: 'transparent',
+    border: '1px solid #1e2535',
+    borderRadius: 8,
+    color: '#94a3b8',
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: 'pointer',
+  },
+  link: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 13,
+    color: '#475569',
+  },
+  linkBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#f97316',
+    cursor: 'pointer',
+    fontSize: 13,
+    fontWeight: 600,
+    padding: 0,
+  },
+  error: {
+    marginTop: 14,
+    padding: '10px 12px',
+    background: 'rgba(239,68,68,0.08)',
+    border: '1px solid rgba(239,68,68,0.2)',
+    borderRadius: 8,
+    color: '#ef4444',
+    fontSize: 12,
+  },
+  stepIndicator: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 28,
+  },
+  stepDot: (active, done) => ({
+    width: active ? 24 : 8,
+    height: 8,
+    borderRadius: 4,
+    background: done ? '#f97316' : active ? '#f97316' : '#1e2535',
+    transition: 'all 0.2s',
+  }),
+  stepTitle: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: '#f1f5f9',
+    marginBottom: 4,
+  },
+  stepSub: {
+    fontSize: 13,
+    color: '#475569',
+    marginBottom: 24,
+  },
+  tradeGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: 8,
+    marginBottom: 24,
+    maxHeight: 340,
+    overflowY: 'auto',
+    paddingRight: 4,
+  },
+  tradeCard: (selected, color) => ({
+    padding: '10px 8px',
+    borderRadius: 8,
+    border: `1px solid ${selected ? color : '#1e2535'}`,
+    background: selected ? color + '18' : '#0f1117',
+    color: selected ? color : '#64748b',
+    cursor: 'pointer',
+    fontSize: 12,
+    fontWeight: selected ? 600 : 400,
+    textAlign: 'center',
+    transition: 'all 0.12s',
+  }),
+  planGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: 12,
+    marginBottom: 24,
+  },
+  planCard: (selected) => ({
+    padding: '20px 16px',
+    borderRadius: 10,
+    border: `2px solid ${selected ? '#f97316' : '#1e2535'}`,
+    background: selected ? 'rgba(249,115,22,0.06)' : '#0f1117',
+    cursor: 'pointer',
+    transition: 'all 0.12s',
+    position: 'relative',
+  }),
+  planName: { fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 },
+  planPrice: { fontSize: 22, fontWeight: 800, color: '#f97316', marginBottom: 12 },
+  planPriceSub: { fontSize: 11, color: '#475569', fontWeight: 400 },
+  planFeature: {
+    fontSize: 11,
+    color: '#64748b',
+    marginBottom: 5,
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 6,
+  },
+  planCheck: { color: '#22c55e', fontWeight: 700, flexShrink: 0 },
+  popularBadge: {
+    position: 'absolute',
+    top: -10,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    background: '#f97316',
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: 700,
+    padding: '2px 10px',
+    borderRadius: 10,
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+  },
+};
+
+const PLANS = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: '$29',
+    features: ['Up to 25 active leads', '1 trade checklist', 'Job progress tracking', 'Basic analytics', 'Email support'],
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: '$79',
+    popular: true,
+    features: ['Unlimited leads', 'All 26 trades', 'AI coaching (Claude)', 'Advanced analytics', 'Callbacks & reminders', 'Priority support'],
+  },
+  {
+    id: 'business',
+    name: 'Business',
+    price: '$149',
+    features: ['Everything in Pro', 'Multi-user access', 'Team analytics', 'Custom checklist steps', 'Dedicated account manager', 'API access'],
+  },
+];
+
+// ─── Login Screen ─────────────────────────────────────────────────────────────
+function LoginScreen({ onLogin, onStartSignup }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (email === 'demo@closedloop.com' && password === 'demo123') {
+      onLogin({ isDemo: true, companyName: 'ClosedLoop', userName: 'Demo User', trade: 'Roofing', plan: 'pro' });
+    } else if (email && password) {
+      setError('Incorrect email or password. Try demo@closedloop.com / demo123');
+    } else {
+      setError('Please enter your email and password.');
+    }
+  };
+
+  const inputStyle = (field) => ({
+    ...A.input,
+    ...(focusedField === field ? A.inputFocus : {}),
+  });
+
+  return (
+    <div style={A.page}>
+      <div style={A.card}>
+        <div style={A.logo}>ClosedLoop</div>
+        <div style={A.tagline}>Sign in to your account</div>
+
+        <form onSubmit={handleSubmit}>
+          <label style={A.label}>Email</label>
+          <input
+            style={inputStyle('email')}
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            onFocus={() => setFocusedField('email')}
+            onBlur={() => setFocusedField(null)}
+            autoComplete="email"
+          />
+
+          <label style={A.label}>Password</label>
+          <input
+            style={inputStyle('password')}
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            onFocus={() => setFocusedField('password')}
+            onBlur={() => setFocusedField(null)}
+            autoComplete="current-password"
+          />
+
+          {error && <div style={A.error}>{error}</div>}
+
+          <button style={A.btn} type="submit">Sign In</button>
+        </form>
+
+        <div style={A.link}>
+          New here?{' '}
+          <button style={A.linkBtn} onClick={onStartSignup}>Create an account</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Onboarding Flow ──────────────────────────────────────────────────────────
+function OnboardingFlow({ onComplete, onBackToLogin }) {
+  const [step, setStep] = useState(1);
+  const [focusedField, setFocusedField] = useState(null);
+  const [form, setForm] = useState({
+    companyName: '', userName: '', email: '', password: '',
+    trade: '', plan: 'pro',
+  });
+  const [errors, setErrors] = useState({});
+
+  const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
+
+  const inputStyle = (field) => ({
+    ...A.input,
+    ...(focusedField === field ? A.inputFocus : {}),
+    ...(errors[field] ? { border: '1px solid #ef4444' } : {}),
+  });
+
+  const validateStep1 = () => {
+    const e = {};
+    if (!form.companyName.trim()) e.companyName = true;
+    if (!form.userName.trim()) e.userName = true;
+    if (!form.email.trim()) e.email = true;
+    if (form.password.length < 6) e.password = true;
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleNext = () => {
+    if (step === 1 && !validateStep1()) return;
+    if (step === 2 && !form.trade) {
+      setErrors({ trade: true });
+      return;
+    }
+    setErrors({});
+    setStep(s => s + 1);
+  };
+
+  const handleComplete = () => {
+    onComplete({
+      isDemo: false,
+      companyName: form.companyName,
+      userName: form.userName,
+      email: form.email,
+      trade: form.trade,
+      plan: form.plan,
+    });
+  };
+
+  return (
+    <div style={A.page}>
+      <div style={{ ...A.card, maxWidth: step === 2 ? 560 : step === 3 ? 720 : 440 }}>
+        <div style={A.logo}>ClosedLoop</div>
+
+        <div style={A.stepIndicator}>
+          {[1, 2, 3].map(n => (
+            <div key={n} style={A.stepDot(step === n, step > n)} />
+          ))}
+        </div>
+
+        {/* ── Step 1: Company Info ── */}
+        {step === 1 && (
+          <>
+            <div style={A.stepTitle}>Set up your account</div>
+            <div style={A.stepSub}>Just a few details to get started.</div>
+
+            <label style={A.label}>Company name</label>
+            <input
+              style={inputStyle('companyName')}
+              placeholder="Apex Roofing LLC"
+              value={form.companyName}
+              onChange={e => set('companyName', e.target.value)}
+              onFocus={() => setFocusedField('companyName')}
+              onBlur={() => setFocusedField(null)}
+            />
+
+            <label style={A.label}>Your name</label>
+            <input
+              style={inputStyle('userName')}
+              placeholder="Jane Smith"
+              value={form.userName}
+              onChange={e => set('userName', e.target.value)}
+              onFocus={() => setFocusedField('userName')}
+              onBlur={() => setFocusedField(null)}
+            />
+
+            <label style={A.label}>Email</label>
+            <input
+              style={inputStyle('email')}
+              type="email"
+              placeholder="jane@apexroofing.com"
+              value={form.email}
+              onChange={e => set('email', e.target.value)}
+              onFocus={() => setFocusedField('email')}
+              onBlur={() => setFocusedField(null)}
+            />
+
+            <label style={A.label}>Password</label>
+            <input
+              style={inputStyle('password')}
+              type="password"
+              placeholder="Min. 6 characters"
+              value={form.password}
+              onChange={e => set('password', e.target.value)}
+              onFocus={() => setFocusedField('password')}
+              onBlur={() => setFocusedField(null)}
+            />
+
+            {errors.password && (
+              <div style={{ fontSize: 11, color: '#ef4444', marginTop: 6 }}>
+                Password must be at least 6 characters.
+              </div>
+            )}
+            {(errors.companyName || errors.userName || errors.email) && (
+              <div style={{ fontSize: 11, color: '#ef4444', marginTop: 6 }}>
+                Please fill in all fields.
+              </div>
+            )}
+
+            <button style={A.btn} onClick={handleNext}>Next →</button>
+            <div style={A.link}>
+              Already have an account?{' '}
+              <button style={A.linkBtn} onClick={onBackToLogin}>Sign in</button>
+            </div>
+          </>
+        )}
+
+        {/* ── Step 2: Pick Trade ── */}
+        {step === 2 && (
+          <>
+            <div style={A.stepTitle}>What's your trade?</div>
+            <div style={A.stepSub}>
+              {errors.trade
+                ? <span style={{ color: '#ef4444' }}>Please select your trade to continue.</span>
+                : 'Select the trade you primarily work in.'}
+            </div>
+
+            <div style={A.tradeGrid}>
+              {TRADE_LIST.map(trade => (
+                <div
+                  key={trade}
+                  style={A.tradeCard(form.trade === trade, TRADE_COLORS[trade])}
+                  onClick={() => { set('trade', trade); setErrors({}); }}
+                >
+                  {trade}
+                </div>
+              ))}
+            </div>
+
+            <button style={A.btn} onClick={handleNext}>Next →</button>
+            <button style={A.btnSecondary} onClick={() => setStep(1)}>← Back</button>
+          </>
+        )}
+
+        {/* ── Step 3: Pick Plan ── */}
+        {step === 3 && (
+          <>
+            <div style={A.stepTitle}>Choose your plan</div>
+            <div style={A.stepSub}>All plans include a 14-day free trial. No card required.</div>
+
+            <div style={A.planGrid}>
+              {PLANS.map(plan => (
+                <div
+                  key={plan.id}
+                  style={A.planCard(form.plan === plan.id)}
+                  onClick={() => set('plan', plan.id)}
+                >
+                  {plan.popular && <div style={A.popularBadge}>Most Popular</div>}
+                  <div style={A.planName}>{plan.name}</div>
+                  <div style={A.planPrice}>
+                    {plan.price}
+                    <span style={A.planPriceSub}>/mo</span>
+                  </div>
+                  {plan.features.map(f => (
+                    <div key={f} style={A.planFeature}>
+                      <span style={A.planCheck}>✓</span>
+                      <span>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            <button style={A.btn} onClick={handleComplete}>Start Free Trial →</button>
+            <button style={A.btnSecondary} onClick={() => setStep(2)}>← Back</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+function EmptyState({ icon, title, sub, btnLabel }) {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', padding: '80px 24px', textAlign: 'center',
+    }}>
+      <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>{icon}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: 13, color: '#475569', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
+      <button style={{
+        padding: '10px 24px',
+        background: 'linear-gradient(135deg, #f97316, #ea580c)',
+        border: 'none', borderRadius: 8,
+        color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+      }}>
+        {btnLabel}
+      </button>
+    </div>
+  );
+}
+
 // ─── App Root ─────────────────────────────────────────────────────────────────
 export default function App() {
+  const [screen, setScreen] = useState('login'); // 'login' | 'onboarding' | 'app'
+  const [session, setSession] = useState(null);
   const [tab, setTab] = useState('pipeline');
   const [selectedLead, setSelectedLead] = useState(null);
+
+  const handleLogin = (sess) => {
+    setSession(sess);
+    setScreen('app');
+    setTab('pipeline');
+  };
+
+  const handleOnboardingComplete = (sess) => {
+    setSession(sess);
+    setScreen('app');
+    setTab('pipeline');
+  };
+
+  if (screen === 'login') {
+    return (
+      <LoginScreen
+        onLogin={handleLogin}
+        onStartSignup={() => setScreen('onboarding')}
+      />
+    );
+  }
+
+  if (screen === 'onboarding') {
+    return (
+      <OnboardingFlow
+        onComplete={handleOnboardingComplete}
+        onBackToLogin={() => setScreen('login')}
+      />
+    );
+  }
+
+  const isDemo = session?.isDemo;
+  const leads = isDemo ? DEMO_LEADS : [];
+  const jobs = isDemo ? DEMO_JOBS : [];
+  const userTrade = session?.trade || 'Roofing';
+  const companyName = session?.companyName || 'ClosedLoop';
 
   return (
     <div style={S.app}>
       <header style={S.header}>
-        <div>
-          <span style={S.logo}>ClosedLoop</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={S.logo}>{companyName}</span>
+          {isDemo && (
+            <span style={{
+              fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+              background: 'rgba(249,115,22,0.12)', color: '#f97316',
+              border: '1px solid rgba(249,115,22,0.2)', letterSpacing: '0.5px',
+            }}>
+              DEMO
+            </span>
+          )}
         </div>
         <div style={S.tabs}>
           {[
@@ -1569,20 +2111,44 @@ export default function App() {
             </button>
           ))}
         </div>
+        <button
+          onClick={() => { setScreen('login'); setSession(null); }}
+          style={{
+            marginLeft: 16, background: 'transparent', border: 'none',
+            color: '#475569', cursor: 'pointer', fontSize: 12,
+            padding: '4px 8px', borderRadius: 6,
+          }}
+        >
+          Sign out
+        </button>
       </header>
 
       <main style={S.body}>
         {tab === 'pipeline' && (
-          <PipelineTab leads={DEMO_LEADS} onSelectLead={setSelectedLead} />
+          leads.length === 0
+            ? <EmptyState
+                icon="📋"
+                title="No leads yet"
+                sub="Start building your pipeline by adding your first lead."
+                btnLabel="Add your first lead"
+              />
+            : <PipelineTab leads={leads} onSelectLead={setSelectedLead} />
         )}
         {tab === 'callbacks' && (
-          <CallbacksTab leads={DEMO_LEADS} onSelectLead={setSelectedLead} />
+          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} />
         )}
         {tab === 'analytics' && (
-          <AnalyticsTab leads={DEMO_LEADS} />
+          <AnalyticsTab leads={leads} />
         )}
         {tab === 'jobs' && (
-          <JobsTab jobs={DEMO_JOBS} />
+          jobs.length === 0
+            ? <EmptyState
+                icon="🔨"
+                title="No jobs yet"
+                sub={`Add your first ${userTrade} job to start tracking progress.`}
+                btnLabel="Add your first job"
+              />
+            : <JobsTab jobs={jobs} />
         )}
       </main>
 
