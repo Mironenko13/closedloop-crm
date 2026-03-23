@@ -2399,167 +2399,648 @@ function EmptyState({ icon, title, sub, btnLabel, onAction }) {
   );
 }
 
-// ─── Demo Page Data ───────────────────────────────────────────────────────────
-const DEMO_LEADS_SKYLINE = [
-  {
-    id: 'd1', name: 'Hargrove Residence', contact: 'Frank Hargrove', role: 'Homeowner',
-    trade: 'Roofing', status: 'active', value: 18400, stage: 'proposal',
-    callbackDate: '2026-03-25', lastContact: '2026-03-20',
-    stallReason: null, notes: 'GAF Timberline HDZ preferred. Wants 50-yr warranty. Demo was well received.',
-    industry: 'Residential', dealAge: 12, phone: '(512) 555-0182', source: 'Referral',
-  },
-  {
-    id: 'd2', name: 'Westside Church of God', contact: 'Pastor James Willis', role: 'Facilities Coord',
-    trade: 'Roofing', status: 'stalled', value: 34700, stage: 'negotiation',
-    callbackDate: '2026-03-23', lastContact: '2026-03-10',
-    stallReason: 'budget_freeze', notes: 'Commercial flat roof, 11,000 sq ft. Full board approval needed.',
-    industry: 'Institutional', dealAge: 41, phone: '(713) 555-0247', source: 'Referral',
-  },
-  {
-    id: 'd3', name: 'Sunridge HOA — Phase II', contact: 'Linda Marsh', role: 'HOA President',
-    trade: 'Roofing', status: 'active', value: 52000, stage: 'qualified',
-    callbackDate: '2026-03-27', lastContact: '2026-03-21',
-    stallReason: null, notes: '28 townhome units. Insurance claim approved. Scheduling crew now.',
-    industry: 'HOA', dealAge: 8, phone: '(512) 555-0391', source: 'Online',
-  },
-  {
-    id: 'd4', name: 'Kowalski Residence', contact: 'Brian Kowalski', role: 'Homeowner',
-    trade: 'Roofing', status: 'stalled', value: 11200, stage: 'proposal',
-    callbackDate: '2026-03-19', lastContact: '2026-03-06',
-    stallReason: 'no_response', notes: '3 calls, 2 emails. Visible hail damage. Try door knock this week.',
-    industry: 'Residential', dealAge: 29, phone: '(469) 555-0138', source: 'Door knock',
-  },
-  {
-    id: 'd5', name: 'Clearbrook Office Plaza', contact: 'Diane Okafor', role: 'Property Manager',
-    trade: 'Roofing', status: 'active', value: 41500, stage: 'negotiation',
-    callbackDate: '2026-03-26', lastContact: '2026-03-22',
-    stallReason: null, notes: 'TPO membrane replacement, 14,000 sq ft. Contract review underway. Near close.',
-    industry: 'Commercial', dealAge: 19, phone: '(214) 555-0274', source: 'Referral',
-  },
-  {
-    id: 'd6', name: 'Torres Residence', contact: 'Miguel Torres', role: 'Homeowner',
-    trade: 'Roofing', status: 'stalled', value: 9800, stage: 'proposal',
-    callbackDate: '2026-03-22', lastContact: '2026-03-11',
-    stallReason: 'price_objection', notes: 'Got a bid $2k lower from another crew. Need to justify value difference.',
-    industry: 'Residential', dealAge: 33, phone: '(512) 555-0419', source: 'Online',
-  },
-  {
-    id: 'd7', name: 'Lakewood Elementary School', contact: 'Tom Hensley', role: 'Facilities Director',
-    trade: 'Roofing', status: 'cold', value: 78000, stage: 'contacted',
-    callbackDate: '2026-04-15', lastContact: '2026-02-28',
-    stallReason: 'timing', notes: 'Large job. School board vote in April. Stay warm until then.',
-    industry: 'Institutional', dealAge: 53, phone: '(817) 555-0362', source: 'Phone call',
-  },
-  {
-    id: 'd8', name: 'Patel Residence', contact: 'Raj Patel', role: 'Homeowner',
-    trade: 'Roofing', status: 'won', value: 14600, stage: 'won',
-    callbackDate: null, lastContact: '2026-03-18',
-    stallReason: null, notes: 'Closed! CertainTeed Landmark Pro. Crew starts 3/26.',
-    industry: 'Residential', dealAge: 24, phone: '(512) 555-0553', source: 'Referral',
-  },
-  {
-    id: 'd9', name: 'Morrison Auto Group', contact: 'Steve Morrison', role: 'Owner',
-    trade: 'Roofing', status: 'stalled', value: 27300, stage: 'negotiation',
-    callbackDate: '2026-03-24', lastContact: '2026-03-14',
-    stallReason: 'competitor', notes: 'Getting 3 bids. We are mid-range. Push warranty and crew experience angle.',
-    industry: 'Commercial', dealAge: 37, phone: '(214) 555-0687', source: 'Door knock',
-  },
-  {
-    id: 'd10', name: 'Riverside Church', contact: 'Pastor Rick Adams', role: 'Admin Director',
-    trade: 'Roofing', status: 'lost', value: 23400, stage: 'lost',
-    callbackDate: null, lastContact: '2026-03-08',
-    stallReason: 'competitor', notes: 'Lost to a church-network contractor. Price + existing relationship.',
-    industry: 'Institutional', dealAge: 61, phone: '(817) 555-0712', source: 'Referral',
-  },
-];
-
-const DEMO_JOBS_SKYLINE = [
-  {
-    id: 'dj1', customer: 'Frank & Linda Hargrove', address: '2847 Maplewood Dr, Austin TX 78745',
-    trade: 'Roofing', value: 18400, status: 'In Progress',
-    scheduledDate: '2026-03-20', completedSteps: [1, 2, 3, 4, 5],
-    notes: 'GAF Timberline HDZ. Tear-off done. New roof going on today.',
-  },
-  {
-    id: 'dj2', customer: 'Raj & Priya Patel', address: '1108 Cedar Ridge Ln, Austin TX 78731',
-    trade: 'Roofing', value: 14600, status: 'Scheduled',
-    scheduledDate: '2026-03-26', completedSteps: [1, 2],
-    notes: 'CertainTeed Landmark Pro. Materials staged on site.',
-  },
-  {
-    id: 'dj3', customer: 'Sunridge HOA — Block A', address: '3300 Sunridge Pkwy, San Antonio TX 78230',
-    trade: 'Roofing', value: 24500, status: 'Complete',
-    scheduledDate: '2026-03-12', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-    notes: '12 units Phase I. Owens Corning Duration. Signed off and paid.',
-  },
-  {
-    id: 'dj4', customer: 'Clearbrook Office Plaza', address: '501 Commerce Dr, Dallas TX 75201',
-    trade: 'Roofing', value: 41500, status: 'In Progress',
-    scheduledDate: '2026-03-18', completedSteps: [1, 2, 3],
-    notes: 'TPO membrane, 14,000 sq ft. Tear-off complete. Underlayment next.',
-  },
-  {
-    id: 'dj5', customer: 'Morrison Auto Group', address: '7700 Auto Row Blvd, Plano TX 75093',
-    trade: 'Roofing', value: 27300, status: 'Scheduled',
-    scheduledDate: '2026-04-02', completedSteps: [1],
-    notes: '3-bay commercial metal roof. Crew scheduled post-Easter week.',
-  },
-];
-
 // ─── Demo Page ────────────────────────────────────────────────────────────────
-function DemoPage() {
-  const [tab, setTab] = useState('pipeline');
-  const [selectedLead, setSelectedLead] = useState(null);
+const TRADE_ICONS = {
+  'Roofing': '🏠', 'Gutters': '🌧', 'Siding': '🏗', 'Windows': '🪟',
+  'Excavation': '🚜', 'General Construction': '🏢', 'HVAC': '❄️', 'Plumbing': '🔧',
+  'Welding': '⚙️', 'Electrical': '🔌', 'Masonry': '🧱', 'Painting': '🎨',
+  'Flooring': '🪵', 'Insulation': '🛡', 'Drywall': '🔨', 'Landscaping': '🌿',
+  'Concrete': '🏛', 'Fencing': '🚧', 'Carpentry': '🪚', 'Waterproofing': '💧',
+  'Solar': '☀️', 'Garage Doors': '🚪', 'Demolition': '💥', 'Septic': '⚗️',
+  'Tree Service': '🌳', 'Pressure Washing': '💦',
+};
 
+// compact lead builder
+const dl = (id, name, contact, role, status, value, stage, callbackDate, stallReason, notes, industry, dealAge, trade) => ({
+  id: `dl_${id}`, name, contact, role, trade, status, value, stage,
+  callbackDate, lastContact: '2026-03-20', stallReason, notes,
+  industry, dealAge, phone: '', source: 'Referral',
+});
+// compact job builder
+const dj = (id, customer, address, trade, value, status, scheduledDate, completedSteps, notes) => ({
+  id: `dj_${id}`, customer, address, trade, value, status, scheduledDate, completedSteps, notes,
+});
+
+const TRADE_DEMO_DATA = {
+  'Roofing': {
+    leads: [
+      dl(1,'Hargrove Residence','Frank Hargrove','Homeowner','active',18400,'proposal','2026-03-25',null,'GAF Timberline HDZ preferred. Wants 50yr warranty. Demo well received.','Residential',12,'Roofing'),
+      dl(2,'Westside Church of God','Pastor James Willis','Facilities Coord','stalled',34700,'negotiation','2026-03-23','budget_freeze','Commercial flat roof, 11,000 sq ft. Full board approval needed.','Institutional',41,'Roofing'),
+      dl(3,'Sunridge HOA Phase II','Linda Marsh','HOA President','active',52000,'qualified','2026-03-27',null,'28 townhome units. Insurance claim approved. Scheduling crew now.','HOA',8,'Roofing'),
+      dl(4,'Kowalski Residence','Brian Kowalski','Homeowner','stalled',11200,'proposal','2026-03-19','no_response','3 calls, 2 emails. Visible hail damage. Try door knock.','Residential',29,'Roofing'),
+      dl(5,'Clearbrook Office Plaza','Diane Okafor','Property Manager','active',41500,'negotiation','2026-03-26',null,'TPO membrane, 14,000 sq ft. Contract review underway.','Commercial',19,'Roofing'),
+      dl(6,'Torres Residence','Miguel Torres','Homeowner','stalled',9800,'proposal','2026-03-22','price_objection','Got a bid $2k lower. Need to justify value difference.','Residential',33,'Roofing'),
+      dl(7,'Lakewood Elementary','Tom Hensley','Facilities Director','cold',78000,'contacted','2026-04-15','timing','Large job. School board vote in April. Stay warm.','Institutional',53,'Roofing'),
+      dl(8,'Patel Residence','Raj Patel','Homeowner','won',14600,'won',null,null,'Closed! CertainTeed Landmark Pro. Crew starts 3/26.','Residential',24,'Roofing'),
+      dl(9,'Morrison Auto Group','Steve Morrison','Owner','stalled',27300,'negotiation','2026-03-24','competitor','Getting 3 bids. Push warranty + crew experience.','Commercial',37,'Roofing'),
+      dl(10,'Riverside Church','Pastor Rick Adams','Admin Director','lost',23400,'lost',null,'competitor','Lost to church-network contractor.','Institutional',61,'Roofing'),
+    ],
+    jobs: [
+      dj(1,'Frank & Linda Hargrove','2847 Maplewood Dr, Austin TX 78745','Roofing',18400,'In Progress','2026-03-20',[1,2,3,4,5],'GAF Timberline HDZ. Tear-off done. New roof going on today.'),
+      dj(2,'Raj & Priya Patel','1108 Cedar Ridge Ln, Austin TX 78731','Roofing',14600,'Scheduled','2026-03-26',[1,2],'CertainTeed Landmark Pro. Materials on site.'),
+      dj(3,'Sunridge HOA Block A','3300 Sunridge Pkwy, San Antonio TX 78230','Roofing',24500,'Complete','2026-03-12',[1,2,3,4,5,6,7,8,9],'12 units Phase I. Signed off and paid.'),
+      dj(4,'Clearbrook Office Plaza','501 Commerce Dr, Dallas TX 75201','Roofing',41500,'In Progress','2026-03-18',[1,2,3],'TPO membrane, 14,000 sq ft. Underlayment next.'),
+      dj(5,'Morrison Auto Group','7700 Auto Row Blvd, Plano TX 75093','Roofing',27300,'Scheduled','2026-04-02',[1],'3-bay commercial metal roof. Crew set for post-Easter.'),
+    ],
+  },
+  'Gutters': {
+    leads: [
+      dl(1,'Whitfield Residence','Carol Whitfield','Homeowner','active',3200,'proposal','2026-03-25',null,'K-style aluminum, 180 linear ft. Wants leaf guards too.','Residential',7,'Gutters'),
+      dl(2,'Maple Creek HOA','Dan Sorenson','HOA Manager','active',8400,'qualified','2026-03-27',null,'14 units, all need gutter replacement. New construction.','HOA',11,'Gutters'),
+      dl(3,'Brennan Residence','Pat Brennan','Homeowner','stalled',2600,'proposal','2026-03-20','price_objection','Competitor quoted $400 less. Explain quality difference.','Residential',22,'Gutters'),
+      dl(4,'Valley Office Park','Greg Nguyen','Property Manager','active',5800,'negotiation','2026-03-26',null,'48-unit commercial building. Half-round copper on historic facade.','Commercial',16,'Gutters'),
+      dl(5,'Kim Residence','Susan Kim','Homeowner','stalled',1900,'contacted','2026-03-19','no_response','Called twice. Storm damage visible in photos she sent.','Residential',18,'Gutters'),
+      dl(6,'Riverside Apartments','Josh Tanner','Maintenance Dir','cold',12000,'contacted','2026-04-10','timing','HOA budget not approved until April meeting.','Commercial',34,'Gutters'),
+      dl(7,'Okafor Residence','Emeka Okafor','Homeowner','won',3800,'won',null,null,'Closed! Seamless aluminum + guards. Job next week.','Residential',14,'Gutters'),
+      dl(8,'Lakeview Church','Deacon Willis','Facilities','stalled',4400,'proposal','2026-03-22','budget_freeze','Waiting on spring maintenance budget release.','Institutional',28,'Gutters'),
+      dl(9,'Parks Residence','Tom Parks','Homeowner','lost',2200,'lost',null,'competitor','DIY job. Bought gutters at hardware store.','Residential',31,'Gutters'),
+    ],
+    jobs: [
+      dj(1,'Carol & Mike Whitfield','412 Pinecrest Dr, Frisco TX 75034','Gutters',3200,'In Progress','2026-03-21',[1,2,3,4],'K-style aluminum. Old gutters off, new going up today.'),
+      dj(2,'Emeka Okafor','2204 Birchwood Ct, Plano TX 75025','Gutters',3800,'Scheduled','2026-03-28',[1,2],'Seamless aluminum + leaf guards. Materials ordered.'),
+      dj(3,'Maple Creek HOA — Phase 1','800 Maple Creek Blvd, McKinney TX 75070','Gutters',8400,'In Progress','2026-03-17',[1,2,3,4,5,6],'7 of 14 units complete. Second half starting Thursday.'),
+      dj(4,'Valley Office Park','3300 Commerce Pkwy, Irving TX 75038','Gutters',5800,'Complete','2026-03-10',[1,2,3,4,5,6,7,8,9],'Half-round copper. Fully installed, sealed, and paid.'),
+    ],
+  },
+  'Siding': {
+    leads: [
+      dl(1,'Henderson Residence','Bill Henderson','Homeowner','active',22400,'proposal','2026-03-25',null,'Hardie plank, full exterior. Storm damage on south wall.','Residential',14,'Siding'),
+      dl(2,'Northgate Condo Assoc','Rhonda Bass','HOA Director','stalled',68000,'negotiation','2026-03-23','budget_freeze','32-unit complex. Board vote needed. Big job.','HOA',45,'Siding'),
+      dl(3,'Garcia Residence','Maria Garcia','Homeowner','active',16800,'qualified','2026-03-27',null,'Vinyl siding replacement. Interested in insulated option.','Residential',9,'Siding'),
+      dl(4,'Crossroads Medical Bldg','Don Frazier','Facilities Dir','stalled',41200,'proposal','2026-03-20','no_response','Submitted quote 3 weeks ago. Follow up with FM.','Commercial',36,'Siding'),
+      dl(5,'Yamamoto Residence','Ken Yamamoto','Homeowner','stalled',19500,'proposal','2026-03-22','price_objection','Competitor at $3k less. Emphasize warranty & install quality.','Residential',28,'Siding'),
+      dl(6,'Westbrook Townhomes','Chad Miller','Property Manager','cold',54000,'contacted','2026-04-08','timing','20 units, exterior update deferred to Q3.','Commercial',41,'Siding'),
+      dl(7,'Pham Residence','Linda Pham','Homeowner','won',14900,'won',null,null,'Closed! Hardie plank, Arctic White. Crew 3/30.','Residential',18,'Siding'),
+      dl(8,'Sunrise Retail Strip','Art Delgado','Owner','stalled',31000,'negotiation','2026-03-24','competitor','3rd bid in. Our price is highest — push warranty story.','Commercial',39,'Siding'),
+      dl(9,'Cooper Residence','James Cooper','Homeowner','lost',18200,'lost',null,'competitor','Lost on price. Went with lower bid.','Residential',52,'Siding'),
+    ],
+    jobs: [
+      dj(1,'Bill & Cheryl Henderson','4418 Ridgeway Dr, Garland TX 75040','Siding',22400,'In Progress','2026-03-19',[1,2,3,4],'Hardie plank, south wall complete. Wrapping remaining 3 sides.'),
+      dj(2,'Linda Pham','918 Elmwood Ave, Dallas TX 75208','Siding',14900,'Scheduled','2026-03-30',[1,2],'Materials ordered. Arctic White Hardie plank on site.'),
+      dj(3,'Northgate Condo — Bldg A','200 Northgate Blvd, Lewisville TX 75067','Siding',68000,'In Progress','2026-03-14',[1,2,3,4,5],'8 of 32 units done. On schedule for 3-week completion.'),
+      dj(4,'Garcia Residence','3310 Sunflower Ln, Mesquite TX 75150','Siding',16800,'Scheduled','2026-04-05',[1,2,3],'Insulated vinyl. Old siding removal scheduled 4/5.'),
+    ],
+  },
+  'Windows': {
+    leads: [
+      dl(1,'Martinez Residence','Rosa Martinez','Homeowner','active',18700,'qualified','2026-03-25',null,'12 windows, Anderson 400 series. Energy upgrade.','Residential',9,'Windows'),
+      dl(2,'Lakeview Office Tower','Diana Chu','Property Manager','stalled',94000,'negotiation','2026-03-23','budget_freeze','Floor 4-6 full replacement. Q2 budget approval needed.','Commercial',52,'Windows'),
+      dl(3,'Nelson Residence','Greg Nelson','Homeowner','active',11400,'proposal','2026-03-27',null,'8 double-hungs + 2 picture windows. Storm damage claim.','Residential',13,'Windows'),
+      dl(4,'Westside School District','Carl Jennings','Facilities Dir','stalled',128000,'proposal','2026-03-20','timing','3 school buildings. Bond measure vote in May.','Institutional',61,'Windows'),
+      dl(5,'Osei Residence','Kwame Osei','Homeowner','stalled',14200,'proposal','2026-03-22','price_objection','Wants Pella but balking at price. Show lifetime value.','Residential',24,'Windows'),
+      dl(6,'Ridgecrest Apartments','Tony Daves','Property Manager','cold',42000,'contacted','2026-04-12','timing','28 units, window upgrade. Wait for lease renewals.','Commercial',38,'Windows'),
+      dl(7,'Flynn Residence','Kate Flynn','Homeowner','won',9800,'won',null,null,'Closed! 6 casements. Crew scheduled 4/1.','Residential',17,'Windows'),
+      dl(8,'Horizon Hotel','Mark Steele','GM','stalled',76000,'negotiation','2026-03-24','competitor','3 bids in. Push the thermal performance data.','Commercial',44,'Windows'),
+      dl(9,'Thomas Residence','Ben Thomas','Homeowner','lost',13500,'lost',null,'competitor','Went with big box store installer.','Residential',40,'Windows'),
+    ],
+    jobs: [
+      dj(1,'Rosa & Carlos Martinez','91 Birchwood Ct, Dallas TX 75208','Windows',18700,'Complete','2026-03-14',[1,2,3,4,5,6,7,8,9],'Anderson 400, 12 windows. All sealed and inspected.'),
+      dj(2,'Kate & Brian Flynn','5522 Willow Ridge Rd, Coppell TX 75019','Windows',9800,'Scheduled','2026-04-01',[1,2],'6 casements. Frames prepped. Install 4/1.'),
+      dj(3,'Greg Nelson','2108 Creekside Dr, Rockwall TX 75087','Windows',11400,'In Progress','2026-03-22',[1,2,3,4],'8 double-hungs done. 2 picture windows going in today.'),
+      dj(4,'Lakeview Office Tower — Fl 4','4400 Lake Tower Dr, Irving TX 75038','Windows',94000,'In Progress','2026-03-10',[1,2,3,4,5],'Floor 4 complete, Floor 5 in progress.'),
+    ],
+  },
+  'Excavation': {
+    leads: [
+      dl(1,'Riverside Development Site','Greg Patterson','Project Manager','active',78000,'qualified','2026-03-25',null,'Site clearing and grading for 14-lot subdivision.','Commercial',18,'Excavation'),
+      dl(2,'Summit Commercial Park','Lena Vasquez','Developer','stalled',142000,'negotiation','2026-03-23','budget_freeze','40-acre site prep. Bank financing pending.','Commercial',54,'Excavation'),
+      dl(3,'Clearwater Estates','Bob Fry','Developer','active',55000,'proposal','2026-03-27',null,'22-lot residential cut and fill. Drainage plan approved.','Commercial',12,'Excavation'),
+      dl(4,'Highway 183 Retail','Diane Moss','Site PM','stalled',89000,'proposal','2026-03-20','no_response','Sent bid 2 weeks ago. GC is unresponsive.','Commercial',41,'Excavation'),
+      dl(5,'Lakeland Church Campus','Rev. Tim Carroll','Admin','stalled',38000,'proposal','2026-03-22','price_objection','Our bid $12k over. Scope creep in their mind.','Institutional',33,'Excavation'),
+      dl(6,'Northview Business Park','Carl Stein','Developer','cold',210000,'contacted','2026-05-01','timing','Large project. Permits not approved until Q3.','Commercial',62,'Excavation'),
+      dl(7,'Mesa Verde HOA','Sandra Hill','Board President','won',31000,'won',null,null,'Closed! Retention pond excavation starts 4/7.','HOA',22,'Excavation'),
+      dl(8,'Toro Industrial Site','Ray Toro','Plant Manager','stalled',67000,'negotiation','2026-03-24','competitor','Two other bids in. Lowest by $8k.','Industrial',38,'Excavation'),
+      dl(9,'Sunrise School Dist','Phil Long','Facilities Dir','lost',44000,'lost',null,'competitor','Lost to in-county contractor on public bid.','Institutional',71,'Excavation'),
+    ],
+    jobs: [
+      dj(1,'Clearwater Estates — Phase 1','FM 423 & Eldorado Pkwy, Frisco TX 75033','Excavation',55000,'In Progress','2026-03-15',[1,2,3,4],'22-lot cut and fill. Grade work 60% complete.'),
+      dj(2,'Mesa Verde HOA Retention Pond','900 Mesa Verde Dr, Keller TX 76248','Excavation',31000,'Scheduled','2026-04-07',[1,2],'Permits pulled. Equipment mobilizes 4/7.'),
+      dj(3,'Riverside Development — Lots 1-14','Riverside Pkwy & CR 380, Denton TX 76208','Excavation',78000,'In Progress','2026-03-08',[1,2,3,4,5],'Site cleared. Grading in progress on north half.'),
+      dj(4,'Summit Commercial Park Pad A','Industrial Blvd, Grand Prairie TX 75050','Excavation',142000,'Scheduled','2026-04-14',[1,2,3],'Permits approved. Equipment staged.'),
+    ],
+  },
+  'General Construction': {
+    leads: [
+      dl(1,'Westview HOA Clubhouse','Susan Park','HOA President','active',94000,'qualified','2026-03-27',null,'2,400 sq ft community center addition. Board vote 3/28.','HOA',18,'General Construction'),
+      dl(2,'Bay City Urgent Care','Dr. Amir Fahad','Owner','stalled',178000,'negotiation','2026-03-23','budget_freeze','3,200 sq ft medical build-out. SBA loan in process.','Commercial',55,'General Construction'),
+      dl(3,'Sunrise Senior Living Wing B','Andrew Mills','Exec Dir','active',262000,'proposal','2026-03-26',null,'40-room wing renovation. Full scope approved.','Institutional',22,'General Construction'),
+      dl(4,'Cornerstone Church Addition','Pastor Dale Ruiz','Admin','stalled',145000,'proposal','2026-03-20','timing','Sanctuary expansion. Congregation vote in April.','Institutional',48,'General Construction'),
+      dl(5,'Riverdale Shopping Center','Pam Novak','Asset Manager','stalled',88000,'proposal','2026-03-22','no_response','4-suite interior rework. Haven\'t heard back in 3 weeks.','Commercial',36,'General Construction'),
+      dl(6,'Hilltop Brewery Expansion','Chris Roth','Owner','active',52000,'negotiation','2026-03-25',null,'Taproom expansion + patio. Permits in hand. Near close.','Commercial',14,'General Construction'),
+      dl(7,'Lakeside Fire Station','Chief Pat Moore','City Admin','cold',310000,'contacted','2026-05-15','timing','City budget item. RFP not out until May.','Institutional',71,'General Construction'),
+      dl(8,'Verde Office Conversion','Tom Lewin','Owner','won',67000,'won',null,null,'Closed! Warehouse-to-office conversion starts 4/3.','Commercial',27,'General Construction'),
+      dl(9,'Atlas Fitness Center','Gina Cruz','Owner','lost',114000,'lost',null,'competitor','Lost on bid. GC with existing relationship won.','Commercial',62,'General Construction'),
+    ],
+    jobs: [
+      dj(1,'Verde Office Conversion','4400 Industrial Blvd, Dallas TX 75207','General Construction',67000,'In Progress','2026-03-18',[1,2,3,4],'Framing complete. Mechanicals rough-in underway.'),
+      dj(2,'Hilltop Brewery Taproom','2210 Commerce St, Fort Worth TX 76102','General Construction',52000,'In Progress','2026-03-11',[1,2,3,4,5],'Steel frame up. Drywall crew starting Monday.'),
+      dj(3,'Westview HOA Clubhouse','5500 Westview Commons, Irving TX 75038','General Construction',94000,'Scheduled','2026-04-07',[1,2,3],'Permits pulled. Site prep begins 4/7.'),
+      dj(4,'Sunrise Senior Living Wing B','1100 Sunrise Blvd, Garland TX 75040','General Construction',262000,'In Progress','2026-02-25',[1,2,3,4,5,6],'40 rooms. Drywall finishing underway. On schedule.'),
+      dj(5,'Bay City Urgent Care','8800 Bay City Dr, Plano TX 75024','General Construction',178000,'Scheduled','2026-04-21',[1,2],'SBA loan approved. Permits in process.'),
+    ],
+  },
+  'HVAC': {
+    leads: [
+      dl(1,'Greenfield Office Park','Dana Nguyen','Property Manager','stalled',23500,'negotiation','2026-03-24','budget_freeze','Carrier 5-ton rooftop. Q1 budget locked. Revisit April.','Commercial',38,'HVAC'),
+      dl(2,'Ridgecrest Elementary','Carl Beck','Facilities Dir','active',44000,'qualified','2026-03-27',null,'8 classroom units + 1 main office. Full replacement.','Institutional',14,'HVAC'),
+      dl(3,'Johnson Residence','Tim Johnson','Homeowner','active',8900,'proposal','2026-03-25',null,'4-ton Lennox split system. Existing unit is 18 years old.','Residential',10,'HVAC'),
+      dl(4,'Sunrise Fitness Club','Marco Lane','Owner','stalled',31200,'proposal','2026-03-20','price_objection','Commercial package unit. $4k over their budget. Trim scope.','Commercial',29,'HVAC'),
+      dl(5,'Northview Apartments','Chad Ross','Property Manager','stalled',18400,'proposal','2026-03-22','no_response','16 units need replacement. Sent proposal, no reply.','Commercial',33,'HVAC'),
+      dl(6,'Lakeside Church','Deacon Paul Smith','Admin','cold',27000,'contacted','2026-04-20','timing','Sanctuary + 6 classrooms. HVAC budget next fiscal year.','Institutional',51,'HVAC'),
+      dl(7,'Porter Residence','Amy Porter','Homeowner','won',7600,'won',null,null,'Closed! Trane 3.5-ton install. Crew 3/27.','Residential',16,'HVAC'),
+      dl(8,'Metro Data Center','IT Director Brad Lee','Facilities','stalled',86000,'negotiation','2026-03-24','competitor','Precision cooling for server room. 2 other bids in.','Commercial',47,'HVAC'),
+      dl(9,'Clearwater Hotel','GM Lisa Cole','Operations','lost',38000,'lost',null,'competitor','Lost — existing HVAC contractor locked in long-term.','Commercial',58,'HVAC'),
+    ],
+    jobs: [
+      dj(1,'Greenfield Office Park — Suite A','510 Oak Creek Blvd, Houston TX 77084','HVAC',23500,'Scheduled','2026-03-28',[1,2],'Carrier 5-ton rooftop. Unit on order. Install 3/28.'),
+      dj(2,'Amy & Kevin Porter','6610 Meadowlark Dr, Sugar Land TX 77479','HVAC',7600,'Complete','2026-03-19',[1,2,3,4,5,6,7,8,9,10],'Trane 3.5-ton. Installed, charged, tested. Paid.'),
+      dj(3,'Ridgecrest Elementary','4400 Ridgecrest Blvd, Katy TX 77450','HVAC',44000,'In Progress','2026-03-12',[1,2,3,4,5],'5 of 9 units installed. Ductwork for main office next.'),
+      dj(4,'Tim & Sarah Johnson','2812 Woodridge Ln, The Woodlands TX 77380','HVAC',8900,'Scheduled','2026-04-03',[1,2],'Lennox 4-ton. Old unit scheduled for removal 4/3.'),
+    ],
+  },
+  'Plumbing': {
+    leads: [
+      dl(1,'Sunridge Apartments','Todd Whitfield','Building Manager','stalled',11400,'proposal','2026-03-19','no_response','24-unit re-pipe. 3 follow-ups. No reply.','Commercial',41,'Plumbing'),
+      dl(2,'Fischer Residence','Jack Fischer','Homeowner','active',4800,'proposal','2026-03-25',null,'Full re-pipe, galvanized to PEX. Insurance approved.','Residential',12,'Plumbing'),
+      dl(3,'Clearview Restaurant','Owner Mike Holt','Owner','stalled',8700,'negotiation','2026-03-23','price_objection','Grease trap + kitchen rough-in. $1,800 over budget.','Commercial',27,'Plumbing'),
+      dl(4,'Meadowbrook HOA Clubhouse','Tina Marsh','HOA Mgr','active',6200,'qualified','2026-03-27',null,'Fixture replacement + water heater upgrade.','HOA',9,'Plumbing'),
+      dl(5,'Hillcrest Medical Office','Office Mgr Pat Ray','Admin','active',14300,'negotiation','2026-03-26',null,'New exam room rough-in + 2 bathrooms. Near close.','Commercial',16,'Plumbing'),
+      dl(6,'Chen Residence','Linda Chen','Homeowner','stalled',3200,'proposal','2026-03-22','budget_freeze','Water heater replacement delayed until tax return.','Residential',22,'Plumbing'),
+      dl(7,'Riverside School Dist','Facilities Dir Ben Cruz','Facilities','cold',28000,'contacted','2026-04-15','timing','4 school buildings, fixture refresh. Budget Q4.','Institutional',44,'Plumbing'),
+      dl(8,'Park Ave Condos','Sara Owens','Property Mgr','won',9100,'won',null,null,'Closed! Units 101-120 re-pipe. Starts 4/1.','Commercial',18,'Plumbing'),
+      dl(9,'Downtown Diner','Owner Roy Burns','Owner','lost',5400,'lost',null,'competitor','Lost on price. Licensed plumber did it for less.','Commercial',35,'Plumbing'),
+    ],
+    jobs: [
+      dj(1,'Jack & Paula Fischer','1814 Magnolia St, Pasadena TX 77502','Plumbing',4800,'In Progress','2026-03-21',[1,2,3],'Galvanized-to-PEX. Rough-in 40% done.'),
+      dj(2,'Park Ave Condos Units 101-120','2200 Park Ave, Houston TX 77004','Plumbing',9100,'Scheduled','2026-04-01',[1,2],'Re-pipe, 20 units. Materials ordered. Crew starts 4/1.'),
+      dj(3,'Hillcrest Medical Office','3300 Hillcrest Dr, Pearland TX 77581','Plumbing',14300,'In Progress','2026-03-14',[1,2,3,4],'Rough-in done. Fixtures going in this week.'),
+      dj(4,'Sunridge Apts — Bldg B','3300 Sunridge Pkwy, Webster TX 77598','Plumbing',11400,'In Progress','2026-03-18',[1,2,3,4],'Units 12-24 re-pipe. Pressure test scheduled Friday.'),
+    ],
+  },
+  'Welding': {
+    leads: [
+      dl(1,'Iron Works Industrial','Carlos Reyes','Plant Manager','active',19800,'qualified','2026-03-27',null,'Steel platform fabrication + install. 1,200 sq ft mezzanine.','Industrial',17,'Welding'),
+      dl(2,'Harbor Shipyard LLC','Frank Delaney','Operations Mgr','stalled',44000,'negotiation','2026-03-23','budget_freeze','Dock gate framework. Capital budget not approved.','Industrial',48,'Welding'),
+      dl(3,'Lone Star Fabricators','Hector Ruiz','Owner','active',28500,'proposal','2026-03-25',null,'Custom machine guards, 6 units. RFQ submitted.','Industrial',13,'Welding'),
+      dl(4,'Metro Transit Authority','Stan Wells','Facilities Dir','stalled',67000,'proposal','2026-03-20','no_response','Bus depot rail and gate work. No reply in 3 weeks.','Institutional',39,'Welding'),
+      dl(5,'Clearwater Brewery','Sam Green','Owner','active',14200,'negotiation','2026-03-26',null,'Custom stainless brew rack system. Near close.','Commercial',19,'Welding'),
+      dl(6,'Atlas Steel Supply','Ray Burk','GM','stalled',38000,'proposal','2026-03-22','price_objection','Storage racking system. $6k over their target.','Industrial',31,'Welding'),
+      dl(7,'Northgate Fitness','Mike Castro','Owner','cold',22000,'contacted','2026-04-10','timing','Rig equipment frames. Construction not started.','Commercial',44,'Welding'),
+      dl(8,'Gulf Coast Refineries','Safety Dir Tomas Rios','HSE Mgr','won',51000,'won',null,null,'Closed! Staircase and handrail fab. Starts 4/5.','Industrial',26,'Welding'),
+      dl(9,'Ridgecrest Auto Dealer','Owner Al Nash','Owner','lost',16000,'lost',null,'competitor','Went with in-house maintenance team.','Commercial',52,'Welding'),
+    ],
+    jobs: [
+      dj(1,'Iron Works Industrial Mezzanine','2244 Industrial Blvd, Houston TX 77015','Welding',19800,'In Progress','2026-03-17',[1,2,3,4],'Steel mezzanine fab complete. On-site install underway.'),
+      dj(2,'Clearwater Brewery Rack System','1800 Warehouse Row, San Antonio TX 78207','Welding',14200,'Scheduled','2026-04-02',[1,2],'Stainless brew rack. Fab in shop, install 4/2.'),
+      dj(3,'Gulf Coast Refineries Staircase','Off-shore Rd 12, Corpus Christi TX 78401','Welding',51000,'Scheduled','2026-04-05',[1,2,3],'Staircase and handrail fab. Drawings approved.'),
+      dj(4,'Lone Star Fabricators Machine Guards','6600 Lone Star Pkwy, Beaumont TX 77701','Welding',28500,'In Progress','2026-03-12',[1,2,3,4,5],'6 guards. 4 complete, 2 in grinding/finishing.'),
+    ],
+  },
+  'Electrical': {
+    leads: [
+      dl(1,'Pinnacle Retail Center','Jeff Bloom','Facilities Dir','active',31200,'negotiation','2026-03-26',null,'400A panel upgrade + 6 EV charger circuits. Near close.','Commercial',27,'Electrical'),
+      dl(2,'Warehouse 14 LLC','Ron Davis','Property Owner','stalled',48000,'proposal','2026-03-20','no_response','Service upgrade + LED retrofit. No reply in 2 weeks.','Commercial',36,'Electrical'),
+      dl(3,'Hillcrest Elementary','Carl Beck','Facilities Dir','active',22000,'qualified','2026-03-27',null,'Full fire alarm replacement + panel upgrade.','Institutional',15,'Electrical'),
+      dl(4,'Morrison Office Park','Brian Morrison','Owner','stalled',39000,'negotiation','2026-03-23','price_objection','Generator install + transfer switch. $5k over budget.','Commercial',29,'Electrical'),
+      dl(5,'Park Ridge Apartments','Donna Kwan','Property Mgr','active',17400,'proposal','2026-03-25',null,'GFCI + panel upgrade for 32 units. Insurance requirement.','Commercial',18,'Electrical'),
+      dl(6,'Valley Church of Christ','Elder Tom Ames','Admin','stalled',28000,'proposal','2026-03-22','budget_freeze','Sanctuary lighting overhaul. Annual budget too tight.','Institutional',44,'Electrical'),
+      dl(7,'Clearview Gym','Marcus Brown','Owner','cold',14000,'contacted','2026-04-15','timing','LED full retrofit. Waiting on new lease signing.','Commercial',38,'Electrical'),
+      dl(8,'Sterling Industries','Plant Mgr Ann Webb','Operations','won',54000,'won',null,null,'Closed! 800A service upgrade. Starts 4/8.','Industrial',21,'Electrical'),
+      dl(9,'Sunset Diner','Owner Roy Burns','Owner','lost',8400,'lost',null,'competitor','Handyman did basic work. Below code — our problem later.','Commercial',47,'Electrical'),
+    ],
+    jobs: [
+      dj(1,'Pinnacle Retail Center','668 Elmwood Ave, Plano TX 75023','Electrical',31200,'Scheduled','2026-04-01',[1,2],'400A panel + 6 EV circuits. Permits pulled. Install 4/1.'),
+      dj(2,'Park Ridge Apartments','2200 Park Ridge Blvd, Garland TX 75040','Electrical',17400,'In Progress','2026-03-19',[1,2,3,4],'GFCI and panel work. 20 of 32 units done.'),
+      dj(3,'Sterling Industries','8800 Sterling Industrial Dr, Mesquite TX 75149','Electrical',54000,'Scheduled','2026-04-08',[1,2,3],'800A service upgrade. Utility coordination complete.'),
+      dj(4,'Hillcrest Elementary','4400 Hillcrest Blvd, Richardson TX 75080','Electrical',22000,'In Progress','2026-03-10',[1,2,3,4,5,6],'Fire alarm system in. Panel upgrade last step.'),
+    ],
+  },
+  'Masonry': {
+    leads: [
+      dl(1,'Downtown Brick Restoration','Tom Hendricks','Building Owner','active',45000,'proposal','2026-03-25',null,'Full brick repoint, 4-story historic building downtown.','Commercial',19,'Masonry'),
+      dl(2,'Riverside Retaining Wall','Bob Crane','Homeowner','stalled',28000,'negotiation','2026-03-23','price_objection','250 LF retaining wall. $4k over expectation.','Residential',33,'Masonry'),
+      dl(3,'Heritage Inn Patio','Patricia Lawson','GM','active',26400,'proposal','2026-03-26',null,'Limestone patio resurfacing + retaining wall.','Commercial',20,'Masonry'),
+      dl(4,'Northridge Church Entrance','Pastor Ed Cole','Facilities','stalled',38000,'proposal','2026-03-20','budget_freeze','New stone entrance and columns. Capital budget needed.','Institutional',47,'Masonry'),
+      dl(5,'Greenview HOA Wall','Linda Shaw','HOA President','active',18700,'qualified','2026-03-27',null,'Community entry wall + stone columns. HOA approved.','HOA',11,'Masonry'),
+      dl(6,'Atlas Industrial Complex','Ray Torres','Plant Mgr','cold',62000,'contacted','2026-04-15','timing','Brick facade restoration. Budget in Q3.','Industrial',58,'Masonry'),
+      dl(7,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','won',33500,'won',null,null,'Closed! Entry steps + facade repair. Starts 4/4.','Commercial',24,'Masonry'),
+      dl(8,'Morrison Distillery','Mike Morrison','Owner','stalled',22000,'negotiation','2026-03-24','competitor','Stone bar feature + fireplace. 2 other bids in.','Commercial',31,'Masonry'),
+      dl(9,'Sunset Baptist Church','Deacon Will Jones','Admin','lost',29000,'lost',null,'competitor','Member of congregation did the work for cost.','Institutional',64,'Masonry'),
+    ],
+    jobs: [
+      dj(1,'Downtown Brick Restoration','400 Main St, Fort Worth TX 76102','Masonry',45000,'In Progress','2026-03-10',[1,2,3,4,5],'South and west face repointing done. North face this week.'),
+      dj(2,'Heritage Inn Patio','312 Heritage Blvd, San Antonio TX 78205','Masonry',26400,'Scheduled','2026-04-03',[1,2,3],'Limestone on site. Forms set. Pour and lay 4/3.'),
+      dj(3,'Greenview HOA Entry Wall','800 Greenview Commons, Allen TX 75013','Masonry',18700,'In Progress','2026-03-19',[1,2,3,4],'Footings poured. Block work 50% complete.'),
+      dj(4,'Lakewood Medical Center','5500 Lakewood Dr, Plano TX 75093','Masonry',33500,'Scheduled','2026-04-04',[1,2],'Steps design approved. Materials ordered.'),
+    ],
+  },
+  'Painting': {
+    leads: [
+      dl(1,'Riverside Church Exterior','Pastor James Willis','Facilities','won',9400,'won',null,null,'Closed! Full exterior repaint. Sherwin-Williams Duration. Starts 4/1.','Institutional',55,'Painting'),
+      dl(2,'Clearbrook Office Suite','Donna Pierce','Office Mgr','active',6800,'proposal','2026-03-25',null,'2,400 sq ft office interior. Neutral repaint.','Commercial',11,'Painting'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','stalled',8200,'negotiation','2026-03-23','price_objection','Full exterior + trim. $900 over competing bid.','Residential',28,'Painting'),
+      dl(4,'Hilltop Hotel Lobby','GM Ray Lutz','Operations','stalled',22000,'proposal','2026-03-20','budget_freeze','Lobby + corridors floors 1-3. Capital budget request.','Commercial',41,'Painting'),
+      dl(5,'Greenway Apartments','Property Mgr Sara Li','Mgr','active',14500,'qualified','2026-03-27',null,'24 unit interiors, turnover repaint. Staging now.','Commercial',13,'Painting'),
+      dl(6,'Sunrise Senior Center','Activities Dir Jo Wells','Admin','stalled',11000,'proposal','2026-03-22','no_response','Community room + 40 resident rooms. No reply 2 weeks.','Institutional',37,'Painting'),
+      dl(7,'Park Ave Dentistry','Dr. Ann Park','Owner','active',5400,'negotiation','2026-03-26',null,'Waiting room + 6 exam rooms repaint. Near close.','Commercial',16,'Painting'),
+      dl(8,'Thornton Residence','Nick Thornton','Homeowner','cold',7100,'contacted','2026-04-08','timing','Interior 4 bedrooms. Waiting on new flooring first.','Residential',31,'Painting'),
+      dl(9,'Crossroads Gym','Owner Greg Nash','Owner','lost',9800,'lost',null,'competitor','Used a friend-of-a-friend painter.','Commercial',44,'Painting'),
+    ],
+    jobs: [
+      dj(1,'Riverside Church','200 Riverside Ave, Fort Worth TX 76107','Painting',9400,'Scheduled','2026-04-01',[1,2,3],'Sherwin-Williams Duration. Prep + prime complete.'),
+      dj(2,'Clearbrook Office Suite','501 Commerce Dr, Dallas TX 75201','Painting',6800,'In Progress','2026-03-22',[1,2,3,4,5],'2,400 sq ft interior. Second coat today.'),
+      dj(3,'Greenway Apartments','2200 Greenway Blvd, Arlington TX 76010','Painting',14500,'In Progress','2026-03-15',[1,2,3,4],'12 of 24 units complete. On pace.'),
+      dj(4,'Park Ave Dentistry','3300 Park Ave, Plano TX 75074','Painting',5400,'Scheduled','2026-04-05',[1,2],'Materials ordered. Prep scheduled 4/5.'),
+    ],
+  },
+  'Flooring': {
+    leads: [
+      dl(1,'Clearwater Gym','Marcus Brown','Owner','cold',17200,'contacted','2026-04-05','timing','Full rubber floor replacement. Remodel deferred to summer.','Commercial',64,'Flooring'),
+      dl(2,'Morrison Residence Kitchen','Amy Morrison','Homeowner','active',8600,'proposal','2026-03-25',null,'LVP throughout kitchen + dining. Shaw Floorté preferred.','Residential',14,'Flooring'),
+      dl(3,'Lakewood Medical Center','Office Mgr Dr. Park','Admin','stalled',28000,'negotiation','2026-03-23','budget_freeze','VCT to LVT conversion, 8,000 sq ft. Budget not released.','Commercial',38,'Flooring'),
+      dl(4,'Sunrise Senior Living','Activities Dir','Admin','active',22400,'qualified','2026-03-27',null,'80 resident rooms LVP replacement. Insurance funded.','Institutional',12,'Flooring'),
+      dl(5,'Thornton Residence','Nick Thornton','Homeowner','stalled',11800,'proposal','2026-03-22','no_response','Hardwood refinish + 3 bedroom LVP. No response 2 weeks.','Residential',28,'Flooring'),
+      dl(6,'Metro Dance Studio','Owner Sofia Vega','Owner','active',14200,'negotiation','2026-03-26',null,'Sprung hardwood dance floor, 1,800 sq ft. Near close.','Commercial',18,'Flooring'),
+      dl(7,'Park Ridge Apts Turnover','Property Mgr Don Kwan','Mgr','stalled',9600,'proposal','2026-03-20','price_objection','12 unit LVP turnover. $1,200 over budget.','Commercial',31,'Flooring'),
+      dl(8,'Chen Residence','Linda Chen','Homeowner','won',7400,'won',null,null,'Closed! Hardwood refinish + LVP hallways. Starts 4/4.','Residential',21,'Flooring'),
+      dl(9,'Ridgecrest Elementary','Carl Beck','Facilities Dir','lost',34000,'lost',null,'competitor','State contract went to lowest bidder.','Institutional',55,'Flooring'),
+    ],
+    jobs: [
+      dj(1,'Amy & Carl Morrison','4418 Ridgeway Dr, Garland TX 75040','Flooring',8600,'In Progress','2026-03-21',[1,2,3,4],'LVP kitchen + dining. Subfloor prepped, laying today.'),
+      dj(2,'Linda & James Chen','2204 Birchwood Ct, Richardson TX 75082','Flooring',7400,'Scheduled','2026-04-04',[1,2],'Hardwood refinish + LVP. Materials on site.'),
+      dj(3,'Metro Dance Studio','1200 Arts District Blvd, Dallas TX 75201','Flooring',14200,'In Progress','2026-03-16',[1,2,3,4,5],'Sprung hardwood. Subfloor level, laying 1st strips.'),
+      dj(4,'Sunrise Senior Living','1100 Sunrise Blvd, Garland TX 75040','Flooring',22400,'In Progress','2026-03-10',[1,2,3,4,5,6],'50 of 80 rooms complete. On schedule.'),
+    ],
+  },
+  'Insulation': {
+    leads: [
+      dl(1,'Northgate Mall','Janet Farley','Facilities Mgr','stalled',31500,'proposal','2026-03-21','no_response','Attic blow-in + roof deck spray foam. No feedback 2 wks.','Commercial',58,'Insulation'),
+      dl(2,'Weber Residence','Bill Weber','Homeowner','active',6200,'proposal','2026-03-25',null,'Attic blow-in + air sealing. Energy audit done.','Residential',11,'Insulation'),
+      dl(3,'Clearbrook Office Bldg','Property Mgr Donna Pierce','Mgr','stalled',18400,'negotiation','2026-03-23','budget_freeze','Roof deck + perimeter wall spray foam. Q2 budget.','Commercial',34,'Insulation'),
+      dl(4,'Sunrise Elementary','Carl Beck','Facilities Dir','active',28000,'qualified','2026-03-27',null,'Full attic insulation upgrade. Energy grant funding.','Institutional',14,'Insulation'),
+      dl(5,'Morrison Residence Addition','Carl Morrison','Homeowner','stalled',4800,'proposal','2026-03-22','price_objection','Room addition insulation. $600 over quote expectation.','Residential',22,'Insulation'),
+      dl(6,'Ridgecrest Warehouse','Ray Torres','Owner','cold',42000,'contacted','2026-04-20','timing','Spray foam whole envelope. Starting build-out Q3.','Industrial',47,'Insulation'),
+      dl(7,'Chen Residence','Linda Chen','Homeowner','won',5600,'won',null,null,'Closed! Attic blow-in + knee walls. Crew 3/28.','Residential',17,'Insulation'),
+      dl(8,'Park Ave Medical Bldg','Dr. Sam Park','Admin Dir','active',22000,'negotiation','2026-03-26',null,'Spray foam retrofit, 4,000 sq ft. Near close.','Commercial',20,'Insulation'),
+      dl(9,'Atlas Warehouse','Plant Mgr Ann Webb','Operations','lost',36000,'lost',null,'competitor','Owner-supplied spray foam contractor won it.','Industrial',61,'Insulation'),
+    ],
+    jobs: [
+      dj(1,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Insulation',6200,'Scheduled','2026-03-28',[1,2],'Blow-in + air sealing. Materials ready.'),
+      dj(2,'Linda & James Chen','2204 Birchwood Ct, Richardson TX 75082','Insulation',5600,'Complete','2026-03-21',[1,2,3,4,5,6,7,8],'Attic blow-in done. Energy audit follow-up sent.'),
+      dj(3,'Sunrise Elementary Attic','4400 Sunrise Blvd, Mesquite TX 75150','Insulation',28000,'In Progress','2026-03-14',[1,2,3,4],'R-38 blow-in 60% complete. Air sealing Friday.'),
+      dj(4,'Park Ave Medical Bldg','3300 Park Ave, Plano TX 75074','Insulation',22000,'Scheduled','2026-04-08',[1,2,3],'Spray foam retrofit. Drawings approved.'),
+    ],
+  },
+  'Drywall': {
+    leads: [
+      dl(1,'Sunrise Senior Living Wing B','Andrew Mills','Maintenance Dir','active',13200,'proposal','2026-03-26',null,'40-room renovation drywall. Full hang + finish.','Institutional',22,'Drywall'),
+      dl(2,'Morrison Office Addition','Carl Morrison','Owner','stalled',18600,'negotiation','2026-03-23','budget_freeze','3,200 sq ft office addition. GC has budget hold.','Commercial',36,'Drywall'),
+      dl(3,'Park Ridge Apts Unit Reno','Property Mgr Don Kwan','Mgr','active',9400,'qualified','2026-03-27',null,'16 unit reno drywall. Consistent crew work.','Commercial',13,'Drywall'),
+      dl(4,'Clearbrook Medical Suite','Dr. Ana Rivera','Owner','stalled',22000,'proposal','2026-03-20','no_response','Exam room build-out, 8 rooms. No reply after bid.','Commercial',31,'Drywall'),
+      dl(5,'Torres New Home','Miguel Torres','Homeowner','stalled',7800,'proposal','2026-03-22','price_objection','Basement finish drywall. $900 over other bid.','Residential',24,'Drywall'),
+      dl(6,'Ridgecrest Brewery','Sam Green','Owner','cold',14000,'contacted','2026-04-10','timing','Taproom build-out drywall. Framing not done yet.','Commercial',38,'Drywall'),
+      dl(7,'Weber Residence Addition','Bill Weber','Homeowner','won',6200,'won',null,null,'Closed! 2 room addition drywall. Crew starts 4/2.','Residential',16,'Drywall'),
+      dl(8,'Lakewood Hotel Reno','GM Ray Lutz','Operations','active',38000,'negotiation','2026-03-25',null,'24 room reno drywall. Near close, scope confirmed.','Commercial',20,'Drywall'),
+      dl(9,'Sunrise School Reno','Carl Beck','Facilities Dir','lost',28000,'lost',null,'competitor','GC used their in-house drywall crew.','Institutional',52,'Drywall'),
+    ],
+    jobs: [
+      dj(1,'Sunrise Senior Living Wing B','1100 Sunrise Blvd, Garland TX 75040','Drywall',13200,'In Progress','2026-03-14',[1,2,3,4],'40 rooms. Hang done. Tape + mud underway.'),
+      dj(2,'Park Ridge Apts 8 Units','2200 Park Ridge Blvd, Garland TX 75040','Drywall',9400,'In Progress','2026-03-18',[1,2,3,4,5],'5 units sanded + primed. 3 units in tape/mud.'),
+      dj(3,'Bill & Carol Weber Addition','4810 Meadowbrook Ln, Flower Mound TX 75028','Drywall',6200,'Scheduled','2026-04-02',[1,2,3],'Frame inspection passed. Hang crew starts 4/2.'),
+      dj(4,'Lakewood Hotel Reno','8200 Lakewood Dr, Plano TX 75093','Drywall',38000,'Scheduled','2026-04-10',[1,2],'24 rooms. Contract signed. Hang crew booked.'),
+    ],
+  },
+  'Landscaping': {
+    leads: [
+      dl(1,'Brookhaven Commons HOA','Tina Rosario','HOA Director','active',34800,'proposal','2026-03-24',null,'Common area redesign + irrigation. Board approved.','HOA',14,'Landscaping'),
+      dl(2,'Clearwater Country Club','GM Mark Peters','Operations','stalled',82000,'negotiation','2026-03-23','budget_freeze','Course perimeter and entrance landscaping. BOD vote.','Commercial',48,'Landscaping'),
+      dl(3,'Morrison Residence','Amy Morrison','Homeowner','active',14200,'qualified','2026-03-27',null,'Backyard hardscape + planting plan. Irrigation included.','Residential',10,'Landscaping'),
+      dl(4,'Sunrise Medical Campus','Facilities Dir Beth Lee','Admin','stalled',44000,'proposal','2026-03-20','no_response','Full campus landscape refresh. No response 3 weeks.','Commercial',36,'Landscaping'),
+      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',8800,'proposal','2026-03-22','price_objection','Front yard redesign + sod. $1,400 over expectation.','Residential',27,'Landscaping'),
+      dl(6,'Northgate Office Park','Property Mgr Greg Lee','Mgr','cold',28000,'contacted','2026-04-10','timing','Parking lot islands + perimeter. Spring budget.','Commercial',41,'Landscaping'),
+      dl(7,'Chen Residence','Linda Chen','Homeowner','won',11400,'won',null,null,'Closed! Backyard hardscape + planting. Starts 4/3.','Residential',18,'Landscaping'),
+      dl(8,'Westfield HOA Entrance','Sandra Hill','HOA President','active',18600,'negotiation','2026-03-26',null,'Entrance monument + plantings. Near close.','HOA',15,'Landscaping'),
+      dl(9,'Atlas Corporate Campus','Facilities VP Ted Ross','Admin','lost',56000,'lost',null,'competitor','National landscape firm won on relationships.','Commercial',67,'Landscaping'),
+    ],
+    jobs: [
+      dj(1,'Brookhaven Commons HOA','1190 Brookhaven Blvd, Frisco TX 75034','Landscaping',34800,'In Progress','2026-03-16',[1,2,3,4,5],'Hardscape done. Planting crew starts Monday.'),
+      dj(2,'Linda & James Chen','2204 Birchwood Ct, Richardson TX 75082','Landscaping',11400,'Scheduled','2026-04-03',[1,2,3],'Plants on order. Hardscape layout ready.'),
+      dj(3,'Westfield HOA Entrance','500 Westfield Commons, Allen TX 75013','Landscaping',18600,'In Progress','2026-03-20',[1,2,3,4],'Monument base complete. Plantings + irrigation next.'),
+      dj(4,'Morrison Backyard','4418 Ridgeway Dr, Garland TX 75040','Landscaping',14200,'Scheduled','2026-04-08',[1,2],'Design approved. Materials ordering now.'),
+    ],
+  },
+  'Concrete': {
+    leads: [
+      dl(1,'Morrison Trucking Depot','Bill Morrison','Owner','stalled',19600,'proposal','2026-03-22','price_objection','6,000 sq ft reinforced slab. $2,800 over expectation.','Commercial',33,'Concrete'),
+      dl(2,'Sunridge Subdivision','Developer Greg Fry','Developer','active',64000,'qualified','2026-03-27',null,'22-lot driveway and walkway package. Approved.','Commercial',14,'Concrete'),
+      dl(3,'Northgate Warehouse','Plant Mgr Ray Torres','Operations','stalled',38000,'negotiation','2026-03-23','budget_freeze','Forklift aisle resurfacing + new dock apron. Q2.','Industrial',44,'Concrete'),
+      dl(4,'Weber Residence','Bill Weber','Homeowner','active',9800,'proposal','2026-03-25',null,'Driveway replacement + back patio. Stamped option.','Residential',12,'Concrete'),
+      dl(5,'Clearview Church Parking','Elder Tom Ames','Admin','stalled',42000,'proposal','2026-03-20','no_response','Parking lot reseal + expansion. No reply.','Institutional',38,'Concrete'),
+      dl(6,'Metro Fire Station','Chief Pat Moore','City Admin','cold',88000,'contacted','2026-05-01','timing','Apparatus bay floor + driveway. City budget Q4.','Institutional',55,'Concrete'),
+      dl(7,'Torres Backyard','Miguel Torres','Homeowner','won',7200,'won',null,null,'Closed! Stamped patio 400 sq ft. Crew 3/30.','Residential',19,'Concrete'),
+      dl(8,'Atlas Industrial Complex','Ann Webb','Plant Mgr','active',54000,'negotiation','2026-03-26',null,'Loading dock expansion + apron. Near close.','Industrial',22,'Concrete'),
+      dl(9,'Ridgecrest School Walkways','Carl Beck','Facilities Dir','lost',31000,'lost',null,'competitor','Local contractor underbid by $4k.','Institutional',62,'Concrete'),
+    ],
+    jobs: [
+      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Concrete',7200,'In Progress','2026-03-24',[1,2,3,4,5,6],'400 sq ft stamped patio. Poured yesterday. Finishing today.'),
+      dj(2,'Morrison Trucking Depot','2244 Industrial Blvd, Dallas TX 75207','Concrete',19600,'Scheduled','2026-04-07',[1,2],'Reinforced slab. Forms set next week.'),
+      dj(3,'Sunridge Subdivision Lots 1-11','FM 423 & Eldorado Pkwy, Frisco TX 75033','Concrete',64000,'In Progress','2026-03-12',[1,2,3,4,5,6],'11 of 22 driveways poured. On schedule.'),
+      dj(4,'Atlas Industrial Loading Dock','8800 Industrial Dr, Mesquite TX 75149','Concrete',54000,'Scheduled','2026-04-10',[1,2,3],'Permits in. Form crew scheduled 4/10.'),
+    ],
+  },
+  'Fencing': {
+    leads: [
+      dl(1,'Sagebrush Ranch','Dale Cooper','Ranch Owner','stalled',28500,'negotiation','2026-03-23','wrong_contact','1,200 LF cedar privacy. Need to reach spouse for sign-off.','Residential',46,'Fencing'),
+      dl(2,'Northview Business Park','Greg Lee','Property Mgr','active',42000,'qualified','2026-03-27',null,'Perimeter chain-link + 3 access gates. Security upgrade.','Commercial',13,'Fencing'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',8400,'proposal','2026-03-25',null,'Backyard privacy fence, 300 LF cedar. HOA approved.','Residential',11,'Fencing'),
+      dl(4,'Clearview School District','Carl Beck','Facilities Dir','stalled',62000,'proposal','2026-03-20','budget_freeze','3 campuses, playground fencing. Capital budget delayed.','Institutional',44,'Fencing'),
+      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',6800,'proposal','2026-03-22','price_objection','150 LF board-on-board. Competing bid $800 less.','Residential',28,'Fencing'),
+      dl(6,'Mesa Verde HOA','Sandra Hill','HOA President','cold',24000,'contacted','2026-04-12','timing','Community fencing refresh. Board vote next month.','HOA',38,'Fencing'),
+      dl(7,'Weber Residence','Bill Weber','Homeowner','won',9200,'won',null,null,'Closed! 400 LF cedar, 2 gates. Crew 3/31.','Residential',20,'Fencing'),
+      dl(8,'Atlas Yard Storage','Ray Torres','Plant Mgr','active',18000,'negotiation','2026-03-26',null,'Heavy-gauge chain link, 600 LF. Near close.','Industrial',16,'Fencing'),
+      dl(9,'Ridgecrest Apartments','Don Kwan','Property Mgr','lost',14000,'lost',null,'competitor','Handyman crew did it cheaper.','Commercial',51,'Fencing'),
+    ],
+    jobs: [
+      dj(1,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Fencing',9200,'Scheduled','2026-03-31',[1,2],'400 LF cedar privacy. Posts ordered. Install 3/31.'),
+      dj(2,'Sagebrush Ranch','8801 County Rd 312, Waco TX 76708','Fencing',28500,'Complete','2026-03-11',[1,2,3,4,5,6,7,8,9,10],'1,200 ft cedar fence. All gates hung and tested.'),
+      dj(3,'Northview Business Park','3300 Northview Commerce Dr, Irving TX 75038','Fencing',42000,'In Progress','2026-03-17',[1,2,3,4,5],'Perimeter chain-link 80% done. Gates being hung.'),
+      dj(4,'Atlas Yard Storage','8800 Industrial Dr, Mesquite TX 75149','Fencing',18000,'Scheduled','2026-04-06',[1,2,3],'Heavy chain-link layout staked. Post holes next week.'),
+    ],
+  },
+  'Carpentry': {
+    leads: [
+      dl(1,'The Craftsman Kitchen','Sandra Yee','Owner','stalled',24100,'negotiation','2026-03-23','technical_fit','Custom cabinet specs rework needed. Awaiting revisions.','Commercial',40,'Carpentry'),
+      dl(2,'Morrison Residence Addition','Carl Morrison','Homeowner','active',18600,'proposal','2026-03-25',null,'Trim package + built-in shelving for new addition.','Residential',14,'Carpentry'),
+      dl(3,'Lakewood Hotel Lobby','GM Ray Lutz','Operations','stalled',44000,'proposal','2026-03-20','budget_freeze','Custom millwork + wainscoting. Capital budget Q2.','Commercial',47,'Carpentry'),
+      dl(4,'Clearbrook Office Fit-Out','Donna Pierce','Office Mgr','active',28000,'qualified','2026-03-27',null,'Reception desk + custom shelving, 2,400 sq ft office.','Commercial',12,'Carpentry'),
+      dl(5,'Torres New Deck','Miguel Torres','Homeowner','stalled',14800,'proposal','2026-03-22','price_objection','Composite deck with pergola. $2,200 over expectation.','Residential',26,'Carpentry'),
+      dl(6,'Sunrise Senior Living','Andrew Mills','Maintenance Dir','cold',22000,'contacted','2026-04-15','timing','Custom millwork for dining room renovation.','Institutional',39,'Carpentry'),
+      dl(7,'Weber Residence Built-Ins','Bill Weber','Homeowner','won',8400,'won',null,null,'Closed! Home office built-ins. Starts 4/3.','Residential',17,'Carpentry'),
+      dl(8,'Park Ave Restaurant','Chef Dan Lee','Owner','active',31000,'negotiation','2026-03-26',null,'Custom bar + booth seating, hardwood. Near close.','Commercial',20,'Carpentry'),
+      dl(9,'Ridgecrest Church','Pastor Ed Cole','Admin','lost',19000,'lost',null,'competitor','Member of congregation is a finish carpenter.','Institutional',58,'Carpentry'),
+    ],
+    jobs: [
+      dj(1,'Bill & Carol Weber Home Office','4810 Meadowbrook Ln, Flower Mound TX 75028','Carpentry',8400,'Scheduled','2026-04-03',[1,2],'Custom built-ins. Shop fab underway.'),
+      dj(2,'Carl & Amy Morrison Addition','4418 Ridgeway Dr, Garland TX 75040','Carpentry',18600,'In Progress','2026-03-19',[1,2,3,4],'Trim complete. Built-in shelving 50% done.'),
+      dj(3,'Clearbrook Office Fit-Out','501 Commerce Dr, Dallas TX 75201','Carpentry',28000,'In Progress','2026-03-13',[1,2,3,4,5],'Reception desk installed. Shelving units in progress.'),
+      dj(4,'Park Ave Restaurant','3300 Park Ave, Plano TX 75074','Carpentry',31000,'Scheduled','2026-04-09',[1,2,3],'Bar design approved. Material order placed.'),
+    ],
+  },
+  'Waterproofing': {
+    leads: [
+      dl(1,'Harbor View Condos','Robert Chang','Board Treasurer','stalled',47500,'proposal','2026-03-24','wrong_contact','Foundation waterproofing, 32 units. Need full board.','HOA',62,'Waterproofing'),
+      dl(2,'Morrison Basement','Carl Morrison','Homeowner','active',12400,'proposal','2026-03-25',null,'Interior drainage + sump system. Active water intrusion.','Residential',13,'Waterproofing'),
+      dl(3,'Clearbrook Commercial Bldg','Donna Pierce','Property Mgr','stalled',38000,'negotiation','2026-03-23','budget_freeze','Below-grade parking deck membrane. Q2 capital.','Commercial',44,'Waterproofing'),
+      dl(4,'Northgate Warehouse','Ray Torres','Plant Mgr','active',22000,'qualified','2026-03-27',null,'Exterior foundation coating + drainage tile.','Industrial',11,'Waterproofing'),
+      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',9800,'proposal','2026-03-22','price_objection','Crawl space encapsulation. $1,400 over expectation.','Residential',28,'Waterproofing'),
+      dl(6,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','cold',54000,'contacted','2026-04-20','timing','Underground utility corridor waterproofing. Q3.','Commercial',51,'Waterproofing'),
+      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',7600,'won',null,null,'Closed! Basement interior drain + sump. Starts 4/4.','Residential',19,'Waterproofing'),
+      dl(8,'Atlas Tilt-Wall Building','Ann Webb','Plant Mgr','active',31000,'negotiation','2026-03-26',null,'Exterior EIFS coating + caulk overhaul. Near close.','Industrial',21,'Waterproofing'),
+      dl(9,'Ridgecrest Church Hall','Deacon Will Jones','Admin','lost',18000,'lost',null,'competitor','Chose a cheaper partial fix instead.','Institutional',63,'Waterproofing'),
+    ],
+    jobs: [
+      dj(1,'Carl & Amy Morrison Basement','4418 Ridgeway Dr, Garland TX 75040','Waterproofing',12400,'In Progress','2026-03-20',[1,2,3,4],'Interior drainage channel cut. Sump install today.'),
+      dj(2,'Miguel & Carmen Torres Basement','4421 Sunset Ridge Rd, Austin TX 78731','Waterproofing',7600,'Scheduled','2026-04-04',[1,2],'Interior drain system. Crew scheduled 4/4.'),
+      dj(3,'Northgate Warehouse','3300 Industrial Pkwy, Grand Prairie TX 75051','Waterproofing',22000,'In Progress','2026-03-15',[1,2,3,4,5],'Exterior coating done. Drainage tile going in now.'),
+      dj(4,'Atlas Tilt-Wall Bldg','8800 Atlas Dr, Mesquite TX 75149','Waterproofing',31000,'Scheduled','2026-04-10',[1,2,3],'EIFS inspection done. Coating crew scheduled.'),
+    ],
+  },
+  'Solar': {
+    leads: [
+      dl(1,'Torres Residence','Miguel Torres','Homeowner','stalled',42000,'negotiation','2026-03-23','budget_freeze','18-panel system. Waiting on utility rebate approval.','Residential',74,'Solar'),
+      dl(2,'Clearbrook Office Park','Donna Pierce','Property Mgr','active',118000,'qualified','2026-03-27',null,'Commercial array, 240kW. Net metering pre-approved.','Commercial',16,'Solar'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',28400,'proposal','2026-03-25',null,'12-panel system. Roof in great shape. Permit submitted.','Residential',12,'Solar'),
+      dl(4,'Northgate Manufacturing','Ann Webb','Plant Mgr','stalled',186000,'negotiation','2026-03-23','price_objection','500kW industrial array. $18k over competitor.','Industrial',55,'Solar'),
+      dl(5,'Riverside Church','Pastor Rick Adams','Admin Dir','stalled',34000,'proposal','2026-03-20','no_response','30kW rooftop. Submitted bid. No reply 3 weeks.','Institutional',41,'Solar'),
+      dl(6,'Lakewood HOA Clubhouse','Linda Marsh','HOA President','cold',22000,'contacted','2026-04-15','timing','Clubhouse + pool solar. Waiting on HOA vote.','HOA',38,'Solar'),
+      dl(7,'Weber Residence','Bill Weber','Homeowner','won',24600,'won',null,null,'Closed! 10-panel system. Install 4/5.','Residential',22,'Solar'),
+      dl(8,'Atlas Industrial Roof','Ray Torres','Plant Mgr','active',94000,'negotiation','2026-03-26',null,'200kW flat roof array. PPA option on table.','Industrial',19,'Solar'),
+      dl(9,'Sunrise School District','Carl Beck','Facilities Dir','lost',210000,'lost',null,'competitor','State procurement went to lowest bidder.','Institutional',84,'Solar'),
+    ],
+    jobs: [
+      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Solar',42000,'In Progress','2026-03-17',[1,2,3,4],'18-panel system. Mounts installed. Panels going up today.'),
+      dj(2,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Solar',24600,'Scheduled','2026-04-05',[1,2,3],'10-panel system. Permit approved. Install 4/5.'),
+      dj(3,'Clearbrook Office Park — Bldg A','501 Commerce Dr, Dallas TX 75201','Solar',118000,'In Progress','2026-03-03',[1,2,3,4,5],'240kW array. All panels mounted. Inverter wiring underway.'),
+      dj(4,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Solar',28400,'Scheduled','2026-04-12',[1,2],'12-panel permit submitted. Utility pre-approved.'),
+    ],
+  },
+  'Garage Doors': {
+    leads: [
+      dl(1,'Lakewood Auto','Steve Kim','Shop Owner','active',7200,'qualified','2026-03-28',null,'3 commercial overhead doors. Second call scheduled.','Commercial',8,'Garage Doors'),
+      dl(2,'Morrison Residence','Carl Morrison','Homeowner','stalled',3800,'proposal','2026-03-22','price_objection','Double door + opener. $400 under our minimum.','Residential',22,'Garage Doors'),
+      dl(3,'Clearbrook Storage LLC','Owner Dan Ross','Owner','active',18400,'proposal','2026-03-26',null,'12 roll-up doors, 10x10. Storage unit facility.','Commercial',15,'Garage Doors'),
+      dl(4,'Weber Residence','Bill Weber','Homeowner','stalled',2800,'contacted','2026-03-19','no_response','Single door replacement. No reply after site visit.','Residential',18,'Garage Doors'),
+      dl(5,'Northgate Auto Dealer','GM Rich Nash','Operations','active',11200,'negotiation','2026-03-25',null,'4 service bay doors, glass panel. Near close.','Commercial',12,'Garage Doors'),
+      dl(6,'Ridgecrest HOA','HOA Manager Tom Park','Mgr','cold',22000,'contacted','2026-04-10','timing','Community storage building doors, 8 units. Q2 budget.','HOA',34,'Garage Doors'),
+      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',4400,'won',null,null,'Closed! Double door + WiFi opener. Crew 3/29.','Residential',14,'Garage Doors'),
+      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',28000,'negotiation','2026-03-24','budget_freeze','8 heavy-duty roll-up doors, 14x14. Budget on hold.','Industrial',38,'Garage Doors'),
+      dl(9,'Park Ridge Condos','Don Kwan','Property Mgr','lost',14600,'lost',null,'competitor','Went with cheapest bid. Low quality expected.','Commercial',46,'Garage Doors'),
+    ],
+    jobs: [
+      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Garage Doors',4400,'Scheduled','2026-03-29',[1,2],'Double door + WiFi opener. Delivery confirmed.'),
+      dj(2,'Northgate Auto Dealer','8800 Auto Row Blvd, Plano TX 75093','Garage Doors',11200,'In Progress','2026-03-21',[1,2,3,4],'4 service bay doors. 2 complete, 2 in progress.'),
+      dj(3,'Clearbrook Storage LLC','6600 Storage Pkwy, Irving TX 75038','Garage Doors',18400,'In Progress','2026-03-14',[1,2,3,4,5],'12 roll-up doors. 8 installed, 4 remaining.'),
+      dj(4,'Lakewood Auto Shop','7700 Lakewood Blvd, Garland TX 75040','Garage Doors',7200,'Scheduled','2026-04-04',[1,2],'3 commercial doors. Measured and ordered.'),
+    ],
+  },
+  'Demolition': {
+    leads: [
+      dl(1,'City Storage LLC','Nick Ferreira','Operations Mgr','stalled',38000,'proposal','2026-03-20','budget_freeze','Old warehouse demo, 8,000 sq ft. Board approval pending.','Commercial',53,'Demolition'),
+      dl(2,'Northgate Redevelopment','Greg Patterson','Developer','active',72000,'qualified','2026-03-27',null,'3-building strip mall demo. Environmental clear.','Commercial',18,'Demolition'),
+      dl(3,'Morrison Industrial Site','Ann Webb','Plant Mgr','active',44000,'proposal','2026-03-25',null,'Concrete slab + structure demo, 12,000 sq ft.','Industrial',14,'Demolition'),
+      dl(4,'Clearview County','Facilities Dir Bill Fox','Admin','stalled',98000,'proposal','2026-03-20','no_response','Old courthouse demo. No response after site walk.','Institutional',41,'Demolition'),
+      dl(5,'Torres Commercial Site','Miguel Torres','Owner','stalled',28000,'negotiation','2026-03-23','price_objection','2-story building demo. $6k over competing bid.','Commercial',33,'Demolition'),
+      dl(6,'Lakeview Redevelopment','Dana Clark','Developer','cold',140000,'contacted','2026-05-01','timing','12-acre site clearance. Permits 6 months out.','Commercial',62,'Demolition'),
+      dl(7,'Park Ave Auto Body','Owner Jim Lee','Owner','won',18000,'won',null,null,'Closed! Old building shell demo. Starts 4/4.','Commercial',21,'Demolition'),
+      dl(8,'Ridgecrest School District','Carl Beck','Facilities Dir','active',56000,'negotiation','2026-03-26',null,'Old gymnasium demo. Asbestos clear. Near close.','Institutional',19,'Demolition'),
+      dl(9,'Clearbrook HOA','Linda Shaw','HOA President','lost',14000,'lost',null,'competitor','Hired a landscaper who also does minor demo.','HOA',55,'Demolition'),
+    ],
+    jobs: [
+      dj(1,'Northgate Strip Mall Demo','3300 Northgate Blvd, Irving TX 75038','Demolition',72000,'In Progress','2026-03-10',[1,2,3,4,5],'Bldg 1 and 2 down. Debris removal underway.'),
+      dj(2,'Park Ave Auto Body Shell','3300 Park Ave, Plano TX 75074','Demolition',18000,'Scheduled','2026-04-04',[1,2,3],'Utility disconnect done. Hazmat clear. Crew 4/4.'),
+      dj(3,'Morrison Industrial Slab','8800 Industrial Dr, Mesquite TX 75149','Demolition',44000,'In Progress','2026-03-18',[1,2,3,4],'Structure down. Slab breaking in progress.'),
+      dj(4,'Ridgecrest Gymnasium','4400 Ridgecrest Blvd, Richardson TX 75080','Demolition',56000,'Scheduled','2026-04-14',[1,2],'Contract signed. Utility disconnect scheduled.'),
+    ],
+  },
+  'Septic': {
+    leads: [
+      dl(1,'Oakwood Estates','Carol Jensen','Homeowner','active',15800,'qualified','2026-03-25',null,'Failing system. Urgent. Permits in process.','Residential',12,'Septic'),
+      dl(2,'Morrison Ranch','Dale Morrison','Ranch Owner','stalled',28000,'negotiation','2026-03-23','budget_freeze','New 1,500-gal system + leach field. Financing needed.','Residential',38,'Septic'),
+      dl(3,'Clearwater Estates — 4 Lots','Developer Greg Fry','Developer','active',52000,'qualified','2026-03-27',null,'4 new residential septic systems. Permits approved.','Commercial',15,'Septic'),
+      dl(4,'Northview Church Camp','Admin Dir Phil Carr','Admin','stalled',44000,'proposal','2026-03-20','no_response','Camp facility new system + pump station. No reply.','Institutional',36,'Septic'),
+      dl(5,'Weber Vacation Property','Bill Weber','Homeowner','stalled',18400,'proposal','2026-03-22','price_objection','Lake cabin new install. Remote site adds cost.','Residential',24,'Septic'),
+      dl(6,'Ridgecrest RV Park','Owner Sam Nash','Owner','cold',38000,'contacted','2026-04-12','timing','RV park system upgrade. Waiting on county permits.','Commercial',44,'Septic'),
+      dl(7,'Torres Rural Property','Miguel Torres','Homeowner','won',14200,'won',null,null,'Closed! New 1,000-gal system. Excavation 3/30.','Residential',18,'Septic'),
+      dl(8,'Park Ridge Animal Clinic','Dr. Gina Park','Owner','active',22000,'negotiation','2026-03-26',null,'Commercial-rated system for new vet clinic. Near close.','Commercial',16,'Septic'),
+      dl(9,'County Road Properties LLC','Owner Roy Burns','Owner','lost',34000,'lost',null,'competitor','County health dept contractor won it directly.','Commercial',61,'Septic'),
+    ],
+    jobs: [
+      dj(1,'Miguel & Carmen Torres','Rural Rt 4 Box 212, Bastrop TX 78602','Septic',14200,'In Progress','2026-03-25',[1,2,3],'Excavation done. Tank being set today.'),
+      dj(2,'Carol Jensen — Oakwood Est','4200 Oakwood Ln, Bastrop TX 78602','Septic',15800,'Scheduled','2026-03-30',[1,2],'Permit issued. Crew scheduled 3/30.'),
+      dj(3,'Clearwater Estates Lot 3','FM 969 & CR 155, Bastrop TX 78602','Septic',13000,'Complete','2026-03-14',[1,2,3,4,5,6,7,8,9,10],'1,000-gal system installed and inspected.'),
+      dj(4,'Park Ridge Animal Clinic','3300 Park Ridge Rd, Denton TX 76210','Septic',22000,'Scheduled','2026-04-10',[1,2,3],'Commercial-grade design approved. Permits in.'),
+    ],
+  },
+  'Tree Service': {
+    leads: [
+      dl(1,'Highland Park HOA','David Moore','Board President','cold',8600,'contacted','2026-04-10','timing','15 trees to remove. Spring budget approval pending.','HOA',71,'Tree Service'),
+      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',4800,'proposal','2026-03-25',null,'3 oaks over roof line. Storm risk. Emergency.','Residential',9,'Tree Service'),
+      dl(3,'Clearbrook Office Park','Donna Pierce','Property Mgr','stalled',12000,'proposal','2026-03-20','no_response','10 trees removed + stump grinding. No reply.','Commercial',28,'Tree Service'),
+      dl(4,'Weber Residence','Bill Weber','Homeowner','active',3400,'qualified','2026-03-27',null,'2 dead elms + 3 stumps. HOA requirement.','Residential',11,'Tree Service'),
+      dl(5,'Northview Church','Elder Tom Ames','Admin','stalled',7200,'proposal','2026-03-22','price_objection','6 pine removals. $800 over expectation.','Institutional',24,'Tree Service'),
+      dl(6,'Atlas Industrial Site','Ray Torres','Plant Mgr','cold',22000,'contacted','2026-04-20','timing','Site clearing, 40+ trees. Permits not ready.','Industrial',38,'Tree Service'),
+      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',2800,'won',null,null,'Closed! 2 trees + 3 stumps. Crew 3/27.','Residential',14,'Tree Service'),
+      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',9800,'negotiation','2026-03-26',null,'Annual tree maintenance + hazard removal. Near close.','Institutional',16,'Tree Service'),
+      dl(9,'Ridgecrest HOA','HOA Mgr Tom Park','Mgr','lost',6400,'lost',null,'competitor','Went with the cheapest bid. No insurance.','HOA',44,'Tree Service'),
+    ],
+    jobs: [
+      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Tree Service',2800,'Complete','2026-03-26',[1,2,3,4,5,6,7,8,9],'2 trees removed, 3 stumps ground. Site clean.'),
+      dj(2,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Tree Service',4800,'Scheduled','2026-03-28',[1,2],'3 oaks. Equipment arriving tomorrow.'),
+      dj(3,'Clearbrook Office Park','501 Commerce Dr, Dallas TX 75201','Tree Service',12000,'In Progress','2026-03-22',[1,2,3,4],'7 of 10 trees removed. Chipping done. 3 stumps to go.'),
+      dj(4,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Tree Service',3400,'Scheduled','2026-04-02',[1,2],'2 elms + 3 stumps. Crew booked 4/2.'),
+    ],
+  },
+  'Pressure Washing': {
+    leads: [
+      dl(1,'Bay Area Car Wash','Lena Torres','Owner','won',4200,'won',null,null,'Closed! Full lot + canopy wash. 3/27.','Commercial',29,'Pressure Washing'),
+      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',1800,'proposal','2026-03-25',null,'House exterior + driveway + fence. Annual contract.','Residential',8,'Pressure Washing'),
+      dl(3,'Clearbrook Office Complex','Donna Pierce','Property Mgr','active',6400,'qualified','2026-03-27',null,'Parking deck + building exterior, 3 buildings.','Commercial',13,'Pressure Washing'),
+      dl(4,'Northgate Restaurant Row','Strip Mgr Greg Lee','Mgr','stalled',8800,'proposal','2026-03-20','no_response','10-unit strip center, pre-season wash. No reply.','Commercial',28,'Pressure Washing'),
+      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',2200,'contacted','2026-03-22','price_objection','Driveway + deck. DIY pressure washer is tempting them.','Residential',18,'Pressure Washing'),
+      dl(6,'Ridgecrest HOA','Tom Park','HOA Mgr','cold',12000,'contacted','2026-04-05','timing','Common area annual wash. Budget Q2.','HOA',33,'Pressure Washing'),
+      dl(7,'Torres Commercial Building','Miguel Torres','Owner','active',3600,'negotiation','2026-03-26',null,'4,000 sq ft brick exterior + awnings. Near close.','Commercial',12,'Pressure Washing'),
+      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',5400,'proposal','2026-03-21','budget_freeze','Warehouse floor + dock areas. Maintenance budget frozen.','Industrial',24,'Pressure Washing'),
+      dl(9,'Lakewood School Campus','Carl Beck','Facilities Dir','lost',9000,'lost',null,'competitor','Custodial staff did it with district equipment.','Institutional',41,'Pressure Washing'),
+    ],
+    jobs: [
+      dj(1,'Bay Area Car Wash','6600 Bay Area Blvd, Pasadena TX 77507','Pressure Washing',4200,'Scheduled','2026-03-27',[1,2],'Full lot + canopy. Equipment loaded.'),
+      dj(2,'Clearbrook Office Complex','501 Commerce Dr, Dallas TX 75201','Pressure Washing',6400,'In Progress','2026-03-22',[1,2,3,4],'Bldg 1 & 2 done. Bldg 3 + parking deck today.'),
+      dj(3,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Pressure Washing',1800,'Complete','2026-03-20',[1,2,3,4,5,6,7,8,9],'Full house wash, driveway, fence. Sealed and done.'),
+      dj(4,'Torres Commercial Bldg','3300 Commercial Dr, Austin TX 78701','Pressure Washing',3600,'Scheduled','2026-03-29',[1,2],'Brick exterior + awnings. Crew booked 3/29.'),
+    ],
+  },
+};
+
+// ─── Trade Select Screen ───────────────────────────────────────────────────────
+function TradeSelectScreen({ onSelect }) {
+  const [hovered, setHovered] = useState(null);
   const goToSignup = () => { window.location.href = '/'; };
 
-  const CtaBar = () => (
+  return (
     <div style={{
-      position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: '#161b27', borderTop: '1px solid #1e2535',
-      padding: '14px 24px',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      gap: 20, zIndex: 100,
-      boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+      minHeight: '100vh', background: '#0f1117',
+      color: '#e2e8f0', fontFamily: "'Inter', -apple-system, sans-serif",
+      padding: '40px 24px 80px',
     }}>
-      <span style={{ fontSize: 14, color: '#cbd5e1' }}>
-        Like what you see?{' '}
-        <span style={{ color: '#f97316', fontWeight: 600 }}>Start your 14-day free trial</span>
-        {' '}— no credit card required
-      </span>
-      <button
-        onClick={goToSignup}
-        style={{
-          padding: '8px 22px',
-          background: 'linear-gradient(135deg, #f97316, #ea580c)',
-          border: 'none', borderRadius: 8,
-          color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        Get Started Free
-      </button>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#f97316', letterSpacing: '-1px', marginBottom: 16 }}>
+            ClosedLoop
+          </div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', marginBottom: 10 }}>
+            See ClosedLoop built for your trade
+          </div>
+          <div style={{ fontSize: 15, color: '#64748b', maxWidth: 480, margin: '0 auto' }}>
+            Pick your trade to see a live demo tailored to your industry
+          </div>
+        </div>
+
+        {/* Trade grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
+          gap: 10,
+          marginBottom: 48,
+        }}>
+          {TRADE_LIST.map(trade => {
+            const color = TRADE_COLORS[trade];
+            const isHovered = hovered === trade;
+            return (
+              <div
+                key={trade}
+                style={{
+                  background: isHovered ? color + '18' : '#161b27',
+                  border: `1px solid ${isHovered ? color : '#1e2535'}`,
+                  borderRadius: 10, padding: '16px 10px',
+                  cursor: 'pointer', textAlign: 'center',
+                  transition: 'all 0.15s',
+                  transform: isHovered ? 'translateY(-2px)' : 'none',
+                  boxShadow: isHovered ? `0 6px 20px ${color}22` : 'none',
+                }}
+                onMouseEnter={() => setHovered(trade)}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => onSelect(trade)}
+              >
+                <div style={{ fontSize: 26, marginBottom: 8 }}>
+                  {TRADE_ICONS[trade]}
+                </div>
+                <div style={{
+                  fontSize: 12, fontWeight: 600,
+                  color: isHovered ? color : '#94a3b8',
+                  lineHeight: 1.3,
+                }}>
+                  {trade}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+            Already have an account?
+          </div>
+          <button
+            onClick={goToSignup}
+            style={{
+              padding: '10px 28px',
+              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+            }}
+          >
+            Sign In / Start Free Trial
+          </button>
+        </div>
+      </div>
     </div>
   );
+}
+
+// ─── Demo Dashboard ────────────────────────────────────────────────────────────
+function DemoDashboard({ trade, onChangeTrade }) {
+  const [tab, setTab] = useState('pipeline');
+  const [selectedLead, setSelectedLead] = useState(null);
+  const goToSignup = () => { window.location.href = '/'; };
+  const tradeColor = TRADE_COLORS[trade] || '#f97316';
+  const data = TRADE_DEMO_DATA[trade] || TRADE_DEMO_DATA['Roofing'];
 
   return (
-    <div style={{ ...S.app, minHeight: '100vh' }}>
-      {/* Top demo banner */}
+    <div style={{
+      minHeight: '100vh', background: '#0f1117',
+      color: '#e2e8f0', fontFamily: "'Inter', -apple-system, sans-serif",
+    }}>
+      {/* Top banner */}
       <div style={{
-        background: 'rgba(249,115,22,0.12)',
-        borderBottom: '1px solid rgba(249,115,22,0.2)',
-        padding: '10px 24px',
+        background: 'rgba(249,115,22,0.08)',
+        borderBottom: '1px solid rgba(249,115,22,0.15)',
+        padding: '9px 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
         fontSize: 13, color: '#f97316',
         position: 'sticky', top: 0, zIndex: 200,
+        flexWrap: 'wrap',
       }}>
-        <span>👋 This is a live demo — sign up free to use it with your own data</span>
+        <span>
+          👋 You're viewing the <strong>{trade}</strong> demo — your data stays private when you sign up
+        </span>
         <button
           onClick={goToSignup}
           style={{
-            padding: '5px 16px',
-            background: '#f97316', border: 'none', borderRadius: 6,
-            color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+            padding: '4px 14px', background: '#f97316',
+            border: 'none', borderRadius: 6, color: '#fff',
+            fontWeight: 700, fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
           }}
         >
           Start Free Trial
@@ -2567,47 +3048,70 @@ function DemoPage() {
       </div>
 
       {/* Header */}
-      <header style={S.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={S.logo}>Skyline Roofing Co.</span>
+      <header style={{
+        background: '#161b27', borderBottom: '1px solid #1e2535',
+        padding: '0 24px', display: 'flex', alignItems: 'center', gap: 12, height: 56,
+      }}>
+        <button
+          onClick={onChangeTrade}
+          style={{
+            background: 'transparent', border: '1px solid #1e2535',
+            borderRadius: 6, color: '#64748b', fontSize: 12,
+            cursor: 'pointer', padding: '5px 12px', whiteSpace: 'nowrap',
+          }}
+        >
+          ← Change trade
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: '#f97316', letterSpacing: '-0.5px' }}>
+            {TRADE_ICONS[trade]} {trade} Demo
+          </span>
           <span style={{
-            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-            background: 'rgba(249,115,22,0.12)', color: '#f97316',
-            border: '1px solid rgba(249,115,22,0.2)', letterSpacing: '0.5px',
+            fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
+            background: tradeColor + '20', color: tradeColor,
+            border: `1px solid ${tradeColor}33`, letterSpacing: '0.5px',
           }}>
             DEMO
           </span>
         </div>
-        <div style={S.tabs}>
-          {[
-            { key: 'pipeline', label: 'Pipeline' },
-            { key: 'callbacks', label: 'Callbacks' },
-            { key: 'analytics', label: 'Analytics' },
-            { key: 'jobs', label: 'Jobs' },
-          ].map(({ key, label }) => (
-            <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
-              {label}
+
+        <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
+          {['pipeline', 'callbacks', 'analytics', 'jobs'].map(key => (
+            <button
+              key={key}
+              style={{
+                padding: '6px 14px', borderRadius: 6, border: 'none',
+                cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                background: tab === key ? '#f97316' : 'transparent',
+                color: tab === key ? '#fff' : '#94a3b8', transition: 'all 0.15s',
+              }}
+              onClick={() => setTab(key)}
+            >
+              {key.charAt(0).toUpperCase() + key.slice(1)}
             </button>
           ))}
         </div>
+
         <button
           onClick={goToSignup}
           style={{
-            marginLeft: 16, padding: '6px 16px',
+            marginLeft: 8, padding: '6px 16px',
             background: 'linear-gradient(135deg, #f97316, #ea580c)',
             border: 'none', borderRadius: 7,
-            color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+            color: '#fff', fontWeight: 700, fontSize: 12,
+            cursor: 'pointer', whiteSpace: 'nowrap',
           }}
         >
-          Sign Up Free
+          Start Free Trial →
         </button>
       </header>
 
-      {/* Tab content */}
-      <main style={{ ...S.body, paddingBottom: 88 }}>
+      {/* Content */}
+      <main style={{ padding: 24, maxWidth: 1400, margin: '0 auto', paddingBottom: 88 }}>
         {tab === 'pipeline' && (
           <PipelineTab
-            leads={DEMO_LEADS_SKYLINE}
+            leads={data.leads}
             onSelectLead={setSelectedLead}
             onAddLead={null}
             onEditLead={null}
@@ -2616,17 +3120,43 @@ function DemoPage() {
           />
         )}
         {tab === 'callbacks' && (
-          <CallbacksTab leads={DEMO_LEADS_SKYLINE} onSelectLead={setSelectedLead} />
+          <CallbacksTab leads={data.leads} onSelectLead={setSelectedLead} />
         )}
         {tab === 'analytics' && (
-          <AnalyticsTab leads={DEMO_LEADS_SKYLINE} />
+          <AnalyticsTab leads={data.leads} />
         )}
         {tab === 'jobs' && (
-          <JobsTab jobs={DEMO_JOBS_SKYLINE} />
+          <JobsTab jobs={data.jobs} />
         )}
       </main>
 
-      <CtaBar />
+      {/* Sticky CTA bar */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0,
+        background: '#161b27', borderTop: '1px solid #1e2535',
+        padding: '13px 24px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        gap: 20, zIndex: 100,
+        boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+      }}>
+        <span style={{ fontSize: 14, color: '#cbd5e1' }}>
+          Like what you see?{' '}
+          <span style={{ color: '#f97316', fontWeight: 600 }}>Start your 14-day free trial</span>
+          {' '}— no credit card required
+        </span>
+        <button
+          onClick={goToSignup}
+          style={{
+            padding: '8px 22px',
+            background: 'linear-gradient(135deg, #f97316, #ea580c)',
+            border: 'none', borderRadius: 8,
+            color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Get Started Free
+        </button>
+      </div>
 
       {selectedLead && (
         <CoachPanel
@@ -2637,6 +3167,16 @@ function DemoPage() {
       )}
     </div>
   );
+}
+
+// ─── Demo Page (router) ────────────────────────────────────────────────────────
+// ─── Demo Page ────────────────────────────────────────────────────────────────
+function DemoPage() {
+  const [selectedTrade, setSelectedTrade] = useState(null);
+  if (!selectedTrade) {
+    return <TradeSelectScreen onSelect={setSelectedTrade} />;
+  }
+  return <DemoDashboard trade={selectedTrade} onChangeTrade={() => setSelectedTrade(null)} />;
 }
 
 // ─── App Root ─────────────────────────────────────────────────────────────────
