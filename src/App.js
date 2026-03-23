@@ -917,13 +917,83 @@ const PLAYBOOKS = {
   ],
 };
 
-const SAMPLE_AI_RESPONSE = `The Torres deal is stalling on price — they've seen a lower number, and without a clear value story you're in a race to the bottom. Stop following up with "just checking in" and instead send a single-page comparison showing your material specs side by side: brand, warranty tier, underlayment type, and drip edge. Most cheap bids strip out the ice-and-water shield or carry no workmanship warranty. Make that visible in writing before you call.
+const DEMO_AI_RESPONSES = {
+  'Roofing|price_objection': `The Torres deal is stalling on price — they've seen a lower number, and without a clear value story you're in a race to the bottom. Stop following up with "just checking in" and instead send a single-page comparison showing your material specs side by side: brand, warranty tier, underlayment type, and drip edge. Most cheap bids strip out the ice-and-water shield or carry no workmanship warranty. Make that visible in writing before you call.
 
 Call Miguel Thursday morning, not email. The line is: "I put together a quick comparison — I'm not asking you to choose us, I'm asking you to compare apples to apples before you decide." That framing lowers his guard and invites a real conversation rather than a yes/no.
 
 If he's still on the fence, offer to do a free 15-minute roof walk with him present — show him exactly what needs to come off and what goes back on. Homeowners who walk the job with you close at nearly twice the rate. It builds trust and makes the price difference feel like a reasonable premium, not a sales pitch.
 
-Last move if needed: offer a $500 material credit if he can confirm in the next 10 days, and frame it as a crew slot issue, not a discount. This preserves your margin story while giving him a concrete reason to decide now rather than let it drag into next month.`;
+Last move if needed: offer a $500 material credit if he can confirm in the next 10 days, and frame it as a crew slot issue, not a discount. This preserves your margin story while giving him a concrete reason to decide now rather than let it drag into next month.`,
+
+  'Roofing|no_response': `Three weeks of silence from a homeowner with visible damage is a signal, not a roadblock — they're scared of the cost and hoping the problem goes away. Don't send another email. Drive by the property this week and knock the door. Your line: "I was in the neighborhood finishing another job and wanted to check if the leaking got worse after last week's rain." That's not a sales call, it's a concerned contractor visit.
+
+If no one's home, leave a handwritten note — not a business card — with your cell number and a specific observation like: "The flashing around your chimney is the first thing that will fail. Happy to take 10 minutes to show you what I'm seeing before it becomes a bigger issue." Handwritten notes get read. Printed flyers get tossed.
+
+Run a quick insurance angle check: if they haven't filed a claim and the damage is weather-related, offer to do a free insurance consult. Many homeowners don't realize their deductible might cover most of the repair. This reframes the conversation from "expensive project" to "how do I get this paid for."
+
+If you reach them and they say they're "still thinking about it," respond with: "Totally understand — I just want to make sure you don't get caught in the spring backlog. My crew slots for April are already filling up. Can we lock in a tentative date that you can cancel with no penalty?" Low commitment, high urgency.`,
+
+  'Masonry|competitor': `The competitor angle in masonry is almost always about price and speed — your edge is quality documentation and visible proof. Before your next call, pull 3–5 photos of comparable brick or stone work you've completed: same application type if possible (retaining wall, chimney, veneer, foundation). Send them unprompted with a note: "Wanted to share some recent work similar to yours — the craftsmanship difference tends to show up in photos before it shows up in the finished job."
+
+Ask directly who you're up against and get specifics. If they won't say, try: "I'd rather lose fair than win without knowing why — can you tell me what they're offering that we aren't?" That disarms the conversation and often surfaces the real objection, which is usually price, timeline, or a personal connection.
+
+Mortar mix, brick tie patterns, and expansion joint placement are the three areas where cut-rate masonry fails within 3–5 years. If your approach is stronger in any of these, document it in a one-pager with photos showing what improper work looks like versus yours. A client who understands what they're buying is far harder to poach on price alone.
+
+Close with a warranty differentiator. Offer a 5-year workmanship warranty in writing if you're confident in your crew. Most masonry contractors carry no such guarantee — and a homeowner comparing three bids will notice when one includes a written warranty and the others don't.`,
+
+  'HVAC|budget_freeze': `Budget freezes in HVAC are almost always temporary — the equipment failure risk hasn't gone away, it's just been deferred. Your job is to reframe this as a cost-of-delay conversation, not a sales pitch. Get them to acknowledge the specific risks: increased utility bills running inefficient equipment, likelihood of emergency failure during peak season, and the gap between planned replacement cost and emergency replacement cost.
+
+Ask for a 30-minute "project planning" call framed around their timeline rather than your sale: "I'm not asking you to move the project up — I want to help you be ready to move fast when the freeze lifts. Can we spend 20 minutes locking in the spec so there's no delay when you're ready?" This keeps the deal warm without pressure.
+
+Split billing is underused in HVAC — offer to invoice equipment and labor separately, with equipment billed now at a modest deposit and labor billed on completion. This often fits within a depleted capital budget while pushing the larger labor cost into the next fiscal period. Many purchasing managers can approve a small equipment spend they can't approve for a full installation.
+
+Lock in a hard re-engage date before you end the call. Ask: "When does your budget cycle reset?" Then get on their calendar for the week after that date. If you don't schedule it now, you'll be chasing in Q2 with no anchor point. A specific calendar invite converts at 10x the rate of a "let's touch base in a few months" close.`,
+
+  'Excavation|timing': `Bad timing in excavation usually means permits are pending, weather is marginal, or there's a sequencing dependency with another trade. Your goal is to identify exactly which one and solve the specific bottleneck — not wait it out passively. Ask directly: "Is there one thing that, if resolved, would let us move forward in the next 2–3 weeks?"
+
+If permits are the blocker, offer to run the permit application yourself. Excavation contractors who handle their own permits — or who have a contact at the municipality — move faster and deliver more value. This turns a delay into a demonstration of your operational competence.
+
+Mobilization deposits are your friend when timing is soft. Propose a small deposit (10–15% of contract) to hold your crew slot and lock in current pricing. Frame it as protecting them from price increases and crew availability gaps, not as you locking in revenue. "I can hold April 3rd for you with a $2,500 deposit, fully refundable if you need to push to May. Otherwise that slot goes to the next project in queue."
+
+Use site proximity to stay visible during the wait. If you have work nearby, do a check-in: "We're finishing a job a few blocks from you this week — mind if I swing by for 15 minutes to confirm our scope and staging plan?" Showing up in person during the delay dramatically reduces the chance they quietly reassign the work.`,
+
+  'Electrical|wrong_contact': `The wrong contact problem in electrical is especially common on commercial jobs where the person who called you isn't the one signing checks. Your immediate move is to ask your current contact for a warm introduction: "I want to make sure whoever handles contracts and invoicing is in the loop before we finalize scope — would it be possible for you to copy them on my next proposal email?" Non-threatening, professionally framed.
+
+If a warm intro isn't happening, go around respectfully. Find the building owner, facilities director, or GC through the company's website or LinkedIn. Your outreach: "I've been working with [name] on an electrical scope for your facility — I wanted to make sure the decision-makers had a chance to review the timeline and ask any questions before we move to contract." You're not going around anyone; you're being thorough.
+
+Never submit a formal proposal without the decision-maker's name on it. If you don't know who that is, hold the proposal. Submitting to the wrong contact delays your close and gives them something to shop without you in the room. Use the proposal timing as leverage: "Before I finalize pricing, I want to make sure this goes to the right person — who actually signs off on electrical work?"
+
+If you get on the phone and they claim to be the decision-maker but something feels off, ask: "Are you the person who will sign the contract, or is there someone else I should loop in?" Most people will tell you. If the proposal still stalls afterward, call back and say: "The proposal seems to have gotten stuck somewhere — is there someone else who should have eyes on this before we lose the schedule?"`,
+
+  'Plumbing|technical_fit': `Technical fit objections in plumbing almost always come down to one of three things: access concerns (can you do the work without major demolition), code compliance uncertainty (will this pass inspection), or material spec disagreements (they want copper, you quoted PEX). Get them to name the exact concern before you defend anything.
+
+If it's access, schedule a site walk before doing anything else. "I'd rather spend 30 minutes on-site than have you uncertain about what the work involves. Let me show you exactly how we'd stage this and what we'd need to open up." Seeing the scope in person resolves most access objections and demonstrates confidence. Bring photos of similar jobs where access was tight and you handled it cleanly.
+
+For code compliance concerns, offer to own the permit and inspection process entirely. "We'll pull the permit, schedule the rough-in inspection, and deliver a final inspection certificate before we close the job." That shifts compliance risk from them to you — and for a technically-minded client, that's exactly the reassurance they need.
+
+Material spec disagreements are negotiable if you understand the why. Copper vs. PEX is usually about longevity perception, repairability, or a recommendation from another contractor. Ask: "What's driving the preference for [material]? I want to understand your priorities before I finalize the spec." Then either accommodate the preference (and reprice) or explain specifically why your spec performs equally or better — with documentation from a third-party source if possible.`,
+};
+
+function getDemoResponse(lead) {
+  const key = `${lead.trade}|${lead.stallReason}`;
+  if (DEMO_AI_RESPONSES[key]) return DEMO_AI_RESPONSES[key];
+  // Fallback: trade and stall reason aware
+  const stallLabel = STALL_LABELS[lead.stallReason] || 'the current objection';
+  const statusLine = lead.status === 'lost'
+    ? `This ${lead.trade} deal was marked lost ${lead.dealAge} days ago`
+    : lead.status === 'stalled'
+    ? `This ${lead.trade} deal has been stalled for ${lead.dealAge} days`
+    : `This active ${lead.trade} deal has been in the pipeline for ${lead.dealAge} days`;
+  const valFmt = lead.value ? `$${lead.value.toLocaleString()}` : 'an unknown value';
+  return `${statusLine} at ${valFmt}, currently stalled on ${stallLabel.toLowerCase()}. Here's how to approach it this week.
+
+The first move is to go back to first principles for ${lead.trade} jobs at the ${lead.stage} stage: confirm the decision-maker is still engaged and that the ${stallLabel.toLowerCase()} you've been told is the real objection. Many ${lead.trade} deals at this stage stall because something has changed in the customer's world that they haven't surfaced yet. Your next call should open with: "I want to make sure I'm still solving the right problem for you — has anything changed since we last spoke?"
+
+Send a specific, non-generic follow-up that references something concrete about their project or situation. Generic "just checking in" messages get ignored. Reference the exact scope, a recent completed job with photos, or a timing angle that makes acting now better than waiting. The goal is one engaged response, not an immediate close.
+
+If you don't hear back within 48 hours, call rather than email. ${lead.trade} contractors who follow up by phone on stalled deals convert at roughly 2x the rate of email-only follow-up. Keep the call under 3 minutes, ask one direct question, and end by agreeing on a specific next step with a date attached.`;
+}
 
 // ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
 const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
@@ -1133,12 +1203,14 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
 }
 
 // ─── CoachPanel ──────────────────────────────────────────────────────────────
-function CoachPanel({ lead, onClose, demoMode }) {
+function CoachPanel({ lead, onClose, demoMode, tier }) {
   const [aiText, setAiText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const goToSignup = () => { window.location.href = '/'; };
 
   const tips = PLAYBOOKS[lead.stallReason] || PLAYBOOKS.no_response;
+  const isStarterLocked = demoMode && tier === 'starter';
 
   const getAiAdvice = async () => {
     setLoading(true);
@@ -1146,10 +1218,11 @@ function CoachPanel({ lead, onClose, demoMode }) {
     setAiText('');
 
     if (demoMode) {
-      // Simulate streaming with pre-written response
-      const words = SAMPLE_AI_RESPONSE.split(' ');
+      // Stream the trade+stall-specific pre-written response word by word
+      const text = getDemoResponse(lead);
+      const words = text.split(' ');
       for (let i = 0; i < words.length; i++) {
-        await new Promise(r => setTimeout(r, 30));
+        await new Promise(r => setTimeout(r, 28));
         setAiText(prev => prev + (i === 0 ? '' : ' ') + words[i]);
       }
       setLoading(false);
@@ -1164,26 +1237,45 @@ function CoachPanel({ lead, onClose, demoMode }) {
         return;
       }
       const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+
+      const statusContext = lead.status === 'stalled'
+        ? 'Status: STALLED — this deal needs recovery coaching'
+        : lead.status === 'active'
+        ? 'Status: ACTIVE — give advice to maintain momentum and accelerate to close'
+        : lead.status === 'lost'
+        ? 'Status: LOST — give win-back advice for re-engaging a deal that was lost'
+        : lead.status === 'cold'
+        ? 'Status: COLD — give re-engagement advice for a deal that has gone cold'
+        : `Status: ${lead.status}`;
+
+      const goalContext = lead.status === 'lost'
+        ? 'Give me 3–4 specific win-back actions I should take THIS WEEK. Focus on re-opening the door, not relitigating the original sale.'
+        : lead.status === 'active'
+        ? 'Give me 3–4 specific actions to accelerate this deal THIS WEEK and keep the momentum going.'
+        : 'Give me 3–4 specific actions I should take THIS WEEK to unblock this deal.';
+
       const stream = await client.messages.stream({
         model: 'claude-opus-4-6',
-        max_tokens: 600,
+        max_tokens: 650,
         thinking: { type: 'adaptive' },
-        system: `You are an elite contractor sales coach specializing in deal recovery.
-Give hyper-specific, tactical advice. Be direct and concise. 3-4 short paragraphs max. No bullet points — write in flowing paragraphs.`,
+        system: `You are an elite contractor sales coach with deep expertise in the ${lead.trade} trade.
+Give hyper-specific, trade-aware, tactical advice. Reference the specific trade, materials, and situations relevant to ${lead.trade} contractors.
+Be direct and concise. 3–4 short paragraphs max. No bullet points — write in flowing paragraphs.`,
         messages: [{
           role: 'user',
-          content: `Give me deal recovery coaching for this stalled contractor lead:
+          content: `Coaching request for a ${lead.trade} contractor deal:
 
-Company/Customer: ${lead.name} (${lead.industry})
+Customer: ${lead.name} (${lead.industry})
 Contact: ${lead.contact}, ${lead.role}
 Trade: ${lead.trade}
 Deal Value: ${fmt(lead.value)}
 Stage: ${lead.stage}
 Days in pipeline: ${lead.dealAge}
-Stall reason: ${STALL_LABELS[lead.stallReason] || 'Unknown'}
+${statusContext}
+Stall reason: ${STALL_LABELS[lead.stallReason] || 'None specified'}
 Rep notes: ${lead.notes}
 
-Give me 3-4 specific actions I should take THIS WEEK to unblock this deal. Be tactical and specific to their situation — no generic advice.`,
+${goalContext} Be tactical and specific to this ${lead.trade} deal — no generic sales advice.`,
         }],
       });
 
@@ -1237,9 +1329,45 @@ Give me 3-4 specific actions I should take THIS WEEK to unblock this deal. Be ta
         </ul>
 
         <div style={S.sectionLabel}>AI Coach — Deal-Specific Advice</div>
-        <button style={S.aiBtn(loading)} onClick={getAiAdvice} disabled={loading}>
-          {loading ? '⟳  Generating coaching advice...' : '✦  Get AI Coaching Advice'}
-        </button>
+        {isStarterLocked ? (
+          <div>
+            <button
+              style={{
+                width: '100%', padding: '11px 16px', borderRadius: 8,
+                background: '#1a1f2e', border: '1px solid #2d3748',
+                color: '#475569', fontSize: 13, fontWeight: 600,
+                cursor: 'not-allowed', textAlign: 'left',
+                display: 'flex', alignItems: 'center', gap: 8,
+              }}
+              disabled
+            >
+              <span style={{ fontSize: 16 }}>🔒</span>
+              AI Coaching — Pro feature
+            </button>
+            <div style={{
+              marginTop: 10, padding: '10px 14px',
+              background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)',
+              borderRadius: 7, fontSize: 12, color: '#94a3b8',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+            }}>
+              <span>AI coaching with trade-specific advice is available on Pro and Business plans.</span>
+              <button
+                onClick={goToSignup}
+                style={{
+                  padding: '5px 14px', background: '#f97316', border: 'none',
+                  borderRadius: 6, color: '#fff', fontWeight: 700,
+                  fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
+                }}
+              >
+                Upgrade
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button style={S.aiBtn(loading)} onClick={getAiAdvice} disabled={loading}>
+            {loading ? '⟳  Generating coaching advice...' : '✦  Get AI Coaching Advice'}
+          </button>
+        )}
 
         {error && (
           <div style={{
@@ -1253,7 +1381,7 @@ Give me 3-4 specific actions I should take THIS WEEK to unblock this deal. Be ta
 
         {aiText && <div style={S.aiResponse}>{aiText}</div>}
 
-        <div style={S.apiKeyNote}>Powered by Claude Opus 4.6 · Add REACT_APP_ANTHROPIC_API_KEY to .env</div>
+        {!demoMode && <div style={S.apiKeyNote}>Powered by Claude Opus 4.6 · Add REACT_APP_ANTHROPIC_API_KEY to .env</div>}
       </div>
     </div>
   );
@@ -1566,7 +1694,7 @@ function CallbacksTab({ leads, onSelectLead }) {
 }
 
 // ─── Analytics Tab ────────────────────────────────────────────────────────────
-function AnalyticsTab({ leads }) {
+function AnalyticsTab({ leads, tier }) {
   const active = leads.filter(l => ['active', 'stalled', 'cold'].includes(l.status));
   const stalled = leads.filter(l => l.status === 'stalled');
   const won = leads.filter(l => l.status === 'won');
@@ -1661,6 +1789,36 @@ function AnalyticsTab({ leads }) {
           </div>
         </div>
       </div>
+
+      {/* Export row — Business tier only in demo; always visible with upgrade nudge otherwise */}
+      {tier !== undefined && (
+        <div style={{
+          marginTop: 24, display: 'flex', justifyContent: 'flex-end',
+        }}>
+          <DisabledTooltip
+            active={tier !== 'business'}
+            label={tier === 'business' ? '' : 'Export — Business feature. Click to upgrade.'}
+          >
+            <button
+              onClick={() => tier === 'business' && window.location.href === void 0}
+              style={{
+                padding: '8px 20px',
+                background: tier === 'business'
+                  ? 'linear-gradient(135deg, #6366f1, #4f46e5)'
+                  : '#1a1f2e',
+                border: tier === 'business' ? 'none' : '1px solid #2d3748',
+                borderRadius: 7, color: tier === 'business' ? '#fff' : '#475569',
+                fontWeight: 600, fontSize: 13,
+                cursor: tier === 'business' ? 'pointer' : 'not-allowed',
+                display: 'flex', alignItems: 'center', gap: 7,
+              }}
+            >
+              {tier !== 'business' && <span>🔒</span>}
+              Export Pipeline Report
+            </button>
+          </DisabledTooltip>
+        </div>
+      )}
     </div>
   );
 }
@@ -1897,6 +2055,124 @@ function JobsTab({ jobs }) {
       {selectedJob && (
         <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
       )}
+    </div>
+  );
+}
+
+// ─── Team Tab ─────────────────────────────────────────────────────────────────
+const DEMO_TEAM = [
+  {
+    id: 't1', name: 'Marcus Johnson', initials: 'MJ',
+    color: '#6366f1', role: 'Senior Sales Rep', status: 'active',
+    leads: 24, won: 8, lost: 3, winRate: 73,
+    pipelineValue: 187400, revenue: 142000,
+    callbacksDue: 6, avgDealAge: 28,
+  },
+  {
+    id: 't2', name: 'Sara Chen', initials: 'SC',
+    color: '#22c55e', role: 'Sales Rep', status: 'active',
+    leads: 19, won: 9, lost: 2, winRate: 82,
+    pipelineValue: 221600, revenue: 198500,
+    callbacksDue: 3, avgDealAge: 21,
+  },
+  {
+    id: 't3', name: 'Dale Russo', initials: 'DR',
+    color: '#f97316', role: 'Sales Rep', status: 'away',
+    leads: 11, won: 3, lost: 4, winRate: 43,
+    pipelineValue: 94200, revenue: 67800,
+    callbacksDue: 8, avgDealAge: 41,
+  },
+];
+
+function TeamTab() {
+  const [hovered, setHovered] = useState(null);
+  const totals = {
+    leads: DEMO_TEAM.reduce((s, r) => s + r.leads, 0),
+    revenue: DEMO_TEAM.reduce((s, r) => s + r.revenue, 0),
+    pipeline: DEMO_TEAM.reduce((s, r) => s + r.pipelineValue, 0),
+    callbacks: DEMO_TEAM.reduce((s, r) => s + r.callbacksDue, 0),
+  };
+
+  return (
+    <div style={{ padding: '0 2px' }}>
+      {/* Summary bar */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24,
+      }}>
+        {[
+          { label: 'Total Leads', value: totals.leads, color: '#6366f1' },
+          { label: 'Pipeline Value', value: fmt(totals.pipeline), color: '#f97316' },
+          { label: 'Revenue Closed', value: fmt(totals.revenue), color: '#22c55e' },
+          { label: 'Callbacks Due', value: totals.callbacks, color: '#ef4444' },
+        ].map(({ label, value, color }) => (
+          <div key={label} style={{
+            background: '#161b27', border: '1px solid #1e2535', borderRadius: 10,
+            padding: '14px 16px',
+          }}>
+            <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color }}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Rep cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {DEMO_TEAM.map(rep => (
+          <div
+            key={rep.id}
+            style={{
+              background: hovered === rep.id ? '#1a2035' : '#161b27',
+              border: `1px solid ${hovered === rep.id ? rep.color + '44' : '#1e2535'}`,
+              borderRadius: 12, padding: '16px 20px',
+              display: 'grid', gridTemplateColumns: 'auto 1fr repeat(5, auto)',
+              gap: 16, alignItems: 'center',
+              transition: 'all 0.15s', cursor: 'default',
+            }}
+            onMouseEnter={() => setHovered(rep.id)}
+            onMouseLeave={() => setHovered(null)}
+          >
+            {/* Avatar */}
+            <div style={{
+              width: 42, height: 42, borderRadius: '50%',
+              background: rep.color + '22', border: `2px solid ${rep.color}44`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 14, fontWeight: 700, color: rep.color, flexShrink: 0,
+            }}>
+              {rep.initials}
+            </div>
+
+            {/* Name + role */}
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                {rep.name}
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 10,
+                  background: rep.status === 'active' ? '#22c55e22' : '#6b728022',
+                  color: rep.status === 'active' ? '#22c55e' : '#6b7280',
+                  border: `1px solid ${rep.status === 'active' ? '#22c55e33' : '#6b728033'}`,
+                }}>
+                  {rep.status === 'active' ? 'Active' : 'Away'}
+                </span>
+              </div>
+              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{rep.role}</div>
+            </div>
+
+            {/* Stats */}
+            {[
+              { label: 'Leads', value: rep.leads, color: '#94a3b8' },
+              { label: 'Win Rate', value: `${rep.winRate}%`, color: rep.winRate >= 70 ? '#22c55e' : rep.winRate >= 50 ? '#f97316' : '#ef4444' },
+              { label: 'Pipeline', value: fmt(rep.pipelineValue), color: '#f97316' },
+              { label: 'Closed Revenue', value: fmt(rep.revenue), color: '#22c55e' },
+              { label: 'Callbacks Due', value: rep.callbacksDue, color: rep.callbacksDue > 5 ? '#ef4444' : '#94a3b8' },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={{ textAlign: 'center', minWidth: 80 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color }}>{value}</div>
+                <div style={{ fontSize: 10, color: '#475569', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -3010,19 +3286,48 @@ function TradeSelectScreen({ onSelect }) {
 }
 
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
+const TIER_META = {
+  starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
+  pro:     { label: 'Pro',     color: '#f97316', desc: 'AI coaching + full analytics' },
+  business:{ label: 'Business',color: '#6366f1', desc: 'Team management + export' },
+};
+
 function DemoDashboard({ trade, onChangeTrade }) {
+  const [tier, setTier] = useState('pro');
   const [tab, setTab] = useState('pipeline');
   const [selectedLead, setSelectedLead] = useState(null);
   const goToSignup = () => { window.location.href = '/'; };
   const tradeColor = TRADE_COLORS[trade] || '#f97316';
   const data = TRADE_DEMO_DATA[trade] || TRADE_DEMO_DATA['Roofing'];
 
+  // Build available tabs based on tier
+  const allTabs = [
+    { key: 'pipeline',  label: 'Pipeline',  locked: false },
+    { key: 'callbacks', label: 'Callbacks', locked: false },
+    { key: 'analytics', label: 'Analytics', locked: tier === 'starter' },
+    { key: 'jobs',      label: 'Jobs',      locked: tier === 'starter' },
+    { key: 'team',      label: 'Team',      locked: tier !== 'business' },
+  ].filter(t => tier === 'business' || t.key !== 'team');
+
+  // Reset to pipeline when switching to starter if on a locked tab
+  const handleTierChange = (newTier) => {
+    setTier(newTier);
+    if (newTier === 'starter' && (tab === 'analytics' || tab === 'jobs' || tab === 'team')) {
+      setTab('pipeline');
+    }
+    if (newTier !== 'business' && tab === 'team') {
+      setTab('pipeline');
+    }
+  };
+
+  const tierColor = TIER_META[tier].color;
+
   return (
     <div style={{
       minHeight: '100vh', background: '#0f1117',
       color: '#e2e8f0', fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
-      {/* Top banner */}
+      {/* Top demo banner */}
       <div style={{
         background: 'rgba(249,115,22,0.08)',
         borderBottom: '1px solid rgba(249,115,22,0.15)',
@@ -3047,10 +3352,67 @@ function DemoDashboard({ trade, onChangeTrade }) {
         </button>
       </div>
 
+      {/* Tier selector bar */}
+      <div style={{
+        background: '#0d1117', borderBottom: '1px solid #1e2535',
+        padding: '10px 24px',
+        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+      }}>
+        <span style={{ fontSize: 11, color: '#475569', fontWeight: 600, marginRight: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Preview tier:
+        </span>
+        {Object.entries(TIER_META).map(([key, meta]) => (
+          <button
+            key={key}
+            onClick={() => handleTierChange(key)}
+            style={{
+              padding: '5px 16px', borderRadius: 20, border: 'none',
+              fontWeight: 600, fontSize: 12, cursor: 'pointer',
+              background: tier === key ? meta.color : '#1a1f2e',
+              color: tier === key ? '#fff' : '#64748b',
+              transition: 'all 0.15s',
+              outline: tier === key ? `2px solid ${meta.color}44` : 'none',
+              outlineOffset: 1,
+            }}
+          >
+            {meta.label}
+          </button>
+        ))}
+        <span style={{ marginLeft: 8, fontSize: 12, color: '#475569' }}>
+          — {TIER_META[tier].desc}
+        </span>
+      </div>
+
+      {/* Starter: lead limit warning */}
+      {tier === 'starter' && (
+        <div style={{
+          background: 'rgba(234,179,8,0.08)', borderBottom: '1px solid rgba(234,179,8,0.2)',
+          padding: '9px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: 8,
+        }}>
+          <span style={{ fontSize: 13, color: '#eab308', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>⚠</span>
+            <span>You've used <strong>8 of 10 leads</strong> on the Starter plan (80%). Upgrade to unlock unlimited leads.</span>
+          </span>
+          <button
+            onClick={goToSignup}
+            style={{
+              padding: '4px 14px', background: '#eab308', border: 'none',
+              borderRadius: 6, color: '#0f1117', fontWeight: 700,
+              fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
+            }}
+          >
+            Upgrade to Pro
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <header style={{
         background: '#161b27', borderBottom: '1px solid #1e2535',
-        padding: '0 24px', display: 'flex', alignItems: 'center', gap: 12, height: 56,
+        padding: '0 24px', display: 'flex', alignItems: 'center', gap: 12,
+        height: 54, flexWrap: 'wrap',
       }}>
         <button
           onClick={onChangeTrade}
@@ -3064,32 +3426,40 @@ function DemoDashboard({ trade, onChangeTrade }) {
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: '#f97316', letterSpacing: '-0.5px' }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: tradeColor, letterSpacing: '-0.5px' }}>
             {TRADE_ICONS[trade]} {trade} Demo
           </span>
           <span style={{
             fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-            background: tradeColor + '20', color: tradeColor,
-            border: `1px solid ${tradeColor}33`, letterSpacing: '0.5px',
+            background: tierColor + '20', color: tierColor,
+            border: `1px solid ${tierColor}33`, letterSpacing: '0.5px',
           }}>
-            DEMO
+            {TIER_META[tier].label.toUpperCase()}
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
-          {['pipeline', 'callbacks', 'analytics', 'jobs'].map(key => (
-            <button
+        <div style={{ display: 'flex', gap: 2, marginLeft: 'auto', flexWrap: 'wrap' }}>
+          {allTabs.map(({ key, label, locked }) => (
+            <DisabledTooltip
               key={key}
-              style={{
-                padding: '6px 14px', borderRadius: 6, border: 'none',
-                cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                background: tab === key ? '#f97316' : 'transparent',
-                color: tab === key ? '#fff' : '#94a3b8', transition: 'all 0.15s',
-              }}
-              onClick={() => setTab(key)}
+              active={locked}
+              label={`${label} — upgrade to access`}
             >
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </button>
+              <button
+                style={{
+                  padding: '6px 14px', borderRadius: 6, border: 'none',
+                  cursor: locked ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
+                  background: tab === key ? tierColor : 'transparent',
+                  color: locked ? '#2d3748' : tab === key ? '#fff' : '#94a3b8',
+                  transition: 'all 0.15s',
+                  display: 'flex', alignItems: 'center', gap: 5,
+                }}
+                onClick={() => !locked && setTab(key)}
+              >
+                {locked && <span style={{ fontSize: 10 }}>🔒</span>}
+                {label}
+              </button>
+            </DisabledTooltip>
           ))}
         </div>
 
@@ -3123,10 +3493,13 @@ function DemoDashboard({ trade, onChangeTrade }) {
           <CallbacksTab leads={data.leads} onSelectLead={setSelectedLead} />
         )}
         {tab === 'analytics' && (
-          <AnalyticsTab leads={data.leads} />
+          <AnalyticsTab leads={data.leads} tier={tier} />
         )}
         {tab === 'jobs' && (
           <JobsTab jobs={data.jobs} />
+        )}
+        {tab === 'team' && (
+          <TeamTab />
         )}
       </main>
 
@@ -3163,6 +3536,7 @@ function DemoDashboard({ trade, onChangeTrade }) {
           lead={selectedLead}
           onClose={() => setSelectedLead(null)}
           demoMode={true}
+          tier={tier}
         />
       )}
     </div>
