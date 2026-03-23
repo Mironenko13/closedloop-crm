@@ -917,83 +917,137 @@ const PLAYBOOKS = {
   ],
 };
 
+// Keys: 'Trade|stallReason' or 'Trade|stallReason|stage' (more specific wins)
 const DEMO_AI_RESPONSES = {
-  'Roofing|price_objection': `The Torres deal is stalling on price — they've seen a lower number, and without a clear value story you're in a race to the bottom. Stop following up with "just checking in" and instead send a single-page comparison showing your material specs side by side: brand, warranty tier, underlayment type, and drip edge. Most cheap bids strip out the ice-and-water shield or carry no workmanship warranty. Make that visible in writing before you call.
 
-Call Miguel Thursday morning, not email. The line is: "I put together a quick comparison — I'm not asking you to choose us, I'm asking you to compare apples to apples before you decide." That framing lowers his guard and invites a real conversation rather than a yes/no.
+  // ── Excavation ──────────────────────────────────────────────────────────────
+  'Excavation|budget_freeze|negotiation': `1. The budget freeze doesn't eliminate the excavation risk — it defers it. Call this week and reframe the delay as a cost question: "What does it cost you if this scope sits unresolved through another season?" Get them to name the consequence. At the negotiation stage they've already agreed your price is right — the freeze is a cash flow problem, not a value problem. Treat it that way.
 
-If he's still on the fence, offer to do a free 15-minute roof walk with him present — show him exactly what needs to come off and what goes back on. Homeowners who walk the job with you close at nearly twice the rate. It builds trust and makes the price difference feel like a reasonable premium, not a sales pitch.
+2. Offer to split the excavation contract into two phases with separate invoicing: mobilization and primary earthwork billed in the current budget period, backfill, compaction, and final grading billed in the next. Many commercial clients can approve a phased draw schedule when a single lump sum is frozen. Bring a revised contract structure to the call — don't just suggest it verbally.
 
-Last move if needed: offer a $500 material credit if he can confirm in the next 10 days, and frame it as a crew slot issue, not a discount. This preserves your margin story while giving him a concrete reason to decide now rather than let it drag into next month.`,
+3. Propose a signed contract now with a delayed start date. "I don't need you to move the project up — I need a signed contract so I can hold your equipment slot and lock in today's mobilization pricing. We start on whatever date works for you." This gives them budget cycle flexibility while protecting your crew calendar. Excavation mobilization costs go up, not down.
 
-  'Roofing|no_response': `Three weeks of silence from a homeowner with visible damage is a signal, not a roadblock — they're scared of the cost and hoping the problem goes away. Don't send another email. Drive by the property this week and knock the door. Your line: "I was in the neighborhood finishing another job and wanted to check if the leaking got worse after last week's rain." That's not a sales call, it's a concerned contractor visit.
+4. Send a written mobilization hold: a refundable 10–15% deposit to lock your equipment and operator availability for a specific 4-week window. "My excavator finishes a site on April 11th. I can hold the following week with a fully refundable hold — otherwise that slot goes to the next job in queue." Real constraint, real urgency.`,
 
-If no one's home, leave a handwritten note — not a business card — with your cell number and a specific observation like: "The flashing around your chimney is the first thing that will fail. Happy to take 10 minutes to show you what I'm seeing before it becomes a bigger issue." Handwritten notes get read. Printed flyers get tossed.
+  'Excavation|no_response|proposal': `1. Don't send another email — show up at the site or office this week. Excavation customers who go quiet after a proposal almost always have a specific concern they didn't voice: scope confusion, a competing quote, or sticker shock on mobilization costs. A 10-minute in-person visit will surface what four emails won't. Your line: "I was nearby on a grading project and wanted to make sure my proposal addressed everything before you made a decision."
 
-Run a quick insurance angle check: if they haven't filed a claim and the damage is weather-related, offer to do a free insurance consult. Many homeowners don't realize their deductible might cover most of the repair. This reframes the conversation from "expensive project" to "how do I get this paid for."
+2. The proposal itself may be the barrier — excavation scopes can look intimidating when itemized with equipment hours, haul fees, and compaction testing line items. Call and ask: "Is there any line item on my proposal that doesn't match how you were picturing the project?" This gives them permission to surface a specific objection instead of ignoring the document. Most no-response situations in excavation come from scope confusion, not disinterest.
 
-If you reach them and they say they're "still thinking about it," respond with: "Totally understand — I just want to make sure you don't get caught in the spring backlog. My crew slots for April are already filling up. Can we lock in a tentative date that you can cancel with no penalty?" Low commitment, high urgency.`,
+3. Add a visual site plan to your follow-up — a simple sketch showing your proposed access route, cut area, spoil staging location, and any known underground utilities. Excavation clients who can visualize what's about to happen on their property respond more readily than those staring at unit prices on paper. Send it with one line: "Wanted to add this so you can see exactly how we'd work the project."
 
-  'Masonry|competitor': `The competitor angle in masonry is almost always about price and speed — your edge is quality documentation and visible proof. Before your next call, pull 3–5 photos of comparable brick or stone work you've completed: same application type if possible (retaining wall, chimney, veneer, foundation). Send them unprompted with a note: "Wanted to share some recent work similar to yours — the craftsmanship difference tends to show up in photos before it shows up in the finished job."
+4. Create a real deadline by referencing your equipment schedule: "My excavator rolls off a site on April 4th. I have a 2-week window before the next job. I'd like to slot your project in — otherwise I'm looking at late May at the earliest." Real constraint, not manufactured pressure. Send it, then go quiet for 48 hours.`,
 
-Ask directly who you're up against and get specifics. If they won't say, try: "I'd rather lose fair than win without knowing why — can you tell me what they're offering that we aren't?" That disarms the conversation and often surfaces the real objection, which is usually price, timeline, or a personal connection.
+  'Excavation|competitor|negotiation': `1. At negotiation with a competitor in play, don't discount first — ask what you're actually competing against. "What specifically are they offering that you're comparing to our proposal?" Excavation bids vary significantly on soil disposal method, compaction specifications, equipment type, and site restoration scope. If the competing bid excludes haul fees or uses lighter equipment for a spec that requires heavy machinery, it's not a lower price — it's an incomplete scope. Show that comparison in writing before you touch your number.
 
-Mortar mix, brick tie patterns, and expansion joint placement are the three areas where cut-rate masonry fails within 3–5 years. If your approach is stronger in any of these, document it in a one-pager with photos showing what improper work looks like versus yours. A client who understands what they're buying is far harder to poach on price alone.
+2. Pull your most comparable recent project by soil type, depth, and site access difficulty. Prepare a one-page summary: what the job was, what challenges came up, how you handled them, and a photo of the finished grade. Excavation customers making a final call between two contractors almost always choose the one who has documented experience with the same site conditions. "I completed a similar cut-and-fill on a clay site in [city] last fall — here's exactly how it went."
 
-Close with a warranty differentiator. Offer a 5-year workmanship warranty in writing if you're confident in your crew. Most masonry contractors carry no such guarantee — and a homeowner comparing three bids will notice when one includes a written warranty and the others don't.`,
+3. If price is the gap, explain it rather than match it. Build a written cost breakdown: operator hours, equipment fuel and transport, soil disposal fees, compaction testing, site restoration. Show where your number comes from. A customer who understands the cost structure is in a completely different negotiating position than one comparing two totals on two sheets of paper.
 
-  'HVAC|budget_freeze': `Budget freezes in HVAC are almost always temporary — the equipment failure risk hasn't gone away, it's just been deferred. Your job is to reframe this as a cost-of-delay conversation, not a sales pitch. Get them to acknowledge the specific risks: increased utility bills running inefficient equipment, likelihood of emergency failure during peak season, and the gap between planned replacement cost and emergency replacement cost.
+4. Offer a performance bond or written grading guarantee with specific tolerances — within 0.1 ft of design grade, signed off before final payment. Most small excavation contractors won't offer this. A written standard plus a performance bond makes the competitor's lower number look like an unquantified risk, which is a different kind of comparison entirely.`,
 
-Ask for a 30-minute "project planning" call framed around their timeline rather than your sale: "I'm not asking you to move the project up — I want to help you be ready to move fast when the freeze lifts. Can we spend 20 minutes locking in the spec so there's no delay when you're ready?" This keeps the deal warm without pressure.
+  'Excavation|price_objection|proposal': `1. Before you negotiate price, find out what they're comparing your proposal to. Ask: "Is there a specific number you had in mind, or have you received another quote?" If they have a competing bid, ask for the total — or the scope breakdown. Excavation proposals vary widely on what's included: your bid may cover compaction testing, engineered fill, haul fees, and utility locating that the cheap bid excludes entirely. You cannot defend your price against a number you haven't seen.
 
-Split billing is underused in HVAC — offer to invoice equipment and labor separately, with equipment billed now at a modest deposit and labor billed on completion. This often fits within a depleted capital budget while pushing the larger labor cost into the next fiscal period. Many purchasing managers can approve a small equipment spend they can't approve for a full installation.
+2. Offer a site walk before adjusting anything. Walk the project together: access route, cut area, spoil staging, underground conflicts. This demonstrates that you've thought through the logistics in detail, and it often surfaces scope items they didn't realize were in your bid — permit coordination, rock breaking contingency, drainage regrading — which shrinks the price objection before you ever touch the number.
 
-Lock in a hard re-engage date before you end the call. Ask: "When does your budget cycle reset?" Then get on their calendar for the week after that date. If you don't schedule it now, you'll be chasing in Q2 with no anchor point. A specific calendar invite converts at 10x the rate of a "let's touch base in a few months" close.`,
+3. Reframe the conversation around total cost of outcome, not line-item rates. Excavation done wrong means expensive remediation: subgrade failures, drainage problems, and failed compaction tests require re-mobilizing equipment and redoing work. Ask: "If the grade doesn't hold or the compaction fails inspection, what does that cost you?" Then offer your written compaction specs and third-party testing. A lower bid with no accountability is a higher-risk bid.
 
-  'Excavation|timing': `Bad timing in excavation usually means permits are pending, weather is marginal, or there's a sequencing dependency with another trade. Your goal is to identify exactly which one and solve the specific bottleneck — not wait it out passively. Ask directly: "Is there one thing that, if resolved, would let us move forward in the next 2–3 weeks?"
+4. If you must move on price, reduce scope rather than reduce margin. "If the budget number is firm, I can break this into two mobilizations: primary excavation and utility work now at a price that fits, and finish grading on a second mobilization when you're ready." Scope reduction preserves your rate. Discounting trains them to push harder every time.`,
 
-If permits are the blocker, offer to run the permit application yourself. Excavation contractors who handle their own permits — or who have a contact at the municipality — move faster and deliver more value. This turns a delay into a demonstration of your operational competence.
+  // ── Roofing ─────────────────────────────────────────────────────────────────
+  'Roofing|price_objection': `1. Stop following up with "just checking in" — send a single-page material comparison before your next call. Put your spec side by side with what a budget roofing bid typically includes: shingle brand and warranty tier, underlayment type, ice-and-water shield coverage, drip edge, and workmanship warranty. Most cheap roofing bids omit the ice-and-water shield, use 20-year 3-tab shingles, and carry zero workmanship warranty. Make those gaps visible in writing. A customer who sees the spec difference rarely needs a price match.
 
-Mobilization deposits are your friend when timing is soft. Propose a small deposit (10–15% of contract) to hold your crew slot and lock in current pricing. Frame it as protecting them from price increases and crew availability gaps, not as you locking in revenue. "I can hold April 3rd for you with a $2,500 deposit, fully refundable if you need to push to May. Otherwise that slot goes to the next project in queue."
+2. Call Thursday morning — not email. Your opening: "I put together a quick comparison I wanted to walk you through — I'm not asking you to choose us, I'm asking you to compare apples to apples before you decide." If they bring up the price gap, answer in terms of what fails first on a budget roof: the step flashings, the ice barrier at the eave, the workmanship when something leaks in year three.
 
-Use site proximity to stay visible during the wait. If you have work nearby, do a check-in: "We're finishing a job a few blocks from you this week — mind if I swing by for 15 minutes to confirm our scope and staging plan?" Showing up in person during the delay dramatically reduces the chance they quietly reassign the work.`,
+3. Offer a free 15-minute roof walk with the customer present — show them the deck condition, what needs to come off, and what goes back on. Homeowners who walk the job with you close at nearly twice the rate of those who only receive a proposal. Bring a photo of a failed budget installation if you have one — showing what the inside of a cheap job looks like when it fails is more persuasive than any comparison sheet.
 
-  'Electrical|wrong_contact': `The wrong contact problem in electrical is especially common on commercial jobs where the person who called you isn't the one signing checks. Your immediate move is to ask your current contact for a warm introduction: "I want to make sure whoever handles contracts and invoicing is in the loop before we finalize scope — would it be possible for you to copy them on my next proposal email?" Non-threatening, professionally framed.
+4. If they're still on the fence after the walk, create a real deadline: "I can lock in your installation week right now — no deposit until materials are ordered, fully refundable if something changes. If I wait another week, that April slot fills up and you're looking at June." Crew availability in roofing season is a genuine constraint. Frame it as protecting their schedule, not as a sales close.`,
 
-If a warm intro isn't happening, go around respectfully. Find the building owner, facilities director, or GC through the company's website or LinkedIn. Your outreach: "I've been working with [name] on an electrical scope for your facility — I wanted to make sure the decision-makers had a chance to review the timeline and ask any questions before we move to contract." You're not going around anyone; you're being thorough.
+  'Roofing|no_response': `1. Stop emailing — drive by the property this week and knock the door. Homeowners with visible roof damage who go quiet are scared of the cost and hoping the problem holds until they're ready. Your line: "I was finishing a job in the neighborhood and wanted to check whether the leak got any worse after last week's rain. Not here to sell anything — just wanted to make sure you're not dealing with interior damage." That's a service call, not a sales visit, and it almost always gets a conversation.
 
-Never submit a formal proposal without the decision-maker's name on it. If you don't know who that is, hold the proposal. Submitting to the wrong contact delays your close and gives them something to shop without you in the room. Use the proposal timing as leverage: "Before I finalize pricing, I want to make sure this goes to the right person — who actually signs off on electrical work?"
+2. If no one's home, leave a handwritten note on the door — not a printed flyer, not a business card. Write your cell number and one specific observation: "The step flashing on the left side of your chimney is lifting — that's where water gets behind and causes decking rot. Happy to take 10 minutes to show you what I'm seeing before the next rain. Call or text me." Handwritten notes get read because they feel personal and specific. Printed material goes in the recycling.
 
-If you get on the phone and they claim to be the decision-maker but something feels off, ask: "Are you the person who will sign the contract, or is there someone else I should loop in?" Most people will tell you. If the proposal still stalls afterward, call back and say: "The proposal seems to have gotten stuck somewhere — is there someone else who should have eyes on this before we lose the schedule?"`,
+3. Run an insurance angle check. If the damage is weather-related and they haven't filed a claim, offer a free insurance scope consultation. Call and say: "Before you commit to any contractor, do you know if your homeowner's policy covers the damage? I've helped a lot of homeowners in this area get their roof covered — it takes 30 minutes and costs you nothing either way." This reframes the entire conversation from "expensive repair" to "how do we get this paid for."
 
-  'Plumbing|technical_fit': `Technical fit objections in plumbing almost always come down to one of three things: access concerns (can you do the work without major demolition), code compliance uncertainty (will this pass inspection), or material spec disagreements (they want copper, you quoted PEX). Get them to name the exact concern before you defend anything.
+4. If you reach them and they say they're "still thinking about it," lock in a soft commitment: "Totally understand — no pressure. Can we at least pencil in a tentative install week that you can cancel if you need to? My April slots are almost gone and I'd hate for you to wait 6 weeks when you're ready to move. It costs you nothing to hold the spot." Low commitment, real urgency, something on the calendar.`,
 
-If it's access, schedule a site walk before doing anything else. "I'd rather spend 30 minutes on-site than have you uncertain about what the work involves. Let me show you exactly how we'd stage this and what we'd need to open up." Seeing the scope in person resolves most access objections and demonstrates confidence. Bring photos of similar jobs where access was tight and you handled it cleanly.
+  // ── Masonry ─────────────────────────────────────────────────────────────────
+  'Masonry|competitor': `1. Before your next call, pull 3–5 photos of comparable masonry work — same application type if possible: retaining wall, chimney rebuild, veneer, foundation parging. Send them unprompted with a short note: "Wanted to share a few recent projects similar to yours — the quality difference in masonry tends to show up in photos before it shows up in the finished job." Don't wait for them to ask. The visual case is your strongest asset at the negotiation stage when a competitor is already in the picture.
 
-For code compliance concerns, offer to own the permit and inspection process entirely. "We'll pull the permit, schedule the rough-in inspection, and deliver a final inspection certificate before we close the job." That shifts compliance risk from them to you — and for a technically-minded client, that's exactly the reassurance they need.
+2. Ask directly which contractor you're up against. If they won't say, try: "I'd rather lose on equal footing than win without knowing why — can you tell me what they're offering that we're not?" That disarms the negotiation and surfaces the real gap. In masonry it's almost always price, a personal relationship, or a speed-of-start advantage. Once you know which one, you can address it specifically instead of guessing.
 
-Material spec disagreements are negotiable if you understand the why. Copper vs. PEX is usually about longevity perception, repairability, or a recommendation from another contractor. Ask: "What's driving the preference for [material]? I want to understand your priorities before I finalize the spec." Then either accommodate the preference (and reprice) or explain specifically why your spec performs equally or better — with documentation from a third-party source if possible.`,
+3. Document your technical differentiators: mortar mix ratios for the substrate, brick tie spacing, expansion joint placement, and drainage detailing. These are the places where cut-rate masonry fails within 3–5 years — efflorescence, tie corrosion, and mortar joint cracking. Put it in writing with a photo showing what improper masonry work looks like after a few winters. A client who understands what they're buying is far harder to poach on price alone.
+
+4. Close with a written workmanship warranty — 5 years on labor. Most masonry contractors carry zero written guarantee. Say it explicitly: "One thing I'd ask you to check when comparing bids: does the other contractor offer a written workmanship warranty? We provide one on every job. Here's what it covers." A written warranty in a competitive masonry bid is a differentiator a lower price genuinely struggles to overcome.`,
+
+  // ── HVAC ────────────────────────────────────────────────────────────────────
+  'HVAC|budget_freeze': `1. The budget freeze doesn't change the equipment failure risk — it defers it. Call this week and reframe the delay as a cost question: "What does it cost you to run your existing system through another season — in utility bills, repair calls, and emergency replacement risk at peak summer demand?" Get them to put a number on the consequence of waiting. At the proposal stage, the price isn't the objection — cash timing is. Treat them differently.
+
+2. Offer split invoicing to work within a frozen budget: invoice equipment and refrigerant materials now at a 30–40% deposit, invoice installation labor after the budget resets. Many commercial clients can approve a capital equipment purchase they can't approve as a single installation project. Have the revised contract ready to send during the call — don't just suggest it verbally and wait for them to ask.
+
+3. Schedule a "readiness review" call — explicitly not a sales call. "I don't need a decision this week. Can we spend 20 minutes confirming the equipment spec and installation access so we're ready to mobilize the day your freeze lifts? HVAC lead times on commercial equipment are running 6–10 weeks. If I wait until you're cleared before ordering, your project is delayed an additional 3 months on top of the freeze." This keeps you technically engaged and positions you as the contractor who's already done the work.
+
+4. Lock in a firm re-engage date — not a vague "let's talk in Q2" but a specific calendar invite. Ask: "When exactly does your new budget cycle open?" Schedule a 20-minute call for the week after that date. The contractor who already has time on the calendar when the budget resets is the one who closes the job. If you don't schedule it now, you'll be competing with three other HVAC contractors for attention when the freeze lifts.`,
+
+  // ── Plumbing ────────────────────────────────────────────────────────────────
+  'Plumbing|wrong_contact': `1. Your plumbing proposal is sitting with someone who can't approve it — this is the most common reason proposals die in the first two weeks. Call your current contact and ask directly: "Are you the person who signs off on the contract, or does this go through someone else first?" Most people will tell you. If it needs to go higher, ask for a warm introduction: "Can you copy [decision-maker] on my next email, or should I reach out to them directly?"
+
+2. If a direct introduction isn't happening, go around respectfully via LinkedIn or the company's website. Email the property owner, facilities manager, or GC — whoever actually approves plumbing work. Subject line: "[Property address] — Plumbing Scope, Ready to Schedule." First sentence: "I've been working with [contact name] on a plumbing proposal for your property and wanted to make sure the right person had a chance to review it before we lose our installation window." You're not undermining anyone — you're being professionally thorough.
+
+3. Never revise your plumbing proposal or lower your price until the actual decision-maker has seen the original scope. The wrong contact may be softening numbers or relaying second-hand objections the real approver doesn't actually have. Find out what the decision-maker's specific concerns are before you change a single line item.
+
+4. Reframe your follow-up as a scheduling issue, not a proposal issue: "I have a licensed plumber available the week of [date] — we're finishing a nearby job and could start yours that Monday. I need a signed contract by Friday to hold that crew." Once you have the right contact, this close is clean. A real scheduling constraint with a specific date beats another "just following up on my proposal" email.`,
+
+  'Plumbing|wrong_contact|proposal': `1. Your plumbing proposal is sitting with someone who can't approve it — this is the most common reason proposals die in the first two weeks. Call your current contact and ask directly: "Are you the person who signs off on the contract, or does this go through someone else first?" Most people will tell you. If it needs to go higher, ask for a warm introduction: "Can you copy [decision-maker] on my next email, or should I reach out to them directly?"
+
+2. If a direct introduction isn't happening, go around respectfully via LinkedIn or the company's website. Email the property owner, facilities manager, or GC — whoever actually approves plumbing work. Subject line: "[Property address] — Plumbing Scope, Ready to Schedule." First sentence: "I've been working with [contact name] on a plumbing proposal for your property and wanted to make sure the right person had a chance to review it before we lose our installation window." You're not undermining anyone — you're being professionally thorough.
+
+3. Never revise your plumbing proposal or lower your price until the actual decision-maker has seen the original scope. The wrong contact may be softening numbers or relaying second-hand objections the real approver doesn't actually have. Find out what the decision-maker's specific concerns are before you change a single line item.
+
+4. Reframe your follow-up as a scheduling issue, not a proposal issue: "I have a licensed plumber available the week of [date] — we're finishing a nearby job and could start yours that Monday. I need a signed contract by Friday to hold that crew." Once you have the right contact, this close is clean. A real scheduling constraint with a specific date beats another "just following up on my proposal" email.`,
+
+  // ── Electrical ──────────────────────────────────────────────────────────────
+  'Electrical|timing': `1. "Bad timing" in electrical almost always means one of three things: permit not yet approved, GC hasn't released the electrical scope, or another project phase hasn't finished. Get them to name the exact blocker: "Is the timing issue something I can help solve, or is there a specific milestone that needs to happen first?" If you don't know the specific dependency, you're waiting on a timeline you don't control.
+
+2. If permits are the bottleneck, offer to pull the permit yourself — application, fee, and inspection scheduling as a pass-through at cost. Electrical contractors who manage their own permits move faster, reduce the customer's administrative burden, and win more repeat commercial work because of it. This one offer often changes the entire relationship.
+
+3. Offer a mobilization hold to protect against material lead times: a refundable 10–15% deposit to order panels, switchgear, conduit, and wire now. "Electrical service equipment is running 8–14 week lead times. If I wait until you're ready before ordering, your project gets pushed back 3 months on top of whatever the timing issue already is. The deposit lets me order materials now so they're ready the day you're cleared to go." That's a genuine value argument.
+
+4. Stay visible without being pushy — one project-specific touchpoint per month. A photo of comparable electrical work you completed, a note about a code change affecting their scope, or a material lead time update: "Thought of your project when I finished this panel upgrade — same service size you need. Just wanted to stay on your radar for when your timing clears up." One specific message per month keeps you front of mind without the feeling of being chased.`,
+
+  'Electrical|timing|qualified': `1. "Bad timing" at the qualified stage in electrical almost always means one of three things: permit not yet approved, GC hasn't released the electrical scope, or another project phase hasn't finished. Get them to name the exact blocker: "Is the timing issue something I can help solve, or is there a specific milestone that needs to happen first?" If you don't know the specific dependency, you're waiting on a timeline you don't control.
+
+2. If permits are the bottleneck, offer to pull the permit yourself — application, fee, and inspection scheduling as a pass-through at cost. Electrical contractors who manage their own permits move faster, reduce the customer's administrative burden, and win more repeat commercial work because of it. This one offer often changes the entire relationship.
+
+3. Offer a mobilization hold to protect against material lead times: a refundable 10–15% deposit to order panels, switchgear, conduit, and wire now. "Electrical service equipment is running 8–14 week lead times. If I wait until you're ready before ordering, your project gets pushed back 3 months on top of whatever the timing issue already is. The deposit lets me order materials now so they're ready the day you're cleared to go." That's a genuine value argument.
+
+4. Stay visible without being pushy — one project-specific touchpoint per month. A photo of comparable electrical work you completed, a note about a code change affecting their scope, or a material lead time update: "Thought of your project when I finished this panel upgrade — same service size you need. Just wanted to stay on your radar for when your timing clears up." One specific message per month keeps you front of mind without the feeling of being chased.`,
 };
 
 function getDemoResponse(lead) {
-  const key = `${lead.trade}|${lead.stallReason}`;
-  if (DEMO_AI_RESPONSES[key]) return DEMO_AI_RESPONSES[key];
-  // Fallback: trade and stall reason aware
-  const stallLabel = STALL_LABELS[lead.stallReason] || 'the current objection';
-  const statusLine = lead.status === 'lost'
-    ? `This ${lead.trade} deal was marked lost ${lead.dealAge} days ago`
-    : lead.status === 'stalled'
-    ? `This ${lead.trade} deal has been stalled for ${lead.dealAge} days`
-    : `This active ${lead.trade} deal has been in the pipeline for ${lead.dealAge} days`;
-  const valFmt = lead.value ? `$${lead.value.toLocaleString()}` : 'an unknown value';
-  return `${statusLine} at ${valFmt}, currently stalled on ${stallLabel.toLowerCase()}. Here's how to approach it this week.
+  // Check most-specific key first (trade + stallReason + stage), then trade + stallReason
+  const specificKey = `${lead.trade}|${lead.stallReason}|${lead.stage}`;
+  const generalKey = `${lead.trade}|${lead.stallReason}`;
+  if (DEMO_AI_RESPONSES[specificKey]) return DEMO_AI_RESPONSES[specificKey];
+  if (DEMO_AI_RESPONSES[generalKey]) return DEMO_AI_RESPONSES[generalKey];
 
-The first move is to go back to first principles for ${lead.trade} jobs at the ${lead.stage} stage: confirm the decision-maker is still engaged and that the ${stallLabel.toLowerCase()} you've been told is the real objection. Many ${lead.trade} deals at this stage stall because something has changed in the customer's world that they haven't surfaced yet. Your next call should open with: "I want to make sure I'm still solving the right problem for you — has anything changed since we last spoke?"
+  // Fallback: every action item references trade, stall reason, stage, and deal value by name
+  const trade = lead.trade;
+  const stall = STALL_LABELS[lead.stallReason] || 'Unknown Reason';
+  const stage = lead.stage;
+  const val = lead.value ? `$${lead.value.toLocaleString()}` : 'this deal';
+  const days = lead.dealAge;
+  const contact = lead.contact || 'the contact';
+  const status = (lead.status || 'stalled').toUpperCase();
 
-Send a specific, non-generic follow-up that references something concrete about their project or situation. Generic "just checking in" messages get ignored. Reference the exact scope, a recent completed job with photos, or a timing angle that makes acting now better than waiting. The goal is one engaged response, not an immediate close.
+  return `1. This ${trade} deal at the ${stage} stage has been ${status} for ${days} days — the ${stall} objection needs a direct confrontation this week, not another follow-up email. Call ${contact} and open with: "I want to understand exactly what's holding this back — is the ${stall.toLowerCase()} the real issue, or is there something else I should know about?" In ${trade} contracting, surface-level objections at the ${stage} stage almost always have a more specific concern underneath them.
 
-If you don't hear back within 48 hours, call rather than email. ${lead.trade} contractors who follow up by phone on stalled deals convert at roughly 2x the rate of email-only follow-up. Keep the call under 3 minutes, ask one direct question, and end by agreeing on a specific next step with a date attached.`;
+2. On a ${val} ${trade} job at the ${stage} stage, the ${stall} objection responds to proof, not persuasion. Send ${contact} one concrete piece of evidence before the call: a photo of a similar completed ${trade} project, a reference from a comparable job, or a written spec comparison showing exactly what's in your ${val} price. Generic follow-ups on stalled ${trade} deals get ignored — specific, documented proof gets responses.
+
+3. Reframe the ${val} ${trade} proposal around the cost of the ${stall.toLowerCase()} continuing. Ask ${contact}: "What does it cost you — in time, risk, or ongoing expense — if this ${trade} work gets pushed another 30 days?" Get them to quantify the consequence of inaction at the ${stage} stage. This shifts the conversation from your price to their problem.
+
+4. Create a specific, real deadline for this ${val} ${trade} deal at ${stage}: reference your crew or material schedule to explain why acting this week matters. "I have [specific availability] that works for your project — if we don't lock it in this week, I can't guarantee that window." ${trade} customers at the ${stage} stage respond to concrete scheduling constraints. Send it, then go quiet for 48 hours.`;
 }
+
 
 // ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
 const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
@@ -1238,44 +1292,42 @@ function CoachPanel({ lead, onClose, demoMode, tier }) {
       }
       const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 
-      const statusContext = lead.status === 'stalled'
-        ? 'Status: STALLED — this deal needs recovery coaching'
-        : lead.status === 'active'
-        ? 'Status: ACTIVE — give advice to maintain momentum and accelerate to close'
-        : lead.status === 'lost'
-        ? 'Status: LOST — give win-back advice for re-engaging a deal that was lost'
-        : lead.status === 'cold'
-        ? 'Status: COLD — give re-engagement advice for a deal that has gone cold'
-        : `Status: ${lead.status}`;
-
-      const goalContext = lead.status === 'lost'
-        ? 'Give me 3–4 specific win-back actions I should take THIS WEEK. Focus on re-opening the door, not relitigating the original sale.'
-        : lead.status === 'active'
-        ? 'Give me 3–4 specific actions to accelerate this deal THIS WEEK and keep the momentum going.'
-        : 'Give me 3–4 specific actions I should take THIS WEEK to unblock this deal.';
+      const cbDays = diffDays(lead.callbackDate);
+      const callbackStatus = lead.callbackDate == null
+        ? 'No callback scheduled'
+        : cbDays < 0
+        ? `OVERDUE by ${Math.abs(cbDays)} day${Math.abs(cbDays) !== 1 ? 's' : ''}`
+        : cbDays === 0
+        ? 'TODAY'
+        : `UPCOMING in ${cbDays} day${cbDays !== 1 ? 's' : ''}`;
 
       const stream = await client.messages.stream({
         model: 'claude-opus-4-6',
-        max_tokens: 650,
+        max_tokens: 700,
         thinking: { type: 'adaptive' },
-        system: `You are an elite contractor sales coach with deep expertise in the ${lead.trade} trade.
-Give hyper-specific, trade-aware, tactical advice. Reference the specific trade, materials, and situations relevant to ${lead.trade} contractors.
-Be direct and concise. 3–4 short paragraphs max. No bullet points — write in flowing paragraphs.`,
+        system: `You are an expert sales coach specializing in the ${lead.trade} contracting industry.`,
         messages: [{
           role: 'user',
-          content: `Coaching request for a ${lead.trade} contractor deal:
+          content: `You are advising a sales rep on this specific stalled deal:
+- Company: ${lead.name} (${lead.industry})
+- Contact: ${lead.contact}, ${lead.role}
+- Trade: ${lead.trade}
+- Deal Value: ${fmt(lead.value)}
+- Current Stage: ${lead.stage}
+- Status: ${(lead.status || 'unknown').toUpperCase()}
+- Stall Reason: ${STALL_LABELS[lead.stallReason] || 'None specified'}
+- Days Since Last Activity: ${lead.dealAge}
+- Callback Status: ${callbackStatus}
+- Notes: ${lead.notes}
 
-Customer: ${lead.name} (${lead.industry})
-Contact: ${lead.contact}, ${lead.role}
-Trade: ${lead.trade}
-Deal Value: ${fmt(lead.value)}
-Stage: ${lead.stage}
-Days in pipeline: ${lead.dealAge}
-${statusContext}
-Stall reason: ${STALL_LABELS[lead.stallReason] || 'None specified'}
-Rep notes: ${lead.notes}
+Give 4 highly specific action items this rep should take THIS WEEK to advance or recover this deal. Your advice must:
+1. Reference the specific trade (mention ${lead.trade}-specific knowledge)
+2. Address the exact stall reason (${STALL_LABELS[lead.stallReason] || 'None specified'}) with tactics that work in contracting
+3. Be different based on whether the deal is ${(lead.status || 'unknown').toUpperCase()}
+4. Reference the deal value (${fmt(lead.value)}) and stage (${lead.stage}) appropriately
+5. Be direct and tactical — no generic sales advice
 
-${goalContext} Be tactical and specific to this ${lead.trade} deal — no generic sales advice.`,
+Format as numbered action items, no preamble.`,
         }],
       });
 
