@@ -917,6 +917,14 @@ const PLAYBOOKS = {
   ],
 };
 
+const SAMPLE_AI_RESPONSE = `The Torres deal is stalling on price — they've seen a lower number, and without a clear value story you're in a race to the bottom. Stop following up with "just checking in" and instead send a single-page comparison showing your material specs side by side: brand, warranty tier, underlayment type, and drip edge. Most cheap bids strip out the ice-and-water shield or carry no workmanship warranty. Make that visible in writing before you call.
+
+Call Miguel Thursday morning, not email. The line is: "I put together a quick comparison — I'm not asking you to choose us, I'm asking you to compare apples to apples before you decide." That framing lowers his guard and invites a real conversation rather than a yes/no.
+
+If he's still on the fence, offer to do a free 15-minute roof walk with him present — show him exactly what needs to come off and what goes back on. Homeowners who walk the job with you close at nearly twice the rate. It builds trust and makes the price difference feel like a reasonable premium, not a sales pitch.
+
+Last move if needed: offer a $500 material credit if he can confirm in the next 10 days, and frame it as a crew slot issue, not a discount. This preserves your margin story while giving him a concrete reason to decide now rather than let it drag into next month.`;
+
 // ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
 const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
 const LEAD_STAGES = ['contacted', 'qualified', 'proposal', 'negotiation'];
@@ -1125,7 +1133,7 @@ function AddLeadModal({ lead, defaultTrade, onSave, onClose }) {
 }
 
 // ─── CoachPanel ──────────────────────────────────────────────────────────────
-function CoachPanel({ lead, onClose }) {
+function CoachPanel({ lead, onClose, demoMode }) {
   const [aiText, setAiText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -1136,6 +1144,18 @@ function CoachPanel({ lead, onClose }) {
     setLoading(true);
     setError('');
     setAiText('');
+
+    if (demoMode) {
+      // Simulate streaming with pre-written response
+      const words = SAMPLE_AI_RESPONSE.split(' ');
+      for (let i = 0; i < words.length; i++) {
+        await new Promise(r => setTimeout(r, 30));
+        setAiText(prev => prev + (i === 0 ? '' : ' ') + words[i]);
+      }
+      setLoading(false);
+      return;
+    }
+
     try {
       const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
       if (!apiKey) {
@@ -1239,8 +1259,41 @@ Give me 3-4 specific actions I should take THIS WEEK to unblock this deal. Be ta
   );
 }
 
+// ─── Disabled Tooltip ────────────────────────────────────────────────────────
+function DisabledTooltip({ active, label, children }) {
+  const [show, setShow] = useState(false);
+  if (!active) return children;
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-block' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div style={{
+          position: 'absolute', bottom: '110%', left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#0f1117', border: '1px solid #2d3748',
+          borderRadius: 6, padding: '5px 10px',
+          fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap',
+          zIndex: 200, pointerEvents: 'none',
+        }}>
+          {label}
+          <div style={{
+            position: 'absolute', top: '100%', left: '50%',
+            transform: 'translateX(-50%)',
+            borderLeft: '5px solid transparent', borderRight: '5px solid transparent',
+            borderTop: '5px solid #2d3748',
+          }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Lead Card ───────────────────────────────────────────────────────────────
-function LeadCard({ lead, onClick, onEdit, onDelete }) {
+function LeadCard({ lead, onClick, onEdit, onDelete, demoMode }) {
   const [hovered, setHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const days = diffDays(lead.callbackDate);
@@ -1289,7 +1342,7 @@ function LeadCard({ lead, onClick, onEdit, onDelete }) {
         </div>
       )}
 
-      {(onEdit || onDelete) && hovered && (
+      {(demoMode || onEdit || onDelete) && hovered && (
         <div
           style={{
             display: 'flex', gap: 6, marginTop: 12, paddingTop: 10,
@@ -1297,31 +1350,38 @@ function LeadCard({ lead, onClick, onEdit, onDelete }) {
           }}
           onClick={e => e.stopPropagation()}
         >
-          {onEdit && (
+          <DisabledTooltip active={demoMode} label="Sign up to add your own data">
             <button
               style={{
                 flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
                 background: 'transparent', border: '1px solid #1e2535',
-                borderRadius: 6, color: '#94a3b8', cursor: 'pointer',
+                borderRadius: 6, color: demoMode ? '#3d4f63' : '#94a3b8',
+                cursor: demoMode ? 'not-allowed' : 'pointer',
+                minWidth: 70,
               }}
-              onClick={() => onEdit(lead)}
+              onClick={demoMode ? undefined : () => onEdit && onEdit(lead)}
             >
               ✏ Edit
             </button>
+          </DisabledTooltip>
+
+          {!confirmDelete && (
+            <DisabledTooltip active={demoMode} label="Sign up to add your own data">
+              <button
+                style={{
+                  flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
+                  background: 'transparent', border: '1px solid #1e2535',
+                  borderRadius: 6, color: demoMode ? '#3d4f63' : '#64748b',
+                  cursor: demoMode ? 'not-allowed' : 'pointer',
+                  minWidth: 70,
+                }}
+                onClick={demoMode ? undefined : () => onDelete && setConfirmDelete(true)}
+              >
+                🗑 Delete
+              </button>
+            </DisabledTooltip>
           )}
-          {onDelete && !confirmDelete && (
-            <button
-              style={{
-                flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
-                background: 'transparent', border: '1px solid #1e2535',
-                borderRadius: 6, color: '#64748b', cursor: 'pointer',
-              }}
-              onClick={() => setConfirmDelete(true)}
-            >
-              🗑 Delete
-            </button>
-          )}
-          {onDelete && confirmDelete && (
+          {!demoMode && onDelete && confirmDelete && (
             <>
               <span style={{ fontSize: 11, color: '#94a3b8', alignSelf: 'center', flex: 1 }}>Sure?</span>
               <button
@@ -1353,7 +1413,7 @@ function LeadCard({ lead, onClick, onEdit, onDelete }) {
 }
 
 // ─── Pipeline Tab ─────────────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead }) {
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode }) {
   const [filter, setFilter] = useState('all');
   const [tradeFilter, setTradeFilter] = useState('all');
   const filters = ['all', 'active', 'stalled', 'cold', 'won', 'lost'];
@@ -1380,18 +1440,23 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead 
           <div style={{ fontSize: 13, color: '#94a3b8' }}>
             Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>{fmt(total)}</span>
           </div>
-          {onAddLead && (
-            <button
-              style={{
-                padding: '6px 16px',
-                background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                border: 'none', borderRadius: 7,
-                color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-              }}
-              onClick={onAddLead}
-            >
-              + Add Lead
-            </button>
+          {(onAddLead || demoMode) && (
+            <DisabledTooltip active={demoMode} label="Sign up to add your own data">
+              <button
+                style={{
+                  padding: '6px 16px',
+                  background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
+                  border: demoMode ? '1px solid #2d3748' : 'none',
+                  borderRadius: 7,
+                  color: demoMode ? '#3d4f63' : '#fff',
+                  fontWeight: 700, fontSize: 13,
+                  cursor: demoMode ? 'not-allowed' : 'pointer',
+                }}
+                onClick={demoMode ? undefined : onAddLead}
+              >
+                + Add Lead
+              </button>
+            </DisabledTooltip>
           )}
         </div>
       </div>
@@ -1422,6 +1487,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead 
             onClick={onSelectLead}
             onEdit={onEditLead}
             onDelete={onDeleteLead}
+            demoMode={demoMode}
           />
         ))}
       </div>
@@ -2333,7 +2399,249 @@ function EmptyState({ icon, title, sub, btnLabel, onAction }) {
   );
 }
 
+// ─── Demo Page Data ───────────────────────────────────────────────────────────
+const DEMO_LEADS_SKYLINE = [
+  {
+    id: 'd1', name: 'Hargrove Residence', contact: 'Frank Hargrove', role: 'Homeowner',
+    trade: 'Roofing', status: 'active', value: 18400, stage: 'proposal',
+    callbackDate: '2026-03-25', lastContact: '2026-03-20',
+    stallReason: null, notes: 'GAF Timberline HDZ preferred. Wants 50-yr warranty. Demo was well received.',
+    industry: 'Residential', dealAge: 12, phone: '(512) 555-0182', source: 'Referral',
+  },
+  {
+    id: 'd2', name: 'Westside Church of God', contact: 'Pastor James Willis', role: 'Facilities Coord',
+    trade: 'Roofing', status: 'stalled', value: 34700, stage: 'negotiation',
+    callbackDate: '2026-03-23', lastContact: '2026-03-10',
+    stallReason: 'budget_freeze', notes: 'Commercial flat roof, 11,000 sq ft. Full board approval needed.',
+    industry: 'Institutional', dealAge: 41, phone: '(713) 555-0247', source: 'Referral',
+  },
+  {
+    id: 'd3', name: 'Sunridge HOA — Phase II', contact: 'Linda Marsh', role: 'HOA President',
+    trade: 'Roofing', status: 'active', value: 52000, stage: 'qualified',
+    callbackDate: '2026-03-27', lastContact: '2026-03-21',
+    stallReason: null, notes: '28 townhome units. Insurance claim approved. Scheduling crew now.',
+    industry: 'HOA', dealAge: 8, phone: '(512) 555-0391', source: 'Online',
+  },
+  {
+    id: 'd4', name: 'Kowalski Residence', contact: 'Brian Kowalski', role: 'Homeowner',
+    trade: 'Roofing', status: 'stalled', value: 11200, stage: 'proposal',
+    callbackDate: '2026-03-19', lastContact: '2026-03-06',
+    stallReason: 'no_response', notes: '3 calls, 2 emails. Visible hail damage. Try door knock this week.',
+    industry: 'Residential', dealAge: 29, phone: '(469) 555-0138', source: 'Door knock',
+  },
+  {
+    id: 'd5', name: 'Clearbrook Office Plaza', contact: 'Diane Okafor', role: 'Property Manager',
+    trade: 'Roofing', status: 'active', value: 41500, stage: 'negotiation',
+    callbackDate: '2026-03-26', lastContact: '2026-03-22',
+    stallReason: null, notes: 'TPO membrane replacement, 14,000 sq ft. Contract review underway. Near close.',
+    industry: 'Commercial', dealAge: 19, phone: '(214) 555-0274', source: 'Referral',
+  },
+  {
+    id: 'd6', name: 'Torres Residence', contact: 'Miguel Torres', role: 'Homeowner',
+    trade: 'Roofing', status: 'stalled', value: 9800, stage: 'proposal',
+    callbackDate: '2026-03-22', lastContact: '2026-03-11',
+    stallReason: 'price_objection', notes: 'Got a bid $2k lower from another crew. Need to justify value difference.',
+    industry: 'Residential', dealAge: 33, phone: '(512) 555-0419', source: 'Online',
+  },
+  {
+    id: 'd7', name: 'Lakewood Elementary School', contact: 'Tom Hensley', role: 'Facilities Director',
+    trade: 'Roofing', status: 'cold', value: 78000, stage: 'contacted',
+    callbackDate: '2026-04-15', lastContact: '2026-02-28',
+    stallReason: 'timing', notes: 'Large job. School board vote in April. Stay warm until then.',
+    industry: 'Institutional', dealAge: 53, phone: '(817) 555-0362', source: 'Phone call',
+  },
+  {
+    id: 'd8', name: 'Patel Residence', contact: 'Raj Patel', role: 'Homeowner',
+    trade: 'Roofing', status: 'won', value: 14600, stage: 'won',
+    callbackDate: null, lastContact: '2026-03-18',
+    stallReason: null, notes: 'Closed! CertainTeed Landmark Pro. Crew starts 3/26.',
+    industry: 'Residential', dealAge: 24, phone: '(512) 555-0553', source: 'Referral',
+  },
+  {
+    id: 'd9', name: 'Morrison Auto Group', contact: 'Steve Morrison', role: 'Owner',
+    trade: 'Roofing', status: 'stalled', value: 27300, stage: 'negotiation',
+    callbackDate: '2026-03-24', lastContact: '2026-03-14',
+    stallReason: 'competitor', notes: 'Getting 3 bids. We are mid-range. Push warranty and crew experience angle.',
+    industry: 'Commercial', dealAge: 37, phone: '(214) 555-0687', source: 'Door knock',
+  },
+  {
+    id: 'd10', name: 'Riverside Church', contact: 'Pastor Rick Adams', role: 'Admin Director',
+    trade: 'Roofing', status: 'lost', value: 23400, stage: 'lost',
+    callbackDate: null, lastContact: '2026-03-08',
+    stallReason: 'competitor', notes: 'Lost to a church-network contractor. Price + existing relationship.',
+    industry: 'Institutional', dealAge: 61, phone: '(817) 555-0712', source: 'Referral',
+  },
+];
+
+const DEMO_JOBS_SKYLINE = [
+  {
+    id: 'dj1', customer: 'Frank & Linda Hargrove', address: '2847 Maplewood Dr, Austin TX 78745',
+    trade: 'Roofing', value: 18400, status: 'In Progress',
+    scheduledDate: '2026-03-20', completedSteps: [1, 2, 3, 4, 5],
+    notes: 'GAF Timberline HDZ. Tear-off done. New roof going on today.',
+  },
+  {
+    id: 'dj2', customer: 'Raj & Priya Patel', address: '1108 Cedar Ridge Ln, Austin TX 78731',
+    trade: 'Roofing', value: 14600, status: 'Scheduled',
+    scheduledDate: '2026-03-26', completedSteps: [1, 2],
+    notes: 'CertainTeed Landmark Pro. Materials staged on site.',
+  },
+  {
+    id: 'dj3', customer: 'Sunridge HOA — Block A', address: '3300 Sunridge Pkwy, San Antonio TX 78230',
+    trade: 'Roofing', value: 24500, status: 'Complete',
+    scheduledDate: '2026-03-12', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    notes: '12 units Phase I. Owens Corning Duration. Signed off and paid.',
+  },
+  {
+    id: 'dj4', customer: 'Clearbrook Office Plaza', address: '501 Commerce Dr, Dallas TX 75201',
+    trade: 'Roofing', value: 41500, status: 'In Progress',
+    scheduledDate: '2026-03-18', completedSteps: [1, 2, 3],
+    notes: 'TPO membrane, 14,000 sq ft. Tear-off complete. Underlayment next.',
+  },
+  {
+    id: 'dj5', customer: 'Morrison Auto Group', address: '7700 Auto Row Blvd, Plano TX 75093',
+    trade: 'Roofing', value: 27300, status: 'Scheduled',
+    scheduledDate: '2026-04-02', completedSteps: [1],
+    notes: '3-bay commercial metal roof. Crew scheduled post-Easter week.',
+  },
+];
+
+// ─── Demo Page ────────────────────────────────────────────────────────────────
+function DemoPage() {
+  const [tab, setTab] = useState('pipeline');
+  const [selectedLead, setSelectedLead] = useState(null);
+
+  const goToSignup = () => { window.location.href = '/'; };
+
+  const CtaBar = () => (
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      background: '#161b27', borderTop: '1px solid #1e2535',
+      padding: '14px 24px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      gap: 20, zIndex: 100,
+      boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+    }}>
+      <span style={{ fontSize: 14, color: '#cbd5e1' }}>
+        Like what you see?{' '}
+        <span style={{ color: '#f97316', fontWeight: 600 }}>Start your 14-day free trial</span>
+        {' '}— no credit card required
+      </span>
+      <button
+        onClick={goToSignup}
+        style={{
+          padding: '8px 22px',
+          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          border: 'none', borderRadius: 8,
+          color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        Get Started Free
+      </button>
+    </div>
+  );
+
+  return (
+    <div style={{ ...S.app, minHeight: '100vh' }}>
+      {/* Top demo banner */}
+      <div style={{
+        background: 'rgba(249,115,22,0.12)',
+        borderBottom: '1px solid rgba(249,115,22,0.2)',
+        padding: '10px 24px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
+        fontSize: 13, color: '#f97316',
+        position: 'sticky', top: 0, zIndex: 200,
+      }}>
+        <span>👋 This is a live demo — sign up free to use it with your own data</span>
+        <button
+          onClick={goToSignup}
+          style={{
+            padding: '5px 16px',
+            background: '#f97316', border: 'none', borderRadius: 6,
+            color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+          }}
+        >
+          Start Free Trial
+        </button>
+      </div>
+
+      {/* Header */}
+      <header style={S.header}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={S.logo}>Skyline Roofing Co.</span>
+          <span style={{
+            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+            background: 'rgba(249,115,22,0.12)', color: '#f97316',
+            border: '1px solid rgba(249,115,22,0.2)', letterSpacing: '0.5px',
+          }}>
+            DEMO
+          </span>
+        </div>
+        <div style={S.tabs}>
+          {[
+            { key: 'pipeline', label: 'Pipeline' },
+            { key: 'callbacks', label: 'Callbacks' },
+            { key: 'analytics', label: 'Analytics' },
+            { key: 'jobs', label: 'Jobs' },
+          ].map(({ key, label }) => (
+            <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={goToSignup}
+          style={{
+            marginLeft: 16, padding: '6px 16px',
+            background: 'linear-gradient(135deg, #f97316, #ea580c)',
+            border: 'none', borderRadius: 7,
+            color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+          }}
+        >
+          Sign Up Free
+        </button>
+      </header>
+
+      {/* Tab content */}
+      <main style={{ ...S.body, paddingBottom: 88 }}>
+        {tab === 'pipeline' && (
+          <PipelineTab
+            leads={DEMO_LEADS_SKYLINE}
+            onSelectLead={setSelectedLead}
+            onAddLead={null}
+            onEditLead={null}
+            onDeleteLead={null}
+            demoMode={true}
+          />
+        )}
+        {tab === 'callbacks' && (
+          <CallbacksTab leads={DEMO_LEADS_SKYLINE} onSelectLead={setSelectedLead} />
+        )}
+        {tab === 'analytics' && (
+          <AnalyticsTab leads={DEMO_LEADS_SKYLINE} />
+        )}
+        {tab === 'jobs' && (
+          <JobsTab jobs={DEMO_JOBS_SKYLINE} />
+        )}
+      </main>
+
+      <CtaBar />
+
+      {selectedLead && (
+        <CoachPanel
+          lead={selectedLead}
+          onClose={() => setSelectedLead(null)}
+          demoMode={true}
+        />
+      )}
+    </div>
+  );
+}
+
 // ─── App Root ─────────────────────────────────────────────────────────────────
+export { DemoPage };
+
 export default function App() {
   const [screen, setScreen] = useState('login'); // 'login' | 'onboarding' | 'app'
   const [session, setSession] = useState(null);
