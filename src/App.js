@@ -366,84 +366,84 @@ const TRADE_CHECKLISTS = {
 const DEMO_LEADS = [
   {
     id: 1, name: 'Hargrove Residence', contact: 'Frank Hargrove', role: 'Homeowner',
-    trade: 'Roofing', status: 'stalled', value: 14800, stage: 'proposal',
+    trade: 'Roofing', status: 'stalled', value: 14800, stage: 'estimate',
     callbackDate: '2026-03-25', lastContact: '2026-03-10',
     stallReason: 'price_objection', notes: 'Wants 15% off. Comparing 2 other bids.',
     industry: 'Residential', dealAge: 22,
   },
   {
     id: 2, name: 'Greenfield Office Park', contact: 'Dana Nguyen', role: 'Property Manager',
-    trade: 'HVAC', status: 'stalled', value: 23500, stage: 'negotiation',
+    trade: 'HVAC', status: 'stalled', value: 23500, stage: 'approved',
     callbackDate: '2026-03-24', lastContact: '2026-03-08',
     stallReason: 'budget_freeze', notes: 'Q1 budget locked. Revisit April per board decision.',
     industry: 'Commercial', dealAge: 38,
   },
   {
     id: 3, name: 'Martinez Family', contact: 'Rosa Martinez', role: 'Homeowner',
-    trade: 'Windows', status: 'active', value: 18700, stage: 'qualified',
+    trade: 'Windows', status: 'active', value: 18700, stage: 'inspection',
     callbackDate: '2026-03-23', lastContact: '2026-03-20',
     stallReason: null, notes: 'Replacing 12 windows. Anderson 400 series preferred.',
     industry: 'Residential', dealAge: 9,
   },
   {
     id: 4, name: 'Sunridge Apartments', contact: 'Todd Whitfield', role: 'Building Manager',
-    trade: 'Plumbing', status: 'stalled', value: 11400, stage: 'proposal',
+    trade: 'Plumbing', status: 'stalled', value: 11400, stage: 'estimate',
     callbackDate: '2026-03-19', lastContact: '2026-03-05',
     stallReason: 'no_response', notes: '3 follow-ups, no reply. 24-unit re-pipe job.',
     industry: 'Commercial', dealAge: 41,
   },
   {
     id: 5, name: 'Pinnacle Retail Center', contact: 'Jeff Bloom', role: 'Facilities Director',
-    trade: 'Electrical', status: 'active', value: 31200, stage: 'negotiation',
+    trade: 'Electrical', status: 'active', value: 31200, stage: 'approved',
     callbackDate: '2026-03-26', lastContact: '2026-03-21',
     stallReason: null, notes: '400A panel upgrade + 6 EV charger circuits. Near close.',
     industry: 'Commercial', dealAge: 27,
   },
   {
     id: 6, name: 'Keller Residence', contact: 'Amy Keller', role: 'Homeowner',
-    trade: 'Siding', status: 'stalled', value: 22600, stage: 'proposal',
+    trade: 'Siding', status: 'stalled', value: 22600, stage: 'estimate',
     callbackDate: '2026-03-22', lastContact: '2026-03-12',
     stallReason: 'competitor', notes: 'Got lower bid from another company. Need to show value.',
     industry: 'Residential', dealAge: 35,
   },
   {
     id: 7, name: 'Westview HOA', contact: 'Susan Park', role: 'HOA President',
-    trade: 'General Construction', status: 'active', value: 94000, stage: 'qualified',
+    trade: 'General Construction', status: 'active', value: 94000, stage: 'inspection',
     callbackDate: '2026-03-27', lastContact: '2026-03-18',
     stallReason: null, notes: 'Community center addition. Board vote scheduled for 3/28.',
     industry: 'HOA', dealAge: 18,
   },
   {
     id: 8, name: 'Magnolia Square', contact: 'Ryan Chen', role: 'Property Manager',
-    trade: 'Gutters', status: 'stalled', value: 5800, stage: 'proposal',
+    trade: 'Gutters', status: 'stalled', value: 5800, stage: 'estimate',
     callbackDate: '2026-03-15', lastContact: '2026-03-03',
     stallReason: 'technical_fit', notes: 'Concerned about K-style vs half-round fit on older building.',
     industry: 'Commercial', dealAge: 49,
   },
   {
     id: 9, name: 'Clearwater Gym', contact: 'Marcus Brown', role: 'Owner',
-    trade: 'Flooring', status: 'cold', value: 17200, stage: 'contacted',
+    trade: 'Flooring', status: 'cold', value: 17200, stage: 'lead',
     callbackDate: '2026-04-05', lastContact: '2026-02-20',
     stallReason: 'timing', notes: 'Remodel on hold until summer. Follow up Q2.',
     industry: 'Commercial', dealAge: 64,
   },
   {
     id: 10, name: 'Riverside Church', contact: 'Pastor James Willis', role: 'Facilities Coord',
-    trade: 'Painting', status: 'won', value: 9400, stage: 'won',
+    trade: 'Painting', status: 'won', value: 9400, stage: 'completed',
     callbackDate: null, lastContact: '2026-03-17',
     stallReason: null, notes: 'Closed! Exterior repaint starting April 1.',
     industry: 'Institutional', dealAge: 55,
   },
   {
     id: 11, name: 'Sagebrush Ranch', contact: 'Dale Cooper', role: 'Ranch Owner',
-    trade: 'Fencing', status: 'stalled', value: 28500, stage: 'negotiation',
+    trade: 'Fencing', status: 'stalled', value: 28500, stage: 'approved',
     callbackDate: '2026-03-23', lastContact: '2026-03-13',
     stallReason: 'wrong_contact', notes: 'Need to reach spouse who holds the purse strings.',
     industry: 'Residential', dealAge: 46,
   },
   {
     id: 12, name: 'Brookhaven Commons', contact: 'Tina Rosario', role: 'HOA Director',
-    trade: 'Landscaping', status: 'active', value: 34800, stage: 'proposal',
+    trade: 'Landscaping', status: 'active', value: 34800, stage: 'estimate',
     callbackDate: '2026-03-24', lastContact: '2026-03-22',
     stallReason: null, notes: 'Common area redesign. Proposal well received by board.',
     industry: 'HOA', dealAge: 14,
@@ -457,91 +457,91 @@ const DEMO_LEADS = [
   },
   {
     id: 14, name: 'Torres Residence', contact: 'Miguel Torres', role: 'Homeowner',
-    trade: 'Solar', status: 'stalled', value: 42000, stage: 'negotiation',
+    trade: 'Solar', status: 'stalled', value: 42000, stage: 'approved',
     callbackDate: '2026-03-23', lastContact: '2026-03-15',
     stallReason: 'budget_freeze', notes: 'Waiting on utility rebate approval. Big deal.',
     industry: 'Residential', dealAge: 74,
   },
   {
     id: 15, name: 'Lakewood Auto', contact: 'Steve Kim', role: 'Shop Owner',
-    trade: 'Garage Doors', status: 'active', value: 7200, stage: 'qualified',
+    trade: 'Garage Doors', status: 'active', value: 7200, stage: 'inspection',
     callbackDate: '2026-03-28', lastContact: '2026-03-23',
     stallReason: null, notes: '3 commercial overhead doors. Second call scheduled.',
     industry: 'Commercial', dealAge: 8,
   },
   {
     id: 16, name: 'Heritage Inn', contact: 'Patricia Lawson', role: 'General Manager',
-    trade: 'Masonry', status: 'active', value: 26400, stage: 'proposal',
+    trade: 'Masonry', status: 'active', value: 26400, stage: 'estimate',
     callbackDate: '2026-03-26', lastContact: '2026-03-19',
     stallReason: null, notes: 'Retaining wall + patio resurfacing. Historic property.',
     industry: 'Commercial', dealAge: 20,
   },
   {
     id: 17, name: 'City Storage LLC', contact: 'Nick Ferreira', role: 'Operations Mgr',
-    trade: 'Demolition', status: 'stalled', value: 38000, stage: 'proposal',
+    trade: 'Demolition', status: 'stalled', value: 38000, stage: 'estimate',
     callbackDate: '2026-03-20', lastContact: '2026-03-04',
     stallReason: 'budget_freeze', notes: 'Old warehouse demo. Full board approval pending.',
     industry: 'Commercial', dealAge: 53,
   },
   {
     id: 18, name: 'Oakwood Estates', contact: 'Carol Jensen', role: 'Homeowner',
-    trade: 'Septic', status: 'active', value: 15800, stage: 'qualified',
+    trade: 'Septic', status: 'active', value: 15800, stage: 'inspection',
     callbackDate: '2026-03-25', lastContact: '2026-03-20',
     stallReason: null, notes: 'Failing system. Urgent job. Permits in process.',
     industry: 'Residential', dealAge: 12,
   },
   {
     id: 19, name: 'Highland Park HOA', contact: 'David Moore', role: 'Board President',
-    trade: 'Tree Service', status: 'cold', value: 8600, stage: 'contacted',
+    trade: 'Tree Service', status: 'cold', value: 8600, stage: 'lead',
     callbackDate: '2026-04-10', lastContact: '2026-02-28',
     stallReason: 'timing', notes: '15 trees to remove. Waiting on spring budget approval.',
     industry: 'HOA', dealAge: 71,
   },
   {
     id: 20, name: 'Bay Area Car Wash', contact: 'Lena Torres', role: 'Owner',
-    trade: 'Pressure Washing', status: 'won', value: 4200, stage: 'won',
+    trade: 'Pressure Washing', status: 'won', value: 4200, stage: 'completed',
     callbackDate: null, lastContact: '2026-03-18',
     stallReason: null, notes: 'Closed! Full lot + canopy wash scheduled 3/27.',
     industry: 'Commercial', dealAge: 29,
   },
   {
     id: 21, name: 'Summit Developers', contact: 'Greg Patterson', role: 'Project Manager',
-    trade: 'Excavation', status: 'stalled', value: 67000, stage: 'negotiation',
+    trade: 'Excavation', status: 'stalled', value: 67000, stage: 'approved',
     callbackDate: '2026-03-22', lastContact: '2026-03-11',
     stallReason: 'price_objection', notes: 'Large site clearing. Need to value-engineer scope.',
     industry: 'Commercial', dealAge: 45,
   },
   {
     id: 22, name: 'Iron Works Industrial', contact: 'Carlos Reyes', role: 'Plant Manager',
-    trade: 'Welding', status: 'active', value: 19800, stage: 'qualified',
+    trade: 'Welding', status: 'active', value: 19800, stage: 'inspection',
     callbackDate: '2026-03-27', lastContact: '2026-03-21',
     stallReason: null, notes: 'Steel platform fabrication + install. Strong fit.',
     industry: 'Industrial', dealAge: 17,
   },
   {
     id: 23, name: 'Northgate Mall', contact: 'Janet Farley', role: 'Facilities Mgr',
-    trade: 'Insulation', status: 'stalled', value: 31500, stage: 'proposal',
+    trade: 'Insulation', status: 'stalled', value: 31500, stage: 'estimate',
     callbackDate: '2026-03-21', lastContact: '2026-03-07',
     stallReason: 'no_response', notes: 'Submitted proposal 2 weeks ago. Zero feedback.',
     industry: 'Commercial', dealAge: 58,
   },
   {
     id: 24, name: 'Sunrise Senior Living', contact: 'Andrew Mills', role: 'Maintenance Dir',
-    trade: 'Drywall', status: 'active', value: 13200, stage: 'proposal',
+    trade: 'Drywall', status: 'active', value: 13200, stage: 'estimate',
     callbackDate: '2026-03-26', lastContact: '2026-03-20',
     stallReason: null, notes: 'Wing renovation. 40 rooms. On track.',
     industry: 'Institutional', dealAge: 22,
   },
   {
     id: 25, name: 'The Craftsman Kitchen', contact: 'Sandra Yee', role: 'Owner',
-    trade: 'Carpentry', status: 'stalled', value: 24100, stage: 'negotiation',
+    trade: 'Carpentry', status: 'stalled', value: 24100, stage: 'approved',
     callbackDate: '2026-03-23', lastContact: '2026-03-14',
     stallReason: 'technical_fit', notes: 'Custom cabinet specs need rework. Awaiting revisions.',
     industry: 'Commercial', dealAge: 40,
   },
   {
     id: 26, name: 'Harbor View Condos', contact: 'Robert Chang', role: 'Board Treasurer',
-    trade: 'Waterproofing', status: 'stalled', value: 47500, stage: 'proposal',
+    trade: 'Waterproofing', status: 'stalled', value: 47500, stage: 'estimate',
     callbackDate: '2026-03-24', lastContact: '2026-03-10',
     stallReason: 'wrong_contact', notes: 'Need to engage full board, not just treasurer.',
     industry: 'HOA', dealAge: 62,
@@ -566,7 +566,17 @@ const STATUS_COLORS = {
   lost: '#ef4444',
 };
 
-const STAGE_ORDER = ['contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
+const STAGE_ORDER = ['lead', 'inspection', 'estimate', 'approved', 'in_progress', 'completed'];
+
+const STAGE_LABELS = {
+  lead: 'Lead',
+  inspection: 'Inspection',
+  estimate: 'Estimate',
+  approved: 'Approved',
+  in_progress: 'In Progress',
+  completed: 'Completed',
+  lost: 'Lost',
+};
 const TODAY = '2026-03-23';
 
 // ─── Jobs Data ────────────────────────────────────────────────────────────────
@@ -1009,7 +1019,7 @@ const PLAYBOOKS = {
 const DEMO_AI_RESPONSES = {
 
   // ── Excavation ──────────────────────────────────────────────────────────────
-  'Excavation|budget_freeze|negotiation': `1. The budget freeze doesn't eliminate the excavation risk — it defers it. Call this week and reframe the delay as a cost question: "What does it cost you if this scope sits unresolved through another season?" Get them to name the consequence. At the negotiation stage they've already agreed your price is right — the freeze is a cash flow problem, not a value problem. Treat it that way.
+  'Excavation|budget_freeze|approved': `1. The budget freeze doesn't eliminate the excavation risk — it defers it. Call this week and reframe the delay as a cost question: "What does it cost you if this scope sits unresolved through another season?" Get them to name the consequence. At the negotiation stage they've already agreed your price is right — the freeze is a cash flow problem, not a value problem. Treat it that way.
 
 2. Offer to split the excavation contract into two phases with separate invoicing: mobilization and primary earthwork billed in the current budget period, backfill, compaction, and final grading billed in the next. Many commercial clients can approve a phased draw schedule when a single lump sum is frozen. Bring a revised contract structure to the call — don't just suggest it verbally.
 
@@ -1017,7 +1027,7 @@ const DEMO_AI_RESPONSES = {
 
 4. Send a written mobilization hold: a refundable 10–15% deposit to lock your equipment and operator availability for a specific 4-week window. "My excavator finishes a site on April 11th. I can hold the following week with a fully refundable hold — otherwise that slot goes to the next job in queue." Real constraint, real urgency.`,
 
-  'Excavation|no_response|proposal': `1. Don't send another email — show up at the site or office this week. Excavation customers who go quiet after a proposal almost always have a specific concern they didn't voice: scope confusion, a competing quote, or sticker shock on mobilization costs. A 10-minute in-person visit will surface what four emails won't. Your line: "I was nearby on a grading project and wanted to make sure my proposal addressed everything before you made a decision."
+  'Excavation|no_response|estimate': `1. Don't send another email — show up at the site or office this week. Excavation customers who go quiet after a proposal almost always have a specific concern they didn't voice: scope confusion, a competing quote, or sticker shock on mobilization costs. A 10-minute in-person visit will surface what four emails won't. Your line: "I was nearby on a grading project and wanted to make sure my proposal addressed everything before you made a decision."
 
 2. The proposal itself may be the barrier — excavation scopes can look intimidating when itemized with equipment hours, haul fees, and compaction testing line items. Call and ask: "Is there any line item on my proposal that doesn't match how you were picturing the project?" This gives them permission to surface a specific objection instead of ignoring the document. Most no-response situations in excavation come from scope confusion, not disinterest.
 
@@ -1025,7 +1035,7 @@ const DEMO_AI_RESPONSES = {
 
 4. Create a real deadline by referencing your equipment schedule: "My excavator rolls off a site on April 4th. I have a 2-week window before the next job. I'd like to slot your project in — otherwise I'm looking at late May at the earliest." Real constraint, not manufactured pressure. Send it, then go quiet for 48 hours.`,
 
-  'Excavation|competitor|negotiation': `1. At negotiation with a competitor in play, don't discount first — ask what you're actually competing against. "What specifically are they offering that you're comparing to our proposal?" Excavation bids vary significantly on soil disposal method, compaction specifications, equipment type, and site restoration scope. If the competing bid excludes haul fees or uses lighter equipment for a spec that requires heavy machinery, it's not a lower price — it's an incomplete scope. Show that comparison in writing before you touch your number.
+  'Excavation|competitor|approved': `1. At negotiation with a competitor in play, don't discount first — ask what you're actually competing against. "What specifically are they offering that you're comparing to our proposal?" Excavation bids vary significantly on soil disposal method, compaction specifications, equipment type, and site restoration scope. If the competing bid excludes haul fees or uses lighter equipment for a spec that requires heavy machinery, it's not a lower price — it's an incomplete scope. Show that comparison in writing before you touch your number.
 
 2. Pull your most comparable recent project by soil type, depth, and site access difficulty. Prepare a one-page summary: what the job was, what challenges came up, how you handled them, and a photo of the finished grade. Excavation customers making a final call between two contractors almost always choose the one who has documented experience with the same site conditions. "I completed a similar cut-and-fill on a clay site in [city] last fall — here's exactly how it went."
 
@@ -1033,7 +1043,7 @@ const DEMO_AI_RESPONSES = {
 
 4. Offer a performance bond or written grading guarantee with specific tolerances — within 0.1 ft of design grade, signed off before final payment. Most small excavation contractors won't offer this. A written standard plus a performance bond makes the competitor's lower number look like an unquantified risk, which is a different kind of comparison entirely.`,
 
-  'Excavation|price_objection|proposal': `1. Before you negotiate price, find out what they're comparing your proposal to. Ask: "Is there a specific number you had in mind, or have you received another quote?" If they have a competing bid, ask for the total — or the scope breakdown. Excavation proposals vary widely on what's included: your bid may cover compaction testing, engineered fill, haul fees, and utility locating that the cheap bid excludes entirely. You cannot defend your price against a number you haven't seen.
+  'Excavation|price_objection|estimate': `1. Before you negotiate price, find out what they're comparing your proposal to. Ask: "Is there a specific number you had in mind, or have you received another quote?" If they have a competing bid, ask for the total — or the scope breakdown. Excavation proposals vary widely on what's included: your bid may cover compaction testing, engineered fill, haul fees, and utility locating that the cheap bid excludes entirely. You cannot defend your price against a number you haven't seen.
 
 2. Offer a site walk before adjusting anything. Walk the project together: access route, cut area, spoil staging, underground conflicts. This demonstrates that you've thought through the logistics in detail, and it often surfaces scope items they didn't realize were in your bid — permit coordination, rock breaking contingency, drainage regrading — which shrinks the price objection before you ever touch the number.
 
@@ -1085,7 +1095,7 @@ const DEMO_AI_RESPONSES = {
 
 4. Reframe your follow-up as a scheduling issue, not a proposal issue: "I have a licensed plumber available the week of [date] — we're finishing a nearby job and could start yours that Monday. I need a signed contract by Friday to hold that crew." Once you have the right contact, this close is clean. A real scheduling constraint with a specific date beats another "just following up on my proposal" email.`,
 
-  'Plumbing|wrong_contact|proposal': `1. Your plumbing proposal is sitting with someone who can't approve it — this is the most common reason proposals die in the first two weeks. Call your current contact and ask directly: "Are you the person who signs off on the contract, or does this go through someone else first?" Most people will tell you. If it needs to go higher, ask for a warm introduction: "Can you copy [decision-maker] on my next email, or should I reach out to them directly?"
+  'Plumbing|wrong_contact|estimate': `1. Your plumbing proposal is sitting with someone who can't approve it — this is the most common reason proposals die in the first two weeks. Call your current contact and ask directly: "Are you the person who signs off on the contract, or does this go through someone else first?" Most people will tell you. If it needs to go higher, ask for a warm introduction: "Can you copy [decision-maker] on my next email, or should I reach out to them directly?"
 
 2. If a direct introduction isn't happening, go around respectfully via LinkedIn or the company's website. Email the property owner, facilities manager, or GC — whoever actually approves plumbing work. Subject line: "[Property address] — Plumbing Scope, Ready to Schedule." First sentence: "I've been working with [contact name] on a plumbing proposal for your property and wanted to make sure the right person had a chance to review it before we lose our installation window." You're not undermining anyone — you're being professionally thorough.
 
@@ -1102,7 +1112,7 @@ const DEMO_AI_RESPONSES = {
 
 4. Stay visible without being pushy — one project-specific touchpoint per month. A photo of comparable electrical work you completed, a note about a code change affecting their scope, or a material lead time update: "Thought of your project when I finished this panel upgrade — same service size you need. Just wanted to stay on your radar for when your timing clears up." One specific message per month keeps you front of mind without the feeling of being chased.`,
 
-  'Electrical|timing|qualified': `1. "Bad timing" at the qualified stage in electrical almost always means one of three things: permit not yet approved, GC hasn't released the electrical scope, or another project phase hasn't finished. Get them to name the exact blocker: "Is the timing issue something I can help solve, or is there a specific milestone that needs to happen first?" If you don't know the specific dependency, you're waiting on a timeline you don't control.
+  'Electrical|timing|inspection': `1. "Bad timing" at the qualified stage in electrical almost always means one of three things: permit not yet approved, GC hasn't released the electrical scope, or another project phase hasn't finished. Get them to name the exact blocker: "Is the timing issue something I can help solve, or is there a specific milestone that needs to happen first?" If you don't know the specific dependency, you're waiting on a timeline you don't control.
 
 2. If permits are the bottleneck, offer to pull the permit yourself — application, fee, and inspection scheduling as a pass-through at cost. Electrical contractors who manage their own permits move faster, reduce the customer's administrative burden, and win more repeat commercial work because of it. This one offer often changes the entire relationship.
 
@@ -1174,7 +1184,7 @@ function getDemoResponse(lead) {
 
 // ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
 const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
-const LEAD_STAGES = ['contacted', 'qualified', 'proposal', 'negotiation'];
+const LEAD_STAGES = ['lead', 'inspection', 'estimate', 'approved', 'in_progress', 'completed'];
 
 const FI = { // form input base
   width: '100%', padding: '9px 12px', background: '#0f1117',
@@ -1199,7 +1209,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
     address: lead?.address || '',
     value: lead?.value ? String(lead.value) : '',
     trade: lead?.trade || defaultTrade || 'Roofing',
-    stage: lead?.stage || 'contacted',
+    stage: lead?.stage || 'lead',
     source: lead?.source || 'Referral',
     notes: lead?.notes || '',
     callbackDate: lead?.callbackDate || '',
@@ -1339,7 +1349,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
               onChange={e => set('stage', e.target.value)}
               onFocus={() => setFocused('stage')} onBlur={() => setFocused(null)}>
               {LEAD_STAGES.map(s => (
-                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                <option key={s} value={s}>{STAGE_LABELS[s] || s}</option>
               ))}
             </select>
           </div>
@@ -1537,7 +1547,7 @@ Format as numbered action items, no preamble.`,
         <button style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ ...S.modalTitle, paddingRight: 52 }}>{lead.name}</div>
         <div style={S.modalSub}>
-          {lead.contact} · {lead.role} · {fmt(lead.value)} · {lead.stage}
+          {lead.contact} · {lead.role} · {fmt(lead.value)} · {STAGE_LABELS[lead.stage] || lead.stage}
           {lead.stallReason && ` · ${STALL_LABELS[lead.stallReason]}`}
         </div>
         <div style={{ marginBottom: 20 }}>
@@ -1680,7 +1690,7 @@ function LeadCard({ lead, onClick, onEdit, onDelete, demoMode }) {
 
       <div style={S.cardMeta}>
         <div style={S.metaItem}>Value: <span style={S.metaValue}>{fmt(lead.value)}</span></div>
-        <div style={S.metaItem}>Stage: <span style={S.metaValue}>{lead.stage}</span></div>
+        <div style={S.metaItem}>Stage: <span style={S.metaValue}>{STAGE_LABELS[lead.stage] || lead.stage}</span></div>
         <div style={S.metaItem}>Age: <span style={S.metaValue}>{lead.dealAge}d</span></div>
       </div>
 
@@ -1943,7 +1953,7 @@ function CallbacksTab({ leads, onSelectLead }) {
               <div style={{ flex: 1 }}>
                 <div style={S.cbName}>{lead.name}</div>
                 <div style={S.cbContact}>
-                  {lead.contact} · {lead.stage}
+                  {lead.contact} · {STAGE_LABELS[lead.stage] || lead.stage}
                   <span style={{ ...S.tradeBadge(lead.trade), marginLeft: 8 }}>{lead.trade}</span>
                 </div>
               </div>
@@ -2042,7 +2052,7 @@ function AnalyticsTab({ leads, tier }) {
           <div style={S.chartTitle}>Pipeline by Stage</div>
           {stageFunnel.map(({ stage, count, value }, i) => (
             <div key={stage} style={S.barRow}>
-              <div style={S.barLabel}>{stage.charAt(0).toUpperCase() + stage.slice(1)}</div>
+              <div style={S.barLabel}>{STAGE_LABELS[stage] || stage}</div>
               <div style={S.barTrack}>
                 <div style={S.barFill(count / maxStageCount * 100, STAGE_COLORS[i % STAGE_COLORS.length])} />
               </div>
@@ -3091,15 +3101,15 @@ const dj = (id, customer, address, trade, value, status, scheduledDate, complete
 const TRADE_DEMO_DATA = {
   'Roofing': {
     leads: [
-      dl(1,'Hargrove Residence','Frank Hargrove','Homeowner','active',18400,'proposal','2026-03-25',null,'GAF Timberline HDZ preferred. Wants 50yr warranty. Demo well received.','Residential',12,'Roofing'),
-      dl(2,'Westside Church of God','Pastor James Willis','Facilities Coord','stalled',34700,'negotiation','2026-03-23','budget_freeze','Commercial flat roof, 11,000 sq ft. Full board approval needed.','Institutional',41,'Roofing'),
-      dl(3,'Sunridge HOA Phase II','Linda Marsh','HOA President','active',52000,'qualified','2026-03-27',null,'28 townhome units. Insurance claim approved. Scheduling crew now.','HOA',8,'Roofing'),
-      dl(4,'Kowalski Residence','Brian Kowalski','Homeowner','stalled',11200,'proposal','2026-03-19','no_response','3 calls, 2 emails. Visible hail damage. Try door knock.','Residential',29,'Roofing'),
-      dl(5,'Clearbrook Office Plaza','Diane Okafor','Property Manager','active',41500,'negotiation','2026-03-26',null,'TPO membrane, 14,000 sq ft. Contract review underway.','Commercial',19,'Roofing'),
-      dl(6,'Torres Residence','Miguel Torres','Homeowner','stalled',9800,'proposal','2026-03-22','price_objection','Got a bid $2k lower. Need to justify value difference.','Residential',33,'Roofing'),
-      dl(7,'Lakewood Elementary','Tom Hensley','Facilities Director','cold',78000,'contacted','2026-04-15','timing','Large job. School board vote in April. Stay warm.','Institutional',53,'Roofing'),
-      dl(8,'Patel Residence','Raj Patel','Homeowner','won',14600,'won',null,null,'Closed! CertainTeed Landmark Pro. Crew starts 3/26.','Residential',24,'Roofing'),
-      dl(9,'Morrison Auto Group','Steve Morrison','Owner','stalled',27300,'negotiation','2026-03-24','competitor','Getting 3 bids. Push warranty + crew experience.','Commercial',37,'Roofing'),
+      dl(1,'Hargrove Residence','Frank Hargrove','Homeowner','active',18400,'estimate','2026-03-25',null,'GAF Timberline HDZ preferred. Wants 50yr warranty. Demo well received.','Residential',12,'Roofing'),
+      dl(2,'Westside Church of God','Pastor James Willis','Facilities Coord','stalled',34700,'approved','2026-03-23','budget_freeze','Commercial flat roof, 11,000 sq ft. Full board approval needed.','Institutional',41,'Roofing'),
+      dl(3,'Sunridge HOA Phase II','Linda Marsh','HOA President','active',52000,'inspection','2026-03-27',null,'28 townhome units. Insurance claim approved. Scheduling crew now.','HOA',8,'Roofing'),
+      dl(4,'Kowalski Residence','Brian Kowalski','Homeowner','stalled',11200,'estimate','2026-03-19','no_response','3 calls, 2 emails. Visible hail damage. Try door knock.','Residential',29,'Roofing'),
+      dl(5,'Clearbrook Office Plaza','Diane Okafor','Property Manager','active',41500,'approved','2026-03-26',null,'TPO membrane, 14,000 sq ft. Contract review underway.','Commercial',19,'Roofing'),
+      dl(6,'Torres Residence','Miguel Torres','Homeowner','stalled',9800,'estimate','2026-03-22','price_objection','Got a bid $2k lower. Need to justify value difference.','Residential',33,'Roofing'),
+      dl(7,'Lakewood Elementary','Tom Hensley','Facilities Director','cold',78000,'lead','2026-04-15','timing','Large job. School board vote in April. Stay warm.','Institutional',53,'Roofing'),
+      dl(8,'Patel Residence','Raj Patel','Homeowner','won',14600,'completed',null,null,'Closed! CertainTeed Landmark Pro. Crew starts 3/26.','Residential',24,'Roofing'),
+      dl(9,'Morrison Auto Group','Steve Morrison','Owner','stalled',27300,'approved','2026-03-24','competitor','Getting 3 bids. Push warranty + crew experience.','Commercial',37,'Roofing'),
       dl(10,'Riverside Church','Pastor Rick Adams','Admin Director','lost',23400,'lost',null,'competitor','Lost to church-network contractor.','Institutional',61,'Roofing'),
     ],
     jobs: [
@@ -3112,14 +3122,14 @@ const TRADE_DEMO_DATA = {
   },
   'Gutters': {
     leads: [
-      dl(1,'Whitfield Residence','Carol Whitfield','Homeowner','active',3200,'proposal','2026-03-25',null,'K-style aluminum, 180 linear ft. Wants leaf guards too.','Residential',7,'Gutters'),
-      dl(2,'Maple Creek HOA','Dan Sorenson','HOA Manager','active',8400,'qualified','2026-03-27',null,'14 units, all need gutter replacement. New construction.','HOA',11,'Gutters'),
-      dl(3,'Brennan Residence','Pat Brennan','Homeowner','stalled',2600,'proposal','2026-03-20','price_objection','Competitor quoted $400 less. Explain quality difference.','Residential',22,'Gutters'),
-      dl(4,'Valley Office Park','Greg Nguyen','Property Manager','active',5800,'negotiation','2026-03-26',null,'48-unit commercial building. Half-round copper on historic facade.','Commercial',16,'Gutters'),
-      dl(5,'Kim Residence','Susan Kim','Homeowner','stalled',1900,'contacted','2026-03-19','no_response','Called twice. Storm damage visible in photos she sent.','Residential',18,'Gutters'),
-      dl(6,'Riverside Apartments','Josh Tanner','Maintenance Dir','cold',12000,'contacted','2026-04-10','timing','HOA budget not approved until April meeting.','Commercial',34,'Gutters'),
-      dl(7,'Okafor Residence','Emeka Okafor','Homeowner','won',3800,'won',null,null,'Closed! Seamless aluminum + guards. Job next week.','Residential',14,'Gutters'),
-      dl(8,'Lakeview Church','Deacon Willis','Facilities','stalled',4400,'proposal','2026-03-22','budget_freeze','Waiting on spring maintenance budget release.','Institutional',28,'Gutters'),
+      dl(1,'Whitfield Residence','Carol Whitfield','Homeowner','active',3200,'estimate','2026-03-25',null,'K-style aluminum, 180 linear ft. Wants leaf guards too.','Residential',7,'Gutters'),
+      dl(2,'Maple Creek HOA','Dan Sorenson','HOA Manager','active',8400,'inspection','2026-03-27',null,'14 units, all need gutter replacement. New construction.','HOA',11,'Gutters'),
+      dl(3,'Brennan Residence','Pat Brennan','Homeowner','stalled',2600,'estimate','2026-03-20','price_objection','Competitor quoted $400 less. Explain quality difference.','Residential',22,'Gutters'),
+      dl(4,'Valley Office Park','Greg Nguyen','Property Manager','active',5800,'approved','2026-03-26',null,'48-unit commercial building. Half-round copper on historic facade.','Commercial',16,'Gutters'),
+      dl(5,'Kim Residence','Susan Kim','Homeowner','stalled',1900,'lead','2026-03-19','no_response','Called twice. Storm damage visible in photos she sent.','Residential',18,'Gutters'),
+      dl(6,'Riverside Apartments','Josh Tanner','Maintenance Dir','cold',12000,'lead','2026-04-10','timing','HOA budget not approved until April meeting.','Commercial',34,'Gutters'),
+      dl(7,'Okafor Residence','Emeka Okafor','Homeowner','won',3800,'completed',null,null,'Closed! Seamless aluminum + guards. Job next week.','Residential',14,'Gutters'),
+      dl(8,'Lakeview Church','Deacon Willis','Facilities','stalled',4400,'estimate','2026-03-22','budget_freeze','Waiting on spring maintenance budget release.','Institutional',28,'Gutters'),
       dl(9,'Parks Residence','Tom Parks','Homeowner','lost',2200,'lost',null,'competitor','DIY job. Bought gutters at hardware store.','Residential',31,'Gutters'),
     ],
     jobs: [
@@ -3131,14 +3141,14 @@ const TRADE_DEMO_DATA = {
   },
   'Siding': {
     leads: [
-      dl(1,'Henderson Residence','Bill Henderson','Homeowner','active',22400,'proposal','2026-03-25',null,'Hardie plank, full exterior. Storm damage on south wall.','Residential',14,'Siding'),
-      dl(2,'Northgate Condo Assoc','Rhonda Bass','HOA Director','stalled',68000,'negotiation','2026-03-23','budget_freeze','32-unit complex. Board vote needed. Big job.','HOA',45,'Siding'),
-      dl(3,'Garcia Residence','Maria Garcia','Homeowner','active',16800,'qualified','2026-03-27',null,'Vinyl siding replacement. Interested in insulated option.','Residential',9,'Siding'),
-      dl(4,'Crossroads Medical Bldg','Don Frazier','Facilities Dir','stalled',41200,'proposal','2026-03-20','no_response','Submitted quote 3 weeks ago. Follow up with FM.','Commercial',36,'Siding'),
-      dl(5,'Yamamoto Residence','Ken Yamamoto','Homeowner','stalled',19500,'proposal','2026-03-22','price_objection','Competitor at $3k less. Emphasize warranty & install quality.','Residential',28,'Siding'),
-      dl(6,'Westbrook Townhomes','Chad Miller','Property Manager','cold',54000,'contacted','2026-04-08','timing','20 units, exterior update deferred to Q3.','Commercial',41,'Siding'),
-      dl(7,'Pham Residence','Linda Pham','Homeowner','won',14900,'won',null,null,'Closed! Hardie plank, Arctic White. Crew 3/30.','Residential',18,'Siding'),
-      dl(8,'Sunrise Retail Strip','Art Delgado','Owner','stalled',31000,'negotiation','2026-03-24','competitor','3rd bid in. Our price is highest — push warranty story.','Commercial',39,'Siding'),
+      dl(1,'Henderson Residence','Bill Henderson','Homeowner','active',22400,'estimate','2026-03-25',null,'Hardie plank, full exterior. Storm damage on south wall.','Residential',14,'Siding'),
+      dl(2,'Northgate Condo Assoc','Rhonda Bass','HOA Director','stalled',68000,'approved','2026-03-23','budget_freeze','32-unit complex. Board vote needed. Big job.','HOA',45,'Siding'),
+      dl(3,'Garcia Residence','Maria Garcia','Homeowner','active',16800,'inspection','2026-03-27',null,'Vinyl siding replacement. Interested in insulated option.','Residential',9,'Siding'),
+      dl(4,'Crossroads Medical Bldg','Don Frazier','Facilities Dir','stalled',41200,'estimate','2026-03-20','no_response','Submitted quote 3 weeks ago. Follow up with FM.','Commercial',36,'Siding'),
+      dl(5,'Yamamoto Residence','Ken Yamamoto','Homeowner','stalled',19500,'estimate','2026-03-22','price_objection','Competitor at $3k less. Emphasize warranty & install quality.','Residential',28,'Siding'),
+      dl(6,'Westbrook Townhomes','Chad Miller','Property Manager','cold',54000,'lead','2026-04-08','timing','20 units, exterior update deferred to Q3.','Commercial',41,'Siding'),
+      dl(7,'Pham Residence','Linda Pham','Homeowner','won',14900,'completed',null,null,'Closed! Hardie plank, Arctic White. Crew 3/30.','Residential',18,'Siding'),
+      dl(8,'Sunrise Retail Strip','Art Delgado','Owner','stalled',31000,'approved','2026-03-24','competitor','3rd bid in. Our price is highest — push warranty story.','Commercial',39,'Siding'),
       dl(9,'Cooper Residence','James Cooper','Homeowner','lost',18200,'lost',null,'competitor','Lost on price. Went with lower bid.','Residential',52,'Siding'),
     ],
     jobs: [
@@ -3150,14 +3160,14 @@ const TRADE_DEMO_DATA = {
   },
   'Windows': {
     leads: [
-      dl(1,'Martinez Residence','Rosa Martinez','Homeowner','active',18700,'qualified','2026-03-25',null,'12 windows, Anderson 400 series. Energy upgrade.','Residential',9,'Windows'),
-      dl(2,'Lakeview Office Tower','Diana Chu','Property Manager','stalled',94000,'negotiation','2026-03-23','budget_freeze','Floor 4-6 full replacement. Q2 budget approval needed.','Commercial',52,'Windows'),
-      dl(3,'Nelson Residence','Greg Nelson','Homeowner','active',11400,'proposal','2026-03-27',null,'8 double-hungs + 2 picture windows. Storm damage claim.','Residential',13,'Windows'),
-      dl(4,'Westside School District','Carl Jennings','Facilities Dir','stalled',128000,'proposal','2026-03-20','timing','3 school buildings. Bond measure vote in May.','Institutional',61,'Windows'),
-      dl(5,'Osei Residence','Kwame Osei','Homeowner','stalled',14200,'proposal','2026-03-22','price_objection','Wants Pella but balking at price. Show lifetime value.','Residential',24,'Windows'),
-      dl(6,'Ridgecrest Apartments','Tony Daves','Property Manager','cold',42000,'contacted','2026-04-12','timing','28 units, window upgrade. Wait for lease renewals.','Commercial',38,'Windows'),
-      dl(7,'Flynn Residence','Kate Flynn','Homeowner','won',9800,'won',null,null,'Closed! 6 casements. Crew scheduled 4/1.','Residential',17,'Windows'),
-      dl(8,'Horizon Hotel','Mark Steele','GM','stalled',76000,'negotiation','2026-03-24','competitor','3 bids in. Push the thermal performance data.','Commercial',44,'Windows'),
+      dl(1,'Martinez Residence','Rosa Martinez','Homeowner','active',18700,'inspection','2026-03-25',null,'12 windows, Anderson 400 series. Energy upgrade.','Residential',9,'Windows'),
+      dl(2,'Lakeview Office Tower','Diana Chu','Property Manager','stalled',94000,'approved','2026-03-23','budget_freeze','Floor 4-6 full replacement. Q2 budget approval needed.','Commercial',52,'Windows'),
+      dl(3,'Nelson Residence','Greg Nelson','Homeowner','active',11400,'estimate','2026-03-27',null,'8 double-hungs + 2 picture windows. Storm damage claim.','Residential',13,'Windows'),
+      dl(4,'Westside School District','Carl Jennings','Facilities Dir','stalled',128000,'estimate','2026-03-20','timing','3 school buildings. Bond measure vote in May.','Institutional',61,'Windows'),
+      dl(5,'Osei Residence','Kwame Osei','Homeowner','stalled',14200,'estimate','2026-03-22','price_objection','Wants Pella but balking at price. Show lifetime value.','Residential',24,'Windows'),
+      dl(6,'Ridgecrest Apartments','Tony Daves','Property Manager','cold',42000,'lead','2026-04-12','timing','28 units, window upgrade. Wait for lease renewals.','Commercial',38,'Windows'),
+      dl(7,'Flynn Residence','Kate Flynn','Homeowner','won',9800,'completed',null,null,'Closed! 6 casements. Crew scheduled 4/1.','Residential',17,'Windows'),
+      dl(8,'Horizon Hotel','Mark Steele','GM','stalled',76000,'approved','2026-03-24','competitor','3 bids in. Push the thermal performance data.','Commercial',44,'Windows'),
       dl(9,'Thomas Residence','Ben Thomas','Homeowner','lost',13500,'lost',null,'competitor','Went with big box store installer.','Residential',40,'Windows'),
     ],
     jobs: [
@@ -3169,14 +3179,14 @@ const TRADE_DEMO_DATA = {
   },
   'Excavation': {
     leads: [
-      dl(1,'Riverside Development Site','Greg Patterson','Project Manager','active',78000,'qualified','2026-03-25',null,'Site clearing and grading for 14-lot subdivision.','Commercial',18,'Excavation'),
-      dl(2,'Summit Commercial Park','Lena Vasquez','Developer','stalled',142000,'negotiation','2026-03-23','budget_freeze','40-acre site prep. Bank financing pending.','Commercial',54,'Excavation'),
-      dl(3,'Clearwater Estates','Bob Fry','Developer','active',55000,'proposal','2026-03-27',null,'22-lot residential cut and fill. Drainage plan approved.','Commercial',12,'Excavation'),
-      dl(4,'Highway 183 Retail','Diane Moss','Site PM','stalled',89000,'proposal','2026-03-20','no_response','Sent bid 2 weeks ago. GC is unresponsive.','Commercial',41,'Excavation'),
-      dl(5,'Lakeland Church Campus','Rev. Tim Carroll','Admin','stalled',38000,'proposal','2026-03-22','price_objection','Our bid $12k over. Scope creep in their mind.','Institutional',33,'Excavation'),
-      dl(6,'Northview Business Park','Carl Stein','Developer','cold',210000,'contacted','2026-05-01','timing','Large project. Permits not approved until Q3.','Commercial',62,'Excavation'),
-      dl(7,'Mesa Verde HOA','Sandra Hill','Board President','won',31000,'won',null,null,'Closed! Retention pond excavation starts 4/7.','HOA',22,'Excavation'),
-      dl(8,'Toro Industrial Site','Ray Toro','Plant Manager','stalled',67000,'negotiation','2026-03-24','competitor','Two other bids in. Lowest by $8k.','Industrial',38,'Excavation'),
+      dl(1,'Riverside Development Site','Greg Patterson','Project Manager','active',78000,'inspection','2026-03-25',null,'Site clearing and grading for 14-lot subdivision.','Commercial',18,'Excavation'),
+      dl(2,'Summit Commercial Park','Lena Vasquez','Developer','stalled',142000,'approved','2026-03-23','budget_freeze','40-acre site prep. Bank financing pending.','Commercial',54,'Excavation'),
+      dl(3,'Clearwater Estates','Bob Fry','Developer','active',55000,'estimate','2026-03-27',null,'22-lot residential cut and fill. Drainage plan approved.','Commercial',12,'Excavation'),
+      dl(4,'Highway 183 Retail','Diane Moss','Site PM','stalled',89000,'estimate','2026-03-20','no_response','Sent bid 2 weeks ago. GC is unresponsive.','Commercial',41,'Excavation'),
+      dl(5,'Lakeland Church Campus','Rev. Tim Carroll','Admin','stalled',38000,'estimate','2026-03-22','price_objection','Our bid $12k over. Scope creep in their mind.','Institutional',33,'Excavation'),
+      dl(6,'Northview Business Park','Carl Stein','Developer','cold',210000,'lead','2026-05-01','timing','Large project. Permits not approved until Q3.','Commercial',62,'Excavation'),
+      dl(7,'Mesa Verde HOA','Sandra Hill','Board President','won',31000,'completed',null,null,'Closed! Retention pond excavation starts 4/7.','HOA',22,'Excavation'),
+      dl(8,'Toro Industrial Site','Ray Toro','Plant Manager','stalled',67000,'approved','2026-03-24','competitor','Two other bids in. Lowest by $8k.','Industrial',38,'Excavation'),
       dl(9,'Sunrise School Dist','Phil Long','Facilities Dir','lost',44000,'lost',null,'competitor','Lost to in-county contractor on public bid.','Institutional',71,'Excavation'),
     ],
     jobs: [
@@ -3188,14 +3198,14 @@ const TRADE_DEMO_DATA = {
   },
   'General Construction': {
     leads: [
-      dl(1,'Westview HOA Clubhouse','Susan Park','HOA President','active',94000,'qualified','2026-03-27',null,'2,400 sq ft community center addition. Board vote 3/28.','HOA',18,'General Construction'),
-      dl(2,'Bay City Urgent Care','Dr. Amir Fahad','Owner','stalled',178000,'negotiation','2026-03-23','budget_freeze','3,200 sq ft medical build-out. SBA loan in process.','Commercial',55,'General Construction'),
-      dl(3,'Sunrise Senior Living Wing B','Andrew Mills','Exec Dir','active',262000,'proposal','2026-03-26',null,'40-room wing renovation. Full scope approved.','Institutional',22,'General Construction'),
-      dl(4,'Cornerstone Church Addition','Pastor Dale Ruiz','Admin','stalled',145000,'proposal','2026-03-20','timing','Sanctuary expansion. Congregation vote in April.','Institutional',48,'General Construction'),
-      dl(5,'Riverdale Shopping Center','Pam Novak','Asset Manager','stalled',88000,'proposal','2026-03-22','no_response','4-suite interior rework. Haven\'t heard back in 3 weeks.','Commercial',36,'General Construction'),
-      dl(6,'Hilltop Brewery Expansion','Chris Roth','Owner','active',52000,'negotiation','2026-03-25',null,'Taproom expansion + patio. Permits in hand. Near close.','Commercial',14,'General Construction'),
-      dl(7,'Lakeside Fire Station','Chief Pat Moore','City Admin','cold',310000,'contacted','2026-05-15','timing','City budget item. RFP not out until May.','Institutional',71,'General Construction'),
-      dl(8,'Verde Office Conversion','Tom Lewin','Owner','won',67000,'won',null,null,'Closed! Warehouse-to-office conversion starts 4/3.','Commercial',27,'General Construction'),
+      dl(1,'Westview HOA Clubhouse','Susan Park','HOA President','active',94000,'inspection','2026-03-27',null,'2,400 sq ft community center addition. Board vote 3/28.','HOA',18,'General Construction'),
+      dl(2,'Bay City Urgent Care','Dr. Amir Fahad','Owner','stalled',178000,'approved','2026-03-23','budget_freeze','3,200 sq ft medical build-out. SBA loan in process.','Commercial',55,'General Construction'),
+      dl(3,'Sunrise Senior Living Wing B','Andrew Mills','Exec Dir','active',262000,'estimate','2026-03-26',null,'40-room wing renovation. Full scope approved.','Institutional',22,'General Construction'),
+      dl(4,'Cornerstone Church Addition','Pastor Dale Ruiz','Admin','stalled',145000,'estimate','2026-03-20','timing','Sanctuary expansion. Congregation vote in April.','Institutional',48,'General Construction'),
+      dl(5,'Riverdale Shopping Center','Pam Novak','Asset Manager','stalled',88000,'estimate','2026-03-22','no_response','4-suite interior rework. Haven\'t heard back in 3 weeks.','Commercial',36,'General Construction'),
+      dl(6,'Hilltop Brewery Expansion','Chris Roth','Owner','active',52000,'approved','2026-03-25',null,'Taproom expansion + patio. Permits in hand. Near close.','Commercial',14,'General Construction'),
+      dl(7,'Lakeside Fire Station','Chief Pat Moore','City Admin','cold',310000,'lead','2026-05-15','timing','City budget item. RFP not out until May.','Institutional',71,'General Construction'),
+      dl(8,'Verde Office Conversion','Tom Lewin','Owner','won',67000,'completed',null,null,'Closed! Warehouse-to-office conversion starts 4/3.','Commercial',27,'General Construction'),
       dl(9,'Atlas Fitness Center','Gina Cruz','Owner','lost',114000,'lost',null,'competitor','Lost on bid. GC with existing relationship won.','Commercial',62,'General Construction'),
     ],
     jobs: [
@@ -3208,14 +3218,14 @@ const TRADE_DEMO_DATA = {
   },
   'HVAC': {
     leads: [
-      dl(1,'Greenfield Office Park','Dana Nguyen','Property Manager','stalled',23500,'negotiation','2026-03-24','budget_freeze','Carrier 5-ton rooftop. Q1 budget locked. Revisit April.','Commercial',38,'HVAC'),
-      dl(2,'Ridgecrest Elementary','Carl Beck','Facilities Dir','active',44000,'qualified','2026-03-27',null,'8 classroom units + 1 main office. Full replacement.','Institutional',14,'HVAC'),
-      dl(3,'Johnson Residence','Tim Johnson','Homeowner','active',8900,'proposal','2026-03-25',null,'4-ton Lennox split system. Existing unit is 18 years old.','Residential',10,'HVAC'),
-      dl(4,'Sunrise Fitness Club','Marco Lane','Owner','stalled',31200,'proposal','2026-03-20','price_objection','Commercial package unit. $4k over their budget. Trim scope.','Commercial',29,'HVAC'),
-      dl(5,'Northview Apartments','Chad Ross','Property Manager','stalled',18400,'proposal','2026-03-22','no_response','16 units need replacement. Sent proposal, no reply.','Commercial',33,'HVAC'),
-      dl(6,'Lakeside Church','Deacon Paul Smith','Admin','cold',27000,'contacted','2026-04-20','timing','Sanctuary + 6 classrooms. HVAC budget next fiscal year.','Institutional',51,'HVAC'),
-      dl(7,'Porter Residence','Amy Porter','Homeowner','won',7600,'won',null,null,'Closed! Trane 3.5-ton install. Crew 3/27.','Residential',16,'HVAC'),
-      dl(8,'Metro Data Center','IT Director Brad Lee','Facilities','stalled',86000,'negotiation','2026-03-24','competitor','Precision cooling for server room. 2 other bids in.','Commercial',47,'HVAC'),
+      dl(1,'Greenfield Office Park','Dana Nguyen','Property Manager','stalled',23500,'approved','2026-03-24','budget_freeze','Carrier 5-ton rooftop. Q1 budget locked. Revisit April.','Commercial',38,'HVAC'),
+      dl(2,'Ridgecrest Elementary','Carl Beck','Facilities Dir','active',44000,'inspection','2026-03-27',null,'8 classroom units + 1 main office. Full replacement.','Institutional',14,'HVAC'),
+      dl(3,'Johnson Residence','Tim Johnson','Homeowner','active',8900,'estimate','2026-03-25',null,'4-ton Lennox split system. Existing unit is 18 years old.','Residential',10,'HVAC'),
+      dl(4,'Sunrise Fitness Club','Marco Lane','Owner','stalled',31200,'estimate','2026-03-20','price_objection','Commercial package unit. $4k over their budget. Trim scope.','Commercial',29,'HVAC'),
+      dl(5,'Northview Apartments','Chad Ross','Property Manager','stalled',18400,'estimate','2026-03-22','no_response','16 units need replacement. Sent proposal, no reply.','Commercial',33,'HVAC'),
+      dl(6,'Lakeside Church','Deacon Paul Smith','Admin','cold',27000,'lead','2026-04-20','timing','Sanctuary + 6 classrooms. HVAC budget next fiscal year.','Institutional',51,'HVAC'),
+      dl(7,'Porter Residence','Amy Porter','Homeowner','won',7600,'completed',null,null,'Closed! Trane 3.5-ton install. Crew 3/27.','Residential',16,'HVAC'),
+      dl(8,'Metro Data Center','IT Director Brad Lee','Facilities','stalled',86000,'approved','2026-03-24','competitor','Precision cooling for server room. 2 other bids in.','Commercial',47,'HVAC'),
       dl(9,'Clearwater Hotel','GM Lisa Cole','Operations','lost',38000,'lost',null,'competitor','Lost — existing HVAC contractor locked in long-term.','Commercial',58,'HVAC'),
     ],
     jobs: [
@@ -3227,14 +3237,14 @@ const TRADE_DEMO_DATA = {
   },
   'Plumbing': {
     leads: [
-      dl(1,'Sunridge Apartments','Todd Whitfield','Building Manager','stalled',11400,'proposal','2026-03-19','no_response','24-unit re-pipe. 3 follow-ups. No reply.','Commercial',41,'Plumbing'),
-      dl(2,'Fischer Residence','Jack Fischer','Homeowner','active',4800,'proposal','2026-03-25',null,'Full re-pipe, galvanized to PEX. Insurance approved.','Residential',12,'Plumbing'),
-      dl(3,'Clearview Restaurant','Owner Mike Holt','Owner','stalled',8700,'negotiation','2026-03-23','price_objection','Grease trap + kitchen rough-in. $1,800 over budget.','Commercial',27,'Plumbing'),
-      dl(4,'Meadowbrook HOA Clubhouse','Tina Marsh','HOA Mgr','active',6200,'qualified','2026-03-27',null,'Fixture replacement + water heater upgrade.','HOA',9,'Plumbing'),
-      dl(5,'Hillcrest Medical Office','Office Mgr Pat Ray','Admin','active',14300,'negotiation','2026-03-26',null,'New exam room rough-in + 2 bathrooms. Near close.','Commercial',16,'Plumbing'),
-      dl(6,'Chen Residence','Linda Chen','Homeowner','stalled',3200,'proposal','2026-03-22','budget_freeze','Water heater replacement delayed until tax return.','Residential',22,'Plumbing'),
-      dl(7,'Riverside School Dist','Facilities Dir Ben Cruz','Facilities','cold',28000,'contacted','2026-04-15','timing','4 school buildings, fixture refresh. Budget Q4.','Institutional',44,'Plumbing'),
-      dl(8,'Park Ave Condos','Sara Owens','Property Mgr','won',9100,'won',null,null,'Closed! Units 101-120 re-pipe. Starts 4/1.','Commercial',18,'Plumbing'),
+      dl(1,'Sunridge Apartments','Todd Whitfield','Building Manager','stalled',11400,'estimate','2026-03-19','no_response','24-unit re-pipe. 3 follow-ups. No reply.','Commercial',41,'Plumbing'),
+      dl(2,'Fischer Residence','Jack Fischer','Homeowner','active',4800,'estimate','2026-03-25',null,'Full re-pipe, galvanized to PEX. Insurance approved.','Residential',12,'Plumbing'),
+      dl(3,'Clearview Restaurant','Owner Mike Holt','Owner','stalled',8700,'approved','2026-03-23','price_objection','Grease trap + kitchen rough-in. $1,800 over budget.','Commercial',27,'Plumbing'),
+      dl(4,'Meadowbrook HOA Clubhouse','Tina Marsh','HOA Mgr','active',6200,'inspection','2026-03-27',null,'Fixture replacement + water heater upgrade.','HOA',9,'Plumbing'),
+      dl(5,'Hillcrest Medical Office','Office Mgr Pat Ray','Admin','active',14300,'approved','2026-03-26',null,'New exam room rough-in + 2 bathrooms. Near close.','Commercial',16,'Plumbing'),
+      dl(6,'Chen Residence','Linda Chen','Homeowner','stalled',3200,'estimate','2026-03-22','budget_freeze','Water heater replacement delayed until tax return.','Residential',22,'Plumbing'),
+      dl(7,'Riverside School Dist','Facilities Dir Ben Cruz','Facilities','cold',28000,'lead','2026-04-15','timing','4 school buildings, fixture refresh. Budget Q4.','Institutional',44,'Plumbing'),
+      dl(8,'Park Ave Condos','Sara Owens','Property Mgr','won',9100,'completed',null,null,'Closed! Units 101-120 re-pipe. Starts 4/1.','Commercial',18,'Plumbing'),
       dl(9,'Downtown Diner','Owner Roy Burns','Owner','lost',5400,'lost',null,'competitor','Lost on price. Licensed plumber did it for less.','Commercial',35,'Plumbing'),
     ],
     jobs: [
@@ -3246,14 +3256,14 @@ const TRADE_DEMO_DATA = {
   },
   'Welding': {
     leads: [
-      dl(1,'Iron Works Industrial','Carlos Reyes','Plant Manager','active',19800,'qualified','2026-03-27',null,'Steel platform fabrication + install. 1,200 sq ft mezzanine.','Industrial',17,'Welding'),
-      dl(2,'Harbor Shipyard LLC','Frank Delaney','Operations Mgr','stalled',44000,'negotiation','2026-03-23','budget_freeze','Dock gate framework. Capital budget not approved.','Industrial',48,'Welding'),
-      dl(3,'Lone Star Fabricators','Hector Ruiz','Owner','active',28500,'proposal','2026-03-25',null,'Custom machine guards, 6 units. RFQ submitted.','Industrial',13,'Welding'),
-      dl(4,'Metro Transit Authority','Stan Wells','Facilities Dir','stalled',67000,'proposal','2026-03-20','no_response','Bus depot rail and gate work. No reply in 3 weeks.','Institutional',39,'Welding'),
-      dl(5,'Clearwater Brewery','Sam Green','Owner','active',14200,'negotiation','2026-03-26',null,'Custom stainless brew rack system. Near close.','Commercial',19,'Welding'),
-      dl(6,'Atlas Steel Supply','Ray Burk','GM','stalled',38000,'proposal','2026-03-22','price_objection','Storage racking system. $6k over their target.','Industrial',31,'Welding'),
-      dl(7,'Northgate Fitness','Mike Castro','Owner','cold',22000,'contacted','2026-04-10','timing','Rig equipment frames. Construction not started.','Commercial',44,'Welding'),
-      dl(8,'Gulf Coast Refineries','Safety Dir Tomas Rios','HSE Mgr','won',51000,'won',null,null,'Closed! Staircase and handrail fab. Starts 4/5.','Industrial',26,'Welding'),
+      dl(1,'Iron Works Industrial','Carlos Reyes','Plant Manager','active',19800,'inspection','2026-03-27',null,'Steel platform fabrication + install. 1,200 sq ft mezzanine.','Industrial',17,'Welding'),
+      dl(2,'Harbor Shipyard LLC','Frank Delaney','Operations Mgr','stalled',44000,'approved','2026-03-23','budget_freeze','Dock gate framework. Capital budget not approved.','Industrial',48,'Welding'),
+      dl(3,'Lone Star Fabricators','Hector Ruiz','Owner','active',28500,'estimate','2026-03-25',null,'Custom machine guards, 6 units. RFQ submitted.','Industrial',13,'Welding'),
+      dl(4,'Metro Transit Authority','Stan Wells','Facilities Dir','stalled',67000,'estimate','2026-03-20','no_response','Bus depot rail and gate work. No reply in 3 weeks.','Institutional',39,'Welding'),
+      dl(5,'Clearwater Brewery','Sam Green','Owner','active',14200,'approved','2026-03-26',null,'Custom stainless brew rack system. Near close.','Commercial',19,'Welding'),
+      dl(6,'Atlas Steel Supply','Ray Burk','GM','stalled',38000,'estimate','2026-03-22','price_objection','Storage racking system. $6k over their target.','Industrial',31,'Welding'),
+      dl(7,'Northgate Fitness','Mike Castro','Owner','cold',22000,'lead','2026-04-10','timing','Rig equipment frames. Construction not started.','Commercial',44,'Welding'),
+      dl(8,'Gulf Coast Refineries','Safety Dir Tomas Rios','HSE Mgr','won',51000,'completed',null,null,'Closed! Staircase and handrail fab. Starts 4/5.','Industrial',26,'Welding'),
       dl(9,'Ridgecrest Auto Dealer','Owner Al Nash','Owner','lost',16000,'lost',null,'competitor','Went with in-house maintenance team.','Commercial',52,'Welding'),
     ],
     jobs: [
@@ -3265,14 +3275,14 @@ const TRADE_DEMO_DATA = {
   },
   'Electrical': {
     leads: [
-      dl(1,'Pinnacle Retail Center','Jeff Bloom','Facilities Dir','active',31200,'negotiation','2026-03-26',null,'400A panel upgrade + 6 EV charger circuits. Near close.','Commercial',27,'Electrical'),
-      dl(2,'Warehouse 14 LLC','Ron Davis','Property Owner','stalled',48000,'proposal','2026-03-20','no_response','Service upgrade + LED retrofit. No reply in 2 weeks.','Commercial',36,'Electrical'),
-      dl(3,'Hillcrest Elementary','Carl Beck','Facilities Dir','active',22000,'qualified','2026-03-27',null,'Full fire alarm replacement + panel upgrade.','Institutional',15,'Electrical'),
-      dl(4,'Morrison Office Park','Brian Morrison','Owner','stalled',39000,'negotiation','2026-03-23','price_objection','Generator install + transfer switch. $5k over budget.','Commercial',29,'Electrical'),
-      dl(5,'Park Ridge Apartments','Donna Kwan','Property Mgr','active',17400,'proposal','2026-03-25',null,'GFCI + panel upgrade for 32 units. Insurance requirement.','Commercial',18,'Electrical'),
-      dl(6,'Valley Church of Christ','Elder Tom Ames','Admin','stalled',28000,'proposal','2026-03-22','budget_freeze','Sanctuary lighting overhaul. Annual budget too tight.','Institutional',44,'Electrical'),
-      dl(7,'Clearview Gym','Marcus Brown','Owner','cold',14000,'contacted','2026-04-15','timing','LED full retrofit. Waiting on new lease signing.','Commercial',38,'Electrical'),
-      dl(8,'Sterling Industries','Plant Mgr Ann Webb','Operations','won',54000,'won',null,null,'Closed! 800A service upgrade. Starts 4/8.','Industrial',21,'Electrical'),
+      dl(1,'Pinnacle Retail Center','Jeff Bloom','Facilities Dir','active',31200,'approved','2026-03-26',null,'400A panel upgrade + 6 EV charger circuits. Near close.','Commercial',27,'Electrical'),
+      dl(2,'Warehouse 14 LLC','Ron Davis','Property Owner','stalled',48000,'estimate','2026-03-20','no_response','Service upgrade + LED retrofit. No reply in 2 weeks.','Commercial',36,'Electrical'),
+      dl(3,'Hillcrest Elementary','Carl Beck','Facilities Dir','active',22000,'inspection','2026-03-27',null,'Full fire alarm replacement + panel upgrade.','Institutional',15,'Electrical'),
+      dl(4,'Morrison Office Park','Brian Morrison','Owner','stalled',39000,'approved','2026-03-23','price_objection','Generator install + transfer switch. $5k over budget.','Commercial',29,'Electrical'),
+      dl(5,'Park Ridge Apartments','Donna Kwan','Property Mgr','active',17400,'estimate','2026-03-25',null,'GFCI + panel upgrade for 32 units. Insurance requirement.','Commercial',18,'Electrical'),
+      dl(6,'Valley Church of Christ','Elder Tom Ames','Admin','stalled',28000,'estimate','2026-03-22','budget_freeze','Sanctuary lighting overhaul. Annual budget too tight.','Institutional',44,'Electrical'),
+      dl(7,'Clearview Gym','Marcus Brown','Owner','cold',14000,'lead','2026-04-15','timing','LED full retrofit. Waiting on new lease signing.','Commercial',38,'Electrical'),
+      dl(8,'Sterling Industries','Plant Mgr Ann Webb','Operations','won',54000,'completed',null,null,'Closed! 800A service upgrade. Starts 4/8.','Industrial',21,'Electrical'),
       dl(9,'Sunset Diner','Owner Roy Burns','Owner','lost',8400,'lost',null,'competitor','Handyman did basic work. Below code — our problem later.','Commercial',47,'Electrical'),
     ],
     jobs: [
@@ -3284,14 +3294,14 @@ const TRADE_DEMO_DATA = {
   },
   'Masonry': {
     leads: [
-      dl(1,'Downtown Brick Restoration','Tom Hendricks','Building Owner','active',45000,'proposal','2026-03-25',null,'Full brick repoint, 4-story historic building downtown.','Commercial',19,'Masonry'),
-      dl(2,'Riverside Retaining Wall','Bob Crane','Homeowner','stalled',28000,'negotiation','2026-03-23','price_objection','250 LF retaining wall. $4k over expectation.','Residential',33,'Masonry'),
-      dl(3,'Heritage Inn Patio','Patricia Lawson','GM','active',26400,'proposal','2026-03-26',null,'Limestone patio resurfacing + retaining wall.','Commercial',20,'Masonry'),
-      dl(4,'Northridge Church Entrance','Pastor Ed Cole','Facilities','stalled',38000,'proposal','2026-03-20','budget_freeze','New stone entrance and columns. Capital budget needed.','Institutional',47,'Masonry'),
-      dl(5,'Greenview HOA Wall','Linda Shaw','HOA President','active',18700,'qualified','2026-03-27',null,'Community entry wall + stone columns. HOA approved.','HOA',11,'Masonry'),
-      dl(6,'Atlas Industrial Complex','Ray Torres','Plant Mgr','cold',62000,'contacted','2026-04-15','timing','Brick facade restoration. Budget in Q3.','Industrial',58,'Masonry'),
-      dl(7,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','won',33500,'won',null,null,'Closed! Entry steps + facade repair. Starts 4/4.','Commercial',24,'Masonry'),
-      dl(8,'Morrison Distillery','Mike Morrison','Owner','stalled',22000,'negotiation','2026-03-24','competitor','Stone bar feature + fireplace. 2 other bids in.','Commercial',31,'Masonry'),
+      dl(1,'Downtown Brick Restoration','Tom Hendricks','Building Owner','active',45000,'estimate','2026-03-25',null,'Full brick repoint, 4-story historic building downtown.','Commercial',19,'Masonry'),
+      dl(2,'Riverside Retaining Wall','Bob Crane','Homeowner','stalled',28000,'approved','2026-03-23','price_objection','250 LF retaining wall. $4k over expectation.','Residential',33,'Masonry'),
+      dl(3,'Heritage Inn Patio','Patricia Lawson','GM','active',26400,'estimate','2026-03-26',null,'Limestone patio resurfacing + retaining wall.','Commercial',20,'Masonry'),
+      dl(4,'Northridge Church Entrance','Pastor Ed Cole','Facilities','stalled',38000,'estimate','2026-03-20','budget_freeze','New stone entrance and columns. Capital budget needed.','Institutional',47,'Masonry'),
+      dl(5,'Greenview HOA Wall','Linda Shaw','HOA President','active',18700,'inspection','2026-03-27',null,'Community entry wall + stone columns. HOA approved.','HOA',11,'Masonry'),
+      dl(6,'Atlas Industrial Complex','Ray Torres','Plant Mgr','cold',62000,'lead','2026-04-15','timing','Brick facade restoration. Budget in Q3.','Industrial',58,'Masonry'),
+      dl(7,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','won',33500,'completed',null,null,'Closed! Entry steps + facade repair. Starts 4/4.','Commercial',24,'Masonry'),
+      dl(8,'Morrison Distillery','Mike Morrison','Owner','stalled',22000,'approved','2026-03-24','competitor','Stone bar feature + fireplace. 2 other bids in.','Commercial',31,'Masonry'),
       dl(9,'Sunset Baptist Church','Deacon Will Jones','Admin','lost',29000,'lost',null,'competitor','Member of congregation did the work for cost.','Institutional',64,'Masonry'),
     ],
     jobs: [
@@ -3303,14 +3313,14 @@ const TRADE_DEMO_DATA = {
   },
   'Painting': {
     leads: [
-      dl(1,'Riverside Church Exterior','Pastor James Willis','Facilities','won',9400,'won',null,null,'Closed! Full exterior repaint. Sherwin-Williams Duration. Starts 4/1.','Institutional',55,'Painting'),
-      dl(2,'Clearbrook Office Suite','Donna Pierce','Office Mgr','active',6800,'proposal','2026-03-25',null,'2,400 sq ft office interior. Neutral repaint.','Commercial',11,'Painting'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','stalled',8200,'negotiation','2026-03-23','price_objection','Full exterior + trim. $900 over competing bid.','Residential',28,'Painting'),
-      dl(4,'Hilltop Hotel Lobby','GM Ray Lutz','Operations','stalled',22000,'proposal','2026-03-20','budget_freeze','Lobby + corridors floors 1-3. Capital budget request.','Commercial',41,'Painting'),
-      dl(5,'Greenway Apartments','Property Mgr Sara Li','Mgr','active',14500,'qualified','2026-03-27',null,'24 unit interiors, turnover repaint. Staging now.','Commercial',13,'Painting'),
-      dl(6,'Sunrise Senior Center','Activities Dir Jo Wells','Admin','stalled',11000,'proposal','2026-03-22','no_response','Community room + 40 resident rooms. No reply 2 weeks.','Institutional',37,'Painting'),
-      dl(7,'Park Ave Dentistry','Dr. Ann Park','Owner','active',5400,'negotiation','2026-03-26',null,'Waiting room + 6 exam rooms repaint. Near close.','Commercial',16,'Painting'),
-      dl(8,'Thornton Residence','Nick Thornton','Homeowner','cold',7100,'contacted','2026-04-08','timing','Interior 4 bedrooms. Waiting on new flooring first.','Residential',31,'Painting'),
+      dl(1,'Riverside Church Exterior','Pastor James Willis','Facilities','won',9400,'completed',null,null,'Closed! Full exterior repaint. Sherwin-Williams Duration. Starts 4/1.','Institutional',55,'Painting'),
+      dl(2,'Clearbrook Office Suite','Donna Pierce','Office Mgr','active',6800,'estimate','2026-03-25',null,'2,400 sq ft office interior. Neutral repaint.','Commercial',11,'Painting'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','stalled',8200,'approved','2026-03-23','price_objection','Full exterior + trim. $900 over competing bid.','Residential',28,'Painting'),
+      dl(4,'Hilltop Hotel Lobby','GM Ray Lutz','Operations','stalled',22000,'estimate','2026-03-20','budget_freeze','Lobby + corridors floors 1-3. Capital budget request.','Commercial',41,'Painting'),
+      dl(5,'Greenway Apartments','Property Mgr Sara Li','Mgr','active',14500,'inspection','2026-03-27',null,'24 unit interiors, turnover repaint. Staging now.','Commercial',13,'Painting'),
+      dl(6,'Sunrise Senior Center','Activities Dir Jo Wells','Admin','stalled',11000,'estimate','2026-03-22','no_response','Community room + 40 resident rooms. No reply 2 weeks.','Institutional',37,'Painting'),
+      dl(7,'Park Ave Dentistry','Dr. Ann Park','Owner','active',5400,'approved','2026-03-26',null,'Waiting room + 6 exam rooms repaint. Near close.','Commercial',16,'Painting'),
+      dl(8,'Thornton Residence','Nick Thornton','Homeowner','cold',7100,'lead','2026-04-08','timing','Interior 4 bedrooms. Waiting on new flooring first.','Residential',31,'Painting'),
       dl(9,'Crossroads Gym','Owner Greg Nash','Owner','lost',9800,'lost',null,'competitor','Used a friend-of-a-friend painter.','Commercial',44,'Painting'),
     ],
     jobs: [
@@ -3322,14 +3332,14 @@ const TRADE_DEMO_DATA = {
   },
   'Flooring': {
     leads: [
-      dl(1,'Clearwater Gym','Marcus Brown','Owner','cold',17200,'contacted','2026-04-05','timing','Full rubber floor replacement. Remodel deferred to summer.','Commercial',64,'Flooring'),
-      dl(2,'Morrison Residence Kitchen','Amy Morrison','Homeowner','active',8600,'proposal','2026-03-25',null,'LVP throughout kitchen + dining. Shaw Floorté preferred.','Residential',14,'Flooring'),
-      dl(3,'Lakewood Medical Center','Office Mgr Dr. Park','Admin','stalled',28000,'negotiation','2026-03-23','budget_freeze','VCT to LVT conversion, 8,000 sq ft. Budget not released.','Commercial',38,'Flooring'),
-      dl(4,'Sunrise Senior Living','Activities Dir','Admin','active',22400,'qualified','2026-03-27',null,'80 resident rooms LVP replacement. Insurance funded.','Institutional',12,'Flooring'),
-      dl(5,'Thornton Residence','Nick Thornton','Homeowner','stalled',11800,'proposal','2026-03-22','no_response','Hardwood refinish + 3 bedroom LVP. No response 2 weeks.','Residential',28,'Flooring'),
-      dl(6,'Metro Dance Studio','Owner Sofia Vega','Owner','active',14200,'negotiation','2026-03-26',null,'Sprung hardwood dance floor, 1,800 sq ft. Near close.','Commercial',18,'Flooring'),
-      dl(7,'Park Ridge Apts Turnover','Property Mgr Don Kwan','Mgr','stalled',9600,'proposal','2026-03-20','price_objection','12 unit LVP turnover. $1,200 over budget.','Commercial',31,'Flooring'),
-      dl(8,'Chen Residence','Linda Chen','Homeowner','won',7400,'won',null,null,'Closed! Hardwood refinish + LVP hallways. Starts 4/4.','Residential',21,'Flooring'),
+      dl(1,'Clearwater Gym','Marcus Brown','Owner','cold',17200,'lead','2026-04-05','timing','Full rubber floor replacement. Remodel deferred to summer.','Commercial',64,'Flooring'),
+      dl(2,'Morrison Residence Kitchen','Amy Morrison','Homeowner','active',8600,'estimate','2026-03-25',null,'LVP throughout kitchen + dining. Shaw Floorté preferred.','Residential',14,'Flooring'),
+      dl(3,'Lakewood Medical Center','Office Mgr Dr. Park','Admin','stalled',28000,'approved','2026-03-23','budget_freeze','VCT to LVT conversion, 8,000 sq ft. Budget not released.','Commercial',38,'Flooring'),
+      dl(4,'Sunrise Senior Living','Activities Dir','Admin','active',22400,'inspection','2026-03-27',null,'80 resident rooms LVP replacement. Insurance funded.','Institutional',12,'Flooring'),
+      dl(5,'Thornton Residence','Nick Thornton','Homeowner','stalled',11800,'estimate','2026-03-22','no_response','Hardwood refinish + 3 bedroom LVP. No response 2 weeks.','Residential',28,'Flooring'),
+      dl(6,'Metro Dance Studio','Owner Sofia Vega','Owner','active',14200,'approved','2026-03-26',null,'Sprung hardwood dance floor, 1,800 sq ft. Near close.','Commercial',18,'Flooring'),
+      dl(7,'Park Ridge Apts Turnover','Property Mgr Don Kwan','Mgr','stalled',9600,'estimate','2026-03-20','price_objection','12 unit LVP turnover. $1,200 over budget.','Commercial',31,'Flooring'),
+      dl(8,'Chen Residence','Linda Chen','Homeowner','won',7400,'completed',null,null,'Closed! Hardwood refinish + LVP hallways. Starts 4/4.','Residential',21,'Flooring'),
       dl(9,'Ridgecrest Elementary','Carl Beck','Facilities Dir','lost',34000,'lost',null,'competitor','State contract went to lowest bidder.','Institutional',55,'Flooring'),
     ],
     jobs: [
@@ -3341,14 +3351,14 @@ const TRADE_DEMO_DATA = {
   },
   'Insulation': {
     leads: [
-      dl(1,'Northgate Mall','Janet Farley','Facilities Mgr','stalled',31500,'proposal','2026-03-21','no_response','Attic blow-in + roof deck spray foam. No feedback 2 wks.','Commercial',58,'Insulation'),
-      dl(2,'Weber Residence','Bill Weber','Homeowner','active',6200,'proposal','2026-03-25',null,'Attic blow-in + air sealing. Energy audit done.','Residential',11,'Insulation'),
-      dl(3,'Clearbrook Office Bldg','Property Mgr Donna Pierce','Mgr','stalled',18400,'negotiation','2026-03-23','budget_freeze','Roof deck + perimeter wall spray foam. Q2 budget.','Commercial',34,'Insulation'),
-      dl(4,'Sunrise Elementary','Carl Beck','Facilities Dir','active',28000,'qualified','2026-03-27',null,'Full attic insulation upgrade. Energy grant funding.','Institutional',14,'Insulation'),
-      dl(5,'Morrison Residence Addition','Carl Morrison','Homeowner','stalled',4800,'proposal','2026-03-22','price_objection','Room addition insulation. $600 over quote expectation.','Residential',22,'Insulation'),
-      dl(6,'Ridgecrest Warehouse','Ray Torres','Owner','cold',42000,'contacted','2026-04-20','timing','Spray foam whole envelope. Starting build-out Q3.','Industrial',47,'Insulation'),
-      dl(7,'Chen Residence','Linda Chen','Homeowner','won',5600,'won',null,null,'Closed! Attic blow-in + knee walls. Crew 3/28.','Residential',17,'Insulation'),
-      dl(8,'Park Ave Medical Bldg','Dr. Sam Park','Admin Dir','active',22000,'negotiation','2026-03-26',null,'Spray foam retrofit, 4,000 sq ft. Near close.','Commercial',20,'Insulation'),
+      dl(1,'Northgate Mall','Janet Farley','Facilities Mgr','stalled',31500,'estimate','2026-03-21','no_response','Attic blow-in + roof deck spray foam. No feedback 2 wks.','Commercial',58,'Insulation'),
+      dl(2,'Weber Residence','Bill Weber','Homeowner','active',6200,'estimate','2026-03-25',null,'Attic blow-in + air sealing. Energy audit done.','Residential',11,'Insulation'),
+      dl(3,'Clearbrook Office Bldg','Property Mgr Donna Pierce','Mgr','stalled',18400,'approved','2026-03-23','budget_freeze','Roof deck + perimeter wall spray foam. Q2 budget.','Commercial',34,'Insulation'),
+      dl(4,'Sunrise Elementary','Carl Beck','Facilities Dir','active',28000,'inspection','2026-03-27',null,'Full attic insulation upgrade. Energy grant funding.','Institutional',14,'Insulation'),
+      dl(5,'Morrison Residence Addition','Carl Morrison','Homeowner','stalled',4800,'estimate','2026-03-22','price_objection','Room addition insulation. $600 over quote expectation.','Residential',22,'Insulation'),
+      dl(6,'Ridgecrest Warehouse','Ray Torres','Owner','cold',42000,'lead','2026-04-20','timing','Spray foam whole envelope. Starting build-out Q3.','Industrial',47,'Insulation'),
+      dl(7,'Chen Residence','Linda Chen','Homeowner','won',5600,'completed',null,null,'Closed! Attic blow-in + knee walls. Crew 3/28.','Residential',17,'Insulation'),
+      dl(8,'Park Ave Medical Bldg','Dr. Sam Park','Admin Dir','active',22000,'approved','2026-03-26',null,'Spray foam retrofit, 4,000 sq ft. Near close.','Commercial',20,'Insulation'),
       dl(9,'Atlas Warehouse','Plant Mgr Ann Webb','Operations','lost',36000,'lost',null,'competitor','Owner-supplied spray foam contractor won it.','Industrial',61,'Insulation'),
     ],
     jobs: [
@@ -3360,14 +3370,14 @@ const TRADE_DEMO_DATA = {
   },
   'Drywall': {
     leads: [
-      dl(1,'Sunrise Senior Living Wing B','Andrew Mills','Maintenance Dir','active',13200,'proposal','2026-03-26',null,'40-room renovation drywall. Full hang + finish.','Institutional',22,'Drywall'),
-      dl(2,'Morrison Office Addition','Carl Morrison','Owner','stalled',18600,'negotiation','2026-03-23','budget_freeze','3,200 sq ft office addition. GC has budget hold.','Commercial',36,'Drywall'),
-      dl(3,'Park Ridge Apts Unit Reno','Property Mgr Don Kwan','Mgr','active',9400,'qualified','2026-03-27',null,'16 unit reno drywall. Consistent crew work.','Commercial',13,'Drywall'),
-      dl(4,'Clearbrook Medical Suite','Dr. Ana Rivera','Owner','stalled',22000,'proposal','2026-03-20','no_response','Exam room build-out, 8 rooms. No reply after bid.','Commercial',31,'Drywall'),
-      dl(5,'Torres New Home','Miguel Torres','Homeowner','stalled',7800,'proposal','2026-03-22','price_objection','Basement finish drywall. $900 over other bid.','Residential',24,'Drywall'),
-      dl(6,'Ridgecrest Brewery','Sam Green','Owner','cold',14000,'contacted','2026-04-10','timing','Taproom build-out drywall. Framing not done yet.','Commercial',38,'Drywall'),
-      dl(7,'Weber Residence Addition','Bill Weber','Homeowner','won',6200,'won',null,null,'Closed! 2 room addition drywall. Crew starts 4/2.','Residential',16,'Drywall'),
-      dl(8,'Lakewood Hotel Reno','GM Ray Lutz','Operations','active',38000,'negotiation','2026-03-25',null,'24 room reno drywall. Near close, scope confirmed.','Commercial',20,'Drywall'),
+      dl(1,'Sunrise Senior Living Wing B','Andrew Mills','Maintenance Dir','active',13200,'estimate','2026-03-26',null,'40-room renovation drywall. Full hang + finish.','Institutional',22,'Drywall'),
+      dl(2,'Morrison Office Addition','Carl Morrison','Owner','stalled',18600,'approved','2026-03-23','budget_freeze','3,200 sq ft office addition. GC has budget hold.','Commercial',36,'Drywall'),
+      dl(3,'Park Ridge Apts Unit Reno','Property Mgr Don Kwan','Mgr','active',9400,'inspection','2026-03-27',null,'16 unit reno drywall. Consistent crew work.','Commercial',13,'Drywall'),
+      dl(4,'Clearbrook Medical Suite','Dr. Ana Rivera','Owner','stalled',22000,'estimate','2026-03-20','no_response','Exam room build-out, 8 rooms. No reply after bid.','Commercial',31,'Drywall'),
+      dl(5,'Torres New Home','Miguel Torres','Homeowner','stalled',7800,'estimate','2026-03-22','price_objection','Basement finish drywall. $900 over other bid.','Residential',24,'Drywall'),
+      dl(6,'Ridgecrest Brewery','Sam Green','Owner','cold',14000,'lead','2026-04-10','timing','Taproom build-out drywall. Framing not done yet.','Commercial',38,'Drywall'),
+      dl(7,'Weber Residence Addition','Bill Weber','Homeowner','won',6200,'completed',null,null,'Closed! 2 room addition drywall. Crew starts 4/2.','Residential',16,'Drywall'),
+      dl(8,'Lakewood Hotel Reno','GM Ray Lutz','Operations','active',38000,'approved','2026-03-25',null,'24 room reno drywall. Near close, scope confirmed.','Commercial',20,'Drywall'),
       dl(9,'Sunrise School Reno','Carl Beck','Facilities Dir','lost',28000,'lost',null,'competitor','GC used their in-house drywall crew.','Institutional',52,'Drywall'),
     ],
     jobs: [
@@ -3379,14 +3389,14 @@ const TRADE_DEMO_DATA = {
   },
   'Landscaping': {
     leads: [
-      dl(1,'Brookhaven Commons HOA','Tina Rosario','HOA Director','active',34800,'proposal','2026-03-24',null,'Common area redesign + irrigation. Board approved.','HOA',14,'Landscaping'),
-      dl(2,'Clearwater Country Club','GM Mark Peters','Operations','stalled',82000,'negotiation','2026-03-23','budget_freeze','Course perimeter and entrance landscaping. BOD vote.','Commercial',48,'Landscaping'),
-      dl(3,'Morrison Residence','Amy Morrison','Homeowner','active',14200,'qualified','2026-03-27',null,'Backyard hardscape + planting plan. Irrigation included.','Residential',10,'Landscaping'),
-      dl(4,'Sunrise Medical Campus','Facilities Dir Beth Lee','Admin','stalled',44000,'proposal','2026-03-20','no_response','Full campus landscape refresh. No response 3 weeks.','Commercial',36,'Landscaping'),
-      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',8800,'proposal','2026-03-22','price_objection','Front yard redesign + sod. $1,400 over expectation.','Residential',27,'Landscaping'),
-      dl(6,'Northgate Office Park','Property Mgr Greg Lee','Mgr','cold',28000,'contacted','2026-04-10','timing','Parking lot islands + perimeter. Spring budget.','Commercial',41,'Landscaping'),
-      dl(7,'Chen Residence','Linda Chen','Homeowner','won',11400,'won',null,null,'Closed! Backyard hardscape + planting. Starts 4/3.','Residential',18,'Landscaping'),
-      dl(8,'Westfield HOA Entrance','Sandra Hill','HOA President','active',18600,'negotiation','2026-03-26',null,'Entrance monument + plantings. Near close.','HOA',15,'Landscaping'),
+      dl(1,'Brookhaven Commons HOA','Tina Rosario','HOA Director','active',34800,'estimate','2026-03-24',null,'Common area redesign + irrigation. Board approved.','HOA',14,'Landscaping'),
+      dl(2,'Clearwater Country Club','GM Mark Peters','Operations','stalled',82000,'approved','2026-03-23','budget_freeze','Course perimeter and entrance landscaping. BOD vote.','Commercial',48,'Landscaping'),
+      dl(3,'Morrison Residence','Amy Morrison','Homeowner','active',14200,'inspection','2026-03-27',null,'Backyard hardscape + planting plan. Irrigation included.','Residential',10,'Landscaping'),
+      dl(4,'Sunrise Medical Campus','Facilities Dir Beth Lee','Admin','stalled',44000,'estimate','2026-03-20','no_response','Full campus landscape refresh. No response 3 weeks.','Commercial',36,'Landscaping'),
+      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',8800,'estimate','2026-03-22','price_objection','Front yard redesign + sod. $1,400 over expectation.','Residential',27,'Landscaping'),
+      dl(6,'Northgate Office Park','Property Mgr Greg Lee','Mgr','cold',28000,'lead','2026-04-10','timing','Parking lot islands + perimeter. Spring budget.','Commercial',41,'Landscaping'),
+      dl(7,'Chen Residence','Linda Chen','Homeowner','won',11400,'completed',null,null,'Closed! Backyard hardscape + planting. Starts 4/3.','Residential',18,'Landscaping'),
+      dl(8,'Westfield HOA Entrance','Sandra Hill','HOA President','active',18600,'approved','2026-03-26',null,'Entrance monument + plantings. Near close.','HOA',15,'Landscaping'),
       dl(9,'Atlas Corporate Campus','Facilities VP Ted Ross','Admin','lost',56000,'lost',null,'competitor','National landscape firm won on relationships.','Commercial',67,'Landscaping'),
     ],
     jobs: [
@@ -3398,14 +3408,14 @@ const TRADE_DEMO_DATA = {
   },
   'Concrete': {
     leads: [
-      dl(1,'Morrison Trucking Depot','Bill Morrison','Owner','stalled',19600,'proposal','2026-03-22','price_objection','6,000 sq ft reinforced slab. $2,800 over expectation.','Commercial',33,'Concrete'),
-      dl(2,'Sunridge Subdivision','Developer Greg Fry','Developer','active',64000,'qualified','2026-03-27',null,'22-lot driveway and walkway package. Approved.','Commercial',14,'Concrete'),
-      dl(3,'Northgate Warehouse','Plant Mgr Ray Torres','Operations','stalled',38000,'negotiation','2026-03-23','budget_freeze','Forklift aisle resurfacing + new dock apron. Q2.','Industrial',44,'Concrete'),
-      dl(4,'Weber Residence','Bill Weber','Homeowner','active',9800,'proposal','2026-03-25',null,'Driveway replacement + back patio. Stamped option.','Residential',12,'Concrete'),
-      dl(5,'Clearview Church Parking','Elder Tom Ames','Admin','stalled',42000,'proposal','2026-03-20','no_response','Parking lot reseal + expansion. No reply.','Institutional',38,'Concrete'),
-      dl(6,'Metro Fire Station','Chief Pat Moore','City Admin','cold',88000,'contacted','2026-05-01','timing','Apparatus bay floor + driveway. City budget Q4.','Institutional',55,'Concrete'),
-      dl(7,'Torres Backyard','Miguel Torres','Homeowner','won',7200,'won',null,null,'Closed! Stamped patio 400 sq ft. Crew 3/30.','Residential',19,'Concrete'),
-      dl(8,'Atlas Industrial Complex','Ann Webb','Plant Mgr','active',54000,'negotiation','2026-03-26',null,'Loading dock expansion + apron. Near close.','Industrial',22,'Concrete'),
+      dl(1,'Morrison Trucking Depot','Bill Morrison','Owner','stalled',19600,'estimate','2026-03-22','price_objection','6,000 sq ft reinforced slab. $2,800 over expectation.','Commercial',33,'Concrete'),
+      dl(2,'Sunridge Subdivision','Developer Greg Fry','Developer','active',64000,'inspection','2026-03-27',null,'22-lot driveway and walkway package. Approved.','Commercial',14,'Concrete'),
+      dl(3,'Northgate Warehouse','Plant Mgr Ray Torres','Operations','stalled',38000,'approved','2026-03-23','budget_freeze','Forklift aisle resurfacing + new dock apron. Q2.','Industrial',44,'Concrete'),
+      dl(4,'Weber Residence','Bill Weber','Homeowner','active',9800,'estimate','2026-03-25',null,'Driveway replacement + back patio. Stamped option.','Residential',12,'Concrete'),
+      dl(5,'Clearview Church Parking','Elder Tom Ames','Admin','stalled',42000,'estimate','2026-03-20','no_response','Parking lot reseal + expansion. No reply.','Institutional',38,'Concrete'),
+      dl(6,'Metro Fire Station','Chief Pat Moore','City Admin','cold',88000,'lead','2026-05-01','timing','Apparatus bay floor + driveway. City budget Q4.','Institutional',55,'Concrete'),
+      dl(7,'Torres Backyard','Miguel Torres','Homeowner','won',7200,'completed',null,null,'Closed! Stamped patio 400 sq ft. Crew 3/30.','Residential',19,'Concrete'),
+      dl(8,'Atlas Industrial Complex','Ann Webb','Plant Mgr','active',54000,'approved','2026-03-26',null,'Loading dock expansion + apron. Near close.','Industrial',22,'Concrete'),
       dl(9,'Ridgecrest School Walkways','Carl Beck','Facilities Dir','lost',31000,'lost',null,'competitor','Local contractor underbid by $4k.','Institutional',62,'Concrete'),
     ],
     jobs: [
@@ -3417,14 +3427,14 @@ const TRADE_DEMO_DATA = {
   },
   'Fencing': {
     leads: [
-      dl(1,'Sagebrush Ranch','Dale Cooper','Ranch Owner','stalled',28500,'negotiation','2026-03-23','wrong_contact','1,200 LF cedar privacy. Need to reach spouse for sign-off.','Residential',46,'Fencing'),
-      dl(2,'Northview Business Park','Greg Lee','Property Mgr','active',42000,'qualified','2026-03-27',null,'Perimeter chain-link + 3 access gates. Security upgrade.','Commercial',13,'Fencing'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',8400,'proposal','2026-03-25',null,'Backyard privacy fence, 300 LF cedar. HOA approved.','Residential',11,'Fencing'),
-      dl(4,'Clearview School District','Carl Beck','Facilities Dir','stalled',62000,'proposal','2026-03-20','budget_freeze','3 campuses, playground fencing. Capital budget delayed.','Institutional',44,'Fencing'),
-      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',6800,'proposal','2026-03-22','price_objection','150 LF board-on-board. Competing bid $800 less.','Residential',28,'Fencing'),
-      dl(6,'Mesa Verde HOA','Sandra Hill','HOA President','cold',24000,'contacted','2026-04-12','timing','Community fencing refresh. Board vote next month.','HOA',38,'Fencing'),
-      dl(7,'Weber Residence','Bill Weber','Homeowner','won',9200,'won',null,null,'Closed! 400 LF cedar, 2 gates. Crew 3/31.','Residential',20,'Fencing'),
-      dl(8,'Atlas Yard Storage','Ray Torres','Plant Mgr','active',18000,'negotiation','2026-03-26',null,'Heavy-gauge chain link, 600 LF. Near close.','Industrial',16,'Fencing'),
+      dl(1,'Sagebrush Ranch','Dale Cooper','Ranch Owner','stalled',28500,'approved','2026-03-23','wrong_contact','1,200 LF cedar privacy. Need to reach spouse for sign-off.','Residential',46,'Fencing'),
+      dl(2,'Northview Business Park','Greg Lee','Property Mgr','active',42000,'inspection','2026-03-27',null,'Perimeter chain-link + 3 access gates. Security upgrade.','Commercial',13,'Fencing'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',8400,'estimate','2026-03-25',null,'Backyard privacy fence, 300 LF cedar. HOA approved.','Residential',11,'Fencing'),
+      dl(4,'Clearview School District','Carl Beck','Facilities Dir','stalled',62000,'estimate','2026-03-20','budget_freeze','3 campuses, playground fencing. Capital budget delayed.','Institutional',44,'Fencing'),
+      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',6800,'estimate','2026-03-22','price_objection','150 LF board-on-board. Competing bid $800 less.','Residential',28,'Fencing'),
+      dl(6,'Mesa Verde HOA','Sandra Hill','HOA President','cold',24000,'lead','2026-04-12','timing','Community fencing refresh. Board vote next month.','HOA',38,'Fencing'),
+      dl(7,'Weber Residence','Bill Weber','Homeowner','won',9200,'completed',null,null,'Closed! 400 LF cedar, 2 gates. Crew 3/31.','Residential',20,'Fencing'),
+      dl(8,'Atlas Yard Storage','Ray Torres','Plant Mgr','active',18000,'approved','2026-03-26',null,'Heavy-gauge chain link, 600 LF. Near close.','Industrial',16,'Fencing'),
       dl(9,'Ridgecrest Apartments','Don Kwan','Property Mgr','lost',14000,'lost',null,'competitor','Handyman crew did it cheaper.','Commercial',51,'Fencing'),
     ],
     jobs: [
@@ -3436,14 +3446,14 @@ const TRADE_DEMO_DATA = {
   },
   'Carpentry': {
     leads: [
-      dl(1,'The Craftsman Kitchen','Sandra Yee','Owner','stalled',24100,'negotiation','2026-03-23','technical_fit','Custom cabinet specs rework needed. Awaiting revisions.','Commercial',40,'Carpentry'),
-      dl(2,'Morrison Residence Addition','Carl Morrison','Homeowner','active',18600,'proposal','2026-03-25',null,'Trim package + built-in shelving for new addition.','Residential',14,'Carpentry'),
-      dl(3,'Lakewood Hotel Lobby','GM Ray Lutz','Operations','stalled',44000,'proposal','2026-03-20','budget_freeze','Custom millwork + wainscoting. Capital budget Q2.','Commercial',47,'Carpentry'),
-      dl(4,'Clearbrook Office Fit-Out','Donna Pierce','Office Mgr','active',28000,'qualified','2026-03-27',null,'Reception desk + custom shelving, 2,400 sq ft office.','Commercial',12,'Carpentry'),
-      dl(5,'Torres New Deck','Miguel Torres','Homeowner','stalled',14800,'proposal','2026-03-22','price_objection','Composite deck with pergola. $2,200 over expectation.','Residential',26,'Carpentry'),
-      dl(6,'Sunrise Senior Living','Andrew Mills','Maintenance Dir','cold',22000,'contacted','2026-04-15','timing','Custom millwork for dining room renovation.','Institutional',39,'Carpentry'),
-      dl(7,'Weber Residence Built-Ins','Bill Weber','Homeowner','won',8400,'won',null,null,'Closed! Home office built-ins. Starts 4/3.','Residential',17,'Carpentry'),
-      dl(8,'Park Ave Restaurant','Chef Dan Lee','Owner','active',31000,'negotiation','2026-03-26',null,'Custom bar + booth seating, hardwood. Near close.','Commercial',20,'Carpentry'),
+      dl(1,'The Craftsman Kitchen','Sandra Yee','Owner','stalled',24100,'approved','2026-03-23','technical_fit','Custom cabinet specs rework needed. Awaiting revisions.','Commercial',40,'Carpentry'),
+      dl(2,'Morrison Residence Addition','Carl Morrison','Homeowner','active',18600,'estimate','2026-03-25',null,'Trim package + built-in shelving for new addition.','Residential',14,'Carpentry'),
+      dl(3,'Lakewood Hotel Lobby','GM Ray Lutz','Operations','stalled',44000,'estimate','2026-03-20','budget_freeze','Custom millwork + wainscoting. Capital budget Q2.','Commercial',47,'Carpentry'),
+      dl(4,'Clearbrook Office Fit-Out','Donna Pierce','Office Mgr','active',28000,'inspection','2026-03-27',null,'Reception desk + custom shelving, 2,400 sq ft office.','Commercial',12,'Carpentry'),
+      dl(5,'Torres New Deck','Miguel Torres','Homeowner','stalled',14800,'estimate','2026-03-22','price_objection','Composite deck with pergola. $2,200 over expectation.','Residential',26,'Carpentry'),
+      dl(6,'Sunrise Senior Living','Andrew Mills','Maintenance Dir','cold',22000,'lead','2026-04-15','timing','Custom millwork for dining room renovation.','Institutional',39,'Carpentry'),
+      dl(7,'Weber Residence Built-Ins','Bill Weber','Homeowner','won',8400,'completed',null,null,'Closed! Home office built-ins. Starts 4/3.','Residential',17,'Carpentry'),
+      dl(8,'Park Ave Restaurant','Chef Dan Lee','Owner','active',31000,'approved','2026-03-26',null,'Custom bar + booth seating, hardwood. Near close.','Commercial',20,'Carpentry'),
       dl(9,'Ridgecrest Church','Pastor Ed Cole','Admin','lost',19000,'lost',null,'competitor','Member of congregation is a finish carpenter.','Institutional',58,'Carpentry'),
     ],
     jobs: [
@@ -3455,14 +3465,14 @@ const TRADE_DEMO_DATA = {
   },
   'Waterproofing': {
     leads: [
-      dl(1,'Harbor View Condos','Robert Chang','Board Treasurer','stalled',47500,'proposal','2026-03-24','wrong_contact','Foundation waterproofing, 32 units. Need full board.','HOA',62,'Waterproofing'),
-      dl(2,'Morrison Basement','Carl Morrison','Homeowner','active',12400,'proposal','2026-03-25',null,'Interior drainage + sump system. Active water intrusion.','Residential',13,'Waterproofing'),
-      dl(3,'Clearbrook Commercial Bldg','Donna Pierce','Property Mgr','stalled',38000,'negotiation','2026-03-23','budget_freeze','Below-grade parking deck membrane. Q2 capital.','Commercial',44,'Waterproofing'),
-      dl(4,'Northgate Warehouse','Ray Torres','Plant Mgr','active',22000,'qualified','2026-03-27',null,'Exterior foundation coating + drainage tile.','Industrial',11,'Waterproofing'),
-      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',9800,'proposal','2026-03-22','price_objection','Crawl space encapsulation. $1,400 over expectation.','Residential',28,'Waterproofing'),
-      dl(6,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','cold',54000,'contacted','2026-04-20','timing','Underground utility corridor waterproofing. Q3.','Commercial',51,'Waterproofing'),
-      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',7600,'won',null,null,'Closed! Basement interior drain + sump. Starts 4/4.','Residential',19,'Waterproofing'),
-      dl(8,'Atlas Tilt-Wall Building','Ann Webb','Plant Mgr','active',31000,'negotiation','2026-03-26',null,'Exterior EIFS coating + caulk overhaul. Near close.','Industrial',21,'Waterproofing'),
+      dl(1,'Harbor View Condos','Robert Chang','Board Treasurer','stalled',47500,'estimate','2026-03-24','wrong_contact','Foundation waterproofing, 32 units. Need full board.','HOA',62,'Waterproofing'),
+      dl(2,'Morrison Basement','Carl Morrison','Homeowner','active',12400,'estimate','2026-03-25',null,'Interior drainage + sump system. Active water intrusion.','Residential',13,'Waterproofing'),
+      dl(3,'Clearbrook Commercial Bldg','Donna Pierce','Property Mgr','stalled',38000,'approved','2026-03-23','budget_freeze','Below-grade parking deck membrane. Q2 capital.','Commercial',44,'Waterproofing'),
+      dl(4,'Northgate Warehouse','Ray Torres','Plant Mgr','active',22000,'inspection','2026-03-27',null,'Exterior foundation coating + drainage tile.','Industrial',11,'Waterproofing'),
+      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',9800,'estimate','2026-03-22','price_objection','Crawl space encapsulation. $1,400 over expectation.','Residential',28,'Waterproofing'),
+      dl(6,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','cold',54000,'lead','2026-04-20','timing','Underground utility corridor waterproofing. Q3.','Commercial',51,'Waterproofing'),
+      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',7600,'completed',null,null,'Closed! Basement interior drain + sump. Starts 4/4.','Residential',19,'Waterproofing'),
+      dl(8,'Atlas Tilt-Wall Building','Ann Webb','Plant Mgr','active',31000,'approved','2026-03-26',null,'Exterior EIFS coating + caulk overhaul. Near close.','Industrial',21,'Waterproofing'),
       dl(9,'Ridgecrest Church Hall','Deacon Will Jones','Admin','lost',18000,'lost',null,'competitor','Chose a cheaper partial fix instead.','Institutional',63,'Waterproofing'),
     ],
     jobs: [
@@ -3474,14 +3484,14 @@ const TRADE_DEMO_DATA = {
   },
   'Solar': {
     leads: [
-      dl(1,'Torres Residence','Miguel Torres','Homeowner','stalled',42000,'negotiation','2026-03-23','budget_freeze','18-panel system. Waiting on utility rebate approval.','Residential',74,'Solar'),
-      dl(2,'Clearbrook Office Park','Donna Pierce','Property Mgr','active',118000,'qualified','2026-03-27',null,'Commercial array, 240kW. Net metering pre-approved.','Commercial',16,'Solar'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',28400,'proposal','2026-03-25',null,'12-panel system. Roof in great shape. Permit submitted.','Residential',12,'Solar'),
-      dl(4,'Northgate Manufacturing','Ann Webb','Plant Mgr','stalled',186000,'negotiation','2026-03-23','price_objection','500kW industrial array. $18k over competitor.','Industrial',55,'Solar'),
-      dl(5,'Riverside Church','Pastor Rick Adams','Admin Dir','stalled',34000,'proposal','2026-03-20','no_response','30kW rooftop. Submitted bid. No reply 3 weeks.','Institutional',41,'Solar'),
-      dl(6,'Lakewood HOA Clubhouse','Linda Marsh','HOA President','cold',22000,'contacted','2026-04-15','timing','Clubhouse + pool solar. Waiting on HOA vote.','HOA',38,'Solar'),
-      dl(7,'Weber Residence','Bill Weber','Homeowner','won',24600,'won',null,null,'Closed! 10-panel system. Install 4/5.','Residential',22,'Solar'),
-      dl(8,'Atlas Industrial Roof','Ray Torres','Plant Mgr','active',94000,'negotiation','2026-03-26',null,'200kW flat roof array. PPA option on table.','Industrial',19,'Solar'),
+      dl(1,'Torres Residence','Miguel Torres','Homeowner','stalled',42000,'approved','2026-03-23','budget_freeze','18-panel system. Waiting on utility rebate approval.','Residential',74,'Solar'),
+      dl(2,'Clearbrook Office Park','Donna Pierce','Property Mgr','active',118000,'inspection','2026-03-27',null,'Commercial array, 240kW. Net metering pre-approved.','Commercial',16,'Solar'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',28400,'estimate','2026-03-25',null,'12-panel system. Roof in great shape. Permit submitted.','Residential',12,'Solar'),
+      dl(4,'Northgate Manufacturing','Ann Webb','Plant Mgr','stalled',186000,'approved','2026-03-23','price_objection','500kW industrial array. $18k over competitor.','Industrial',55,'Solar'),
+      dl(5,'Riverside Church','Pastor Rick Adams','Admin Dir','stalled',34000,'estimate','2026-03-20','no_response','30kW rooftop. Submitted bid. No reply 3 weeks.','Institutional',41,'Solar'),
+      dl(6,'Lakewood HOA Clubhouse','Linda Marsh','HOA President','cold',22000,'lead','2026-04-15','timing','Clubhouse + pool solar. Waiting on HOA vote.','HOA',38,'Solar'),
+      dl(7,'Weber Residence','Bill Weber','Homeowner','won',24600,'completed',null,null,'Closed! 10-panel system. Install 4/5.','Residential',22,'Solar'),
+      dl(8,'Atlas Industrial Roof','Ray Torres','Plant Mgr','active',94000,'approved','2026-03-26',null,'200kW flat roof array. PPA option on table.','Industrial',19,'Solar'),
       dl(9,'Sunrise School District','Carl Beck','Facilities Dir','lost',210000,'lost',null,'competitor','State procurement went to lowest bidder.','Institutional',84,'Solar'),
     ],
     jobs: [
@@ -3493,14 +3503,14 @@ const TRADE_DEMO_DATA = {
   },
   'Garage Doors': {
     leads: [
-      dl(1,'Lakewood Auto','Steve Kim','Shop Owner','active',7200,'qualified','2026-03-28',null,'3 commercial overhead doors. Second call scheduled.','Commercial',8,'Garage Doors'),
-      dl(2,'Morrison Residence','Carl Morrison','Homeowner','stalled',3800,'proposal','2026-03-22','price_objection','Double door + opener. $400 under our minimum.','Residential',22,'Garage Doors'),
-      dl(3,'Clearbrook Storage LLC','Owner Dan Ross','Owner','active',18400,'proposal','2026-03-26',null,'12 roll-up doors, 10x10. Storage unit facility.','Commercial',15,'Garage Doors'),
-      dl(4,'Weber Residence','Bill Weber','Homeowner','stalled',2800,'contacted','2026-03-19','no_response','Single door replacement. No reply after site visit.','Residential',18,'Garage Doors'),
-      dl(5,'Northgate Auto Dealer','GM Rich Nash','Operations','active',11200,'negotiation','2026-03-25',null,'4 service bay doors, glass panel. Near close.','Commercial',12,'Garage Doors'),
-      dl(6,'Ridgecrest HOA','HOA Manager Tom Park','Mgr','cold',22000,'contacted','2026-04-10','timing','Community storage building doors, 8 units. Q2 budget.','HOA',34,'Garage Doors'),
-      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',4400,'won',null,null,'Closed! Double door + WiFi opener. Crew 3/29.','Residential',14,'Garage Doors'),
-      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',28000,'negotiation','2026-03-24','budget_freeze','8 heavy-duty roll-up doors, 14x14. Budget on hold.','Industrial',38,'Garage Doors'),
+      dl(1,'Lakewood Auto','Steve Kim','Shop Owner','active',7200,'inspection','2026-03-28',null,'3 commercial overhead doors. Second call scheduled.','Commercial',8,'Garage Doors'),
+      dl(2,'Morrison Residence','Carl Morrison','Homeowner','stalled',3800,'estimate','2026-03-22','price_objection','Double door + opener. $400 under our minimum.','Residential',22,'Garage Doors'),
+      dl(3,'Clearbrook Storage LLC','Owner Dan Ross','Owner','active',18400,'estimate','2026-03-26',null,'12 roll-up doors, 10x10. Storage unit facility.','Commercial',15,'Garage Doors'),
+      dl(4,'Weber Residence','Bill Weber','Homeowner','stalled',2800,'lead','2026-03-19','no_response','Single door replacement. No reply after site visit.','Residential',18,'Garage Doors'),
+      dl(5,'Northgate Auto Dealer','GM Rich Nash','Operations','active',11200,'approved','2026-03-25',null,'4 service bay doors, glass panel. Near close.','Commercial',12,'Garage Doors'),
+      dl(6,'Ridgecrest HOA','HOA Manager Tom Park','Mgr','cold',22000,'lead','2026-04-10','timing','Community storage building doors, 8 units. Q2 budget.','HOA',34,'Garage Doors'),
+      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',4400,'completed',null,null,'Closed! Double door + WiFi opener. Crew 3/29.','Residential',14,'Garage Doors'),
+      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',28000,'approved','2026-03-24','budget_freeze','8 heavy-duty roll-up doors, 14x14. Budget on hold.','Industrial',38,'Garage Doors'),
       dl(9,'Park Ridge Condos','Don Kwan','Property Mgr','lost',14600,'lost',null,'competitor','Went with cheapest bid. Low quality expected.','Commercial',46,'Garage Doors'),
     ],
     jobs: [
@@ -3512,14 +3522,14 @@ const TRADE_DEMO_DATA = {
   },
   'Demolition': {
     leads: [
-      dl(1,'City Storage LLC','Nick Ferreira','Operations Mgr','stalled',38000,'proposal','2026-03-20','budget_freeze','Old warehouse demo, 8,000 sq ft. Board approval pending.','Commercial',53,'Demolition'),
-      dl(2,'Northgate Redevelopment','Greg Patterson','Developer','active',72000,'qualified','2026-03-27',null,'3-building strip mall demo. Environmental clear.','Commercial',18,'Demolition'),
-      dl(3,'Morrison Industrial Site','Ann Webb','Plant Mgr','active',44000,'proposal','2026-03-25',null,'Concrete slab + structure demo, 12,000 sq ft.','Industrial',14,'Demolition'),
-      dl(4,'Clearview County','Facilities Dir Bill Fox','Admin','stalled',98000,'proposal','2026-03-20','no_response','Old courthouse demo. No response after site walk.','Institutional',41,'Demolition'),
-      dl(5,'Torres Commercial Site','Miguel Torres','Owner','stalled',28000,'negotiation','2026-03-23','price_objection','2-story building demo. $6k over competing bid.','Commercial',33,'Demolition'),
-      dl(6,'Lakeview Redevelopment','Dana Clark','Developer','cold',140000,'contacted','2026-05-01','timing','12-acre site clearance. Permits 6 months out.','Commercial',62,'Demolition'),
-      dl(7,'Park Ave Auto Body','Owner Jim Lee','Owner','won',18000,'won',null,null,'Closed! Old building shell demo. Starts 4/4.','Commercial',21,'Demolition'),
-      dl(8,'Ridgecrest School District','Carl Beck','Facilities Dir','active',56000,'negotiation','2026-03-26',null,'Old gymnasium demo. Asbestos clear. Near close.','Institutional',19,'Demolition'),
+      dl(1,'City Storage LLC','Nick Ferreira','Operations Mgr','stalled',38000,'estimate','2026-03-20','budget_freeze','Old warehouse demo, 8,000 sq ft. Board approval pending.','Commercial',53,'Demolition'),
+      dl(2,'Northgate Redevelopment','Greg Patterson','Developer','active',72000,'inspection','2026-03-27',null,'3-building strip mall demo. Environmental clear.','Commercial',18,'Demolition'),
+      dl(3,'Morrison Industrial Site','Ann Webb','Plant Mgr','active',44000,'estimate','2026-03-25',null,'Concrete slab + structure demo, 12,000 sq ft.','Industrial',14,'Demolition'),
+      dl(4,'Clearview County','Facilities Dir Bill Fox','Admin','stalled',98000,'estimate','2026-03-20','no_response','Old courthouse demo. No response after site walk.','Institutional',41,'Demolition'),
+      dl(5,'Torres Commercial Site','Miguel Torres','Owner','stalled',28000,'approved','2026-03-23','price_objection','2-story building demo. $6k over competing bid.','Commercial',33,'Demolition'),
+      dl(6,'Lakeview Redevelopment','Dana Clark','Developer','cold',140000,'lead','2026-05-01','timing','12-acre site clearance. Permits 6 months out.','Commercial',62,'Demolition'),
+      dl(7,'Park Ave Auto Body','Owner Jim Lee','Owner','won',18000,'completed',null,null,'Closed! Old building shell demo. Starts 4/4.','Commercial',21,'Demolition'),
+      dl(8,'Ridgecrest School District','Carl Beck','Facilities Dir','active',56000,'approved','2026-03-26',null,'Old gymnasium demo. Asbestos clear. Near close.','Institutional',19,'Demolition'),
       dl(9,'Clearbrook HOA','Linda Shaw','HOA President','lost',14000,'lost',null,'competitor','Hired a landscaper who also does minor demo.','HOA',55,'Demolition'),
     ],
     jobs: [
@@ -3531,14 +3541,14 @@ const TRADE_DEMO_DATA = {
   },
   'Septic': {
     leads: [
-      dl(1,'Oakwood Estates','Carol Jensen','Homeowner','active',15800,'qualified','2026-03-25',null,'Failing system. Urgent. Permits in process.','Residential',12,'Septic'),
-      dl(2,'Morrison Ranch','Dale Morrison','Ranch Owner','stalled',28000,'negotiation','2026-03-23','budget_freeze','New 1,500-gal system + leach field. Financing needed.','Residential',38,'Septic'),
-      dl(3,'Clearwater Estates — 4 Lots','Developer Greg Fry','Developer','active',52000,'qualified','2026-03-27',null,'4 new residential septic systems. Permits approved.','Commercial',15,'Septic'),
-      dl(4,'Northview Church Camp','Admin Dir Phil Carr','Admin','stalled',44000,'proposal','2026-03-20','no_response','Camp facility new system + pump station. No reply.','Institutional',36,'Septic'),
-      dl(5,'Weber Vacation Property','Bill Weber','Homeowner','stalled',18400,'proposal','2026-03-22','price_objection','Lake cabin new install. Remote site adds cost.','Residential',24,'Septic'),
-      dl(6,'Ridgecrest RV Park','Owner Sam Nash','Owner','cold',38000,'contacted','2026-04-12','timing','RV park system upgrade. Waiting on county permits.','Commercial',44,'Septic'),
-      dl(7,'Torres Rural Property','Miguel Torres','Homeowner','won',14200,'won',null,null,'Closed! New 1,000-gal system. Excavation 3/30.','Residential',18,'Septic'),
-      dl(8,'Park Ridge Animal Clinic','Dr. Gina Park','Owner','active',22000,'negotiation','2026-03-26',null,'Commercial-rated system for new vet clinic. Near close.','Commercial',16,'Septic'),
+      dl(1,'Oakwood Estates','Carol Jensen','Homeowner','active',15800,'inspection','2026-03-25',null,'Failing system. Urgent. Permits in process.','Residential',12,'Septic'),
+      dl(2,'Morrison Ranch','Dale Morrison','Ranch Owner','stalled',28000,'approved','2026-03-23','budget_freeze','New 1,500-gal system + leach field. Financing needed.','Residential',38,'Septic'),
+      dl(3,'Clearwater Estates — 4 Lots','Developer Greg Fry','Developer','active',52000,'inspection','2026-03-27',null,'4 new residential septic systems. Permits approved.','Commercial',15,'Septic'),
+      dl(4,'Northview Church Camp','Admin Dir Phil Carr','Admin','stalled',44000,'estimate','2026-03-20','no_response','Camp facility new system + pump station. No reply.','Institutional',36,'Septic'),
+      dl(5,'Weber Vacation Property','Bill Weber','Homeowner','stalled',18400,'estimate','2026-03-22','price_objection','Lake cabin new install. Remote site adds cost.','Residential',24,'Septic'),
+      dl(6,'Ridgecrest RV Park','Owner Sam Nash','Owner','cold',38000,'lead','2026-04-12','timing','RV park system upgrade. Waiting on county permits.','Commercial',44,'Septic'),
+      dl(7,'Torres Rural Property','Miguel Torres','Homeowner','won',14200,'completed',null,null,'Closed! New 1,000-gal system. Excavation 3/30.','Residential',18,'Septic'),
+      dl(8,'Park Ridge Animal Clinic','Dr. Gina Park','Owner','active',22000,'approved','2026-03-26',null,'Commercial-rated system for new vet clinic. Near close.','Commercial',16,'Septic'),
       dl(9,'County Road Properties LLC','Owner Roy Burns','Owner','lost',34000,'lost',null,'competitor','County health dept contractor won it directly.','Commercial',61,'Septic'),
     ],
     jobs: [
@@ -3550,14 +3560,14 @@ const TRADE_DEMO_DATA = {
   },
   'Tree Service': {
     leads: [
-      dl(1,'Highland Park HOA','David Moore','Board President','cold',8600,'contacted','2026-04-10','timing','15 trees to remove. Spring budget approval pending.','HOA',71,'Tree Service'),
-      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',4800,'proposal','2026-03-25',null,'3 oaks over roof line. Storm risk. Emergency.','Residential',9,'Tree Service'),
-      dl(3,'Clearbrook Office Park','Donna Pierce','Property Mgr','stalled',12000,'proposal','2026-03-20','no_response','10 trees removed + stump grinding. No reply.','Commercial',28,'Tree Service'),
-      dl(4,'Weber Residence','Bill Weber','Homeowner','active',3400,'qualified','2026-03-27',null,'2 dead elms + 3 stumps. HOA requirement.','Residential',11,'Tree Service'),
-      dl(5,'Northview Church','Elder Tom Ames','Admin','stalled',7200,'proposal','2026-03-22','price_objection','6 pine removals. $800 over expectation.','Institutional',24,'Tree Service'),
-      dl(6,'Atlas Industrial Site','Ray Torres','Plant Mgr','cold',22000,'contacted','2026-04-20','timing','Site clearing, 40+ trees. Permits not ready.','Industrial',38,'Tree Service'),
-      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',2800,'won',null,null,'Closed! 2 trees + 3 stumps. Crew 3/27.','Residential',14,'Tree Service'),
-      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',9800,'negotiation','2026-03-26',null,'Annual tree maintenance + hazard removal. Near close.','Institutional',16,'Tree Service'),
+      dl(1,'Highland Park HOA','David Moore','Board President','cold',8600,'lead','2026-04-10','timing','15 trees to remove. Spring budget approval pending.','HOA',71,'Tree Service'),
+      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',4800,'estimate','2026-03-25',null,'3 oaks over roof line. Storm risk. Emergency.','Residential',9,'Tree Service'),
+      dl(3,'Clearbrook Office Park','Donna Pierce','Property Mgr','stalled',12000,'estimate','2026-03-20','no_response','10 trees removed + stump grinding. No reply.','Commercial',28,'Tree Service'),
+      dl(4,'Weber Residence','Bill Weber','Homeowner','active',3400,'inspection','2026-03-27',null,'2 dead elms + 3 stumps. HOA requirement.','Residential',11,'Tree Service'),
+      dl(5,'Northview Church','Elder Tom Ames','Admin','stalled',7200,'estimate','2026-03-22','price_objection','6 pine removals. $800 over expectation.','Institutional',24,'Tree Service'),
+      dl(6,'Atlas Industrial Site','Ray Torres','Plant Mgr','cold',22000,'lead','2026-04-20','timing','Site clearing, 40+ trees. Permits not ready.','Industrial',38,'Tree Service'),
+      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',2800,'completed',null,null,'Closed! 2 trees + 3 stumps. Crew 3/27.','Residential',14,'Tree Service'),
+      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',9800,'approved','2026-03-26',null,'Annual tree maintenance + hazard removal. Near close.','Institutional',16,'Tree Service'),
       dl(9,'Ridgecrest HOA','HOA Mgr Tom Park','Mgr','lost',6400,'lost',null,'competitor','Went with the cheapest bid. No insurance.','HOA',44,'Tree Service'),
     ],
     jobs: [
@@ -3569,14 +3579,14 @@ const TRADE_DEMO_DATA = {
   },
   'Seal Coating': {
     leads: [
-      dl(1,'Westbrook Apartment Complex','Tony Vasquez','Property Mgr','active',8400,'proposal','2026-03-25',null,'Full parking lot, 60-space. Two coats required. Demo well received.','Commercial',10,'Seal Coating'),
-      dl(2,'Meadowfield HOA','Linda Barnes','HOA President','stalled',14200,'negotiation','2026-03-21','budget_freeze','8,000 sq ft access roads + parking. Annual board vote needed.','HOA',37,'Seal Coating'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',2800,'qualified','2026-03-27',null,'Driveway + apron, 1,200 sq ft. Ready to schedule.','Residential',7,'Seal Coating'),
-      dl(4,'Atlas Industrial Park','Ray Torres','Plant Mgr','stalled',22000,'proposal','2026-03-20','no_response','Loading dock + 3 parking areas. No reply after 2 quotes.','Industrial',31,'Seal Coating'),
-      dl(5,'Northview Church','Pastor Ellison','Admin','stalled',6400,'contacted','2026-03-22','price_objection','Main lot + overflow, 4,500 sq ft. $400 over expectation.','Institutional',22,'Seal Coating'),
-      dl(6,'Weber Residence','Bill Weber','Homeowner','cold',1900,'contacted','2026-04-15','timing','1-car driveway. Wants spring. No urgency.','Residential',44,'Seal Coating'),
-      dl(7,'Clearbrook Office Park','Donna Pierce','Property Mgr','won',11600,'won',null,null,'Closed! 3 lots fully coated. Crew out 3/27.','Commercial',18,'Seal Coating'),
-      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',17800,'negotiation','2026-03-26',null,'4 entrance drives + bus loop. Near contract.','Institutional',14,'Seal Coating'),
+      dl(1,'Westbrook Apartment Complex','Tony Vasquez','Property Mgr','active',8400,'estimate','2026-03-25',null,'Full parking lot, 60-space. Two coats required. Demo well received.','Commercial',10,'Seal Coating'),
+      dl(2,'Meadowfield HOA','Linda Barnes','HOA President','stalled',14200,'approved','2026-03-21','budget_freeze','8,000 sq ft access roads + parking. Annual board vote needed.','HOA',37,'Seal Coating'),
+      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',2800,'inspection','2026-03-27',null,'Driveway + apron, 1,200 sq ft. Ready to schedule.','Residential',7,'Seal Coating'),
+      dl(4,'Atlas Industrial Park','Ray Torres','Plant Mgr','stalled',22000,'estimate','2026-03-20','no_response','Loading dock + 3 parking areas. No reply after 2 quotes.','Industrial',31,'Seal Coating'),
+      dl(5,'Northview Church','Pastor Ellison','Admin','stalled',6400,'lead','2026-03-22','price_objection','Main lot + overflow, 4,500 sq ft. $400 over expectation.','Institutional',22,'Seal Coating'),
+      dl(6,'Weber Residence','Bill Weber','Homeowner','cold',1900,'lead','2026-04-15','timing','1-car driveway. Wants spring. No urgency.','Residential',44,'Seal Coating'),
+      dl(7,'Clearbrook Office Park','Donna Pierce','Property Mgr','won',11600,'completed',null,null,'Closed! 3 lots fully coated. Crew out 3/27.','Commercial',18,'Seal Coating'),
+      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',17800,'approved','2026-03-26',null,'4 entrance drives + bus loop. Near contract.','Institutional',14,'Seal Coating'),
       dl(9,'Torres Condo HOA','Miguel Torres','HOA Mgr','lost',9200,'lost',null,'competitor','Went with the lower bid — no two-coat guarantee.','HOA',42,'Seal Coating'),
     ],
     jobs: [
@@ -3607,14 +3617,14 @@ const TRADE_DEMO_DATA = {
   },
   'Pressure Washing': {
     leads: [
-      dl(1,'Bay Area Car Wash','Lena Torres','Owner','won',4200,'won',null,null,'Closed! Full lot + canopy wash. 3/27.','Commercial',29,'Pressure Washing'),
-      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',1800,'proposal','2026-03-25',null,'House exterior + driveway + fence. Annual contract.','Residential',8,'Pressure Washing'),
-      dl(3,'Clearbrook Office Complex','Donna Pierce','Property Mgr','active',6400,'qualified','2026-03-27',null,'Parking deck + building exterior, 3 buildings.','Commercial',13,'Pressure Washing'),
-      dl(4,'Northgate Restaurant Row','Strip Mgr Greg Lee','Mgr','stalled',8800,'proposal','2026-03-20','no_response','10-unit strip center, pre-season wash. No reply.','Commercial',28,'Pressure Washing'),
-      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',2200,'contacted','2026-03-22','price_objection','Driveway + deck. DIY pressure washer is tempting them.','Residential',18,'Pressure Washing'),
-      dl(6,'Ridgecrest HOA','Tom Park','HOA Mgr','cold',12000,'contacted','2026-04-05','timing','Common area annual wash. Budget Q2.','HOA',33,'Pressure Washing'),
-      dl(7,'Torres Commercial Building','Miguel Torres','Owner','active',3600,'negotiation','2026-03-26',null,'4,000 sq ft brick exterior + awnings. Near close.','Commercial',12,'Pressure Washing'),
-      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',5400,'proposal','2026-03-21','budget_freeze','Warehouse floor + dock areas. Maintenance budget frozen.','Industrial',24,'Pressure Washing'),
+      dl(1,'Bay Area Car Wash','Lena Torres','Owner','won',4200,'completed',null,null,'Closed! Full lot + canopy wash. 3/27.','Commercial',29,'Pressure Washing'),
+      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',1800,'estimate','2026-03-25',null,'House exterior + driveway + fence. Annual contract.','Residential',8,'Pressure Washing'),
+      dl(3,'Clearbrook Office Complex','Donna Pierce','Property Mgr','active',6400,'inspection','2026-03-27',null,'Parking deck + building exterior, 3 buildings.','Commercial',13,'Pressure Washing'),
+      dl(4,'Northgate Restaurant Row','Strip Mgr Greg Lee','Mgr','stalled',8800,'estimate','2026-03-20','no_response','10-unit strip center, pre-season wash. No reply.','Commercial',28,'Pressure Washing'),
+      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',2200,'lead','2026-03-22','price_objection','Driveway + deck. DIY pressure washer is tempting them.','Residential',18,'Pressure Washing'),
+      dl(6,'Ridgecrest HOA','Tom Park','HOA Mgr','cold',12000,'lead','2026-04-05','timing','Common area annual wash. Budget Q2.','HOA',33,'Pressure Washing'),
+      dl(7,'Torres Commercial Building','Miguel Torres','Owner','active',3600,'approved','2026-03-26',null,'4,000 sq ft brick exterior + awnings. Near close.','Commercial',12,'Pressure Washing'),
+      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',5400,'estimate','2026-03-21','budget_freeze','Warehouse floor + dock areas. Maintenance budget frozen.','Industrial',24,'Pressure Washing'),
       dl(9,'Lakewood School Campus','Carl Beck','Facilities Dir','lost',9000,'lost',null,'competitor','Custodial staff did it with district equipment.','Institutional',41,'Pressure Washing'),
     ],
     jobs: [

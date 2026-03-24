@@ -12,7 +12,9 @@
       "Bash(git remote:*)",
       "Bash(git push:*)",
       "Bash(npx react-scripts:*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(grep -c \",''''proposal'''',\\\\|,''''negotiation'''',\\\\|,''''qualified'''',\\\\|,''''contacted'''',\" c:/Users/miron/closedloop-crm/src/App.js echo \"---\" grep -n \",''''won'''',\" c:/Users/miron/closedloop-crm/src/App.js)",
+      "Bash(npm run:*)"
     ]
   }
 }
