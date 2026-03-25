@@ -694,6 +694,12 @@ const DEMO_JOBS = [
   },
 ];
 
+const DEMO_CREW = [
+  { id: 'dc1', name: 'Jake Martinez', role: 'Lead Installer', phone: '(555) 234-5678', specialties: ['Roofing', 'Siding'] },
+  { id: 'dc2', name: 'Tom Walsh', role: 'Foreman', phone: '(555) 345-6789', specialties: ['Gutters', 'Roofing', 'Windows'] },
+  { id: 'dc3', name: 'Luis Reyes', role: 'Helper', phone: '(555) 456-7890', specialties: ['Roofing'] },
+];
+
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const S = {
   app: {
@@ -962,6 +968,7 @@ const NAV_TABS = [
   { key: 'callbacks', label: 'Callbacks', icon: '📞' },
   { key: 'analytics', label: 'Analytics', icon: '📊' },
   { key: 'jobs',      label: 'Jobs',      icon: '🔨' },
+  { key: 'crew',      label: 'Crew',      icon: '👷' },
   { key: 'photos',    label: 'Photos',    icon: '📸' },
 ];
 
@@ -1310,6 +1317,69 @@ const photoDB = {
     }));
   },
 };
+
+// ─── IndexedDB Time Tracking ─────────────────────────────────────────────────
+const timeDB = {
+  _db: null,
+  open() {
+    if (this._db) return Promise.resolve(this._db);
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('ridgeos-time', 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('entries')) {
+          const store = db.createObjectStore('entries', { keyPath: 'id' });
+          store.createIndex('jobId', 'jobId', { unique: false });
+          store.createIndex('crewMemberId', 'crewMemberId', { unique: false });
+        }
+      };
+      req.onsuccess = (e) => { this._db = e.target.result; resolve(this._db); };
+      req.onerror = () => reject(req.error);
+    });
+  },
+  getAll() {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('entries', 'readonly').objectStore('entries').getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  add(entry) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('entries', 'readwrite').objectStore('entries').add(entry);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  put(entry) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('entries', 'readwrite').objectStore('entries').put(entry);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+};
+
+function fmtDuration(ms) {
+  if (!ms || ms < 0) return '0m';
+  const totalMins = Math.floor(ms / 60000);
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  if (h === 0) return `${m}m`;
+  return `${h}h ${m}m`;
+}
+
+function weekStartMs() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - d.getDay());
+  return d.getTime();
+}
+
+function computeTotalMs(entries) {
+  const now = Date.now();
+  return entries.reduce((sum, e) => sum + Math.max(0, (e.clockOut || now) - e.clockIn), 0);
+}
 
 async function compressImage(file) {
   return new Promise((resolve) => {
@@ -2261,7 +2331,7 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose, customChecklist }) {
+function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign }) {
   const steps = TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Roofing'];
@@ -2368,13 +2438,25 @@ function JobModal({ job, onClose, customChecklist }) {
         <div style={{ marginTop: 16, fontSize: 11, color: '#374151', textAlign: 'center' }}>
           Scheduled: {job.scheduledDate}
         </div>
+
+        {crew && (
+          <div style={{ marginTop: 20 }}>
+            <JobCrewSection
+              job={job}
+              crew={crew}
+              assignments={assignments || {}}
+              onAssign={onAssign}
+              onUnassign={onUnassign}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
-function JobsTab({ jobs, customChecklist }) {
+function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -2494,7 +2576,15 @@ function JobsTab({ jobs, customChecklist }) {
       </div>
 
       {selectedJob && (
-        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} customChecklist={customChecklist} />
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          customChecklist={customChecklist}
+          crew={crew}
+          assignments={assignments}
+          onAssign={onAssign}
+          onUnassign={onUnassign}
+        />
       )}
     </div>
   );
@@ -4436,6 +4526,415 @@ function GlobalPhotoLog() {
   );
 }
 
+// ─── Add Job Modal ────────────────────────────────────────────────────────────
+function AddJobModal({ onSave, onClose }) {
+  const isMobile = useMobile();
+  const [form, setForm] = useState({
+    customer: '', address: '', trade: 'Roofing', value: '', scheduledDate: '', notes: '',
+  });
+  const [errors, setErrors] = useState({});
+  const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const validate = () => {
+    const e = {};
+    if (!form.customer.trim()) e.customer = true;
+    if (!form.value || isNaN(Number(form.value)) || Number(form.value) <= 0) e.value = true;
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSave = () => {
+    if (!validate()) return;
+    onSave({
+      id: Date.now(),
+      customer: form.customer.trim(),
+      address: form.address.trim(),
+      trade: form.trade,
+      value: Math.round(Number(form.value)),
+      status: 'Scheduled',
+      scheduledDate: form.scheduledDate || new Date().toISOString().slice(0, 10),
+      completedSteps: [],
+      notes: form.notes.trim(),
+    });
+  };
+
+  const mobOverlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const mobModal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '90dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 520 };
+  const fi = (field) => ({
+    ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '9px 12px',
+    border: `1px solid ${errors[field] ? '#ef4444' : '#1e2535'}`,
+  });
+
+  return (
+    <div style={mobOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={mobModal}>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add New Job</div>
+        <div style={S.modalSub}>Required fields marked with *</div>
+
+        <label style={FLbl}>Customer Name *</label>
+        <input style={fi('customer')} value={form.customer} onChange={e => set('customer', e.target.value)} placeholder="Customer or company name" />
+
+        <label style={FLbl}>Job Address</label>
+        <input style={fi('address')} value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Main St, City TX 78000" />
+
+        <div style={isMobile ? {} : FRow}>
+          <div>
+            <label style={FLbl}>Trade</label>
+            <select style={fi('trade')} value={form.trade} onChange={e => set('trade', e.target.value)}>
+              {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={FLbl}>Job Value *</label>
+            <input style={fi('value')} value={form.value} onChange={e => set('value', e.target.value)} placeholder="15000" type="number" min="0" />
+          </div>
+        </div>
+
+        <label style={FLbl}>Scheduled Date</label>
+        <input style={fi('scheduledDate')} value={form.scheduledDate} onChange={e => set('scheduledDate', e.target.value)} type="date" />
+
+        <label style={FLbl}>Notes</label>
+        <textarea style={{ ...fi('notes'), minHeight: 72, resize: 'vertical' }} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Job details, materials, crew notes..." />
+
+        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+          <button style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }} onClick={handleSave}>Add Job</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Job Crew Section ──────────────────────────────────────────────────────────
+function JobCrewSection({ job, crew, assignments, onAssign, onUnassign }) {
+  const [entries, setEntries] = useState([]);
+  const [now, setNow] = useState(Date.now());
+  const [showAssign, setShowAssign] = useState(false);
+  const isMobile = useMobile();
+
+  const assignedIds = assignments[String(job.id)] || [];
+  const assignedCrew = crew.filter(m => assignedIds.includes(m.id));
+
+  const refresh = useCallback(() => {
+    timeDB.getAll().then(all => {
+      setEntries(all.filter(e => String(e.jobId) === String(job.id)));
+    }).catch(() => {});
+  }, [job.id]);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  useEffect(() => {
+    const hasOpen = entries.some(e => !e.clockOut);
+    if (!hasOpen) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [entries]);
+
+  const clockedInEntry = (memberId) => entries.find(e => e.crewMemberId === memberId && !e.clockOut);
+
+  const memberTotalMs = (memberId) => computeTotalMs(entries.filter(e => e.crewMemberId === memberId));
+
+  const handleClockIn = async (member) => {
+    await timeDB.add({
+      id: `te-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      jobId: String(job.id),
+      crewMemberId: member.id,
+      clockIn: Date.now(),
+      clockOut: null,
+    });
+    refresh();
+  };
+
+  const handleClockOut = async (member) => {
+    const open = clockedInEntry(member.id);
+    if (!open) return;
+    await timeDB.put({ ...open, clockOut: Date.now() });
+    refresh();
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={S.sectionLabel}>Crew</div>
+        {onAssign && (
+          <button
+            style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 6, background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)', color: '#f97316', cursor: 'pointer' }}
+            onClick={() => setShowAssign(s => !s)}
+          >
+            {showAssign ? 'Done' : '+ Assign'}
+          </button>
+        )}
+      </div>
+
+      {showAssign && (
+        <div style={{ marginBottom: 12 }}>
+          {crew.length === 0 ? (
+            <div style={{ fontSize: 12, color: '#475569', padding: '8px 0' }}>No crew members yet. Add them in the Crew tab.</div>
+          ) : crew.map(member => {
+            const isAssigned = assignedIds.includes(member.id);
+            return (
+              <div
+                key={member.id}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 7, marginBottom: 4, background: isAssigned ? 'rgba(249,115,22,0.08)' : '#0f1117', border: `1px solid ${isAssigned ? 'rgba(249,115,22,0.25)' : '#1e2535'}`, cursor: 'pointer' }}
+                onClick={() => isAssigned ? onUnassign(job.id, member.id) : onAssign(job.id, member.id)}
+              >
+                <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: isAssigned ? '#f97316' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: isAssigned ? '#fff' : '#64748b' }}>
+                  {member.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{member.name}</div>
+                  {member.role && <div style={{ fontSize: 11, color: '#64748b' }}>{member.role}</div>}
+                </div>
+                <span style={{ fontSize: 11, color: isAssigned ? '#f97316' : '#475569' }}>{isAssigned ? '✓ Assigned' : '+ Add'}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {assignedCrew.length === 0 ? (
+        <div style={{ fontSize: 12, color: '#475569', padding: '8px 0', marginBottom: 4 }}>
+          {crew.length === 0 ? 'Add crew members in the Crew tab, then assign them here.' : 'No crew assigned. Click + Assign to add crew to this job.'}
+        </div>
+      ) : assignedCrew.map(member => {
+        const open = clockedInEntry(member.id);
+        const totalMs = memberTotalMs(member.id);
+        const elapsed = open ? (now - open.clockIn) : 0;
+        return (
+          <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#0f1117', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : '#1e2535'}` }}>
+            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#64748b' }}>
+              {member.name.slice(0, 2).toUpperCase()}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', marginBottom: 2 }}>{member.name}</div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>
+                {open
+                  ? <span style={{ color: '#22c55e' }}>● Clocked in · {fmtDuration(elapsed)}</span>
+                  : `Total: ${fmtDuration(totalMs)}`}
+              </div>
+            </div>
+            <button
+              style={{ padding: isMobile ? '10px 14px' : '7px 12px', minWidth: isMobile ? 90 : 80, borderRadius: 7, border: 'none', background: open ? '#ef4444' : '#22c55e', color: '#fff', fontWeight: 700, fontSize: isMobile ? 13 : 12, cursor: 'pointer', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}
+              onClick={() => open ? handleClockOut(member) : handleClockIn(member)}
+            >
+              {open ? 'Clock Out' : 'Clock In'}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Crew Member Modal ──────────────────────────────────────────────────────────
+function CrewMemberModal({ member, onSave, onClose }) {
+  const isMobile = useMobile();
+  const [name, setName] = useState(member?.name || '');
+  const [role, setRole] = useState(member?.role || '');
+  const [phone, setPhone] = useState(member?.phone || '');
+  const [specialties, setSpecialties] = useState(member?.specialties || []);
+  const [nameErr, setNameErr] = useState(false);
+
+  const toggleSpecialty = (trade) => {
+    setSpecialties(prev => prev.includes(trade) ? prev.filter(t => t !== trade) : [...prev, trade]);
+  };
+
+  const handleSave = () => {
+    if (!name.trim()) { setNameErr(true); return; }
+    onSave({
+      id: member?.id || `crew-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      name: name.trim(), role: role.trim(), phone: phone.trim(), specialties,
+    });
+  };
+
+  const mobOverlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const mobModal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '90dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 520 };
+  const inp = (err) => ({ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '9px 12px', border: `1px solid ${err ? '#ef4444' : '#1e2535'}` });
+
+  return (
+    <div style={mobOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={mobModal}>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>{member ? 'Edit Crew Member' : 'Add Crew Member'}</div>
+        <div style={S.modalSub}>Profile and trade specialties</div>
+
+        <label style={FLbl}>Name *</label>
+        <input style={inp(nameErr)} value={name} onChange={e => { setName(e.target.value); setNameErr(false); }} placeholder="Full name" />
+        {nameErr && <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 6 }}>Name is required</div>}
+
+        <label style={FLbl}>Role / Title</label>
+        <input style={inp(false)} value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. Lead Installer, Foreman, Helper" />
+
+        <label style={FLbl}>Phone</label>
+        <input style={inp(false)} value={phone} onChange={e => setPhone(e.target.value)} placeholder="(555) 000-0000" type="tel" />
+
+        <label style={FLbl}>Trade Specialties</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
+          {TRADE_LIST.map(trade => {
+            const sel = specialties.includes(trade);
+            const color = TRADE_COLORS[trade] || '#64748b';
+            return (
+              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : '#1e2535'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
+                {trade}
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+          <button style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }} onClick={handleSave}>{member ? 'Save Changes' : 'Add Member'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Crew Tab ──────────────────────────────────────────────────────────────────
+function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteMember }) {
+  const [allEntries, setAllEntries] = useState([]);
+  const [now, setNow] = useState(Date.now());
+  const [crewModal, setCrewModal] = useState(null);
+  const isMobile = useMobile();
+
+  useEffect(() => {
+    const load = () => timeDB.getAll().then(setAllEntries).catch(() => {});
+    load();
+    const t = setInterval(load, 10000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const hasOpen = allEntries.some(e => !e.clockOut);
+    if (!hasOpen) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [allEntries]);
+
+  const weekMs = weekStartMs();
+
+  const memberStatus = (member) => {
+    const open = allEntries.find(e => e.crewMemberId === member.id && !e.clockOut);
+    if (!open) return { clockedIn: false, jobName: null, openEntry: null };
+    const job = jobs.find(j => String(j.id) === String(open.jobId));
+    return { clockedIn: true, jobName: job ? job.customer : 'Unknown Job', openEntry: open };
+  };
+
+  const memberWeekMs = (member) => {
+    const we = allEntries.filter(e => e.crewMemberId === member.id && e.clockIn >= weekMs);
+    return computeTotalMs(we);
+  };
+
+  const memberTotalMs = (member) => computeTotalMs(allEntries.filter(e => e.crewMemberId === member.id));
+
+  const handleSaveMember = (data) => {
+    if (crewModal === 'add') onAddMember(data);
+    else onEditMember(data);
+    setCrewModal(null);
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Crew</div>
+          <div style={{ fontSize: 13, color: '#64748b' }}>
+            {crew.length} member{crew.length !== 1 ? 's' : ''} · Weekly hours overview
+          </div>
+        </div>
+        <button
+          style={{ padding: '10px 18px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+          onClick={() => setCrewModal('add')}
+        >
+          + Add Member
+        </button>
+      </div>
+
+      {crew.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 60 }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>👷</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>No crew members yet</div>
+          <div style={{ fontSize: 13, color: '#475569', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
+          <button style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={() => setCrewModal('add')}>
+            Add First Member
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+          {crew.map(member => {
+            const status = memberStatus(member);
+            const wMs = memberWeekMs(member);
+            const tMs = memberTotalMs(member);
+            const elapsed = status.clockedIn ? (now - status.openEntry.clockIn) : 0;
+            const sessionMs = status.clockedIn ? elapsed : 0;
+
+            return (
+              <div key={member.id} style={{ background: '#161b27', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : '#1e2535'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
+                    {member.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#f1f5f9' }}>{member.name}</div>
+                    {member.role && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{member.role}</div>}
+                    {member.phone && <div style={{ fontSize: 12, color: '#475569', marginTop: 1 }}>{member.phone}</div>}
+                  </div>
+                  <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
+                    <button style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
+                    <button style={{ padding: '5px 8px', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 13, lineHeight: 1, WebkitTapHighlightColor: 'transparent' }} onClick={() => onDeleteMember(member.id)}>×</button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : '#1e2535'}` }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#475569', display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#64748b' }}>
+                    {status.clockedIn ? `On job · ${status.jobName}` : 'Off duty'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                  <div style={{ background: '#0f1117', borderRadius: 7, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>This Week</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#f97316' }}>{fmtDuration(wMs + sessionMs)}</div>
+                  </div>
+                  <div style={{ background: '#0f1117', borderRadius: 7, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>All Time</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0' }}>{fmtDuration(tMs + sessionMs)}</div>
+                  </div>
+                </div>
+
+                {member.specialties && member.specialties.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    {member.specialties.slice(0, 3).map(t => (
+                      <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: (TRADE_COLORS[t] || '#64748b') + '22', color: TRADE_COLORS[t] || '#64748b' }}>{t}</span>
+                    ))}
+                    {member.specialties.length > 3 && (
+                      <span style={{ fontSize: 10, color: '#475569', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {crewModal && (
+        <CrewMemberModal
+          member={crewModal === 'add' ? null : crewModal}
+          onSave={handleSaveMember}
+          onClose={() => setCrewModal(null)}
+        />
+      )}
+    </div>
+  );
+}
+
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
   starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
@@ -4787,6 +5286,34 @@ export default function App() {
     }
   }, [userLeads, session]);
 
+  const [userCrew, setUserCrew] = useState(() => {
+    try { const s = localStorage.getItem('cl_crew'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [userJobs, setUserJobs] = useState(() => {
+    try { const s = localStorage.getItem('cl_jobs'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [assignments, setAssignments] = useState(() => {
+    try { const s = localStorage.getItem('cl_assignments'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const [jobModal, setJobModal] = useState(false);
+
+  useEffect(() => {
+    if (session && !session.isDemo) localStorage.setItem('cl_crew', JSON.stringify(userCrew));
+  }, [userCrew, session]);
+  useEffect(() => {
+    if (session && !session.isDemo) localStorage.setItem('cl_jobs', JSON.stringify(userJobs));
+  }, [userJobs, session]);
+  useEffect(() => {
+    if (session && !session.isDemo) localStorage.setItem('cl_assignments', JSON.stringify(assignments));
+  }, [assignments, session]);
+
+  const handleAddCrew = (member) => setUserCrew(prev => [member, ...prev]);
+  const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
+  const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
+  const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
+  const handleAssign = (jobId, crewId) => setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
+  const handleUnassign = (jobId, crewId) => setAssignments(prev => ({ ...prev, [String(jobId)]: (prev[String(jobId)] || []).filter(id => id !== crewId) }));
+
   const handleLogin = (sess) => {
     setSession(sess);
     setScreen('app');
@@ -4835,7 +5362,8 @@ export default function App() {
 
   const isDemo = session?.isDemo;
   const leads = isDemo ? DEMO_LEADS : userLeads;
-  const jobs = isDemo ? DEMO_JOBS : [];
+  const crew = isDemo ? DEMO_CREW : userCrew;
+  const jobs = isDemo ? DEMO_JOBS : userJobs;
   const userTrade = session?.trade || 'Roofing';
   const companyName = session?.companyName || 'RidgeOS';
   const userCustomChecklist = session?.customTradeConfig?.checklist || null;
@@ -4926,8 +5454,26 @@ export default function App() {
                 title="No jobs yet"
                 sub={`Add your first ${userTrade} job to start tracking progress.`}
                 btnLabel="Add your first job"
+                onAction={isDemo ? null : () => setJobModal(true)}
               />
-            : <JobsTab jobs={jobs} customChecklist={userCustomChecklist} />
+            : <JobsTab
+                jobs={jobs}
+                customChecklist={userCustomChecklist}
+                crew={crew}
+                assignments={assignments}
+                onAssign={isDemo ? null : handleAssign}
+                onUnassign={isDemo ? null : handleUnassign}
+              />
+        )}
+        {tab === 'crew' && (
+          <CrewTab
+            crew={crew}
+            jobs={jobs}
+            assignments={assignments}
+            onAddMember={isDemo ? null : handleAddCrew}
+            onEditMember={isDemo ? null : handleEditCrew}
+            onDeleteMember={isDemo ? null : handleDeleteCrew}
+          />
         )}
         {tab === 'photos' && (
           <GlobalPhotoLog />
@@ -4958,6 +5504,10 @@ export default function App() {
           onSave={leadModal === 'add' ? handleAddLead : handleEditLead}
           onClose={() => setLeadModal(null)}
         />
+      )}
+
+      {jobModal && (
+        <AddJobModal onSave={handleAddJob} onClose={() => setJobModal(false)} />
       )}
     </div>
   );
