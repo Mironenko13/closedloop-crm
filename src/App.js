@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 
 // ─── Trades ──────────────────────────────────────────────────────────────────
 const TRADE_LIST = [
@@ -1263,17 +1263,307 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
   );
 }
 
+// ─── IndexedDB Photo Storage ──────────────────────────────────────────────────
+const photoDB = {
+  _db: null,
+  open() {
+    if (this._db) return Promise.resolve(this._db);
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('ridgeos-photos', 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('photos')) {
+          const store = db.createObjectStore('photos', { keyPath: 'id' });
+          store.createIndex('jobId', 'jobId', { unique: false });
+        }
+      };
+      req.onsuccess = (e) => { this._db = e.target.result; resolve(this._db); };
+      req.onerror = () => reject(req.error);
+    });
+  },
+  getAll() {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('photos', 'readonly').objectStore('photos').getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  getByJob(jobId) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('photos', 'readonly').objectStore('photos').index('jobId').getAll(jobId);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  add(photo) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('photos', 'readwrite').objectStore('photos').add(photo);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  remove(id) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('photos', 'readwrite').objectStore('photos').delete(id);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    }));
+  },
+};
+
+async function compressImage(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX = 1200;
+      let { width, height } = img;
+      if (width > MAX) { height = Math.round(height * MAX / width); width = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = url;
+  });
+}
+
+// ─── Job Photos Panel ─────────────────────────────────────────────────────────
+function JobPhotosPanel({ lead, onCountChange }) {
+  const [photos, setPhotos] = useState([]);
+  const [lightbox, setLightbox] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [caption, setCaption] = useState('');
+  const isMobile = useMobile();
+  const fileRef = useRef(null);
+  const cameraRef = useRef(null);
+
+  const refresh = useCallback(() => {
+    photoDB.getByJob(String(lead.id)).then(ps => {
+      const sorted = ps.sort((a, b) => b.timestamp - a.timestamp);
+      setPhotos(sorted);
+      if (onCountChange) onCountChange(sorted.length);
+    }).catch(() => {});
+  }, [lead.id, onCountChange]);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  const handleFiles = async (files) => {
+    if (!files || !files.length) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) continue;
+        const imageData = await compressImage(file);
+        await photoDB.add({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          jobId: String(lead.id),
+          jobName: lead.name,
+          imageData,
+          timestamp: Date.now(),
+          caption: caption.trim(),
+          stage: lead.stage || 'lead',
+          trade: lead.trade || '',
+        });
+      }
+      setCaption('');
+    } finally {
+      setUploading(false);
+      refresh();
+    }
+  };
+
+  const handleDelete = async (id) => {
+    await photoDB.remove(id);
+    if (lightbox && lightbox.id === id) setLightbox(null);
+    refresh();
+  };
+
+  const formatTs = (ts) => new Date(ts).toLocaleString('en-US', {
+    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+
+  const gridCols = isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))';
+
+  return (
+    <div>
+      {/* Upload controls */}
+      <div style={{ marginBottom: 14 }}>
+        <input
+          style={{
+            width: '100%', padding: '8px 12px', background: '#0f1117',
+            border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0',
+            fontSize: 13, outline: 'none', boxSizing: 'border-box',
+            fontFamily: 'inherit', marginBottom: 8,
+          }}
+          placeholder="Caption / note (optional)"
+          value={caption}
+          onChange={e => setCaption(e.target.value)}
+        />
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
+            onChange={e => { handleFiles(e.target.files); e.target.value = ''; }}
+          />
+          <input
+            ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+            onChange={e => { handleFiles(e.target.files); e.target.value = ''; }}
+          />
+          <button
+            onClick={() => cameraRef.current && cameraRef.current.click()}
+            disabled={uploading}
+            style={{
+              flex: 1, padding: '10px 14px', borderRadius: 8,
+              background: '#f97316', border: 'none', color: '#fff',
+              fontSize: 13, fontWeight: 700,
+              cursor: uploading ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              opacity: uploading ? 0.6 : 1,
+            }}
+          >
+            📷 {isMobile ? 'Camera' : 'Take Photo'}
+          </button>
+          <button
+            onClick={() => fileRef.current && fileRef.current.click()}
+            disabled={uploading}
+            style={{
+              flex: 1, padding: '10px 14px', borderRadius: 8,
+              background: '#1a1f2e', border: '1px solid #2d3748',
+              color: uploading ? '#475569' : '#94a3b8',
+              fontSize: 13, fontWeight: 600,
+              cursor: uploading ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            🖼 {uploading ? 'Saving…' : 'Upload'}
+          </button>
+        </div>
+      </div>
+
+      {/* Photo grid */}
+      {photos.length === 0 ? (
+        <div style={{
+          textAlign: 'center', padding: '28px 16px',
+          border: '1px dashed #1e2535', borderRadius: 10,
+        }}>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#64748b', marginBottom: 4 }}>No photos yet</div>
+          <div style={{ fontSize: 12, color: '#475569' }}>
+            {isMobile
+              ? 'Tap Camera to shoot or Upload to pick from library.'
+              : 'Use Take Photo or Upload to start documenting this job.'}
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8 }}>
+          {photos.map(photo => (
+            <div
+              key={photo.id}
+              onClick={() => setLightbox(photo)}
+              style={{
+                position: 'relative', borderRadius: 8, overflow: 'hidden',
+                cursor: 'pointer', border: '1px solid #1e2535',
+                aspectRatio: '4/3', background: '#0d1117',
+              }}
+            >
+              <img
+                src={photo.imageData}
+                alt={photo.caption || 'Job photo'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+              {photo.caption && (
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'rgba(0,0,0,0.65)', padding: '4px 7px',
+                  fontSize: 10, color: '#e2e8f0',
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}>
+                  {photo.caption}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 2000,
+            background: 'rgba(0,0,0,0.93)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', padding: 16,
+          }}
+          onClick={(e) => e.target === e.currentTarget && setLightbox(null)}
+        >
+          <img
+            src={lightbox.imageData}
+            alt={lightbox.caption || ''}
+            style={{ maxWidth: '100%', maxHeight: '72vh', objectFit: 'contain', borderRadius: 8 }}
+          />
+          <div style={{
+            marginTop: 12, display: 'flex', gap: 10, alignItems: 'center',
+            flexWrap: 'wrap', justifyContent: 'center', maxWidth: 480,
+          }}>
+            {lightbox.caption && (
+              <span style={{ fontSize: 13, color: '#e2e8f0' }}>{lightbox.caption}</span>
+            )}
+            <span style={{ fontSize: 11, color: '#64748b' }}>{formatTs(lightbox.timestamp)}</span>
+            <span style={{
+              fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
+              background: 'rgba(249,115,22,0.15)', color: '#f97316',
+              border: '1px solid rgba(249,115,22,0.3)',
+            }}>
+              {STAGE_LABELS[lightbox.stage] || lightbox.stage}
+            </span>
+          </div>
+          <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => setLightbox(null)}
+              style={{
+                padding: '8px 20px', borderRadius: 7,
+                background: '#1a1f2e', border: '1px solid #2d3748',
+                color: '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Close
+            </button>
+            <button
+              onClick={() => handleDelete(lightbox.id)}
+              style={{
+                padding: '8px 20px', borderRadius: 7,
+                background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+                color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── CoachPanel ──────────────────────────────────────────────────────────────
 function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
   const [aiText, setAiText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [localStage, setLocalStage] = useState(lead.stage || 'lead');
+  const [activeTab, setActiveTab] = useState('info');
+  const [photoCount, setPhotoCount] = useState(0);
   const isMobile = useMobile();
   const goToSignup = () => { window.location.href = '/'; };
 
   const stageTips = STAGE_TIPS[localStage] || STAGE_TIPS.lead;
   const isStarterLocked = demoMode && tier === 'starter';
+
+  useEffect(() => {
+    photoDB.getByJob(String(lead.id)).then(ps => setPhotoCount(ps.length)).catch(() => {});
+  }, [lead.id]);
 
   const handleStageChange = (newStage) => {
     setLocalStage(newStage);
@@ -1344,107 +1634,137 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
           {lead.contact} · {lead.role} · {fmt(lead.value)} · {STAGE_LABELS[lead.stage] || lead.stage}
           {lead.stallReason && ` · ${STALL_LABELS[lead.stallReason]}`}
         </div>
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 16 }}>
           <span style={S.tradeBadge(lead.trade)}>{lead.trade}</span>
         </div>
 
-        {lead.notes && (
-          <>
-            <div style={S.sectionLabel}>Job Notes</div>
-            <div style={{
-              fontSize: 13, color: '#94a3b8', marginBottom: 20,
-              padding: '10px 12px', background: '#0f1117', borderRadius: 6,
-            }}>
-              {lead.notes}
-            </div>
-          </>
-        )}
-
-        <div style={S.sectionLabel}>Stage</div>
-        <div style={{
-          display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20,
-        }}>
-          {STAGE_ORDER.map((s) => (
+        {/* Tab switcher */}
+        <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 20 }}>
+          {[
+            { key: 'info', label: 'Details' },
+            { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
+          ].map(({ key, label }) => (
             <button
-              key={s}
-              onClick={() => handleStageChange(s)}
+              key={key}
+              onClick={() => setActiveTab(key)}
               style={{
-                padding: '5px 12px', borderRadius: 20, fontSize: 11,
-                fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
-                border: localStage === s ? 'none' : '1px solid #1e2535',
-                background: localStage === s ? '#f97316' : '#0f1117',
-                color: localStage === s ? '#fff' : '#64748b',
+                padding: '8px 16px', background: 'transparent', border: 'none',
+                borderBottom: activeTab === key ? '2px solid #f97316' : '2px solid transparent',
+                color: activeTab === key ? '#f97316' : '#64748b',
+                fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                marginBottom: -1, transition: 'color 0.15s', fontFamily: 'inherit',
               }}
             >
-              {STAGE_LABELS[s]}
+              {label}
             </button>
           ))}
         </div>
 
-        <div style={S.sectionLabel}>What to do at this stage</div>
-        <ul style={S.playbookList}>
-          {stageTips.map((tip, i) => (
-            <li key={i} style={S.playbookItem}>
-              <span style={S.playbookNum}>{i + 1}</span>
-              <span>{tip}</span>
-            </li>
-          ))}
-        </ul>
+        {/* Details tab */}
+        {activeTab === 'info' && (
+          <>
+            {lead.notes && (
+              <>
+                <div style={S.sectionLabel}>Job Notes</div>
+                <div style={{
+                  fontSize: 13, color: '#94a3b8', marginBottom: 20,
+                  padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+                }}>
+                  {lead.notes}
+                </div>
+              </>
+            )}
 
-        <div style={S.sectionLabel}>AI Coach — Job Advice</div>
-        {isStarterLocked ? (
-          <div>
-            <button
-              style={{
-                width: '100%', padding: '11px 16px', borderRadius: 8,
-                background: '#1a1f2e', border: '1px solid #2d3748',
-                color: '#475569', fontSize: 13, fontWeight: 600,
-                cursor: 'not-allowed', textAlign: 'left',
-                display: 'flex', alignItems: 'center', gap: 8,
-              }}
-              disabled
-            >
-              <span style={{ fontSize: 16 }}>🔒</span>
-              AI Job Advice — Pro feature
-            </button>
-            <div style={{
-              marginTop: 10, padding: '10px 14px',
-              background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)',
-              borderRadius: 7, fontSize: 12, color: '#94a3b8',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-            }}>
-              <span>AI job advice with stage-specific next steps is available on Pro and Business plans.</span>
-              <button
-                onClick={goToSignup}
-                style={{
-                  padding: '5px 14px', background: '#f97316', border: 'none',
-                  borderRadius: 6, color: '#fff', fontWeight: 700,
-                  fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
-                }}
-              >
-                Upgrade
-              </button>
+            <div style={S.sectionLabel}>Stage</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
+              {STAGE_ORDER.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => handleStageChange(s)}
+                  style={{
+                    padding: '5px 12px', borderRadius: 20, fontSize: 11,
+                    fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                    border: localStage === s ? 'none' : '1px solid #1e2535',
+                    background: localStage === s ? '#f97316' : '#0f1117',
+                    color: localStage === s ? '#fff' : '#64748b',
+                  }}
+                >
+                  {STAGE_LABELS[s]}
+                </button>
+              ))}
             </div>
-          </div>
-        ) : (
-          <button style={S.aiBtn(loading)} onClick={getAiAdvice} disabled={loading}>
-            {loading ? '⟳  Generating job advice...' : '✦  Get AI Job Advice'}
-          </button>
+
+            <div style={S.sectionLabel}>What to do at this stage</div>
+            <ul style={S.playbookList}>
+              {stageTips.map((tip, i) => (
+                <li key={i} style={S.playbookItem}>
+                  <span style={S.playbookNum}>{i + 1}</span>
+                  <span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div style={S.sectionLabel}>AI Coach — Job Advice</div>
+            {isStarterLocked ? (
+              <div>
+                <button
+                  style={{
+                    width: '100%', padding: '11px 16px', borderRadius: 8,
+                    background: '#1a1f2e', border: '1px solid #2d3748',
+                    color: '#475569', fontSize: 13, fontWeight: 600,
+                    cursor: 'not-allowed', textAlign: 'left',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                  }}
+                  disabled
+                >
+                  <span style={{ fontSize: 16 }}>🔒</span>
+                  AI Job Advice — Pro feature
+                </button>
+                <div style={{
+                  marginTop: 10, padding: '10px 14px',
+                  background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)',
+                  borderRadius: 7, fontSize: 12, color: '#94a3b8',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+                }}>
+                  <span>AI job advice with stage-specific next steps is available on Pro and Business plans.</span>
+                  <button
+                    onClick={goToSignup}
+                    style={{
+                      padding: '5px 14px', background: '#f97316', border: 'none',
+                      borderRadius: 6, color: '#fff', fontWeight: 700,
+                      fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Upgrade
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button style={S.aiBtn(loading)} onClick={getAiAdvice} disabled={loading}>
+                {loading ? '⟳  Generating job advice...' : '✦  Get AI Job Advice'}
+              </button>
+            )}
+
+            {error && (
+              <div style={{
+                fontSize: 12, color: '#ef4444', marginBottom: 12,
+                padding: '8px 12px', background: 'rgba(239,68,68,0.08)',
+                borderRadius: 6, border: '1px solid rgba(239,68,68,0.2)',
+              }}>
+                {error}
+              </div>
+            )}
+
+            {aiText && <div style={S.aiResponse}>{aiText}</div>}
+
+            {!demoMode && <div style={S.apiKeyNote}>Powered by Claude · Add ANTHROPIC_API_KEY to Vercel environment variables</div>}
+          </>
         )}
 
-        {error && (
-          <div style={{
-            fontSize: 12, color: '#ef4444', marginBottom: 12,
-            padding: '8px 12px', background: 'rgba(239,68,68,0.08)',
-            borderRadius: 6, border: '1px solid rgba(239,68,68,0.2)',
-          }}>
-            {error}
-          </div>
+        {/* Photos tab */}
+        {activeTab === 'photos' && (
+          <JobPhotosPanel lead={lead} onCountChange={setPhotoCount} />
         )}
-
-        {aiText && <div style={S.aiResponse}>{aiText}</div>}
-
-        {!demoMode && <div style={S.apiKeyNote}>Powered by Claude · Add ANTHROPIC_API_KEY to Vercel environment variables</div>}
       </div>
     </div>
   );
@@ -3918,6 +4238,204 @@ function PhotoLogTab({ tier }) {
   );
 }
 
+// ─── Global Photo Log (real users) ───────────────────────────────────────────
+function GlobalPhotoLog() {
+  const [photos, setPhotos] = useState([]);
+  const [jobFilter, setJobFilter] = useState('all');
+  const [lightbox, setLightbox] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const isMobile = useMobile();
+
+  const loadPhotos = useCallback(() => {
+    photoDB.getAll().then(all => {
+      setPhotos(all.sort((a, b) => b.timestamp - a.timestamp));
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { loadPhotos(); }, [loadPhotos]);
+
+  const handleDelete = async (id) => {
+    await photoDB.remove(id);
+    setPhotos(prev => prev.filter(p => p.id !== id));
+    if (lightbox && lightbox.id === id) setLightbox(null);
+  };
+
+  const jobIds = [...new Set(photos.map(p => p.jobId))];
+  const filtered = jobFilter === 'all' ? photos : photos.filter(p => p.jobId === jobFilter);
+
+  const formatTs = (ts) => new Date(ts).toLocaleString('en-US', {
+    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+
+  const gridCols = isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))';
+
+  if (loading) {
+    return <div style={{ padding: 40, textAlign: 'center', color: '#64748b', fontSize: 13 }}>Loading photos…</div>;
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+        marginBottom: 16, flexWrap: 'wrap', gap: 8,
+      }}>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Photo Log</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+            {photos.length > 0
+              ? `${photos.length} photo${photos.length !== 1 ? 's' : ''} · open a job card to add more`
+              : 'Job site documentation — open any job card to upload photos'}
+          </div>
+        </div>
+      </div>
+
+      {/* Job filter pills — only when multiple jobs have photos */}
+      {jobIds.length > 1 && (
+        <div style={{
+          display: 'flex', gap: 6, marginBottom: 16,
+          overflowX: 'auto', WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none', paddingBottom: 4,
+        }}>
+          <button style={S.filterBtn(jobFilter === 'all')} onClick={() => setJobFilter('all')}>
+            All ({photos.length})
+          </button>
+          {jobIds.map(jid => {
+            const name = photos.find(p => p.jobId === jid)?.jobName || jid;
+            const count = photos.filter(p => p.jobId === jid).length;
+            return (
+              <button key={jid} style={S.filterBtn(jobFilter === jid)} onClick={() => setJobFilter(jid)}>
+                {name} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {photos.length === 0 ? (
+        <div style={{
+          textAlign: 'center', padding: '48px 24px',
+          border: '1px dashed #1e2535', borderRadius: 12,
+        }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>📷</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>No photos yet</div>
+          <div style={{ fontSize: 13, color: '#475569', maxWidth: 300, margin: '0 auto' }}>
+            Open any job from the Pipeline tab, then tap the Photos tab inside the job card.
+          </div>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 10 }}>
+            {filtered.map(photo => (
+              <div
+                key={photo.id}
+                onClick={() => setLightbox(photo)}
+                style={{
+                  position: 'relative', borderRadius: 8, overflow: 'hidden',
+                  cursor: 'pointer', border: '1px solid #1e2535',
+                  aspectRatio: '4/3', background: '#0d1117',
+                }}
+              >
+                <img
+                  src={photo.imageData}
+                  alt={photo.caption || 'Job photo'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'rgba(0,0,0,0.7)', padding: '6px 8px',
+                }}>
+                  <div style={{
+                    fontSize: 11, fontWeight: 600, color: '#e2e8f0', marginBottom: 1,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>
+                    {photo.jobName || 'Unknown job'}
+                  </div>
+                  {photo.caption && (
+                    <div style={{
+                      fontSize: 10, color: '#94a3b8',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    }}>
+                      {photo.caption}
+                    </div>
+                  )}
+                </div>
+                <div style={{
+                  position: 'absolute', top: 6, left: 6,
+                  fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 6,
+                  background: 'rgba(249,115,22,0.85)', color: '#fff',
+                }}>
+                  {STAGE_LABELS[photo.stage] || photo.stage}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Lightbox */}
+          {lightbox && (
+            <div
+              style={{
+                position: 'fixed', inset: 0, zIndex: 2000,
+                background: 'rgba(0,0,0,0.93)',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', padding: 16,
+              }}
+              onClick={(e) => e.target === e.currentTarget && setLightbox(null)}
+            >
+              <img
+                src={lightbox.imageData}
+                alt={lightbox.caption || ''}
+                style={{ maxWidth: '100%', maxHeight: '72vh', objectFit: 'contain', borderRadius: 8 }}
+              />
+              <div style={{
+                marginTop: 12, display: 'flex', gap: 10, alignItems: 'center',
+                flexWrap: 'wrap', justifyContent: 'center', maxWidth: 480, textAlign: 'center',
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{lightbox.jobName}</span>
+                {lightbox.caption && (
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>{lightbox.caption}</span>
+                )}
+                <span style={{ fontSize: 11, color: '#64748b' }}>{formatTs(lightbox.timestamp)}</span>
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
+                  background: 'rgba(249,115,22,0.15)', color: '#f97316',
+                  border: '1px solid rgba(249,115,22,0.3)',
+                }}>
+                  {STAGE_LABELS[lightbox.stage] || lightbox.stage}
+                </span>
+              </div>
+              <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+                <button
+                  onClick={() => setLightbox(null)}
+                  style={{
+                    padding: '8px 20px', borderRadius: 7,
+                    background: '#1a1f2e', border: '1px solid #2d3748',
+                    color: '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  }}
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => handleDelete(lightbox.id)}
+                  style={{
+                    padding: '8px 20px', borderRadius: 7,
+                    background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+                    color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
   starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
@@ -4410,6 +4928,9 @@ export default function App() {
                 btnLabel="Add your first job"
               />
             : <JobsTab jobs={jobs} customChecklist={userCustomChecklist} />
+        )}
+        {tab === 'photos' && (
+          <GlobalPhotoLog />
         )}
       </main>
 
