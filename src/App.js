@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from 'react';
-import Anthropic from '@anthropic-ai/sdk';
 
 // ─── Trades ──────────────────────────────────────────────────────────────────
 const TRADE_LIST = [
@@ -576,6 +575,46 @@ const STAGE_LABELS = {
   in_progress: 'In Progress',
   completed: 'Completed',
   lost: 'Lost',
+};
+
+// Operational next-step tips shown inside the job detail modal, keyed by pipeline stage
+const STAGE_TIPS = {
+  lead: [
+    'Call or visit the property to confirm scope and identify any visible damage',
+    'Check Google Maps satellite view of the property before the site visit',
+    'Ask about insurance claim status before quoting — it changes the entire conversation',
+    'Log contact details, job address, and initial scope notes before moving forward',
+  ],
+  inspection: [
+    'Take photos of all four sides, close-ups of damage areas, ridge, valleys, and all penetrations',
+    'Measure total square footage and note roof pitch — both directly affect material quantities',
+    'Identify flashing condition at chimney, skylights, and valleys — the most common callback sources',
+    'Walk the attic if accessible — note soft spots or rot that must be priced before the estimate',
+  ],
+  estimate: [
+    'Include a line item for each material: shingles, underlayment, ice & water shield, drip edge, flashing, ridge cap',
+    'Add a conditional deck repair line item — unexpected rot found during tear-off needs prior approval',
+    'Send the estimate within 24 hours of inspection — close rate drops significantly after 48 hours',
+    'Follow up by phone 48 hours after sending — ask about specific line items, not just "did you see it"',
+  ],
+  approved: [
+    'Order all materials now — lock in pricing and eliminate last-minute delivery delays',
+    'Assign the crew lead and confirm availability for the scheduled start date in writing',
+    'Pull the permit if required — verify local requirements before the crew arrives on site',
+    'Confirm payment schedule with the customer: deposit amount, method, and balance due on completion',
+  ],
+  in_progress: [
+    'Check in with the crew lead at noon — confirm daily progress and flag material shortages early',
+    'Take before, during, and after photos at each phase — they protect you on warranty claims',
+    'Get written customer approval before adding any scope found during tear-off (deck damage, rotted fascia)',
+    'Run a magnetic nail sweep around the perimeter at end of each day — nail callbacks are avoidable',
+  ],
+  completed: [
+    'Walk the completed job with the customer before requesting final payment',
+    'Run a full magnetic nail sweep — driveway, lawn, and sidewalk — before leaving the site',
+    'File the permit close-out inspection if required by your jurisdiction',
+    'Ask for a Google review and one referral within 48 hours — this is your highest-converting window',
+  ],
 };
 const TODAY = '2026-03-23';
 
@@ -1182,6 +1221,31 @@ function getDemoResponse(lead) {
 }
 
 
+// Operational demo AI responses keyed by stage — used when demoMode is true in CoachPanel
+function getStageAiDemo(lead) {
+  const stage = lead.stage || 'lead';
+  const name = lead.name;
+  const val = fmt(lead.value);
+  const contact = lead.contact;
+  const trade = lead.trade;
+
+  const responses = {
+    lead: `1. Call ${contact} today to schedule a site visit for the ${name} job — leads that get a same-day visit convert 3× higher than those that wait a week. Ask about insurance coverage before the call ends; it changes the entire pricing conversation.\n\n2. Pull the ${name} property on Google Maps and check the satellite view before visiting — estimate roof pitch, square footage, and any visible damage areas. Arriving prepared on a ${val} ${trade} lead signals professionalism before you've said a word.\n\n3. Check the county assessor site for any open permits on the ${name} address. An existing open permit on a ${val} job can delay your approval at the estimate stage if you don't catch it now.\n\n4. Create the job folder today: address, ${contact}'s contact details, Street View screenshot, and your initial scope notes. Organization from the lead stage sets the pace for every stage that follows.`,
+
+    inspection: `1. Take a minimum of 20 photos at the ${name} inspection — four sides from ground level, close-ups of each damage area, the ridge, both valleys, and all penetrations. ${contact} will use these to understand exactly what they're approving at the ${val} estimate stage.\n\n2. Measure the roof in sections: ridge length, each slope's dimensions, and pitch. Accurate square footage on a ${val} ${trade} job prevents under-ordering shingles or padding your estimate with expensive overage.\n\n3. Walk the attic if accessible — inspect the decking for soft spots, rot, and prior patching. Any damaged decking at ${name} must be priced as a conditional line item in the estimate, not discovered mid-job when the crew is already on site.\n\n4. Document flashing condition at every penetration — chimney, skylights, and valleys are the #1 source of callbacks on completed ${trade} jobs. Note what needs replacing now so it's in the ${val} estimate, not an afterthought after approval.`,
+
+    estimate: `1. Send the ${name} estimate within 24 hours of today's inspection — close rate drops sharply after 48 hours. The ${val} estimate should include materials, labor, disposal, and a conditional line item for deck repair with a per-sheet rate.\n\n2. Break the estimate into specific line items: shingles (brand and warranty tier), underlayment, ice & water shield, drip edge, flashing, ridge cap, tear-off, and disposal. ${contact} will compare your bid to others — being itemized makes your ${val} scope impossible to compare directly against a lump-sum competitor.\n\n3. Include your workmanship warranty terms explicitly in the estimate document. Most cheap ${trade} bids carry no written warranty. Putting yours in writing is a direct differentiator at the ${val} level and protects you in future disputes.\n\n4. Follow up with a call to ${contact} 48 hours after sending — don't wait for a response. Ask: "Did you have a chance to look over the line items? Any questions on the material spec?" The goal is a conversation that surfaces concerns, not a silent approval or no-show.`,
+
+    approved: `1. Order all materials for ${name} today — shingles, underlayment, drip edge, flashing, and ridge cap. Lock in pricing now. ${trade} supply pricing shifts and specific SKUs can slip if you wait until the week of the job.\n\n2. Assign the crew lead for ${name} and confirm their availability for the scheduled start date in writing. For a ${val} ${trade} job, a confirmed crew lead is not the same as a tentative one — get the name and start time committed before materials are delivered.\n\n3. Check permit requirements for the ${name} address — many jurisdictions require a permit for full ${trade} replacement. Pulling it now prevents the most common avoidable delay: a crew on site with no permit in hand.\n\n4. Confirm the payment schedule with ${contact} before day one: deposit amount, collection method, and balance due on completion. Get this in writing so there is no ambiguity at the ${val} final invoice.`,
+
+    in_progress: `1. Check in with the crew lead at ${name} at noon today — confirm progress against the daily plan, flag any material shortages, and get an updated completion estimate. Daily visibility on a ${val} ${trade} job prevents small delays from compounding into schedule problems.\n\n2. Take progress photos at each phase today: deck exposed, underlayment down, and shingles going on. These photos protect you on future warranty claims and give ${contact} confidence the ${val} job is moving as expected.\n\n3. If the crew finds soft or rotted decking at ${name} today, stop and call ${contact} before proceeding — show them a photo, explain the issue, and get written approval before adding scope. Never absorb deck repair on a ${val} job without documented customer sign-off.\n\n4. Confirm your debris disposal plan for end of day — dumpster location, magnet sweep route for nails, and where excess materials will be staged overnight. Nail injuries and neighbor complaints are the two most common issues on active ${trade} jobs.`,
+
+    completed: `1. Schedule the final walkthrough with ${contact} before requesting the balance on the ${name} job — walk the perimeter together, check the ridge line, and inspect all flashing points. A face-to-face final walkthrough closes the ${val} job cleanly and sets up the referral conversation naturally.\n\n2. Run a magnetic nail sweep around the full perimeter of the ${name} property before leaving — driveway, lawn, and sidewalk. One nail in a tire generates a callback that costs more in goodwill than the sweep takes in time.\n\n3. File the permit close-out inspection if required by your jurisdiction for the ${name} address. Some counties issue lien notices if the final inspection isn't filed within 30 days of completion — don't leave this open on a ${val} job.\n\n4. Ask ${contact} for a Google review and one referral within 48 hours of final sign-off. Say it directly: "If you're happy with the job, a Google review and one referral are the two best ways to help us grow — I'll send you the link right now." This is your highest-converting window on any completed job.`,
+  };
+
+  return responses[stage] || responses.lead;
+}
+
 // ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
 const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
 const LEAD_STAGES = ['lead', 'inspection', 'estimate', 'approved', 'in_progress', 'completed'];
@@ -1410,15 +1474,23 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
 }
 
 // ─── CoachPanel ──────────────────────────────────────────────────────────────
-function CoachPanel({ lead, onClose, demoMode, tier }) {
+function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
   const [aiText, setAiText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [localStage, setLocalStage] = useState(lead.stage || 'lead');
   const isMobile = useMobile();
   const goToSignup = () => { window.location.href = '/'; };
 
-  const tips = PLAYBOOKS[lead.stallReason] || PLAYBOOKS.no_response;
+  const stageTips = STAGE_TIPS[localStage] || STAGE_TIPS.lead;
   const isStarterLocked = demoMode && tier === 'starter';
+
+  const handleStageChange = (newStage) => {
+    setLocalStage(newStage);
+    setAiText('');
+    setError('');
+    if (onStageChange) onStageChange(newStage);
+  };
 
   const getAiAdvice = async () => {
     setLoading(true);
@@ -1426,8 +1498,7 @@ function CoachPanel({ lead, onClose, demoMode, tier }) {
     setAiText('');
 
     if (demoMode) {
-      // Stream the trade+stall-specific pre-written response word by word
-      const text = getDemoResponse(lead);
+      const text = getStageAiDemo({ ...lead, stage: localStage });
       const words = text.split(' ');
       for (let i = 0; i < words.length; i++) {
         await new Promise(r => setTimeout(r, 28));
@@ -1437,98 +1508,31 @@ function CoachPanel({ lead, onClose, demoMode, tier }) {
       return;
     }
 
+    const currentStageLabel = STAGE_LABELS[localStage] || localStage;
+
     try {
-      const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
-      if (!apiKey) {
-        setError('Set REACT_APP_ANTHROPIC_API_KEY in your .env file to enable AI coaching.');
-        setLoading(false);
-        return;
-      }
-      const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
-
-      const cbDays = diffDays(lead.callbackDate);
-      const callbackStatus = lead.callbackDate == null
-        ? 'No callback scheduled'
-        : cbDays < 0
-        ? `OVERDUE by ${Math.abs(cbDays)} day${Math.abs(cbDays) !== 1 ? 's' : ''}`
-        : cbDays === 0
-        ? 'TODAY'
-        : `UPCOMING in ${cbDays} day${cbDays !== 1 ? 's' : ''}`;
-
-      const hasStall = !!(lead.stallReason && STALL_LABELS[lead.stallReason]);
-      const stallLabel = hasStall ? STALL_LABELS[lead.stallReason] : null;
-      const statusUp = (lead.status || 'unknown').toUpperCase();
-
-      // Status-aware coaching goal — never mention stall reason for deals that don't have one
-      let coachingGoal;
-      let stallLine = '';
-      let instruction4;
-      if (lead.status === 'won') {
-        coachingGoal = `This deal is WON. Give advice on how to maximize the relationship from here: secure a referral, explore upsell or add-on work, or turn this ${lead.trade} customer into a repeat client.`;
-        instruction4 = `Focus on post-close relationship tactics specific to ${lead.trade} contractors`;
-      } else if (lead.status === 'lost') {
-        coachingGoal = `This deal was LOST. Give a win-back strategy focused on re-opening the door without relitigating the original sale.`;
-        instruction4 = `Give specific win-back tactics that work in the ${lead.trade} industry`;
-      } else if (lead.status === 'active' && !hasStall) {
-        coachingGoal = `This deal is ACTIVE and moving — give advice on how to advance it from the ${lead.stage} stage to close as quickly as possible. Focus entirely on momentum and advancement tactics, not recovery.`;
-        instruction4 = `Give stage-advancement tactics specific to ${lead.trade} contracting at the ${lead.stage} stage`;
-      } else if (lead.status === 'active' && hasStall) {
-        coachingGoal = `This deal is ACTIVE but showing a ${stallLabel} signal at the ${lead.stage} stage — give advice on how to address that before it fully stalls and keep the deal advancing.`;
-        stallLine = `- Stall Signal: ${stallLabel}`;
-        instruction4 = `Address the ${stallLabel} signal with tactics specific to ${lead.trade} contracting`;
-      } else {
-        // stalled, cold, or unknown
-        coachingGoal = `This deal is ${statusUp} at the ${lead.stage} stage${hasStall ? ` due to ${stallLabel}` : ''} — give a specific recovery plan to unblock it this week.`;
-        if (hasStall) stallLine = `- Stall Reason: ${stallLabel}`;
-        instruction4 = hasStall
-          ? `Address the ${stallLabel} objection with tactics specific to ${lead.trade} contracting`
-          : `Give re-engagement tactics specific to ${lead.trade} contracting at the ${lead.stage} stage`;
-      }
-
-      const stream = await client.messages.stream({
-        model: 'claude-opus-4-6',
-        max_tokens: 700,
-        thinking: { type: 'adaptive' },
-        system: `You are an expert sales coach specializing in the ${lead.trade} contracting industry.`,
-        messages: [{
-          role: 'user',
-          content: `You are advising a sales rep on this deal:
-- Company: ${lead.name} (${lead.industry})
-- Contact: ${lead.contact}, ${lead.role}
-- Trade: ${lead.trade}
-- Deal Value: ${fmt(lead.value)}
-- Current Stage: ${lead.stage}
-- Status: ${statusUp}
-${stallLine ? stallLine + '\n' : ''}- Days Since Last Activity: ${lead.dealAge}
-- Callback Status: ${callbackStatus}
-- Notes: ${lead.notes}
-
-${coachingGoal}
-
-Give 4 highly specific action items this rep should take THIS WEEK. Requirements:
-1. Reference ${lead.trade}-specific knowledge in every action item
-2. Name ${lead.contact} directly in at least 2 action items
-3. Reference the ${fmt(lead.value)} deal value or ${lead.stage} stage in at least 2 action items
-4. ${instruction4}
-5. Zero generic sales advice — every sentence must be specific to this ${lead.trade} deal
-
-Format as numbered action items, no preamble.`,
-        }],
+      const res = await fetch('/api/ai-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trade: lead.trade,
+          stage: currentStageLabel,
+          notes: lead.notes,
+          value: fmt(lead.value),
+          name: lead.name,
+          contact: lead.contact,
+          role: lead.role,
+          industry: lead.industry,
+        }),
       });
-
-      for await (const event of stream) {
-        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-          setAiText(prev => prev + event.delta.text);
-        }
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Error contacting AI coach.');
+      } else {
+        setAiText(data.text);
       }
     } catch (e) {
-      if (e instanceof Anthropic.AuthenticationError) {
-        setError('Invalid API key. Check your REACT_APP_ANTHROPIC_API_KEY.');
-      } else if (e instanceof Anthropic.RateLimitError) {
-        setError('Rate limited. Please wait a moment and try again.');
-      } else {
-        setError('Error: ' + (e.message || 'Unknown error occurred'));
-      }
+      setError('Error: ' + (e.message || 'Unknown error occurred'));
     } finally {
       setLoading(false);
     }
@@ -1554,17 +1558,42 @@ Format as numbered action items, no preamble.`,
           <span style={S.tradeBadge(lead.trade)}>{lead.trade}</span>
         </div>
 
-        <div style={S.sectionLabel}>Deal Notes</div>
+        {lead.notes && (
+          <>
+            <div style={S.sectionLabel}>Job Notes</div>
+            <div style={{
+              fontSize: 13, color: '#94a3b8', marginBottom: 20,
+              padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+            }}>
+              {lead.notes}
+            </div>
+          </>
+        )}
+
+        <div style={S.sectionLabel}>Stage</div>
         <div style={{
-          fontSize: 13, color: '#94a3b8', marginBottom: 20,
-          padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+          display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20,
         }}>
-          {lead.notes}
+          {STAGE_ORDER.map((s) => (
+            <button
+              key={s}
+              onClick={() => handleStageChange(s)}
+              style={{
+                padding: '5px 12px', borderRadius: 20, fontSize: 11,
+                fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                border: localStage === s ? 'none' : '1px solid #1e2535',
+                background: localStage === s ? '#f97316' : '#0f1117',
+                color: localStage === s ? '#fff' : '#64748b',
+              }}
+            >
+              {STAGE_LABELS[s]}
+            </button>
+          ))}
         </div>
 
-        <div style={S.sectionLabel}>Recovery Playbook</div>
+        <div style={S.sectionLabel}>What to do at this stage</div>
         <ul style={S.playbookList}>
-          {tips.map((tip, i) => (
+          {stageTips.map((tip, i) => (
             <li key={i} style={S.playbookItem}>
               <span style={S.playbookNum}>{i + 1}</span>
               <span>{tip}</span>
@@ -1572,7 +1601,7 @@ Format as numbered action items, no preamble.`,
           ))}
         </ul>
 
-        <div style={S.sectionLabel}>AI Coach — Deal-Specific Advice</div>
+        <div style={S.sectionLabel}>AI Coach — Job Advice</div>
         {isStarterLocked ? (
           <div>
             <button
@@ -1586,7 +1615,7 @@ Format as numbered action items, no preamble.`,
               disabled
             >
               <span style={{ fontSize: 16 }}>🔒</span>
-              AI Coaching — Pro feature
+              AI Job Advice — Pro feature
             </button>
             <div style={{
               marginTop: 10, padding: '10px 14px',
@@ -1594,7 +1623,7 @@ Format as numbered action items, no preamble.`,
               borderRadius: 7, fontSize: 12, color: '#94a3b8',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
             }}>
-              <span>AI coaching with trade-specific advice is available on Pro and Business plans.</span>
+              <span>AI job advice with stage-specific next steps is available on Pro and Business plans.</span>
               <button
                 onClick={goToSignup}
                 style={{
@@ -1609,7 +1638,7 @@ Format as numbered action items, no preamble.`,
           </div>
         ) : (
           <button style={S.aiBtn(loading)} onClick={getAiAdvice} disabled={loading}>
-            {loading ? '⟳  Generating coaching advice...' : '✦  Get AI Coaching Advice'}
+            {loading ? '⟳  Generating job advice...' : '✦  Get AI Job Advice'}
           </button>
         )}
 
@@ -1625,7 +1654,7 @@ Format as numbered action items, no preamble.`,
 
         {aiText && <div style={S.aiResponse}>{aiText}</div>}
 
-        {!demoMode && <div style={S.apiKeyNote}>Powered by Claude Opus 4.6 · Add REACT_APP_ANTHROPIC_API_KEY to .env</div>}
+        {!demoMode && <div style={S.apiKeyNote}>Powered by Claude · Add ANTHROPIC_API_KEY to Vercel environment variables</div>}
       </div>
     </div>
   );
@@ -2810,25 +2839,19 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
     setCustomTradeError('');
     setCustomTradeConfig(null);
     try {
-      const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
-      if (!apiKey) {
-        setCustomTradeError('Set REACT_APP_ANTHROPIC_API_KEY in your .env to enable this feature.');
-        setCustomTradeLoading(false);
-        return;
-      }
-      const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
-      const prompt = `You are configuring a contractor CRM for a "${tradeName}" business.\nReturn ONLY valid JSON with no markdown, no explanation, no backticks. Format:\n{\n  "checklist": ["step 1", "step 2", ...],\n  "pipeline": ["Stage 1", "Stage 2", ...]\n}`;
-      const msg = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }],
+      const res = await fetch('/api/custom-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tradeName }),
       });
-      const raw = msg.content[0].text.trim();
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed.checklist) || !Array.isArray(parsed.pipeline)) throw new Error('bad shape');
-      setCustomTradeConfig(parsed);
-      set('trade', tradeName);
-      setErrors({});
+      const data = await res.json();
+      if (!res.ok) {
+        setCustomTradeError(data.error || "Couldn't generate that trade — try being more specific.");
+      } else {
+        setCustomTradeConfig(data);
+        set('trade', tradeName);
+        setErrors({});
+      }
     } catch {
       setCustomTradeError("Couldn't generate that trade — try being more specific.");
     } finally {
@@ -4401,6 +4424,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           onClose={() => setSelectedLead(null)}
           demoMode={true}
           tier={tier}
+          onStageChange={(newStage) => setSelectedLead(prev => ({ ...prev, stage: newStage }))}
         />
       )}
     </div>
@@ -4603,7 +4627,16 @@ export default function App() {
       {isMobile && <BottomNav tab={tab} setTab={setTab} />}
 
       {selectedLead && (
-        <CoachPanel lead={selectedLead} onClose={() => setSelectedLead(null)} />
+        <CoachPanel
+          lead={selectedLead}
+          onClose={() => setSelectedLead(null)}
+          onStageChange={(newStage) => {
+            setUserLeads(prev => prev.map(l =>
+              l.id === selectedLead.id ? { ...l, stage: newStage } : l
+            ));
+            setSelectedLead(prev => ({ ...prev, stage: newStage }));
+          }}
+        />
       )}
 
       {leadModal && (

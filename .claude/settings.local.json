@@ -14,7 +14,8 @@
       "Bash(npx react-scripts:*)",
       "Bash(node -e \":*)",
       "Bash(grep -c \",''''proposal'''',\\\\|,''''negotiation'''',\\\\|,''''qualified'''',\\\\|,''''contacted'''',\" c:/Users/miron/closedloop-crm/src/App.js echo \"---\" grep -n \",''''won'''',\" c:/Users/miron/closedloop-crm/src/App.js)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(powershell -Command \":*)"
     ]
   }
 }
