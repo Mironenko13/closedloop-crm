@@ -1009,50 +1009,6 @@ const diffDays = (dateStr) => {
   return Math.round((new Date(dateStr) - new Date(TODAY)) / 86400000);
 };
 
-const PLAYBOOKS = {
-  price_objection: [
-    'Lead with value, not price — restate the ROI impact for their specific use case',
-    'Offer a phased rollout to reduce initial commitment and perceived risk',
-    'Prepare a competitor TCO comparison highlighting long-term cost advantages',
-    'Escalate to decision-maker level with a written business case before any concessions',
-  ],
-  budget_freeze: [
-    'Lock in a specific re-engage calendar date before the call ends',
-    'Explore creative structuring — split the invoice across fiscal quarters',
-    'Identify an emergency exception budget path directly with the decision-maker',
-    'Keep warm with monthly value-add content; never go fully dark',
-  ],
-  no_response: [
-    'Switch channels immediately — try a direct call instead of email',
-    'Send a "permission to close" message to create urgency and get a response',
-    'Reach out to a different contact in the org to re-establish the relationship',
-    'Reference a recent event or season to make your outreach timely and relevant',
-  ],
-  competitor: [
-    'Request a head-to-head comparison using their actual project specs',
-    'Identify 3 differentiators they have not yet seen or evaluated',
-    'Pull in a reference from a similar project in their area',
-    'Offer a warranty or service guarantee the competitor cannot match',
-  ],
-  timing: [
-    'Set a hard go/no-go date and get it on their calendar now',
-    'Propose a site assessment or pre-work that starts immediately despite the timing',
-    'Ask what specific milestones would make the timing right — get concrete answers',
-    'Maintain value touches every 3 weeks with completed project photos and case studies',
-  ],
-  wrong_contact: [
-    'Ask your current contact to make a warm intro to the real decision-maker',
-    'Research the org or household decision chain before your next call',
-    'Send value content directly to the target decision-maker',
-    'Use the framing: "I want to make sure the right people are aligned before we move forward"',
-  ],
-  technical_fit: [
-    'Schedule a dedicated technical walkthrough to address their specific concerns',
-    'Prepare a custom scope document tailored to their exact requirements',
-    'Offer a time-boxed site visit or mock-up to prove fit',
-    'Bring in references from customers who had similar technical challenges',
-  ],
-};
 
 // Keys: 'Trade|stallReason' or 'Trade|stallReason|stage' (more specific wins)
 const DEMO_AI_RESPONSES = {
@@ -1159,67 +1115,6 @@ const DEMO_AI_RESPONSES = {
 
 4. Stay visible without being pushy — one project-specific touchpoint per month. A photo of comparable electrical work you completed, a note about a code change affecting their scope, or a material lead time update: "Thought of your project when I finished this panel upgrade — same service size you need. Just wanted to stay on your radar for when your timing clears up." One specific message per month keeps you front of mind without the feeling of being chased.`,
 };
-
-function getDemoResponse(lead) {
-  // Check most-specific key first (trade + stallReason + stage), then trade + stallReason
-  const specificKey = `${lead.trade}|${lead.stallReason}|${lead.stage}`;
-  const generalKey = `${lead.trade}|${lead.stallReason}`;
-  if (DEMO_AI_RESPONSES[specificKey]) return DEMO_AI_RESPONSES[specificKey];
-  if (DEMO_AI_RESPONSES[generalKey]) return DEMO_AI_RESPONSES[generalKey];
-
-  // Fallback: status-based advice, every item references trade/contact/value/stage explicitly
-  const trade = lead.trade;
-  const stage = lead.stage;
-  const val = lead.value ? `$${lead.value.toLocaleString()}` : 'the project value';
-  const contact = lead.contact || 'your contact';
-  const hasStall = !!(lead.stallReason && STALL_LABELS[lead.stallReason]);
-  const stall = hasStall ? STALL_LABELS[lead.stallReason] : null;
-
-  if (lead.status === 'won') {
-    return `1. The ${val} ${trade} job is closed — call ${contact} this week to confirm the installation schedule is locked and every crew, material delivery, and permit is staged correctly. A smooth start on a ${trade} job of this size is your best referral-generating move.
-
-2. Ask ${contact} directly for two referrals before the ${stage} job starts: "Do you know anyone else in the area dealing with a similar ${trade} issue? I'd rather get your recommendation than knock doors." Referral requests immediately after a ${val} close, before any work has started, close at a higher rate than post-completion asks.
-
-3. While you have ${contact}'s attention on the ${trade} project, identify one scope add-on — extended warranty, preventive maintenance agreement, or a second phase of work — and present it as a natural extension of what they've already approved. A ${val} ${trade} customer who just signed is far more receptive than a cold prospect.
-
-4. Document this ${trade} job for marketing from day one: take before photos at start, progress photos at key milestones, and a completed job photo at the end. Ask ${contact} for a written testimonial at final walkthrough. A ${val} ${trade} job with documented before/after photos and a named customer review is worth 10 cold leads in your next proposal cycle.`;
-  }
-
-  if (lead.status === 'lost') {
-    return `1. Wait 2 weeks from when this ${val} ${trade} deal was marked lost, then call ${contact} with a single question — no pitch: "Did the project move forward with another contractor, or did it get put on hold?" Half the time a lost ${trade} deal at the ${stage} stage stalls with the other contractor or never starts. You want to be the first call when that happens.
-
-2. If ${contact} went with a competitor on this ${val} ${trade} job, send a short note 30 days after their start date: "Hope the ${trade} project is going smoothly — I'm always here if anything comes up." ${trade} contractors who misquote scope, run slow, or leave messes create re-opening opportunities. Position yourself as the backup without saying so.
-
-3. Ask ${contact} directly what you could have done differently on this ${val} ${trade} proposal. "I'd genuinely like to know what the other contractor offered that we didn't — not to argue, just to improve." Most people will tell you. That answer tells you exactly how to win the next ${trade} job from this customer or a referral from them.
-
-4. Put ${contact} on a 90-day re-engagement sequence: one touchpoint per month with something useful — a ${trade} industry update, a photo of completed local work similar to their ${stage}-stage project, or a seasonal maintenance reminder. You lost the ${val} job today; you're building to win the next ${trade} project from this customer in 6–12 months.`;
-  }
-
-  if (lead.status === 'active' && !hasStall) {
-    return `1. This ${val} ${trade} deal is active at the ${stage} stage — the fastest way to advance it is to give ${contact} a specific next step with a deadline attached, not another open-ended follow-up. Call this week and say: "I want to make sure your ${trade} project stays on schedule — what's the one thing we need to resolve to move from ${stage} to the next step this week?"
-
-2. At the ${stage} stage on a ${val} ${trade} job, the rep who controls the timeline controls the close. Send ${contact} a written summary of exactly where the project stands and what the next 2 steps are: what you need from them, and what you'll deliver. ${trade} customers at ${stage} who receive a clear written path forward move faster than those waiting on a verbal follow-up.
-
-3. Identify the single decision-maker who can push this ${val} ${trade} deal past the ${stage} stage and make sure they have everything they need to say yes. If ${contact} isn't that person, ask: "Is there anyone else who needs to be comfortable with this before we move forward?" Surface any hidden approvers now, not at the contract stage.
-
-4. Create a soft deadline tied to your ${trade} crew or material availability: "I want to hold a start date for your ${trade} project — if you can confirm by [date], I can lock in the slot. Otherwise I can't guarantee availability on your preferred timeline." A ${val} ${trade} deal at the ${stage} stage moves faster when there's a real scheduling stake, not just an open calendar.`;
-  }
-
-  // Active + stall signal, or stalled/cold
-  const stallDesc = stall ? `the ${stall} signal` : 'the current blocker';
-  const stallContext = stall
-    ? `the ${stall} issue`
-    : `what's holding this back`;
-
-  return `1. This ${val} ${trade} deal at the ${stage} stage is showing ${stallDesc} — call ${contact} this week and surface it directly: "I want to make sure I understand exactly what's holding this ${trade} project back. Is ${stallContext} the real issue, or is there something else I should know?" ${trade} deals at ${stage} that stall often have a more specific concern underneath the stated reason.
-
-2. On a ${val} ${trade} job at the ${stage} stage, the ${stallDesc} responds to proof and specificity, not pressure. Send ${contact} one concrete piece of evidence before you call: a photo of a comparable completed ${trade} project, a reference from a similar ${stage}-stage job, or a written comparison showing exactly what's in your ${val} scope. Stalled ${trade} deals at ${stage} move when you replace doubt with documented confidence.
-
-3. Reframe the ${val} ${trade} project around the cost of delay for ${contact}. Ask: "What does it cost you — in risk, inconvenience, or ongoing expense — if this ${trade} work gets pushed another 30 days past ${stage}?" Get a specific answer. This shifts the ${contact} conversation from your price to their consequence, which is the right frame for advancing a ${trade} deal past a ${stallDesc}.
-
-4. Create a real deadline for this ${val} ${trade} deal at ${stage}: reference a concrete constraint on your crew or material schedule. "I have a ${trade} crew available the week of [date] — I'd like to hold that for your project if you can confirm this week. If not, that slot goes to the next job." ${contact} needs a specific reason to decide now. Give them a real one, then go quiet.`;
-}
-
 
 // Operational demo AI responses keyed by stage — used when demoMode is true in CoachPanel
 function getStageAiDemo(lead) {
