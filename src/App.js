@@ -2730,10 +2730,10 @@ function LoginScreen({ onLogin, onStartSignup }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email === 'demo@closedloop.com' && password === 'demo123') {
-      onLogin({ isDemo: true, companyName: 'ClosedLoop', userName: 'Demo User', trade: 'Roofing', plan: 'pro' });
+    if (email === 'demo@ridgeos.com' && password === 'demo123') {
+      onLogin({ isDemo: true, companyName: 'RidgeOS', userName: 'Demo User', trade: 'Roofing', plan: 'pro' });
     } else if (email && password) {
-      setError('Incorrect email or password. Try demo@closedloop.com / demo123');
+      setError('Incorrect email or password. Try demo@ridgeos.com / demo123');
     } else {
       setError('Please enter your email and password.');
     }
@@ -2747,8 +2747,8 @@ function LoginScreen({ onLogin, onStartSignup }) {
   return (
     <div style={A.page}>
       <div style={A.card}>
-        <div style={A.logo}>ClosedLoop</div>
-        <div style={A.tagline}>Sign in to your account</div>
+        <div style={A.logo}>RidgeOS</div>
+        <div style={A.tagline}>The operating system for your roofing business.</div>
 
         <form onSubmit={handleSubmit}>
           <label style={A.label}>Email</label>
@@ -2874,7 +2874,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
   return (
     <div style={A.page}>
       <div style={{ ...A.card, maxWidth: step === 2 ? 560 : step === 3 ? 720 : 440 }}>
-        <div style={A.logo}>ClosedLoop</div>
+        <div style={A.logo}>RidgeOS</div>
 
         <div style={A.stepIndicator}>
           {[1, 2, 3].map(n => (
@@ -3697,10 +3697,10 @@ function TradeSelectScreen({ onSelect }) {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <div style={{ fontSize: 28, fontWeight: 800, color: '#f97316', letterSpacing: '-1px', marginBottom: 16 }}>
-            ClosedLoop
+            RidgeOS
           </div>
           <div style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', marginBottom: 10 }}>
-            See ClosedLoop built for your trade
+            See RidgeOS built for your trade
           </div>
           <div style={{ fontSize: 15, color: '#64748b', maxWidth: 480, margin: '0 auto' }}>
             Pick your trade to see a live demo tailored to your industry
@@ -4529,7 +4529,7 @@ export default function App() {
   const leads = isDemo ? DEMO_LEADS : userLeads;
   const jobs = isDemo ? DEMO_JOBS : [];
   const userTrade = session?.trade || 'Roofing';
-  const companyName = session?.companyName || 'ClosedLoop';
+  const companyName = session?.companyName || 'RidgeOS';
   const userCustomChecklist = session?.customTradeConfig?.checklist || null;
 
   // Only expose mutators for non-demo accounts
@@ -4544,7 +4544,7 @@ export default function App() {
         ...(isMobile ? { padding: '0 16px', height: 52 } : {}),
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={S.logo}>ClosedLoop</span>
+          <span style={S.logo}>RidgeOS</span>
           {isDemo && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
@@ -4554,7 +4554,7 @@ export default function App() {
               DEMO
             </span>
           )}
-          {!isMobile && companyName !== 'ClosedLoop' && (
+          {!isMobile && companyName !== 'RidgeOS' && (
             <span style={S.logoSub}>{companyName}</span>
           )}
         </div>
