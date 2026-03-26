@@ -577,6 +577,16 @@ const STAGE_LABELS = {
   lost: 'Lost',
 };
 
+const STAGE_COLORS = {
+  lead:        '#64748b',
+  inspection:  '#3b82f6',
+  estimate:    '#f59e0b',
+  approved:    '#10b981',
+  in_progress: '#f97316',
+  completed:   '#22c55e',
+  lost:        '#ef4444',
+};
+
 // Operational next-step tips shown inside the job detail modal, keyed by pipeline stage
 const STAGE_TIPS = {
   lead: [
@@ -816,6 +826,18 @@ const S = {
     letterSpacing: '0.3px',
     whiteSpace: 'nowrap',
     marginTop: 6,
+  }),
+  stageBadge: (stage) => ({
+    display: 'inline-block',
+    fontSize: 11,
+    fontWeight: 700,
+    padding: '3px 10px',
+    borderRadius: 10,
+    background: (STAGE_COLORS[stage] || '#64748b') + '28',
+    color: STAGE_COLORS[stage] || '#64748b',
+    border: `1px solid ${(STAGE_COLORS[stage] || '#64748b')}44`,
+    letterSpacing: '0.2px',
+    whiteSpace: 'nowrap',
   }),
   cardMeta: { display: 'flex', gap: 12, marginTop: 12, flexWrap: 'wrap' },
   metaItem: { fontSize: 12, color: '#94a3b8' },
@@ -1968,11 +1990,13 @@ function LeadCard({ lead, onClick, onEdit, onDelete, demoMode }) {
         <span style={S.statusBadge(lead.status)}>{lead.status}</span>
       </div>
 
-      <span style={S.tradeBadge(lead.trade)}>{lead.trade}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+        <span style={S.stageBadge(lead.stage)}>{STAGE_LABELS[lead.stage] || lead.stage}</span>
+        <span style={{ ...S.tradeBadge(lead.trade), marginTop: 0 }}>{lead.trade}</span>
+      </div>
 
       <div style={S.cardMeta}>
         <div style={S.metaItem}>Value: <span style={S.metaValue}>{fmt(lead.value)}</span></div>
-        <div style={S.metaItem}>Stage: <span style={S.metaValue}>{STAGE_LABELS[lead.stage] || lead.stage}</span></div>
         <div style={S.metaItem}>Age: <span style={S.metaValue}>{lead.dealAge}d</span></div>
       </div>
 
