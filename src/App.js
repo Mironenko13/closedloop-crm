@@ -700,6 +700,18 @@ const DEMO_CREW = [
   { id: 'dc3', name: 'Luis Reyes', role: 'Helper', phone: '(555) 456-7890', specialties: ['Roofing'] },
 ];
 
+const DEMO_MESSAGES = [
+  { id: 'dm-1', jobId: '101', senderId: 'system', senderName: 'System', text: 'Jake Martinez assigned to this job', timestamp: 1742400000000, type: 'system' },
+  { id: 'dm-2', jobId: '101', senderId: 'dc1', senderName: 'Jake Martinez', text: 'On site. Starting tear-off. Weather is clear.', timestamp: 1742410000000, type: 'user' },
+  { id: 'dm-3', jobId: '101', senderId: 'system', senderName: 'System', text: 'Tom Walsh assigned to this job', timestamp: 1742411000000, type: 'system' },
+  { id: 'dm-4', jobId: '101', senderId: 'dc2', senderName: 'Tom Walsh', text: 'Picked up shingles from Beacon. ETA 20 mins.', timestamp: 1742420000000, type: 'user' },
+  { id: 'dm-5', jobId: '101', senderId: 'dc1', senderName: 'Jake Martinez', text: 'Day 2 done. Underlayment installed, starting shingles tomorrow.', timestamp: 1742500000000, type: 'user' },
+  { id: 'dm-6', jobId: '102', senderId: 'system', senderName: 'System', text: 'Job scheduled for 2026-03-28', timestamp: 1742000000000, type: 'system' },
+  { id: 'dm-7', jobId: '102', senderId: 'dc2', senderName: 'Tom Walsh', text: 'Confirmed with property manager. Access code is 4821.', timestamp: 1742100000000, type: 'user' },
+  { id: 'dm-8', jobId: '104', senderId: 'system', senderName: 'System', text: 'Luis Reyes assigned to this job', timestamp: 1742200000000, type: 'system' },
+  { id: 'dm-9', jobId: '104', senderId: 'dc3', senderName: 'Luis Reyes', text: 'Units 1-6 re-piped. Moving to second floor now.', timestamp: 1742300000000, type: 'user' },
+];
+
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const S = {
   app: {
@@ -969,6 +981,7 @@ const NAV_TABS = [
   { key: 'analytics', label: 'Analytics', icon: '📊' },
   { key: 'jobs',      label: 'Jobs',      icon: '🔨' },
   { key: 'crew',      label: 'Crew',      icon: '👷' },
+  { key: 'chat',      label: 'Chat',      icon: '💬' },
   { key: 'photos',    label: 'Photos',    icon: '📸' },
 ];
 
@@ -1380,6 +1393,47 @@ function computeTotalMs(entries) {
   const now = Date.now();
   return entries.reduce((sum, e) => sum + Math.max(0, (e.clockOut || now) - e.clockIn), 0);
 }
+
+// ─── IndexedDB Chat Storage ───────────────────────────────────────────────────
+const chatDB = {
+  _db: null,
+  open() {
+    if (this._db) return Promise.resolve(this._db);
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('ridgeos-chat', 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('messages')) {
+          const store = db.createObjectStore('messages', { keyPath: 'id' });
+          store.createIndex('jobId', 'jobId', { unique: false });
+        }
+      };
+      req.onsuccess = (e) => { this._db = e.target.result; resolve(this._db); };
+      req.onerror = () => reject(req.error);
+    });
+  },
+  getAll() {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('messages', 'readonly').objectStore('messages').getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  getByJob(jobId) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('messages', 'readonly').objectStore('messages').index('jobId').getAll(jobId);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+  add(msg) {
+    return this.open().then(db => new Promise((resolve, reject) => {
+      const req = db.transaction('messages', 'readwrite').objectStore('messages').add(msg);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }));
+  },
+};
 
 async function compressImage(file) {
   return new Promise((resolve) => {
@@ -2331,7 +2385,7 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign }) {
+function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages }) {
   const steps = TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Roofing'];
@@ -2346,6 +2400,17 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
     });
     return init;
   });
+
+  const [modalTab, setModalTab] = useState('checklist');
+  const [msgCount, setMsgCount] = useState(0);
+
+  useEffect(() => {
+    if (demoMessages) {
+      setMsgCount(demoMessages.filter(m => m.type === 'user').length);
+      return;
+    }
+    chatDB.getByJob(String(job.id)).then(msgs => setMsgCount(msgs.length)).catch(() => {});
+  }, [job.id, demoMessages]);
 
   const toggle = (id) => {
     setChecks(prev => {
@@ -2404,51 +2469,80 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           </div>
         </div>
 
-        <div style={S.sectionLabel}>Job Notes</div>
-        <div style={{
-          fontSize: 13, color: '#94a3b8', marginBottom: 20,
-          padding: '10px 12px', background: '#0f1117', borderRadius: 6,
-        }}>
-          {job.notes}
+        {/* Modal tab bar */}
+        <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 20 }}>
+          {[
+            { key: 'checklist', label: 'Checklist' },
+            { key: 'crew', label: 'Crew' },
+            { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setModalTab(key)}
+              style={{
+                padding: '8px 16px', background: 'transparent', border: 'none',
+                borderBottom: `2px solid ${modalTab === key ? '#f97316' : 'transparent'}`,
+                color: modalTab === key ? '#f97316' : '#64748b',
+                cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                marginBottom: -1, WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
-        <div style={S.sectionLabel}>{job.trade} Checklist</div>
-        <div>
-          {steps.map((step) => {
-            const c = checks[step.id];
-            return (
-              <div key={step.id} style={S.checklistItem(c.done)} onClick={() => toggle(step.id)}>
-                <div style={S.checkbox(c.done)}>
-                  {c.done && (
-                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-                      <path d="M1 4L4 7L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </div>
-                <span style={S.checkLabel(c.done)}>
-                  <span style={{ color: '#475569', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
-                  {step.label}
-                </span>
-                {c.ts && <span style={S.checkTs}>{c.ts}</span>}
-              </div>
-            );
-          })}
-        </div>
+        {modalTab === 'checklist' && (
+          <>
+            <div style={S.sectionLabel}>Job Notes</div>
+            <div style={{
+              fontSize: 13, color: '#94a3b8', marginBottom: 20,
+              padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+            }}>
+              {job.notes}
+            </div>
 
-        <div style={{ marginTop: 16, fontSize: 11, color: '#374151', textAlign: 'center' }}>
-          Scheduled: {job.scheduledDate}
-        </div>
+            <div style={S.sectionLabel}>{job.trade} Checklist</div>
+            <div>
+              {steps.map((step) => {
+                const c = checks[step.id];
+                return (
+                  <div key={step.id} style={S.checklistItem(c.done)} onClick={() => toggle(step.id)}>
+                    <div style={S.checkbox(c.done)}>
+                      {c.done && (
+                        <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                          <path d="M1 4L4 7L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <span style={S.checkLabel(c.done)}>
+                      <span style={{ color: '#475569', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
+                      {step.label}
+                    </span>
+                    {c.ts && <span style={S.checkTs}>{c.ts}</span>}
+                  </div>
+                );
+              })}
+            </div>
 
-        {crew && (
-          <div style={{ marginTop: 20 }}>
-            <JobCrewSection
-              job={job}
-              crew={crew}
-              assignments={assignments || {}}
-              onAssign={onAssign}
-              onUnassign={onUnassign}
-            />
-          </div>
+            <div style={{ marginTop: 16, fontSize: 11, color: '#374151', textAlign: 'center' }}>
+              Scheduled: {job.scheduledDate}
+            </div>
+          </>
+        )}
+
+        {modalTab === 'crew' && (
+          <JobCrewSection
+            job={job}
+            crew={crew || []}
+            assignments={assignments || {}}
+            onAssign={onAssign}
+            onUnassign={onUnassign}
+          />
+        )}
+
+        {modalTab === 'chat' && (
+          <JobChatPanel jobId={job.id} currentUser={currentUser} demoMessages={demoMessages} onCountChange={setMsgCount} />
         )}
       </div>
     </div>
@@ -2456,7 +2550,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
-function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign }) {
+function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -2584,6 +2678,8 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           assignments={assignments}
           onAssign={onAssign}
           onUnassign={onUnassign}
+          currentUser={currentUser}
+          demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
         />
       )}
     </div>
@@ -4935,6 +5031,213 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
   );
 }
 
+// ─── Job Chat Panel ──────────────────────────────────────────────────────────
+function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const endRef = useRef(null);
+  const isMobile = useMobile();
+
+  const load = useCallback(() => {
+    if (demoMessages) {
+      const sorted = [...demoMessages].sort((a, b) => a.timestamp - b.timestamp);
+      setMessages(sorted);
+      if (onCountChange) onCountChange(sorted.filter(m => m.type === 'user').length);
+      return;
+    }
+    chatDB.getByJob(String(jobId)).then(msgs => {
+      const sorted = msgs.sort((a, b) => a.timestamp - b.timestamp);
+      setMessages(sorted);
+      if (onCountChange) onCountChange(sorted.length);
+    }).catch(() => {});
+  }, [jobId, demoMessages, onCountChange]);
+
+  useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    if (endRef.current) endRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const send = async () => {
+    const t = text.trim();
+    if (!t || demoMessages) return;
+    const msg = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      jobId: String(jobId),
+      senderId: 'user',
+      senderName: currentUser || 'You',
+      text: t,
+      timestamp: Date.now(),
+      type: 'user',
+    };
+    await chatDB.add(msg).catch(() => {});
+    setText('');
+    load();
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  };
+
+  const formatTs = (ts) => new Date(ts).toLocaleString('en-US', {
+    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: 320 }}>
+      <div style={{ flex: 1, overflow: 'auto', maxHeight: 380, paddingBottom: 8 }}>
+        {messages.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#475569' }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#64748b' }}>No messages yet</div>
+            <div style={{ fontSize: 12, marginTop: 4, color: '#374151' }}>Start the conversation below</div>
+          </div>
+        ) : messages.map(msg => (
+          msg.type === 'system' ? (
+            <div key={msg.id} style={{ textAlign: 'center', padding: '5px 0', margin: '4px 0' }}>
+              <span style={{ fontSize: 11, color: '#475569', background: '#0f1117', padding: '3px 12px', borderRadius: 20, border: '1px solid #1e2535' }}>
+                {msg.text}
+              </span>
+            </div>
+          ) : (
+            <div key={msg.id} style={{ marginBottom: 14, padding: '0 2px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
+                  {msg.senderName.slice(0, 2).toUpperCase()}
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f0' }}>{msg.senderName}</span>
+                <span style={{ fontSize: 11, color: '#374151' }}>{formatTs(msg.timestamp)}</span>
+              </div>
+              <div style={{ marginLeft: 34, fontSize: 13, color: '#cbd5e1', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{msg.text}</div>
+            </div>
+          )
+        ))}
+        <div ref={endRef} />
+      </div>
+
+      {!demoMessages && (
+        <div style={{ display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid #1e2535', marginTop: 4 }}>
+          <textarea
+            style={{
+              flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
+              background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7,
+              color: '#e2e8f0', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
+              resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
+              lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
+            }}
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Message... (Enter to send)"
+            rows={1}
+          />
+          <button
+            style={{
+              padding: '8px 14px', border: 'none', borderRadius: 7,
+              background: text.trim() ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#1e2535',
+              color: text.trim() ? '#fff' : '#475569',
+              cursor: text.trim() ? 'pointer' : 'default',
+              fontWeight: 600, fontSize: 13, flexShrink: 0,
+              minWidth: 60, WebkitTapHighlightColor: 'transparent',
+            }}
+            onClick={send}
+          >
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Chat Tab (global) ────────────────────────────────────────────────────────
+function ChatTab({ jobs }) {
+  const [allMessages, setAllMessages] = useState([]);
+  const [jobFilter, setJobFilter] = useState('all');
+
+  useEffect(() => {
+    chatDB.getAll().then(msgs => {
+      setAllMessages(msgs.sort((a, b) => b.timestamp - a.timestamp));
+    }).catch(() => {});
+  }, []);
+
+  const jobsWithMsgs = useMemo(() => {
+    const ids = [...new Set(allMessages.map(m => m.jobId))];
+    return ids.map(id => jobs.find(j => String(j.id) === id)).filter(Boolean);
+  }, [allMessages, jobs]);
+
+  const filtered = useMemo(() => {
+    if (jobFilter === 'all') return allMessages;
+    return allMessages.filter(m => m.jobId === jobFilter);
+  }, [allMessages, jobFilter]);
+
+  const jobName = (jobId) => {
+    const j = jobs.find(jb => String(jb.id) === jobId);
+    return j ? j.customer : 'Unknown Job';
+  };
+
+  const formatTs = (ts) => new Date(ts).toLocaleString('en-US', {
+    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+
+  return (
+    <div>
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Job Chat</div>
+        <div style={{ fontSize: 13, color: '#64748b' }}>Recent messages across all jobs</div>
+      </div>
+
+      <div style={S.filterRow}>
+        <button style={S.filterBtn(jobFilter === 'all')} onClick={() => setJobFilter('all')}>
+          All Jobs ({allMessages.filter(m => m.type === 'user').length})
+        </button>
+        {jobsWithMsgs.map(j => (
+          <button key={j.id} style={S.filterBtn(jobFilter === String(j.id))} onClick={() => setJobFilter(String(j.id))}>
+            {j.customer}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 60, color: '#475569' }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>No messages yet</div>
+          <div style={{ fontSize: 13 }}>Open a job and start chatting with your crew.</div>
+        </div>
+      ) : (
+        <div>
+          {filtered.map(msg => (
+            msg.type === 'system' ? (
+              <div key={msg.id} style={{ textAlign: 'center', padding: '4px 0', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, color: '#475569' }}>
+                  {jobName(msg.jobId)} · {msg.text}
+                </span>
+              </div>
+            ) : (
+              <div key={msg.id} style={{
+                background: '#161b27', border: '1px solid #1e2535', borderRadius: 8,
+                padding: '12px 16px', marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12,
+              }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
+                  {msg.senderName.slice(0, 2).toUpperCase()}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{msg.senderName}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#f97316', background: 'rgba(249,115,22,0.1)', padding: '1px 8px', borderRadius: 10 }}>{jobName(msg.jobId)}</span>
+                    <span style={{ fontSize: 11, color: '#374151', marginLeft: 'auto' }}>{formatTs(msg.timestamp)}</span>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.text}</div>
+                </div>
+              </div>
+            )
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
   starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
@@ -5174,7 +5477,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           <AnalyticsTab leads={data.leads} tier={tier} />
         )}
         {tab === 'jobs' && (
-          <JobsTab jobs={data.jobs} customChecklist={customTradeConfig?.checklist} />
+          <JobsTab jobs={data.jobs} customChecklist={customTradeConfig?.checklist} demoMessages={DEMO_MESSAGES} />
         )}
         {tab === 'photos' && (
           <PhotoLogTab tier={tier} />
@@ -5311,8 +5614,20 @@ export default function App() {
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
   const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
-  const handleAssign = (jobId, crewId) => setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
-  const handleUnassign = (jobId, crewId) => setAssignments(prev => ({ ...prev, [String(jobId)]: (prev[String(jobId)] || []).filter(id => id !== crewId) }));
+  const handleAssign = (jobId, crewId) => {
+    setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
+    const member = userCrew.find(m => m.id === crewId);
+    if (member) {
+      chatDB.add({ id: `sys-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, jobId: String(jobId), senderId: 'system', senderName: 'System', text: `${member.name} assigned to this job`, timestamp: Date.now(), type: 'system' }).catch(() => {});
+    }
+  };
+  const handleUnassign = (jobId, crewId) => {
+    setAssignments(prev => ({ ...prev, [String(jobId)]: (prev[String(jobId)] || []).filter(id => id !== crewId) }));
+    const member = userCrew.find(m => m.id === crewId);
+    if (member) {
+      chatDB.add({ id: `sys-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, jobId: String(jobId), senderId: 'system', senderName: 'System', text: `${member.name} removed from this job`, timestamp: Date.now(), type: 'system' }).catch(() => {});
+    }
+  };
 
   const handleLogin = (sess) => {
     setSession(sess);
@@ -5367,6 +5682,7 @@ export default function App() {
   const userTrade = session?.trade || 'Roofing';
   const companyName = session?.companyName || 'RidgeOS';
   const userCustomChecklist = session?.customTradeConfig?.checklist || null;
+  const currentUser = session?.name || session?.companyName || 'You';
 
   // Only expose mutators for non-demo accounts
   const addLeadHandler = isDemo ? null : () => setLeadModal('add');
@@ -5463,6 +5779,8 @@ export default function App() {
                 assignments={assignments}
                 onAssign={isDemo ? null : handleAssign}
                 onUnassign={isDemo ? null : handleUnassign}
+                currentUser={currentUser}
+                demoMessages={isDemo ? DEMO_MESSAGES : null}
               />
         )}
         {tab === 'crew' && (
@@ -5474,6 +5792,9 @@ export default function App() {
             onEditMember={isDemo ? null : handleEditCrew}
             onDeleteMember={isDemo ? null : handleDeleteCrew}
           />
+        )}
+        {tab === 'chat' && (
+          <ChatTab jobs={jobs} />
         )}
         {tab === 'photos' && (
           <GlobalPhotoLog />
