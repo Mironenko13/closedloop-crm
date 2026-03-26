@@ -2385,7 +2385,7 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages }) {
+function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete }) {
   const steps = TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Roofing'];
@@ -2403,6 +2403,8 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
   const [modalTab, setModalTab] = useState('checklist');
   const [msgCount, setMsgCount] = useState(0);
+  const [photoCount, setPhotoCount] = useState(0);
+  const [confirmComplete, setConfirmComplete] = useState(false);
 
   useEffect(() => {
     if (demoMessages) {
@@ -2470,10 +2472,11 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
         </div>
 
         {/* Modal tab bar */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 20 }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 20, overflowX: 'auto' }}>
           {[
             { key: 'checklist', label: 'Checklist' },
             { key: 'crew', label: 'Crew' },
+            { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
             { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
           ].map(({ key, label }) => (
             <button
@@ -2528,7 +2531,43 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             <div style={{ marginTop: 16, fontSize: 11, color: '#374151', textAlign: 'center' }}>
               Scheduled: {job.scheduledDate}
             </div>
+
+            {/* Mark Job Complete */}
+            {onComplete && job.status !== 'Complete' && (
+              <div style={{ marginTop: 20 }}>
+                {pct === 100 ? (
+                  <button
+                    style={{ width: '100%', padding: '12px 16px', background: 'linear-gradient(135deg, #22c55e, #16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                    onClick={() => onComplete(job.id)}
+                  >
+                    ✓ Mark Job Complete
+                  </button>
+                ) : confirmComplete ? (
+                  <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 13, color: '#f97316', marginBottom: 10 }}>Not all checklist items are done. Complete anyway?</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
+                      <button style={{ flex: 2, padding: '8px', background: '#22c55e', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }} onClick={() => onComplete(job.id)}>Complete Anyway</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                    onClick={() => setConfirmComplete(true)}
+                  >
+                    Mark as Complete
+                  </button>
+                )}
+              </div>
+            )}
           </>
+        )}
+
+        {modalTab === 'photos' && (
+          <JobPhotosPanel
+            lead={{ id: job.id, name: job.customer, stage: 'in_progress', trade: job.trade }}
+            onCountChange={setPhotoCount}
+          />
         )}
 
         {modalTab === 'crew' && (
@@ -2550,7 +2589,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
-function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages }) {
+function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -2680,6 +2719,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           onUnassign={onUnassign}
           currentUser={currentUser}
           demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
+          onComplete={onComplete ? (id) => { onComplete(id); setSelectedJob(null); } : null}
         />
       )}
     </div>
@@ -5614,6 +5654,7 @@ export default function App() {
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
   const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
+  const handleCompleteJob = (id) => setUserJobs(prev => prev.map(j => j.id === id ? { ...j, status: 'Complete' } : j));
   const handleAssign = (jobId, crewId) => {
     setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
     const member = userCrew.find(m => m.id === crewId);
@@ -5781,6 +5822,7 @@ export default function App() {
                 onUnassign={isDemo ? null : handleUnassign}
                 currentUser={currentUser}
                 demoMessages={isDemo ? DEMO_MESSAGES : null}
+                onComplete={isDemo ? null : handleCompleteJob}
               />
         )}
         {tab === 'crew' && (
