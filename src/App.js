@@ -1024,6 +1024,25 @@ function BottomNav({ tab, setTab, tabs, color }) {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const fmt = (n) => '$' + n.toLocaleString();
 
+// Stages at which a lead also appears as an active job
+const JOB_STAGES = ['approved', 'in_progress', 'completed'];
+
+function leadToJob(lead) {
+  return {
+    id: lead.id,
+    customer: lead.name,
+    address: lead.address || '',
+    trade: lead.trade,
+    value: lead.value,
+    status: lead.stage === 'completed' ? 'Complete'
+          : lead.stage === 'in_progress' ? 'In Progress'
+          : 'Scheduled',
+    scheduledDate: lead.callbackDate || lead.lastContact || TODAY,
+    completedSteps: lead.completedSteps || [],
+    notes: lead.notes || '',
+  };
+}
+
 const diffDays = (dateStr) => {
   if (!dateStr) return null;
   return Math.round((new Date(dateStr) - new Date(TODAY)) / 86400000);
@@ -2385,7 +2404,7 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete }) {
+function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete, onUpdateSteps }) {
   const steps = TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Roofing'];
@@ -2417,13 +2436,18 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const toggle = (id) => {
     setChecks(prev => {
       const wasDone = prev[id].done;
-      return {
+      const next = {
         ...prev,
         [id]: {
           done: !wasDone,
           ts: wasDone ? null : new Date().toISOString().slice(0, 16).replace('T', ' '),
         },
       };
+      if (onUpdateSteps) {
+        const doneIds = Object.entries(next).filter(([, v]) => v.done).map(([k]) => Number(k));
+        onUpdateSteps(job.id, doneIds);
+      }
+      return next;
     });
   };
 
@@ -2589,7 +2613,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
-function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete }) {
+function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete, onUpdateSteps }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -2720,6 +2744,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           currentUser={currentUser}
           demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
           onComplete={onComplete ? (id) => { onComplete(id); setSelectedJob(null); } : null}
+          onUpdateSteps={onUpdateSteps}
         />
       )}
     </div>
@@ -5517,7 +5542,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           <AnalyticsTab leads={data.leads} tier={tier} />
         )}
         {tab === 'jobs' && (
-          <JobsTab jobs={data.jobs} customChecklist={customTradeConfig?.checklist} demoMessages={DEMO_MESSAGES} />
+          <JobsTab jobs={DEMO_JOBS} customChecklist={customTradeConfig?.checklist} demoMessages={DEMO_MESSAGES} />
         )}
         {tab === 'photos' && (
           <PhotoLogTab tier={tier} />
@@ -5654,7 +5679,14 @@ export default function App() {
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
   const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
-  const handleCompleteJob = (id) => setUserJobs(prev => prev.map(j => j.id === id ? { ...j, status: 'Complete' } : j));
+  const handleCompleteJob = (id) => {
+    setUserLeads(prev => prev.map(l => l.id === id ? { ...l, stage: 'completed' } : l));
+    setUserJobs(prev => prev.map(j => j.id === id ? { ...j, status: 'Complete' } : j));
+  };
+  const handleUpdateJobSteps = (jobId, completedSteps) => {
+    setUserLeads(prev => prev.map(l => l.id === jobId ? { ...l, completedSteps } : l));
+    setUserJobs(prev => prev.map(j => j.id === jobId ? { ...j, completedSteps } : j));
+  };
   const handleAssign = (jobId, crewId) => {
     setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
     const member = userCrew.find(m => m.id === crewId);
@@ -5719,7 +5751,15 @@ export default function App() {
   const isDemo = session?.isDemo;
   const leads = isDemo ? DEMO_LEADS : userLeads;
   const crew = isDemo ? DEMO_CREW : userCrew;
-  const jobs = isDemo ? DEMO_JOBS : userJobs;
+
+  // Derive jobs from pipeline leads that have reached a job-execution stage,
+  // then append any standalone jobs added via "Add Job" (deduplicated by id).
+  const derivedJobs = userLeads
+    .filter(l => JOB_STAGES.includes(l.stage))
+    .map(leadToJob);
+  const derivedIds = new Set(derivedJobs.map(j => String(j.id)));
+  const standaloneJobs = userJobs.filter(j => !derivedIds.has(String(j.id)));
+  const jobs = isDemo ? DEMO_JOBS : [...derivedJobs, ...standaloneJobs];
   const userTrade = session?.trade || 'Roofing';
   const companyName = session?.companyName || 'RidgeOS';
   const userCustomChecklist = session?.customTradeConfig?.checklist || null;
@@ -5823,6 +5863,7 @@ export default function App() {
                 currentUser={currentUser}
                 demoMessages={isDemo ? DEMO_MESSAGES : null}
                 onComplete={isDemo ? null : handleCompleteJob}
+                onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
               />
         )}
         {tab === 'crew' && (
