@@ -5453,7 +5453,7 @@ function ChatTab({ jobs }) {
   );
 }
 
-// ─── Schedule Job Modal ────────────────────────────────────────────────────────
+// ─── Schedule Job Modal (reschedule existing) ──────────────────────────────────
 function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   const activeJobs = jobs.filter(j => j.status !== 'Complete');
   const isReschedule = targetJob && targetJob.scheduledDate;
@@ -5468,9 +5468,7 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   };
 
   const btnBase = { padding: '9px 20px', borderRadius: 8, border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer' };
-  const title = targetJob
-    ? (isReschedule ? `Reschedule — ${targetJob.customer}` : `Schedule — ${targetJob.customer}`)
-    : 'Schedule Job';
+  const title = targetJob ? (isReschedule ? `Reschedule — ${targetJob.customer}` : `Schedule — ${targetJob.customer}`) : 'Schedule Existing Job';
 
   return (
     <div style={S.modalOverlay} onClick={onClose}>
@@ -5482,28 +5480,17 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
             <label style={FLbl}>Job</label>
             <select style={{ ...FI, marginBottom: 4 }} value={jobId} onChange={e => setJobId(e.target.value)}>
               <option value="">Select a job…</option>
-              {activeJobs.map(j => (
-                <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} ({j.status})</option>
-              ))}
+              {activeJobs.map(j => <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} ({j.status})</option>)}
             </select>
           </>
         )}
         <label style={FLbl}>Start Date</label>
         <input type="date" style={{ ...FI, marginBottom: 4 }} value={date} onChange={e => setDate(e.target.value)} />
         <label style={FLbl}>Duration (days)</label>
-        <input
-          type="number" min={1} max={365}
-          style={{ ...FI, marginBottom: 20 }}
-          value={duration}
-          onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
-        />
+        <input type="number" min={1} max={365} style={{ ...FI, marginBottom: 20 }} value={duration} onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))} />
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button style={{ ...btnBase, background: '#1e2535', color: '#94a3b8' }} onClick={onClose}>Cancel</button>
-          <button
-            style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', color: jobId && date ? '#fff' : '#475569' }}
-            onClick={handleSave}
-            disabled={!jobId || !date}
-          >
+          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', color: jobId && date ? '#fff' : '#475569' }} onClick={handleSave} disabled={!jobId || !date}>
             {isReschedule ? 'Reschedule' : 'Schedule'}
           </button>
         </div>
@@ -5512,29 +5499,245 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   );
 }
 
+// ─── New Job Modal (create + schedule in one step) ─────────────────────────────
+function NewJobModal({ defaultDate, crew, onSave, onClose }) {
+  const [customer, setCustomer] = useState('');
+  const [trade, setTrade] = useState('Roofing');
+  const [value, setValue] = useState('');
+  const [scheduledDate, setScheduledDate] = useState(defaultDate || TODAY);
+  const [duration, setDuration] = useState(1);
+  const [notes, setNotes] = useState('');
+  const [crewIds, setCrewIds] = useState([]);
+
+  const toggleCrew = id => setCrewIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  const canSave = customer.trim() && trade;
+  const btnBase = { padding: '9px 20px', borderRadius: 8, border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+
+  return (
+    <div style={S.modalOverlay} onClick={onClose}>
+      <div style={{ ...S.modal, maxWidth: 480 }} onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Quick-Create Job</div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 18 }}>Create a new job and schedule it in one step</div>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Client Name *</label>
+            <input style={FI} value={customer} onChange={e => setCustomer(e.target.value)} placeholder="e.g. John Smith" autoFocus />
+          </div>
+          <div>
+            <label style={FLbl}>Trade *</label>
+            <select style={FI} value={trade} onChange={e => setTrade(e.target.value)}>
+              {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+        </div>
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Value ($)</label>
+            <input style={FI} type="number" min={0} value={value} onChange={e => setValue(e.target.value)} placeholder="0" />
+          </div>
+          <div>
+            <label style={FLbl}>Notes</label>
+            <input style={FI} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Optional" />
+          </div>
+        </div>
+        <div style={FRow}>
+          <div>
+            <label style={FLbl}>Start Date</label>
+            <input style={FI} type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
+          </div>
+          <div>
+            <label style={FLbl}>Duration (days)</label>
+            <input style={FI} type="number" min={1} max={365} value={duration} onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))} />
+          </div>
+        </div>
+        {crew.length > 0 && (
+          <>
+            <label style={FLbl}>Assign Crew</label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+              {crew.map(m => {
+                const sel = crewIds.includes(m.id);
+                return (
+                  <button key={m.id} onClick={() => toggleCrew(m.id)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${sel ? '#f97316' : '#1e2535'}`, background: sel ? 'rgba(249,115,22,0.15)' : '#1e2535', color: sel ? '#f97316' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                    {m.name}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: crew.length ? 0 : 8 }}>
+          <button style={{ ...btnBase, background: '#1e2535', color: '#94a3b8' }} onClick={onClose}>Cancel</button>
+          <button
+            disabled={!canSave}
+            onClick={() => { if (canSave) { onSave({ customer: customer.trim(), trade, value: parseFloat(value) || 0, scheduledDate, duration, notes, crewIds }); onClose(); } }}
+            style={{ ...btnBase, background: canSave ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', color: canSave ? '#fff' : '#475569', cursor: canSave ? 'pointer' : 'not-allowed' }}
+          >
+            Create & Schedule
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Stage Change Modal ─────────────────────────────────────────────────────────
+function StageChangeModal({ job, onSave, onClose }) {
+  const stages = [
+    { key: 'approved', label: 'Approved', color: '#10b981' },
+    { key: 'in_progress', label: 'In Progress', color: '#f97316' },
+    { key: 'completed', label: 'Completed', color: '#22c55e' },
+  ];
+  return (
+    <div style={S.modalOverlay} onClick={onClose}>
+      <div style={{ ...S.modal, maxWidth: 300 }} onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {stages.map(s => (
+            <button key={s.key} onClick={() => { onSave(s.key); onClose(); }} style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${s.color}44`, background: `${s.color}18`, color: s.color, fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Quick Assign Crew Panel ─────────────────────────────────────────────────────
+function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, onClose }) {
+  const assignedIds = assignments[String(job.id)] || [];
+  return (
+    <div style={S.modalOverlay} onClick={onClose}>
+      <div style={{ ...S.modal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        {crew.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {crew.map(m => {
+              const assigned = assignedIds.includes(m.id);
+              return (
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#0f1117', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : '#1e2535'}`, borderRadius: 8 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#f97316' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#64748b', flexShrink: 0 }}>
+                    {m.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{m.name}</div>
+                    <div style={{ fontSize: 11, color: '#64748b' }}>{m.role}</div>
+                  </div>
+                  <button onClick={() => assigned ? onUnassign(job.id, m.id) : onAssign(job.id, m.id)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer', background: assigned ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: assigned ? '#ef4444' : '#f97316' }}>
+                    {assigned ? 'Remove' : '+ Add'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <button style={{ marginTop: 16, width: '100%', padding: '10px', background: '#1e2535', border: 'none', borderRadius: 8, color: '#94a3b8', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={onClose}>Done</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Today's Summary Panel ───────────────────────────────────────────────────────
+function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
+  const todayJobs = useMemo(() => jobs.filter(j => jobOccupiesDate(j, TODAY)), [jobs]);
+  const unassignedToday = useMemo(() => todayJobs.filter(j => !(assignments[String(j.id)] || []).length), [todayJobs, assignments]);
+  return (
+    <div style={{ marginTop: 24, background: '#161b27', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 12, padding: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#f97316' }}>Today's Dispatch</div>
+          <div style={{ fontSize: 12, color: '#64748b' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+        </div>
+        <div style={{ fontSize: 12, color: '#64748b', textAlign: 'right' }}>
+          <span style={{ color: '#f1f5f9', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
+          <span style={{ color: unassignedToday.length ? '#f97316' : '#22c55e', fontWeight: 700 }}>{unassignedToday.length}</span> unassigned
+        </div>
+      </div>
+      {todayJobs.length === 0 ? (
+        <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: crew.length > 0 ? 16 : 0 }}>
+          {todayJobs.map(job => {
+            const tc = TRADE_COLORS[job.trade] || '#64748b';
+            const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
+            const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
+            return (
+              <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#0f1117', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#1e2535'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                  <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {jobDuration(job)}d</div>
+                </div>
+                {assignedCrew.length > 0 ? (
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {assignedCrew.slice(0, 3).map(m => (
+                      <div key={m.id} title={m.name} style={{ width: 22, height: 22, borderRadius: '50%', background: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>
+                        {m.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span style={{ fontSize: 11, color: '#f97316', fontWeight: 600 }}>Unassigned</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {crew.length > 0 && (
+        <>
+          <div style={S.sectionLabel}>Crew Status</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6 }}>
+            {crew.map(member => {
+              const memberJobs = todayJobs.filter(j => (assignments[String(j.id)] || []).includes(member.id));
+              const busy = memberJobs.length > 0;
+              const hasConflict = memberJobs.some(j => conflicts.has(`${member.id}-${String(j.id)}`));
+              return (
+                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#0f1117', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : '#1e2535'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#f97316' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
+                    {member.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+                    <div style={{ fontSize: 10, color: hasConflict ? '#ef4444' : busy ? '#f97316' : '#22c55e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {hasConflict ? '⚠ Conflict' : busy ? memberJobs[0].customer : 'Available'}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Calendar: Context Menu ─────────────────────────────────────────────────────
-function CalendarContextMenu({ job, x, y, onView, onReschedule, onRemove, onComplete }) {
+function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, onChangeStage, onRemove, onComplete, onDelete }) {
   const tc = TRADE_COLORS[job.trade] || '#64748b';
   const items = [
     { label: 'View Details', action: onView, icon: '📋' },
     { label: 'Reschedule', action: onReschedule, icon: '📅' },
-    { label: 'Remove from Calendar', action: onRemove, icon: '✕', color: '#ef4444' },
+    { label: 'Assign Crew', action: onAssignCrew, icon: '👷' },
+    { label: 'Change Stage', action: onChangeStage, icon: '🔄' },
     job.status !== 'Complete' ? { label: 'Mark Complete', action: onComplete, icon: '✓', color: '#22c55e' } : null,
+    { label: 'Remove from Calendar', action: onRemove, icon: '✕', color: '#ef4444' },
+    { label: 'Delete Job', action: onDelete, icon: '🗑', color: '#ef4444' },
   ].filter(Boolean);
-
   return (
-    <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', minWidth: 190, overflow: 'hidden' }}>
-      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#64748b', borderBottom: '1px solid #334155', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-        {job.customer}
-      </div>
+    <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', minWidth: 200, overflow: 'hidden' }}>
+      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#64748b', borderBottom: '1px solid #334155', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
       {items.map(item => (
-        <button
-          key={item.label}
-          onClick={item.action}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#e2e8f0', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
+        <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#e2e8f0', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
-        >
+          onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}>
           <span style={{ width: 16, textAlign: 'center' }}>{item.icon}</span>
           {item.label}
         </button>
@@ -5544,7 +5747,7 @@ function CalendarContextMenu({ job, x, y, onView, onReschedule, onRemove, onComp
 }
 
 // ─── Calendar: Day Dispatch ─────────────────────────────────────────────────────
-function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJobClick, onScheduleForDate }) {
+function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJobClick, onCreateForDate }) {
   const d = new Date(dateStr + 'T12:00:00');
   const dayJobs = jobs.filter(j => jobOccupiesDate(j, dateStr));
 
@@ -5557,12 +5760,9 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
         </div>
-        {onScheduleForDate && (
-          <button
-            onClick={onScheduleForDate}
-            style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
-          >
-            + Schedule
+        {onCreateForDate && (
+          <button onClick={onCreateForDate} style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
+            + New Job
           </button>
         )}
         {onClose && <button style={{ ...S.closeBtn, position: 'relative', top: 'auto', right: 'auto', flexShrink: 0 }} onClick={onClose}>×</button>}
@@ -5632,21 +5832,20 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
 }
 
 // ─── Calendar: Month View ─────────────────────────────────────────────────────
-function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu }) {
+function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu, dragJobId, dragOverDate, onDragStart, onDragOver, onDrop, onDragEnd }) {
   const isMobile = useMobile();
   const DAY_NAMES = isMobile ? ['S','M','T','W','T','F','S'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-        {DAY_NAMES.map((d, i) => (
-          <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748b', padding: '4px 0' }}>{d}</div>
-        ))}
+        {DAY_NAMES.map((d, i) => <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748b', padding: '4px 0' }}>{d}</div>)}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
         {days.map(dateStr => {
           const dayJobs = dayJobsFn(dateStr);
           const isToday = dateStr === today;
           const isSelected = dateStr === selectedDate;
+          const isDragOver = dragOverDate === dateStr && dragJobId;
           const inMonth = dateStr.slice(0, 7) === currentMonth;
           const maxVis = isMobile ? 1 : 3;
           const overflow = dayJobs.length - maxVis;
@@ -5654,25 +5853,29 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
             <div
               key={dateStr}
               onClick={() => onDayClick(dateStr)}
-              style={{ minHeight: isMobile ? 52 : 80, background: isSelected ? 'rgba(249,115,22,0.1)' : '#161b27', border: `1px solid ${isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
+              onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
+              onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
+              onDragLeave={() => { if (onDragOver) onDragOver(null); }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(249,115,22,0.15)' : isSelected ? 'rgba(249,115,22,0.1)' : '#161b27', border: `1px solid ${isDragOver ? '#f97316' : isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
-                {isToday ? (
-                  <span style={{ background: '#f97316', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
-                    {parseInt(dateStr.slice(8))}
-                  </span>
-                ) : (
-                  <span style={{ fontSize: isMobile ? 10 : 12, color: '#94a3b8' }}>{parseInt(dateStr.slice(8))}</span>
-                )}
+                {isToday
+                  ? <span style={{ background: '#f97316', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
+                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#94a3b8' }}>{parseInt(dateStr.slice(8))}</span>
+                }
               </div>
               {dayJobs.slice(0, maxVis).map(job => {
                 const tc = TRADE_COLORS[job.trade] || '#64748b';
+                const isDragging = dragJobId === String(job.id);
                 return (
                   <div
                     key={job.id}
+                    draggable
+                    onDragStart={e => { e.stopPropagation(); e.dataTransfer.setData('jobId', String(job.id)); e.dataTransfer.effectAllowed = 'move'; if (onDragStart) onDragStart(String(job.id)); }}
+                    onDragEnd={() => { if (onDragEnd) onDragEnd(); }}
                     onClick={e => { e.stopPropagation(); onJobClick && onJobClick(job); }}
                     onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
-                    style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, padding: isMobile ? '1px 3px' : '2px 5px', borderRadius: '0 3px 3px 0', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                    style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, padding: isMobile ? '1px 3px' : '2px 5px', borderRadius: '0 3px 3px 0', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'grab', opacity: isDragging ? 0.4 : 1 }}
                   >
                     {isMobile ? job.customer.split(' ')[0].slice(0, 6) : job.customer.split(' ')[0]}
                   </div>
@@ -5688,7 +5891,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
 }
 
 // ─── Calendar: Week View ──────────────────────────────────────────────────────
-function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu }) {
+function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu, dragJobId, dragOverDate, onDragStart, onDragOver, onDrop, onDragEnd }) {
   const isMobile = useMobile();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: isMobile ? 2 : 6 }}>
@@ -5696,29 +5899,35 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
         const dayJobs = dayJobsFn(dateStr);
         const isToday = dateStr === today;
         const isSelected = dateStr === selectedDate;
+        const isDragOver = dragOverDate === dateStr && dragJobId;
         const d = new Date(dateStr + 'T12:00:00');
         return (
           <div
             key={dateStr}
             onClick={() => onDayClick(dateStr)}
-            style={{ background: isSelected ? 'rgba(249,115,22,0.08)' : '#161b27', border: `1px solid ${isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 8, padding: isMobile ? '6px 4px' : '10px 8px', cursor: 'pointer', minHeight: 100 }}
+            onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
+            onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
+            onDragLeave={() => { if (onDragOver) onDragOver(null); }}
+            style={{ background: isDragOver ? 'rgba(249,115,22,0.12)' : isSelected ? 'rgba(249,115,22,0.08)' : '#161b27', border: `1px solid ${isDragOver ? '#f97316' : isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 8, padding: isMobile ? '6px 4px' : '10px 8px', cursor: 'pointer', minHeight: 100 }}
           >
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
-              <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
-                {d.toLocaleDateString('en-US', { weekday: 'short' })}
-              </div>
+              <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
               <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#f1f5f9', background: isToday ? '#f97316' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
                 {d.getDate()}
               </div>
             </div>
             {dayJobs.map(job => {
               const tc = TRADE_COLORS[job.trade] || '#64748b';
+              const isDragging = dragJobId === String(job.id);
               return (
                 <div
                   key={job.id}
+                  draggable
+                  onDragStart={e => { e.stopPropagation(); e.dataTransfer.setData('jobId', String(job.id)); e.dataTransfer.effectAllowed = 'move'; if (onDragStart) onDragStart(String(job.id)); }}
+                  onDragEnd={() => { if (onDragEnd) onDragEnd(); }}
                   onClick={e => { e.stopPropagation(); onJobClick && onJobClick(job); }}
                   onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
-                  style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, padding: isMobile ? '2px 4px' : '3px 6px', borderRadius: 4, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                  style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, padding: isMobile ? '2px 4px' : '3px 6px', borderRadius: 4, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'grab', opacity: isDragging ? 0.4 : 1 }}
                 >
                   {isMobile ? job.customer.split(' ')[0].slice(0, 5) : job.customer}
                 </div>
@@ -5732,13 +5941,18 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
 }
 
 // ─── Calendar Tab ─────────────────────────────────────────────────────────────
-function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdateSteps, onAssign, onUnassign, currentUser, demoMessages, customChecklist, isDemo }) {
+function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdateSteps, onAssign, onUnassign, currentUser, demoMessages, customChecklist, isDemo, onCreate, onChangeStage, onDeleteJob }) {
   const [view, setView] = useState('month');
   const [current, setCurrent] = useState(new Date(TODAY + 'T12:00:00'));
   const [selectedDate, setSelectedDate] = useState(null);
+  const [newJobModal, setNewJobModal] = useState(null);     // null | { defaultDate }
   const [scheduleModal, setScheduleModal] = useState(null); // null | { defaultDate, targetJob }
   const [selectedJob, setSelectedJob] = useState(null);
-  const [contextMenu, setContextMenu] = useState(null); // null | { job, x, y }
+  const [stageChangeJob, setStageChangeJob] = useState(null);
+  const [quickCrewJob, setQuickCrewJob] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);     // null | { job, x, y }
+  const [dragJobId, setDragJobId] = useState(null);
+  const [dragOverDate, setDragOverDate] = useState(null);
   const isMobile = useMobile();
 
   const scheduledJobs = useMemo(() => jobs.filter(j => j.scheduledDate), [jobs]);
@@ -5750,14 +5964,11 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       const memberJobs = scheduledJobs.filter(j => (assignments[String(j.id)] || []).includes(member.id));
       for (let i = 0; i < memberJobs.length; i++) {
         for (let k = i + 1; k < memberJobs.length; k++) {
-          const a = memberJobs[i];
-          const b = memberJobs[k];
+          const a = memberJobs[i]; const b = memberJobs[k];
           if (a.scheduledDate && b.scheduledDate) {
-            const aEnd = jobEndDate(a);
-            const bEnd = jobEndDate(b);
+            const aEnd = jobEndDate(a); const bEnd = jobEndDate(b);
             if (a.scheduledDate <= bEnd && b.scheduledDate <= aEnd) {
-              set.add(`${member.id}-${String(a.id)}`);
-              set.add(`${member.id}-${String(b.id)}`);
+              set.add(`${member.id}-${String(a.id)}`); set.add(`${member.id}-${String(b.id)}`);
             }
           }
         }
@@ -5769,20 +5980,8 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
   const navBtn = { padding: '6px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: 'transparent' };
   const currentStr = toDateStr(current);
 
-  const prev = () => {
-    const d = new Date(current);
-    if (view === 'month') d.setMonth(d.getMonth() - 1);
-    else if (view === 'week') d.setDate(d.getDate() - 7);
-    else d.setDate(d.getDate() - 1);
-    setCurrent(d); setSelectedDate(null);
-  };
-  const next = () => {
-    const d = new Date(current);
-    if (view === 'month') d.setMonth(d.getMonth() + 1);
-    else if (view === 'week') d.setDate(d.getDate() + 7);
-    else d.setDate(d.getDate() + 1);
-    setCurrent(d); setSelectedDate(null);
-  };
+  const prev = () => { const d = new Date(current); if (view === 'month') d.setMonth(d.getMonth() - 1); else if (view === 'week') d.setDate(d.getDate() - 7); else d.setDate(d.getDate() - 1); setCurrent(d); setSelectedDate(null); };
+  const next = () => { const d = new Date(current); if (view === 'month') d.setMonth(d.getMonth() + 1); else if (view === 'week') d.setDate(d.getDate() + 7); else d.setDate(d.getDate() + 1); setCurrent(d); setSelectedDate(null); };
 
   const dayJobsFn = useCallback((dateStr) => scheduledJobs.filter(j => jobOccupiesDate(j, dateStr)), [scheduledJobs]);
 
@@ -5790,8 +5989,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
     if (view === 'month') return current.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     if (view === 'week') {
       const wd = buildWeekDays(currentStr);
-      const s = new Date(wd[0] + 'T12:00:00');
-      const e = new Date(wd[6] + 'T12:00:00');
+      const s = new Date(wd[0] + 'T12:00:00'); const e = new Date(wd[6] + 'T12:00:00');
       return `${s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
     }
     return current.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -5802,56 +6000,52 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
   const dispatchDate = view === 'day' ? currentStr : selectedDate;
   const currentMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
 
-  const openScheduleModal = useCallback((date, targetJob) => {
-    setScheduleModal({ defaultDate: date || TODAY, targetJob: targetJob || null });
-  }, []);
+  const closeAll = useCallback(() => { setContextMenu(null); setDragJobId(null); setDragOverDate(null); }, []);
 
   const handleDayClick = useCallback((dateStr) => {
-    if (!isDemo && onSchedule) {
-      openScheduleModal(dateStr, null);
-    } else {
-      setSelectedDate(prev => prev === dateStr ? null : dateStr);
-    }
-  }, [isDemo, onSchedule, openScheduleModal]);
+    if (!isDemo && onCreate) setNewJobModal({ defaultDate: dateStr });
+    else setSelectedDate(prev => prev === dateStr ? null : dateStr);
+  }, [isDemo, onCreate]);
 
-  const handleJobClick = useCallback((job) => {
-    setContextMenu(null);
-    setSelectedJob(job);
-  }, []);
+  const handleJobClick = useCallback((job) => { closeAll(); setSelectedJob(job); }, [closeAll]);
 
   const handleJobContextMenu = useCallback((job, e) => {
     setContextMenu({ job, x: e.clientX, y: e.clientY });
   }, []);
 
-  const closeContextMenu = useCallback(() => setContextMenu(null), []);
+  const handleSaveSchedule = useCallback((jobId, date, duration) => { if (onSchedule) onSchedule(jobId, date, duration); }, [onSchedule]);
 
-  const handleSaveSchedule = useCallback((jobId, date, duration) => {
-    if (onSchedule) onSchedule(jobId, date, duration);
-  }, [onSchedule]);
+  const handleDragStart = useCallback((jobId) => { setDragJobId(jobId); }, []);
+  const handleDragOver = useCallback((dateStr) => { setDragOverDate(dateStr); }, []);
+  const handleDrop = useCallback((jobId, dateStr) => {
+    if (onSchedule) {
+      const job = jobs.find(j => String(j.id) === jobId);
+      onSchedule(jobId, dateStr, job ? jobDuration(job) : 1);
+    }
+    setDragJobId(null); setDragOverDate(null);
+  }, [onSchedule, jobs]);
+  const handleDragEnd = useCallback(() => { setDragJobId(null); setDragOverDate(null); }, []);
 
-  const handleRemoveFromCalendar = useCallback((job) => {
-    if (onSchedule) onSchedule(String(job.id), null, null);
-  }, [onSchedule]);
+  const handleCompleteJob = useCallback((id) => { if (onComplete) onComplete(id); setSelectedJob(null); }, [onComplete]);
 
-  const handleCompleteJobFromCalendar = useCallback((id) => {
-    if (onComplete) onComplete(id);
-    setSelectedJob(null);
-  }, [onComplete]);
+  const sharedGridProps = { dayJobsFn, onDayClick: handleDayClick, selectedDate, onJobClick: handleJobClick, onJobContextMenu: !isDemo ? handleJobContextMenu : null, dragJobId, dragOverDate, onDragStart: !isDemo ? handleDragStart : null, onDragOver: !isDemo ? handleDragOver : null, onDrop: !isDemo ? handleDrop : null, onDragEnd: !isDemo ? handleDragEnd : null };
 
   return (
     <div>
       {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Calendar</div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} need scheduling</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Dispatch Board</div>
+          <div style={{ fontSize: 13, color: '#64748b' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
+        {!isDemo && onCreate && (
+          <button onClick={() => setNewJobModal({ defaultDate: TODAY })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
+            + New Job
+          </button>
+        )}
         {!isDemo && onSchedule && (
-          <button
-            onClick={() => openScheduleModal(TODAY, null)}
-            style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}
-          >
-            + Schedule Job
+          <button onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: null })} style={{ padding: '8px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 8, color: '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
+            Schedule Existing
           </button>
         )}
         <div style={{ display: 'flex', gap: 4 }}>
@@ -5863,12 +6057,13 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         </div>
       </div>
 
-      {/* ── Nav ── */}
+      {/* ── Nav row ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <button style={navBtn} onClick={prev}>‹</button>
         <button style={{ ...navBtn, fontSize: 12, padding: '6px 12px' }} onClick={() => { setCurrent(new Date(TODAY + 'T12:00:00')); setSelectedDate(null); }}>Today</button>
         <button style={navBtn} onClick={next}>›</button>
         <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#f1f5f9' }}>{headerLabel}</div>
+        {dragJobId && <span style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>Drop to reschedule</span>}
       </div>
 
       {/* ── Unscheduled banner ── */}
@@ -5877,11 +6072,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <span style={{ fontSize: 13, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
             {unscheduledJobs.slice(0, 5).map(j => (
-              <button
-                key={j.id}
-                onClick={() => !isDemo && onSchedule && openScheduleModal(TODAY, j)}
-                style={{ fontSize: 11, color: '#94a3b8', background: '#1e2535', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: !isDemo && onSchedule ? 'pointer' : 'default' }}
-              >
+              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 11, color: '#94a3b8', background: '#1e2535', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: 'pointer' }}>
                 {j.customer}
               </button>
             ))}
@@ -5890,30 +6081,9 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         </div>
       )}
 
-      {/* ── Grid ── */}
-      {view === 'month' && (
-        <MonthView
-          days={monthDays}
-          currentMonth={currentMonth}
-          today={TODAY}
-          dayJobsFn={dayJobsFn}
-          onDayClick={handleDayClick}
-          selectedDate={selectedDate}
-          onJobClick={handleJobClick}
-          onJobContextMenu={!isDemo ? handleJobContextMenu : null}
-        />
-      )}
-      {view === 'week' && (
-        <WeekView
-          days={weekDays}
-          today={TODAY}
-          dayJobsFn={dayJobsFn}
-          onDayClick={handleDayClick}
-          selectedDate={selectedDate}
-          onJobClick={handleJobClick}
-          onJobContextMenu={!isDemo ? handleJobContextMenu : null}
-        />
-      )}
+      {/* ── Calendar grid ── */}
+      {view === 'month' && <MonthView days={monthDays} currentMonth={currentMonth} today={TODAY} {...sharedGridProps} />}
+      {view === 'week' && <WeekView days={weekDays} today={TODAY} {...sharedGridProps} />}
 
       {/* ── Day dispatch panel ── */}
       {dispatchDate && (
@@ -5925,7 +6095,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           conflicts={conflicts}
           onClose={view !== 'day' ? () => setSelectedDate(null) : null}
           onJobClick={handleJobClick}
-          onScheduleForDate={!isDemo && onSchedule ? () => openScheduleModal(dispatchDate, null) : null}
+          onCreateForDate={!isDemo && onCreate ? () => setNewJobModal({ defaultDate: dispatchDate }) : null}
         />
       )}
 
@@ -5943,10 +6113,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
                     <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
                   </div>
                   {!isDemo && onSchedule && (
-                    <button
-                      onClick={e => { e.stopPropagation(); openScheduleModal(TODAY, job); }}
-                      style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
-                    >
+                    <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
                       Schedule
                     </button>
                   )}
@@ -5957,7 +6124,18 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         </div>
       )}
 
-      {/* ── Schedule modal ── */}
+      {/* ── Today's summary panel ── */}
+      <TodaySummaryPanel jobs={jobs} crew={crew} assignments={assignments} conflicts={conflicts} onJobClick={handleJobClick} />
+
+      {/* ── Modals ── */}
+      {newJobModal && (
+        <NewJobModal
+          defaultDate={newJobModal.defaultDate}
+          crew={crew}
+          onSave={jobData => { if (onCreate) onCreate(jobData); }}
+          onClose={() => setNewJobModal(null)}
+        />
+      )}
       {scheduleModal && (
         <ScheduleJobModal
           defaultDate={scheduleModal.defaultDate}
@@ -5967,8 +6145,23 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           onClose={() => setScheduleModal(null)}
         />
       )}
-
-      {/* ── Job detail modal ── */}
+      {stageChangeJob && (
+        <StageChangeModal
+          job={stageChangeJob}
+          onSave={stage => { if (onChangeStage) onChangeStage(String(stageChangeJob.id), stage); }}
+          onClose={() => setStageChangeJob(null)}
+        />
+      )}
+      {quickCrewJob && (
+        <QuickAssignCrewPanel
+          job={quickCrewJob}
+          crew={crew}
+          assignments={assignments}
+          onAssign={onAssign || (() => {})}
+          onUnassign={onUnassign || (() => {})}
+          onClose={() => setQuickCrewJob(null)}
+        />
+      )}
       {selectedJob && (
         <JobModal
           job={selectedJob}
@@ -5980,7 +6173,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           onUnassign={isDemo ? null : onUnassign}
           currentUser={currentUser}
           demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
-          onComplete={isDemo ? null : (id) => handleCompleteJobFromCalendar(id)}
+          onComplete={isDemo ? null : id => handleCompleteJob(id)}
           onUpdateSteps={isDemo ? null : onUpdateSteps}
           onUpdateSchedule={isDemo ? null : (jobId, date, dur) => { handleSaveSchedule(jobId, date, dur); setSelectedJob(null); }}
         />
@@ -5989,15 +6182,18 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       {/* ── Context menu ── */}
       {contextMenu && (
         <>
-          <div style={{ position: 'fixed', inset: 0, zIndex: 1999 }} onClick={closeContextMenu} />
+          <div style={{ position: 'fixed', inset: 0, zIndex: 1999 }} onClick={closeAll} />
           <CalendarContextMenu
             job={contextMenu.job}
             x={contextMenu.x}
             y={contextMenu.y}
-            onView={() => { setSelectedJob(contextMenu.job); closeContextMenu(); }}
-            onReschedule={() => { openScheduleModal(contextMenu.job.scheduledDate || TODAY, contextMenu.job); closeContextMenu(); }}
-            onRemove={() => { handleRemoveFromCalendar(contextMenu.job); closeContextMenu(); }}
-            onComplete={() => { handleCompleteJobFromCalendar(String(contextMenu.job.id)); closeContextMenu(); }}
+            onView={() => { setSelectedJob(contextMenu.job); closeAll(); }}
+            onReschedule={() => { setScheduleModal({ defaultDate: contextMenu.job.scheduledDate || TODAY, targetJob: contextMenu.job }); closeAll(); }}
+            onAssignCrew={() => { if (!isDemo) setQuickCrewJob(contextMenu.job); closeAll(); }}
+            onChangeStage={() => { if (!isDemo) setStageChangeJob(contextMenu.job); closeAll(); }}
+            onRemove={() => { if (onSchedule) onSchedule(String(contextMenu.job.id), null, null); closeAll(); }}
+            onComplete={() => { handleCompleteJob(String(contextMenu.job.id)); closeAll(); }}
+            onDelete={() => { if (onDeleteJob) onDeleteJob(String(contextMenu.job.id)); closeAll(); }}
           />
         </>
       )}
@@ -6381,6 +6577,36 @@ export default function App() {
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
   const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
+  const handleCreateAndScheduleJob = (jobData) => {
+    const id = `j-${Date.now()}`;
+    const newJob = {
+      id,
+      customer: jobData.customer,
+      address: jobData.address || '',
+      trade: jobData.trade,
+      value: jobData.value || 0,
+      status: 'Scheduled',
+      scheduledDate: jobData.scheduledDate,
+      duration: jobData.duration || 1,
+      notes: jobData.notes || '',
+      completedSteps: [],
+      explicitlyScheduled: true,
+    };
+    setUserJobs(prev => [newJob, ...prev]);
+    if (jobData.crewIds && jobData.crewIds.length) {
+      setAssignments(prev => ({ ...prev, [id]: jobData.crewIds }));
+    }
+  };
+  const handleChangeJobStage = (jobId, stage) => {
+    const statusMap = { approved: 'Scheduled', in_progress: 'In Progress', completed: 'Complete', lost: 'Lost' };
+    setUserLeads(prev => prev.map(l => String(l.id) === String(jobId) ? { ...l, stage } : l));
+    setUserJobs(prev => prev.map(j => String(j.id) === String(jobId) ? { ...j, status: statusMap[stage] || stage } : j));
+  };
+  const handleDeleteJob = (jobId) => {
+    setUserJobs(prev => prev.filter(j => String(j.id) !== String(jobId)));
+    setUserLeads(prev => prev.map(l => String(l.id) === String(jobId) ? { ...l, stage: 'lost' } : l));
+    setAssignments(prev => { const n = { ...prev }; delete n[String(jobId)]; return n; });
+  };
   const handleCompleteJob = (id) => {
     setUserLeads(prev => prev.map(l => l.id === id ? { ...l, stage: 'completed' } : l));
     setUserJobs(prev => prev.map(j => j.id === id ? { ...j, status: 'Complete' } : j));
@@ -6587,6 +6813,9 @@ export default function App() {
             demoMessages={isDemo ? DEMO_MESSAGES : null}
             customChecklist={userCustomChecklist}
             isDemo={isDemo}
+            onCreate={isDemo ? null : handleCreateAndScheduleJob}
+            onChangeStage={isDemo ? null : handleChangeJobStage}
+            onDeleteJob={isDemo ? null : handleDeleteJob}
           />
         )}
         {tab === 'crew' && (
