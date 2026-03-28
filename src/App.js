@@ -6132,13 +6132,32 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
 
 // ─── Day Action Modal ──────────────────────────────────────────────────────────
 function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExisting, onCreateNew, onAddNote, onClose }) {
-  const [mode, setMode] = useState('menu'); // 'menu' | 'note'
+  const [mode, setMode] = useState('menu'); // 'menu' | 'schedule' | 'create' | 'note'
   const [note, setNote] = useState(existingNote || '');
+  const [description, setDescription] = useState('');
+  const [customer, setCustomer] = useState('');
+  const [duration, setDuration] = useState(1);
   const noteRef = useRef(null);
+  const descRef = useRef(null);
 
   useEffect(() => { if (mode === 'note' && noteRef.current) noteRef.current.focus(); }, [mode]);
+  useEffect(() => { if (mode === 'create' && descRef.current) descRef.current.focus(); }, [mode]);
 
   const displayDate = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const subTitle = mode === 'menu' ? 'What would you like to do?'
+    : mode === 'schedule' ? 'Select a job to schedule for this day'
+    : mode === 'create' ? 'Quick-create a new job'
+    : 'Add a note for this day';
+
+  const backBtn = (
+    <button
+      onClick={() => setMode('menu')}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: '2px 0', marginBottom: 14 }}
+    >
+      &#8592; Back
+    </button>
+  );
 
   const actionBtn = (icon, label, sub, onClick) => (
     <button
@@ -6161,16 +6180,16 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
         <button style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 2 }}>{displayDate}</div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20 }}>What would you like to do?</div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20 }}>{subTitle}</div>
 
         {mode === 'menu' && (
           <div>
             {actionBtn('📋', 'Schedule Existing Job',
               unscheduledJobs.length > 0 ? `${unscheduledJobs.length} job${unscheduledJobs.length !== 1 ? 's' : ''} awaiting scheduling` : 'Pick from pipeline jobs',
-              () => { onScheduleExisting(date); onClose(); }
+              () => setMode('schedule')
             )}
             {actionBtn('✏️', 'Create New Job', 'Quick-create and schedule for this date',
-              () => { onCreateNew(date); onClose(); }
+              () => setMode('create')
             )}
             {actionBtn('📝', existingNote ? 'Edit Note' : 'Add Note', existingNote ? `"${existingNote.slice(0, 40)}${existingNote.length > 40 ? '…' : ''}"` : 'Office closed, rain day, site visit…',
               () => setMode('note')
@@ -6178,8 +6197,73 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
           </div>
         )}
 
+        {mode === 'schedule' && (
+          <div>
+            {backBtn}
+            {unscheduledJobs.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0' }}>No unscheduled jobs — all caught up!</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 260, overflowY: 'auto' }}>
+                {unscheduledJobs.map(job => (
+                  <button
+                    key={job.id}
+                    onClick={() => { onScheduleExisting(date, job.id); onClose(); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 8, cursor: 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e2535'; e.currentTarget.style.background = '#161b27'; }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer || job.description}</div>
+                      <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
+                    </div>
+                    <span style={{ fontSize: 11, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>Schedule &#8594;</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {mode === 'create' && (
+          <div>
+            {backBtn}
+            <input
+              ref={descRef}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Job description (required)"
+              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+            />
+            <input
+              value={customer}
+              onChange={e => setCustomer(e.target.value)}
+              placeholder="Client name (optional)"
+              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <label style={{ fontSize: 12, color: '#64748b', flexShrink: 0 }}>Duration (days):</label>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                value={duration}
+                onChange={e => setDuration(Math.max(1, Math.min(30, parseInt(e.target.value) || 1)))}
+                style={{ width: 60, background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
+              />
+            </div>
+            <button
+              onClick={() => { if (description.trim()) { onCreateNew(date, { description: description.trim(), customer: customer.trim(), duration }); onClose(); } }}
+              disabled={!description.trim()}
+              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
+            >
+              Create &amp; Schedule
+            </button>
+          </div>
+        )}
+
         {mode === 'note' && (
           <div>
+            {backBtn}
             <textarea
               ref={noteRef}
               value={note}
@@ -6190,16 +6274,13 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
               style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
             />
             <div style={{ fontSize: 11, color: '#334155', marginBottom: 10 }}>Ctrl+Enter to save</div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setMode('menu')} style={{ flex: 1, padding: '9px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 7, color: '#94a3b8', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>← Back</button>
-              <button
-                onClick={() => { onAddNote(date, note.trim()); onClose(); }}
-                disabled={!note.trim()}
-                style={{ flex: 2, padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
-              >
-                Save Note
-              </button>
-            </div>
+            <button
+              onClick={() => { onAddNote(date, note.trim()); onClose(); }}
+              disabled={!note.trim()}
+              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
+            >
+              Save Note
+            </button>
           </div>
         )}
       </div>
@@ -6429,9 +6510,20 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           date={dayActionModal.date}
           unscheduledJobs={unscheduledJobs}
           existingNote={dayNotes[dayActionModal.date] || ''}
-          onScheduleExisting={date => setScheduleModal({ defaultDate: date, targetJob: null })}
-          onCreateNew={date => setQuickBar({ date, job: null })}
-          onAddNote={(date, text) => setDayNotes(prev => ({ ...prev, [date]: text }))}
+          onScheduleExisting={(d, jobId) => {
+            if (jobId && onSchedule) { onSchedule(jobId, d); }
+            else { setScheduleModal({ defaultDate: d, targetJob: null }); }
+            setDayActionModal(null);
+          }}
+          onCreateNew={(d, formData) => {
+            if (formData && onCreate) {
+              onCreate({ description: formData.description, customer: formData.customer || formData.description, duration: formData.duration, scheduledDate: d, explicitlyScheduled: true, taskList: [] });
+            } else {
+              setQuickBar({ date: d, job: null });
+            }
+            setDayActionModal(null);
+          }}
+          onAddNote={(d, text) => setDayNotes(prev => ({ ...prev, [d]: text }))}
           onClose={() => setDayActionModal(null)}
         />
       )}
