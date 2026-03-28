@@ -2487,7 +2487,8 @@ function AnalyticsTab({ leads, tier }) {
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
 function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule }) {
-  const steps = TRADE_CHECKLISTS[job.trade]
+  const steps = (job.taskList && job.taskList.length ? job.taskList.map((label, i) => ({ id: i + 1, label })) : null)
+    || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Roofing'];
   const tradeColor = TRADE_COLORS[job.trade] || '#f97316';
@@ -5499,83 +5500,138 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   );
 }
 
-// ─── New Job Modal (create + schedule in one step) ─────────────────────────────
-function NewJobModal({ defaultDate, crew, onSave, onClose }) {
-  const [customer, setCustomer] = useState('');
-  const [trade, setTrade] = useState('Roofing');
-  const [value, setValue] = useState('');
-  const [scheduledDate, setScheduledDate] = useState(defaultDate || TODAY);
-  const [duration, setDuration] = useState(1);
-  const [notes, setNotes] = useState('');
-  const [crewIds, setCrewIds] = useState([]);
+// ─── Quick Schedule Bar (inline panel — replaces NewJobModal) ──────────────────
+function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
+  const [description, setDescription] = useState(job?.description || '');
+  const [customer, setCustomer] = useState(job?.customer || '');
+  const [duration, setDuration] = useState(job?.duration || 1);
+  const [showChecklist, setShowChecklist] = useState(!!(job?.taskList?.length));
+  const [taskList, setTaskList] = useState(job?.taskList || []);
+  const [taskInput, setTaskInput] = useState('');
+  const textareaRef = useRef(null);
 
-  const toggleCrew = id => setCrewIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-  const canSave = customer.trim() && trade;
-  const btnBase = { padding: '9px 20px', borderRadius: 8, border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+  useEffect(() => { if (textareaRef.current) textareaRef.current.focus(); }, []);
+
+  const isEdit = !!job;
+  const displayDate = date ? new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
+  const canSave = description.trim() || customer.trim();
+
+  const addTask = () => {
+    if (taskInput.trim()) { setTaskList(prev => [...prev, taskInput.trim()]); setTaskInput(''); }
+  };
+  const removeTask = (i) => setTaskList(prev => prev.filter((_, idx) => idx !== i));
+  const useTemplate = () => {
+    const tmpl = TRADE_CHECKLISTS[userTrade] || TRADE_CHECKLISTS['Roofing'];
+    setTaskList(tmpl.map(s => s.label));
+    setShowChecklist(true);
+  };
+
+  const handleSave = () => {
+    if (!canSave) return;
+    const desc = description.trim();
+    const cust = customer.trim() || (desc ? desc.slice(0, 40) : 'Untitled');
+    onSave({
+      ...(isEdit ? { id: job.id } : {}),
+      description: desc,
+      customer: cust,
+      trade: userTrade,
+      scheduledDate: date,
+      duration,
+      taskList,
+      value: job?.value || 0,
+    });
+    onClose();
+  };
 
   return (
-    <div style={S.modalOverlay} onClick={onClose}>
-      <div style={{ ...S.modal, maxWidth: 480 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Quick-Create Job</div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 18 }}>Create a new job and schedule it in one step</div>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={FRow}>
-          <div>
-            <label style={FLbl}>Client Name *</label>
-            <input style={FI} value={customer} onChange={e => setCustomer(e.target.value)} placeholder="e.g. John Smith" autoFocus />
-          </div>
-          <div>
-            <label style={FLbl}>Trade *</label>
-            <select style={FI} value={trade} onChange={e => setTrade(e.target.value)}>
-              {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-          </div>
+    <div style={{ background: '#161b27', border: '1px solid #2d3748', borderRadius: 10, padding: '16px 18px', marginBottom: 16, position: 'relative' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+        <div style={{ flex: 1 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#f97316' }}>{isEdit ? 'Edit Entry' : '+ Schedule'}</span>
+          {displayDate && <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>{displayDate}</span>}
+          <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{userTrade}</span>
         </div>
-        <div style={FRow}>
-          <div>
-            <label style={FLbl}>Value ($)</label>
-            <input style={FI} type="number" min={0} value={value} onChange={e => setValue(e.target.value)} placeholder="0" />
-          </div>
-          <div>
-            <label style={FLbl}>Notes</label>
-            <input style={FI} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Optional" />
-          </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+      </div>
+
+      {/* Main textarea — primary input */}
+      <textarea
+        ref={textareaRef}
+        value={description}
+        onChange={e => setDescription(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) handleSave(); }}
+        placeholder={`What's happening this day? (e.g. Roof replacement, final inspection, material delivery…)`}
+        rows={3}
+        style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+      />
+
+      {/* Secondary fields row */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+        <input
+          value={customer}
+          onChange={e => setCustomer(e.target.value)}
+          placeholder="Client name (optional)"
+          style={{ flex: '2 1 160px', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: '1 1 120px' }}>
+          <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>Duration:</span>
+          <input
+            type="number" min={1} max={365} value={duration}
+            onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
+            style={{ width: 54, background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
+          />
+          <span style={{ fontSize: 12, color: '#475569' }}>day{duration !== 1 ? 's' : ''}</span>
         </div>
-        <div style={FRow}>
-          <div>
-            <label style={FLbl}>Start Date</label>
-            <input style={FI} type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
-          </div>
-          <div>
-            <label style={FLbl}>Duration (days)</label>
-            <input style={FI} type="number" min={1} max={365} value={duration} onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))} />
-          </div>
-        </div>
-        {crew.length > 0 && (
-          <>
-            <label style={FLbl}>Assign Crew</label>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
-              {crew.map(m => {
-                const sel = crewIds.includes(m.id);
-                return (
-                  <button key={m.id} onClick={() => toggleCrew(m.id)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${sel ? '#f97316' : '#1e2535'}`, background: sel ? 'rgba(249,115,22,0.15)' : '#1e2535', color: sel ? '#f97316' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                    {m.name}
-                  </button>
-                );
-              })}
+      </div>
+
+      {/* Checklist toggle */}
+      <div style={{ marginBottom: showChecklist ? 10 : 0 }}>
+        <button
+          onClick={() => setShowChecklist(v => !v)}
+          style={{ background: 'none', border: 'none', color: showChecklist ? '#f97316' : '#64748b', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
+        >
+          {showChecklist ? '▾ Checklist' : '▸ Add Checklist'}
+        </button>
+        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{taskList.length} items</span>}
+
+        {showChecklist && (
+          <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '10px 12px' }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+              <input
+                value={taskInput}
+                onChange={e => setTaskInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTask(); } }}
+                placeholder="Add a step and press Enter…"
+                style={{ flex: 1, background: '#161b27', border: '1px solid #2d3748', borderRadius: 6, color: '#f1f5f9', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
+              />
+              <button onClick={useTemplate} style={{ padding: '6px 10px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Use {userTrade} template
+              </button>
             </div>
-          </>
+            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
+            {taskList.map((t, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < taskList.length - 1 ? '1px solid #1e2535' : 'none' }}>
+                <span style={{ fontSize: 11, color: '#475569', minWidth: 16 }}>{i + 1}.</span>
+                <span style={{ flex: 1, fontSize: 12, color: '#94a3b8' }}>{t}</span>
+                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+              </div>
+            ))}
+          </div>
         )}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: crew.length ? 0 : 8 }}>
-          <button style={{ ...btnBase, background: '#1e2535', color: '#94a3b8' }} onClick={onClose}>Cancel</button>
-          <button
-            disabled={!canSave}
-            onClick={() => { if (canSave) { onSave({ customer: customer.trim(), trade, value: parseFloat(value) || 0, scheduledDate, duration, notes, crewIds }); onClose(); } }}
-            style={{ ...btnBase, background: canSave ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', color: canSave ? '#fff' : '#475569', cursor: canSave ? 'pointer' : 'not-allowed' }}
-          >
-            Create & Schedule
-          </button>
-        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
+        <span style={{ fontSize: 11, color: '#334155', marginRight: 'auto' }}>Ctrl+Enter to save</span>
+        <button onClick={onClose} style={{ padding: '7px 16px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 8, color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+        <button
+          onClick={handleSave}
+          disabled={!canSave}
+          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#475569', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
+        >
+          {isEdit ? 'Update' : 'Schedule'}
+        </button>
       </div>
     </div>
   );
@@ -5877,7 +5933,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
                     onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
                     style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, padding: isMobile ? '1px 3px' : '2px 5px', borderRadius: '0 3px 3px 0', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'grab', opacity: isDragging ? 0.4 : 1 }}
                   >
-                    {isMobile ? job.customer.split(' ')[0].slice(0, 6) : job.customer.split(' ')[0]}
+                    {isMobile ? (job.description || job.customer).slice(0, 6) : (job.description || job.customer).split(' ').slice(0, 3).join(' ')}
                   </div>
                 );
               })}
@@ -5929,7 +5985,7 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
                   onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
                   style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, padding: isMobile ? '2px 4px' : '3px 6px', borderRadius: 4, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'grab', opacity: isDragging ? 0.4 : 1 }}
                 >
-                  {isMobile ? job.customer.split(' ')[0].slice(0, 5) : job.customer}
+                  {isMobile ? (job.description || job.customer).slice(0, 6) : (job.description || job.customer)}
                 </div>
               );
             })}
@@ -5941,11 +5997,11 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
 }
 
 // ─── Calendar Tab ─────────────────────────────────────────────────────────────
-function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdateSteps, onAssign, onUnassign, currentUser, demoMessages, customChecklist, isDemo, onCreate, onChangeStage, onDeleteJob }) {
+function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdateSteps, onAssign, onUnassign, currentUser, demoMessages, customChecklist, isDemo, onCreate, onUpdate, onChangeStage, onDeleteJob, userTrade }) {
   const [view, setView] = useState('month');
   const [current, setCurrent] = useState(new Date(TODAY + 'T12:00:00'));
   const [selectedDate, setSelectedDate] = useState(null);
-  const [newJobModal, setNewJobModal] = useState(null);     // null | { defaultDate }
+  const [quickBar, setQuickBar] = useState(null);           // null | { date, job }
   const [scheduleModal, setScheduleModal] = useState(null); // null | { defaultDate, targetJob }
   const [selectedJob, setSelectedJob] = useState(null);
   const [stageChangeJob, setStageChangeJob] = useState(null);
@@ -5954,6 +6010,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
   const [dragJobId, setDragJobId] = useState(null);
   const [dragOverDate, setDragOverDate] = useState(null);
   const isMobile = useMobile();
+  const effectiveTrade = userTrade || 'Roofing';
 
   const scheduledJobs = useMemo(() => jobs.filter(j => j.scheduledDate), [jobs]);
   const unscheduledJobs = useMemo(() => jobs.filter(j => (j.explicitlyScheduled === false || !j.scheduledDate) && j.status !== 'Complete'), [jobs]);
@@ -6003,11 +6060,15 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
   const closeAll = useCallback(() => { setContextMenu(null); setDragJobId(null); setDragOverDate(null); }, []);
 
   const handleDayClick = useCallback((dateStr) => {
-    if (!isDemo && onCreate) setNewJobModal({ defaultDate: dateStr });
+    if (!isDemo && onCreate) { setQuickBar({ date: dateStr, job: null }); setSelectedDate(dateStr); }
     else setSelectedDate(prev => prev === dateStr ? null : dateStr);
   }, [isDemo, onCreate]);
 
-  const handleJobClick = useCallback((job) => { closeAll(); setSelectedJob(job); }, [closeAll]);
+  const handleJobClick = useCallback((job) => {
+    closeAll();
+    if (!isDemo && (onCreate || onUpdate)) setQuickBar({ date: job.scheduledDate || TODAY, job });
+    else setSelectedJob(job);
+  }, [closeAll, isDemo, onCreate, onUpdate]);
 
   const handleJobContextMenu = useCallback((job, e) => {
     setContextMenu({ job, x: e.clientX, y: e.clientY });
@@ -6039,7 +6100,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <div style={{ fontSize: 13, color: '#64748b' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
         {!isDemo && onCreate && (
-          <button onClick={() => setNewJobModal({ defaultDate: TODAY })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={() => setQuickBar({ date: TODAY, job: null })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
             + New Job
           </button>
         )}
@@ -6065,6 +6126,20 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#f1f5f9' }}>{headerLabel}</div>
         {dragJobId && <span style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>Drop to reschedule</span>}
       </div>
+
+      {/* ── Quick Schedule Bar ── */}
+      {quickBar && (
+        <QuickScheduleBar
+          date={quickBar.date}
+          job={quickBar.job}
+          userTrade={effectiveTrade}
+          onSave={jobData => {
+            if (jobData.id) { if (onUpdate) onUpdate(jobData); }
+            else { if (onCreate) onCreate(jobData); }
+          }}
+          onClose={() => setQuickBar(null)}
+        />
+      )}
 
       {/* ── Unscheduled banner ── */}
       {unscheduledJobs.length > 0 && (
@@ -6095,7 +6170,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           conflicts={conflicts}
           onClose={view !== 'day' ? () => setSelectedDate(null) : null}
           onJobClick={handleJobClick}
-          onCreateForDate={!isDemo && onCreate ? () => setNewJobModal({ defaultDate: dispatchDate }) : null}
+          onCreateForDate={!isDemo && onCreate ? () => setQuickBar({ date: dispatchDate, job: null }) : null}
         />
       )}
 
@@ -6128,14 +6203,6 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       <TodaySummaryPanel jobs={jobs} crew={crew} assignments={assignments} conflicts={conflicts} onJobClick={handleJobClick} />
 
       {/* ── Modals ── */}
-      {newJobModal && (
-        <NewJobModal
-          defaultDate={newJobModal.defaultDate}
-          crew={crew}
-          onSave={jobData => { if (onCreate) onCreate(jobData); }}
-          onClose={() => setNewJobModal(null)}
-        />
-      )}
       {scheduleModal && (
         <ScheduleJobModal
           defaultDate={scheduleModal.defaultDate}
@@ -6582,6 +6649,8 @@ export default function App() {
     const newJob = {
       id,
       customer: jobData.customer,
+      description: jobData.description || '',
+      taskList: jobData.taskList || [],
       address: jobData.address || '',
       trade: jobData.trade,
       value: jobData.value || 0,
@@ -6596,6 +6665,10 @@ export default function App() {
     if (jobData.crewIds && jobData.crewIds.length) {
       setAssignments(prev => ({ ...prev, [id]: jobData.crewIds }));
     }
+  };
+  const handleUpdateJob = (jobData) => {
+    setUserJobs(prev => prev.map(j => String(j.id) === String(jobData.id) ? { ...j, customer: jobData.customer, description: jobData.description || '', taskList: jobData.taskList || [], scheduledDate: jobData.scheduledDate, duration: jobData.duration || 1, trade: jobData.trade } : j));
+    setUserLeads(prev => prev.map(l => String(l.id) === String(jobData.id) ? { ...l, name: jobData.customer, scheduledDate: jobData.scheduledDate, duration: jobData.duration || 1 } : l));
   };
   const handleChangeJobStage = (jobId, stage) => {
     const statusMap = { approved: 'Scheduled', in_progress: 'In Progress', completed: 'Complete', lost: 'Lost' };
@@ -6814,8 +6887,10 @@ export default function App() {
             customChecklist={userCustomChecklist}
             isDemo={isDemo}
             onCreate={isDemo ? null : handleCreateAndScheduleJob}
+            onUpdate={isDemo ? null : handleUpdateJob}
             onChangeStage={isDemo ? null : handleChangeJobStage}
             onDeleteJob={isDemo ? null : handleDeleteJob}
+            userTrade={userTrade}
           />
         )}
         {tab === 'crew' && (
