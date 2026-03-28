@@ -941,6 +941,11 @@ const S = {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
   },
+  modalOverlay: {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 1000, padding: 20,
+  },
   modal: {
     background: '#161b27', border: '1px solid #1e2535',
     borderRadius: 14, width: '100%', maxWidth: 560,
