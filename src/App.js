@@ -6022,7 +6022,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
 }
 
 // ─── Calendar: Month View ─────────────────────────────────────────────────────
-function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu, dragJobId, dragOverDate, onDragStart, onDragOver, onDrop, onDragEnd }) {
+function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu, dragJobId, dragOverDate, onDragStart, onDragOver, onDrop, onDragEnd, dayNotes }) {
   const isMobile = useMobile();
   const DAY_NAMES = isMobile ? ['S','M','T','W','T','F','S'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   return (
@@ -6072,6 +6072,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
                 );
               })}
               {overflow > 0 && <div style={{ fontSize: 9, color: '#475569', padding: '1px 2px' }}>+{overflow}</div>}
+              {dayNotes && dayNotes[dateStr] && <div style={{ fontSize: 8, color: '#818cf8', lineHeight: 1, paddingTop: 1 }}>&#128221;</div>}
             </div>
           );
         })}
@@ -6081,7 +6082,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
 }
 
 // ─── Calendar: Week View ──────────────────────────────────────────────────────
-function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu, dragJobId, dragOverDate, onDragStart, onDragOver, onDrop, onDragEnd }) {
+function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu, dragJobId, dragOverDate, onDragStart, onDragOver, onDrop, onDragEnd, dayNotes }) {
   const isMobile = useMobile();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: isMobile ? 2 : 6 }}>
@@ -6123,6 +6124,11 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
                 </div>
               );
             })}
+            {dayNotes && dayNotes[dateStr] && (
+              <div style={{ fontSize: 9, color: '#818cf8', marginTop: 4, padding: '2px 4px', background: 'rgba(99,102,241,0.1)', borderRadius: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                &#128221; {dayNotes[dateStr].slice(0, 18)}{dayNotes[dateStr].length > 18 ? '…' : ''}
+              </div>
+            )}
           </div>
         );
       })}
@@ -6131,22 +6137,33 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
 }
 
 // ─── Day Action Modal ──────────────────────────────────────────────────────────
-function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExisting, onCreateNew, onAddNote, onClose }) {
+function DayActionModal({ date, allJobs, assignments, crew, existingNote, onScheduleExisting, onCreateNew, onAddNote, onClose }) {
   const [mode, setMode] = useState('menu'); // 'menu' | 'schedule' | 'create' | 'note'
   const [note, setNote] = useState(existingNote || '');
   const [description, setDescription] = useState('');
   const [customer, setCustomer] = useState('');
   const [duration, setDuration] = useState(1);
+  const [search, setSearch] = useState('');
+  const [justScheduled, setJustScheduled] = useState(null);
   const noteRef = useRef(null);
   const descRef = useRef(null);
+  const searchRef = useRef(null);
+  const closeRef = useRef(onClose);
+  useEffect(() => { closeRef.current = onClose; });
 
   useEffect(() => { if (mode === 'note' && noteRef.current) noteRef.current.focus(); }, [mode]);
   useEffect(() => { if (mode === 'create' && descRef.current) descRef.current.focus(); }, [mode]);
+  useEffect(() => { if (mode === 'schedule' && searchRef.current) searchRef.current.focus(); }, [mode]);
+  useEffect(() => {
+    if (!justScheduled) return;
+    const t = setTimeout(() => closeRef.current(), 1300);
+    return () => clearTimeout(t);
+  }, [justScheduled]);
 
   const displayDate = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   const subTitle = mode === 'menu' ? 'What would you like to do?'
-    : mode === 'schedule' ? 'Select a job to schedule for this day'
+    : mode === 'schedule' ? 'Tap a job to schedule or reschedule it'
     : mode === 'create' ? 'Quick-create a new job'
     : 'Add a note for this day';
 
@@ -6174,9 +6191,55 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
     </button>
   );
 
+  const jobs = allJobs || [];
+  const q = search.toLowerCase();
+  const filtered = q ? jobs.filter(j => (j.description || '').toLowerCase().includes(q) || (j.customer || '').toLowerCase().includes(q)) : jobs;
+  const unscheduledSection = filtered.filter(j => !j.scheduledDate || j.explicitlyScheduled === false);
+  const scheduledSection = filtered.filter(j => j.scheduledDate && j.explicitlyScheduled !== false);
+
+  const crewLabel = (jobId) => {
+    const ids = (assignments || {})[String(jobId)] || [];
+    const names = ids.map(id => (crew || []).find(m => m.id === id)).filter(Boolean).map(m => m.name);
+    return names.length ? names.join(', ') : null;
+  };
+
+  const JobRow = ({ job }) => {
+    const alreadyHere = job.scheduledDate === date;
+    const crewNames = crewLabel(job.id);
+    const fmtDate = job.scheduledDate ? new Date(job.scheduledDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Unscheduled';
+    return (
+      <button
+        onClick={alreadyHere ? undefined : () => { onScheduleExisting(date, job.id); setJustScheduled(job); }}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#0f1117' : '#161b27', border: '1px solid #1e2535', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
+        onMouseEnter={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; })}
+        onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#1e2535'; e.currentTarget.style.background = '#161b27'; })}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748b' : '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
+          <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>
+            {job.customer && job.description ? `${job.customer} · ` : ''}{job.status || ''}{fmtDate ? ` · ${fmtDate}` : ''}
+          </div>
+          {crewNames && <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>&#128100; {crewNames}</div>}
+        </div>
+        {alreadyHere
+          ? <span style={{ fontSize: 10, color: '#475569', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
+          : <span style={{ fontSize: 11, color: '#f97316', fontWeight: 700, flexShrink: 0 }}>&#8594;</span>
+        }
+      </button>
+    );
+  };
+
+  const SuccessView = ({ icon, title, sub }) => (
+    <div style={{ textAlign: 'center', padding: '28px 0' }}>
+      <div style={{ fontSize: 36, marginBottom: 12 }}>{icon}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: '#4ade80', marginBottom: 6 }}>{title}</div>
+      <div style={{ fontSize: 12, color: '#64748b' }}>{sub}</div>
+    </div>
+  );
+
   return (
     <div style={S.modalOverlay} onClick={onClose}>
-      <div style={{ ...S.modal, maxWidth: 380 }} onClick={e => e.stopPropagation()}>
+      <div style={{ ...S.modal, maxWidth: 400 }} onClick={e => e.stopPropagation()}>
         <button style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 2 }}>{displayDate}</div>
@@ -6184,47 +6247,56 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
 
         {mode === 'menu' && (
           <div>
-            {actionBtn('📋', 'Schedule Existing Job',
-              unscheduledJobs.length > 0 ? `${unscheduledJobs.length} job${unscheduledJobs.length !== 1 ? 's' : ''} awaiting scheduling` : 'Pick from pipeline jobs',
+            {actionBtn('📋', 'Schedule / Reschedule Job',
+              jobs.length > 0 ? `${jobs.length} job${jobs.length !== 1 ? 's' : ''} in pipeline` : 'Pick from pipeline jobs',
               () => setMode('schedule')
             )}
             {actionBtn('✏️', 'Create New Job', 'Quick-create and schedule for this date',
               () => setMode('create')
             )}
-            {actionBtn('📝', existingNote ? 'Edit Note' : 'Add Note', existingNote ? `"${existingNote.slice(0, 40)}${existingNote.length > 40 ? '…' : ''}"` : 'Office closed, rain day, site visit…',
+            {actionBtn('📝', existingNote ? 'Edit Note' : 'Add Note',
+              existingNote ? `"${existingNote.slice(0, 40)}${existingNote.length > 40 ? '…' : ''}"` : 'Office closed, rain day, site visit…',
               () => setMode('note')
             )}
           </div>
         )}
 
-        {mode === 'schedule' && (
+        {mode === 'schedule' && !justScheduled && (
           <div>
             {backBtn}
-            {unscheduledJobs.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0' }}>No unscheduled jobs — all caught up!</div>
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by job or client name&#8230;"
+              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
+            />
+            {filtered.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 260, overflowY: 'auto' }}>
-                {unscheduledJobs.map(job => (
-                  <button
-                    key={job.id}
-                    onClick={() => { onScheduleExisting(date, job.id); onClose(); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 8, cursor: 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e2535'; e.currentTarget.style.background = '#161b27'; }}
-                  >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer || job.description}</div>
-                      <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
-                    </div>
-                    <span style={{ fontSize: 11, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>Schedule &#8594;</span>
-                  </button>
-                ))}
+              <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                {unscheduledSection.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Unscheduled</div>
+                    {unscheduledSection.map(job => <JobRow key={job.id} job={job} />)}
+                  </>
+                )}
+                {scheduledSection.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: unscheduledSection.length > 0 ? 10 : 0, marginBottom: 3 }}>Reschedule</div>
+                    {scheduledSection.map(job => <JobRow key={job.id} job={job} />)}
+                  </>
+                )}
               </div>
             )}
           </div>
         )}
 
-        {mode === 'create' && (
+        {mode === 'schedule' && justScheduled && (
+          <SuccessView icon="✅" title="Scheduled!" sub={`${justScheduled.description || justScheduled.customer} → ${displayDate}`} />
+        )}
+
+        {mode === 'create' && !justScheduled && (
           <div>
             {backBtn}
             <input
@@ -6252,7 +6324,12 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
               />
             </div>
             <button
-              onClick={() => { if (description.trim()) { onCreateNew(date, { description: description.trim(), customer: customer.trim(), duration }); onClose(); } }}
+              onClick={() => {
+                if (description.trim()) {
+                  onCreateNew(date, { description: description.trim(), customer: customer.trim(), duration });
+                  setJustScheduled({ description: description.trim() });
+                }
+              }}
               disabled={!description.trim()}
               style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
             >
@@ -6261,27 +6338,35 @@ function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExistin
           </div>
         )}
 
-        {mode === 'note' && (
+        {mode === 'create' && justScheduled && (
+          <SuccessView icon="✅" title="Job Created!" sub={`${justScheduled.description} scheduled for ${displayDate}`} />
+        )}
+
+        {mode === 'note' && !justScheduled && (
           <div>
             {backBtn}
             <textarea
               ref={noteRef}
               value={note}
               onChange={e => setNote(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { onAddNote(date, note.trim()); onClose(); } }}
-              placeholder="e.g. Office closed, rain day, equipment delivery…"
+              onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } } }}
+              placeholder="e.g. Office closed, rain day, equipment delivery&#8230;"
               rows={3}
               style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
             />
             <div style={{ fontSize: 11, color: '#334155', marginBottom: 10 }}>Ctrl+Enter to save</div>
             <button
-              onClick={() => { onAddNote(date, note.trim()); onClose(); }}
+              onClick={() => { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } }}
               disabled={!note.trim()}
               style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
             >
               Save Note
             </button>
           </div>
+        )}
+
+        {mode === 'note' && justScheduled && (
+          <SuccessView icon="&#128221;" title="Note Saved!" sub={`Visible on ${displayDate}`} />
         )}
       </div>
     </div>
@@ -6382,7 +6467,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
 
   const handleCompleteJob = useCallback((id) => { if (onComplete) onComplete(id); setSelectedJob(null); }, [onComplete]);
 
-  const sharedGridProps = { dayJobsFn, onDayClick: handleDayClick, selectedDate, onJobClick: handleJobClick, onJobContextMenu: !isDemo ? handleJobContextMenu : null, dragJobId, dragOverDate, onDragStart: !isDemo ? handleDragStart : null, onDragOver: !isDemo ? handleDragOver : null, onDrop: !isDemo ? handleDrop : null, onDragEnd: !isDemo ? handleDragEnd : null };
+  const sharedGridProps = { dayJobsFn, onDayClick: handleDayClick, selectedDate, onJobClick: handleJobClick, onJobContextMenu: !isDemo ? handleJobContextMenu : null, dragJobId, dragOverDate, onDragStart: !isDemo ? handleDragStart : null, onDragOver: !isDemo ? handleDragOver : null, onDrop: !isDemo ? handleDrop : null, onDragEnd: !isDemo ? handleDragEnd : null, dayNotes };
 
   return (
     <div>
@@ -6508,20 +6593,25 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       {dayActionModal && (
         <DayActionModal
           date={dayActionModal.date}
-          unscheduledJobs={unscheduledJobs}
+          allJobs={jobs}
+          assignments={assignments}
+          crew={crew}
           existingNote={dayNotes[dayActionModal.date] || ''}
           onScheduleExisting={(d, jobId) => {
-            if (jobId && onSchedule) { onSchedule(jobId, d); }
-            else { setScheduleModal({ defaultDate: d, targetJob: null }); }
-            setDayActionModal(null);
+            if (jobId) {
+              if (onSchedule) onSchedule(jobId, d);
+            } else {
+              setScheduleModal({ defaultDate: d, targetJob: null });
+              setDayActionModal(null);
+            }
           }}
           onCreateNew={(d, formData) => {
-            if (formData && onCreate) {
-              onCreate({ description: formData.description, customer: formData.customer || formData.description, duration: formData.duration, scheduledDate: d, explicitlyScheduled: true, taskList: [] });
+            if (formData) {
+              if (onCreate) onCreate({ description: formData.description, customer: formData.customer || formData.description, duration: formData.duration, scheduledDate: d, explicitlyScheduled: true, taskList: [], status: 'In Progress', trade: effectiveTrade });
             } else {
               setQuickBar({ date: d, job: null });
+              setDayActionModal(null);
             }
-            setDayActionModal(null);
           }}
           onAddNote={(d, text) => setDayNotes(prev => ({ ...prev, [d]: text }))}
           onClose={() => setDayActionModal(null)}
