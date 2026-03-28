@@ -4928,12 +4928,18 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
   const [now, setNow] = useState(Date.now());
   const [showAssign, setShowAssign] = useState(false);
   const [newName, setNewName] = useState('');
+  // Local state for demo/read-only mode so UI still feels functional
+  const [localAssignedIds, setLocalAssignedIds] = useState([]);
+  const [localCrew, setLocalCrew] = useState([]);
   const newNameRef = useRef(null);
   const isMobile = useMobile();
 
-  const assignedIds = assignments[String(job.id)] || [];
-  const assignedCrew = crew.filter(m => assignedIds.includes(m.id));
-  const unassignedCrew = crew.filter(m => !assignedIds.includes(m.id));
+  // Merge persisted + local assignments/crew so both modes work
+  const persistedIds = assignments[String(job.id)] || [];
+  const assignedIds = [...new Set([...persistedIds, ...localAssignedIds])];
+  const allCrew = [...crew, ...localCrew];
+  const assignedCrew = allCrew.filter(m => assignedIds.includes(m.id));
+  const unassignedCrew = allCrew.filter(m => !assignedIds.includes(m.id));
 
   const refresh = useCallback(() => {
     timeDB.getAll().then(all => {
@@ -4968,12 +4974,23 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
     refresh();
   };
 
+  const doAssign = (memberId) => {
+    if (onAssign) onAssign(job.id, memberId);
+    else setLocalAssignedIds(prev => [...prev, memberId]);
+  };
+  const doUnassign = (memberId) => {
+    if (onUnassign) onUnassign(job.id, memberId);
+    else setLocalAssignedIds(prev => prev.filter(id => id !== memberId));
+  };
+
   const handleCreateAndAssign = () => {
     const name = newName.trim();
-    if (!name || !onAddCrew || !onAssign) return;
+    if (!name) return;
     const id = `crew-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    onAddCrew({ id, name, role: '', phone: '', specialties: [] });
-    onAssign(job.id, id);
+    const member = { id, name, role: '', phone: '', specialties: [] };
+    if (onAddCrew) onAddCrew(member);
+    else setLocalCrew(prev => [...prev, member]);
+    doAssign(id);
     setNewName('');
   };
 
@@ -4991,30 +5008,28 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
 
       {showAssign && (
         <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
-          {/* Inline create — fastest path */}
-          {onAddCrew && onAssign && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: unassignedCrew.length > 0 ? 10 : 0 }}>
-              <input
-                ref={newNameRef}
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') handleCreateAndAssign(); }}
-                placeholder="Type a name and press Enter to add…"
-                style={{ flex: 1, background: '#161b27', border: '1px solid #2d3748', borderRadius: 7, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
-              />
-              <button
-                onClick={handleCreateAndAssign}
-                disabled={!newName.trim()}
-                style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
-              >
-                Add
-              </button>
-            </div>
-          )}
-          {/* Existing crew list */}
+          {/* Text input — always visible, fastest path */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: unassignedCrew.length > 0 ? 10 : 4 }}>
+            <input
+              ref={newNameRef}
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCreateAndAssign(); } }}
+              placeholder="Type crew member name…"
+              style={{ flex: 1, background: '#161b27', border: '1px solid #2d3748', borderRadius: 7, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+            />
+            <button
+              onClick={handleCreateAndAssign}
+              disabled={!newName.trim()}
+              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
+            >
+              Add
+            </button>
+          </div>
+          {/* Existing unassigned crew */}
           {unassignedCrew.length > 0 && (
             <div>
-              {unassignedCrew.length > 0 && onAddCrew && onAssign && <div style={{ fontSize: 11, color: '#475569', marginBottom: 6, paddingTop: 2 }}>Or pick from your crew:</div>}
+              <div style={{ fontSize: 11, color: '#475569', marginBottom: 6 }}>Or pick from your crew:</div>
               {unassignedCrew.map(member => (
                 <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#161b27', border: '1px solid #1e2535' }}>
                   <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#64748b' }}>
@@ -5025,9 +5040,8 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
                     {member.role && <div style={{ fontSize: 11, color: '#475569' }}>{member.role}</div>}
                   </div>
                   <button
-                    onClick={() => onAssign && onAssign(job.id, member.id)}
-                    disabled={!onAssign}
-                    style={{ padding: '5px 12px', background: onAssign ? 'rgba(249,115,22,0.12)' : 'transparent', border: `1px solid ${onAssign ? 'rgba(249,115,22,0.3)' : '#1e2535'}`, borderRadius: 6, color: onAssign ? '#f97316' : '#334155', fontWeight: 600, fontSize: 11, cursor: onAssign ? 'pointer' : 'default' }}
+                    onClick={() => doAssign(member.id)}
+                    style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}
                   >
                     + Add
                   </button>
@@ -5035,13 +5049,13 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
               ))}
             </div>
           )}
-          {!onAddCrew && !onAssign && crew.length === 0 && (
-            <div style={{ fontSize: 12, color: '#475569' }}>No crew members available.</div>
+          {unassignedCrew.length === 0 && !newName && (
+            <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>All crew members are assigned.</div>
           )}
         </div>
       )}
 
-      {/* Assigned crew with clock-in and remove */}
+      {/* Assigned crew */}
       {assignedCrew.length === 0 && !showAssign && (
         <div style={{ fontSize: 12, color: '#475569', padding: '4px 0 8px' }}>
           No crew assigned yet. Click <span style={{ color: '#f97316' }}>+ Assign Crew</span> above.
@@ -5065,14 +5079,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
               </div>
             </div>
             <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-              {onUnassign && (
-                <button
-                  style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid #2d3748', background: 'transparent', color: '#475569', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => onUnassign(job.id, member.id)}
-                >
-                  Remove
-                </button>
-              )}
+              <button
+                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid #2d3748', background: 'transparent', color: '#475569', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                onClick={() => doUnassign(member.id)}
+              >
+                Remove
+              </button>
               <button
                 style={{ padding: isMobile ? '10px 14px' : '7px 12px', minWidth: isMobile ? 90 : 80, borderRadius: 7, border: 'none', background: open ? '#ef4444' : '#22c55e', color: '#fff', fontWeight: 700, fontSize: isMobile ? 13 : 12, cursor: 'pointer', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => open ? handleClockOut(member) : handleClockIn(member)}
