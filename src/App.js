@@ -5563,13 +5563,42 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   );
 }
 
-// ─── Quick Schedule Bar (inline panel — replaces NewJobModal) ──────────────────
+// ─── Roofing workflow phases for checklist smart insertion ─────────────────────
+const ROOFING_WORKFLOW_PHASES = [
+  { score: 1,  keys: ['site inspect', 'initial inspect', 'site visit', 'measur', 'survey', 'assess', 'estimate'] },
+  { score: 2,  keys: ['permit', 'hoa', 'approv'] },
+  { score: 3,  keys: ['material', 'order', 'deliv', 'suppli', 'purchas'] },
+  { score: 4,  keys: ['safety', 'scaffold', 'staging', 'equipment staging', 'set up equip'] },
+  { score: 5,  keys: ['tear off', 'tear-off', 'strip roof', 'remove old roof', 'demo old'] },
+  { score: 6,  keys: ['deck', 'board', 'rotted', 'rot', 'plywood', 'sheathing', 'damaged wood', 'wood repair'] },
+  { score: 7,  keys: ['drip edge', 'drip'] },
+  { score: 8,  keys: ['ice and water', 'ice & water', 'water shield', 'ice shield'] },
+  { score: 9,  keys: ['underlayment', 'roofing felt', 'synthetic felt', 'peel and stick'] },
+  { score: 10, keys: ['install shingle', 'lay shingle', 'new roof', 'roof system', 'membrane', 'flat roof', 'asphalt'] },
+  { score: 11, keys: ['ridge vent', 'ridge cap', 'ventilation', 'soffit vent', 'attic vent'] },
+  { score: 12, keys: ['flash', 'seal', 'caulk', 'chimney', 'skylight', 'valley'] },
+  { score: 13, keys: ['gutter', 'downspout', 'fascia'] },
+  { score: 14, keys: ['cleanup', 'clean up', 'debris', 'haul away', 'sweep', 'disposal'] },
+  { score: 15, keys: ['final inspect', 'final check', 'walkthrough', 'punch list', 'completion'] },
+  { score: 16, keys: ['invoice', 'billing', 'send bill', 'statement'] },
+  { score: 17, keys: ['payment', 'paid', 'receiv', 'collect payment'] },
+];
+function getWorkflowScore(text) {
+  const lower = text.toLowerCase();
+  for (const phase of ROOFING_WORKFLOW_PHASES) {
+    if (phase.keys.some(k => lower.includes(k))) return phase.score;
+  }
+  return 14.5; // default: before final inspection
+}
+
+// ─── Quick Schedule Bar (inline panel) ─────────────────────────────────────────
 function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
   const [description, setDescription] = useState(job?.description || '');
   const [customer, setCustomer] = useState(job?.customer || '');
   const [duration, setDuration] = useState(job?.duration || 1);
   const [showChecklist, setShowChecklist] = useState(!!(job?.taskList?.length));
   const [taskList, setTaskList] = useState(job?.taskList || []);
+  const [taskHistory, setTaskHistory] = useState([]); // undo stack, max 5
   const [taskInput, setTaskInput] = useState('');
   const textareaRef = useRef(null);
 
@@ -5579,12 +5608,44 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
   const displayDate = date ? new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
   const canSave = description.trim() || customer.trim();
 
+  const pushHistory = (list) => setTaskHistory(h => [...h.slice(-4), list]);
+
   const addTask = () => {
-    if (taskInput.trim()) { setTaskList(prev => [...prev, taskInput.trim()]); setTaskInput(''); }
+    const raw = taskInput.trim();
+    if (!raw) return;
+    // Detect "3. Step text" or "3) Step text" → insert at that position
+    const numbered = raw.match(/^(\d+)[.)]\s*(.+)/);
+    let label, insertIdx;
+    if (numbered) {
+      label = numbered[2].trim();
+      insertIdx = Math.min(parseInt(numbered[1]) - 1, taskList.length); // clamp to end
+    } else {
+      label = raw;
+      const newScore = getWorkflowScore(label);
+      const firstHigher = taskList.map(s => getWorkflowScore(s)).findIndex(s => s > newScore);
+      insertIdx = firstHigher === -1 ? taskList.length : firstHigher;
+    }
+    const next = [...taskList];
+    next.splice(insertIdx, 0, label);
+    pushHistory(taskList);
+    setTaskList(next);
+    setTaskInput('');
   };
-  const removeTask = (i) => setTaskList(prev => prev.filter((_, idx) => idx !== i));
+
+  const removeTask = (i) => {
+    pushHistory(taskList);
+    setTaskList(prev => prev.filter((_, idx) => idx !== i));
+  };
+
+  const undo = () => {
+    if (taskHistory.length === 0) return;
+    setTaskList(taskHistory[taskHistory.length - 1]);
+    setTaskHistory(h => h.slice(0, -1));
+  };
+
   const useTemplate = () => {
     const tmpl = TRADE_CHECKLISTS[userTrade] || TRADE_CHECKLISTS['Roofing'];
+    pushHistory(taskList);
     setTaskList(tmpl.map(s => s.label));
     setShowChecklist(true);
   };
@@ -5618,7 +5679,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
       </div>
 
-      {/* Main textarea — primary input */}
+      {/* Main textarea */}
       <textarea
         ref={textareaRef}
         value={description}
@@ -5629,7 +5690,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
       />
 
-      {/* Secondary fields row */}
+      {/* Secondary fields */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
         <input
           value={customer}
@@ -5660,22 +5721,32 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
 
         {showChecklist && (
           <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '10px 12px' }}>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+            {/* Input row */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
               <input
                 value={taskInput}
                 onChange={e => setTaskInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTask(); } }}
-                placeholder="Add a step and press Enter…"
+                placeholder='Step name, or "3. Step" to insert at position 3…'
                 style={{ flex: 1, background: '#161b27', border: '1px solid #2d3748', borderRadius: 6, color: '#f1f5f9', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
               />
               <button onClick={useTemplate} style={{ padding: '6px 10px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Use {userTrade} template
               </button>
             </div>
+            {/* Undo row */}
+            {taskHistory.length > 0 && (
+              <div style={{ marginBottom: 6 }}>
+                <button onClick={undo} style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+                  ↩ Undo{taskHistory.length > 1 ? ` (${taskHistory.length} steps)` : ''}
+                </button>
+              </div>
+            )}
+            {/* Steps list */}
             {taskList.length === 0 && <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
             {taskList.map((t, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < taskList.length - 1 ? '1px solid #1e2535' : 'none' }}>
-                <span style={{ fontSize: 11, color: '#475569', minWidth: 16 }}>{i + 1}.</span>
+                <span style={{ fontSize: 11, color: '#475569', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
                 <span style={{ flex: 1, fontSize: 12, color: '#94a3b8' }}>{t}</span>
                 <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
               </div>
