@@ -1067,7 +1067,8 @@ function leadToJob(lead) {
     status: lead.stage === 'completed' ? 'Complete'
           : lead.stage === 'in_progress' ? 'In Progress'
           : 'Scheduled',
-    scheduledDate: lead.callbackDate || lead.lastContact || TODAY,
+    scheduledDate: lead.scheduledDate || lead.callbackDate || lead.lastContact || TODAY,
+    explicitlyScheduled: !!lead.scheduledDate,
     completedSteps: lead.completedSteps || [],
     notes: lead.notes || '',
     duration: lead.duration || 1,
@@ -5452,21 +5453,119 @@ function ChatTab({ jobs }) {
   );
 }
 
-// ─── Calendar: Day Dispatch ────────────────────────────────────────────────────
-function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose }) {
+// ─── Schedule Job Modal ────────────────────────────────────────────────────────
+function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
+  const activeJobs = jobs.filter(j => j.status !== 'Complete');
+  const isReschedule = targetJob && targetJob.scheduledDate;
+  const [jobId, setJobId] = useState(targetJob ? String(targetJob.id) : (activeJobs[0] ? String(activeJobs[0].id) : ''));
+  const [date, setDate] = useState(targetJob ? (targetJob.scheduledDate || defaultDate || TODAY) : (defaultDate || TODAY));
+  const [duration, setDuration] = useState(targetJob ? jobDuration(targetJob) : 1);
+
+  const handleSave = () => {
+    if (!jobId || !date) return;
+    onSave(jobId, date, duration);
+    onClose();
+  };
+
+  const btnBase = { padding: '9px 20px', borderRadius: 8, border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+  const title = targetJob
+    ? (isReschedule ? `Reschedule — ${targetJob.customer}` : `Schedule — ${targetJob.customer}`)
+    : 'Schedule Job';
+
+  return (
+    <div style={S.modalOverlay} onClick={onClose}>
+      <div style={{ ...S.modal, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 18, paddingRight: 40 }}>{title}</div>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        {!targetJob && (
+          <>
+            <label style={FLbl}>Job</label>
+            <select style={{ ...FI, marginBottom: 4 }} value={jobId} onChange={e => setJobId(e.target.value)}>
+              <option value="">Select a job…</option>
+              {activeJobs.map(j => (
+                <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} ({j.status})</option>
+              ))}
+            </select>
+          </>
+        )}
+        <label style={FLbl}>Start Date</label>
+        <input type="date" style={{ ...FI, marginBottom: 4 }} value={date} onChange={e => setDate(e.target.value)} />
+        <label style={FLbl}>Duration (days)</label>
+        <input
+          type="number" min={1} max={365}
+          style={{ ...FI, marginBottom: 20 }}
+          value={duration}
+          onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
+        />
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button style={{ ...btnBase, background: '#1e2535', color: '#94a3b8' }} onClick={onClose}>Cancel</button>
+          <button
+            style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', color: jobId && date ? '#fff' : '#475569' }}
+            onClick={handleSave}
+            disabled={!jobId || !date}
+          >
+            {isReschedule ? 'Reschedule' : 'Schedule'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Calendar: Context Menu ─────────────────────────────────────────────────────
+function CalendarContextMenu({ job, x, y, onView, onReschedule, onRemove, onComplete }) {
+  const tc = TRADE_COLORS[job.trade] || '#64748b';
+  const items = [
+    { label: 'View Details', action: onView, icon: '📋' },
+    { label: 'Reschedule', action: onReschedule, icon: '📅' },
+    { label: 'Remove from Calendar', action: onRemove, icon: '✕', color: '#ef4444' },
+    job.status !== 'Complete' ? { label: 'Mark Complete', action: onComplete, icon: '✓', color: '#22c55e' } : null,
+  ].filter(Boolean);
+
+  return (
+    <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', minWidth: 190, overflow: 'hidden' }}>
+      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#64748b', borderBottom: '1px solid #334155', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+        {job.customer}
+      </div>
+      {items.map(item => (
+        <button
+          key={item.label}
+          onClick={item.action}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#e2e8f0', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+        >
+          <span style={{ width: 16, textAlign: 'center' }}>{item.icon}</span>
+          {item.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── Calendar: Day Dispatch ─────────────────────────────────────────────────────
+function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJobClick, onScheduleForDate }) {
   const d = new Date(dateStr + 'T12:00:00');
   const dayJobs = jobs.filter(j => jobOccupiesDate(j, dateStr));
 
   return (
     <div style={{ background: '#161b27', border: '1px solid #1e2535', borderRadius: 10, padding: 16, marginTop: 12 }}>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14, gap: 8 }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>
             {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
         </div>
-        {onClose && <button style={S.closeBtn} onClick={onClose}>×</button>}
+        {onScheduleForDate && (
+          <button
+            onClick={onScheduleForDate}
+            style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
+          >
+            + Schedule
+          </button>
+        )}
+        {onClose && <button style={{ ...S.closeBtn, position: 'relative', top: 'auto', right: 'auto', flexShrink: 0 }} onClick={onClose}>×</button>}
       </div>
 
       {dayJobs.length === 0 ? (
@@ -5475,16 +5574,14 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose }) {
         <div style={{ marginBottom: 16 }}>
           {dayJobs.map(job => {
             const tc = TRADE_COLORS[job.trade] || '#64748b';
-            const assignedCrew = (assignments[String(job.id)] || [])
-              .map(id => crew.find(m => m.id === id)).filter(Boolean);
+            const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
-              <div key={job.id} style={{
-                padding: '10px 12px', borderRadius: 8, marginBottom: 6,
-                background: '#0f1117',
-                border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#1e2535'}`,
-                borderLeft: `3px solid ${tc}`,
-              }}>
+              <div
+                key={job.id}
+                onClick={() => onJobClick && onJobClick(job)}
+                style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#0f1117', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#1e2535'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{job.customer}</div>
                   <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: tc + '22', color: tc }}>{job.status}</span>
@@ -5535,7 +5632,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose }) {
 }
 
 // ─── Calendar: Month View ─────────────────────────────────────────────────────
-function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedDate }) {
+function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu }) {
   const isMobile = useMobile();
   const DAY_NAMES = isMobile ? ['S','M','T','W','T','F','S'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   return (
@@ -5557,13 +5654,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
             <div
               key={dateStr}
               onClick={() => onDayClick(dateStr)}
-              style={{
-                minHeight: isMobile ? 52 : 80,
-                background: isSelected ? 'rgba(249,115,22,0.1)' : '#161b27',
-                border: `1px solid ${isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`,
-                borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px',
-                cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35,
-              }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isSelected ? 'rgba(249,115,22,0.1)' : '#161b27', border: `1px solid ${isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
                 {isToday ? (
@@ -5577,7 +5668,12 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               {dayJobs.slice(0, maxVis).map(job => {
                 const tc = TRADE_COLORS[job.trade] || '#64748b';
                 return (
-                  <div key={job.id} style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, padding: isMobile ? '1px 3px' : '2px 5px', borderRadius: '0 3px 3px 0', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div
+                    key={job.id}
+                    onClick={e => { e.stopPropagation(); onJobClick && onJobClick(job); }}
+                    onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
+                    style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, padding: isMobile ? '1px 3px' : '2px 5px', borderRadius: '0 3px 3px 0', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                  >
                     {isMobile ? job.customer.split(' ')[0].slice(0, 6) : job.customer.split(' ')[0]}
                   </div>
                 );
@@ -5592,7 +5688,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
 }
 
 // ─── Calendar: Week View ──────────────────────────────────────────────────────
-function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate }) {
+function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick, onJobContextMenu }) {
   const isMobile = useMobile();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: isMobile ? 2 : 6 }}>
@@ -5618,7 +5714,12 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate }) {
             {dayJobs.map(job => {
               const tc = TRADE_COLORS[job.trade] || '#64748b';
               return (
-                <div key={job.id} style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, padding: isMobile ? '2px 4px' : '3px 6px', borderRadius: 4, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div
+                  key={job.id}
+                  onClick={e => { e.stopPropagation(); onJobClick && onJobClick(job); }}
+                  onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
+                  style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, padding: isMobile ? '2px 4px' : '3px 6px', borderRadius: 4, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
                   {isMobile ? job.customer.split(' ')[0].slice(0, 5) : job.customer}
                 </div>
               );
@@ -5631,14 +5732,17 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate }) {
 }
 
 // ─── Calendar Tab ─────────────────────────────────────────────────────────────
-function CalendarTab({ jobs, crew, assignments }) {
+function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdateSteps, onAssign, onUnassign, currentUser, demoMessages, customChecklist, isDemo }) {
   const [view, setView] = useState('month');
   const [current, setCurrent] = useState(new Date(TODAY + 'T12:00:00'));
   const [selectedDate, setSelectedDate] = useState(null);
+  const [scheduleModal, setScheduleModal] = useState(null); // null | { defaultDate, targetJob }
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null); // null | { job, x, y }
   const isMobile = useMobile();
 
   const scheduledJobs = useMemo(() => jobs.filter(j => j.scheduledDate), [jobs]);
-  const unscheduledJobs = useMemo(() => jobs.filter(j => !j.scheduledDate && j.status !== 'Complete'), [jobs]);
+  const unscheduledJobs = useMemo(() => jobs.filter(j => (j.explicitlyScheduled === false || !j.scheduledDate) && j.status !== 'Complete'), [jobs]);
 
   const conflicts = useMemo(() => {
     const set = new Set();
@@ -5662,12 +5766,7 @@ function CalendarTab({ jobs, crew, assignments }) {
     return set;
   }, [crew, assignments, scheduledJobs]);
 
-  const navBtn = {
-    padding: '6px 14px', background: '#1e2535', border: '1px solid #2d3748',
-    borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 18, lineHeight: 1,
-    WebkitTapHighlightColor: 'transparent',
-  };
-
+  const navBtn = { padding: '6px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: 'transparent' };
   const currentStr = toDateStr(current);
 
   const prev = () => {
@@ -5700,23 +5799,61 @@ function CalendarTab({ jobs, crew, assignments }) {
 
   const monthDays = useMemo(() => view === 'month' ? buildMonthDays(current.getFullYear(), current.getMonth()) : [], [view, current]);
   const weekDays = useMemo(() => (view === 'week' || view === 'day') ? buildWeekDays(currentStr) : [], [view, currentStr]);
-
   const dispatchDate = view === 'day' ? currentStr : selectedDate;
   const currentMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
 
-  const handleDayClick = useCallback((dateStr) => {
-    setSelectedDate(prev => prev === dateStr ? null : dateStr);
+  const openScheduleModal = useCallback((date, targetJob) => {
+    setScheduleModal({ defaultDate: date || TODAY, targetJob: targetJob || null });
   }, []);
+
+  const handleDayClick = useCallback((dateStr) => {
+    if (!isDemo && onSchedule) {
+      openScheduleModal(dateStr, null);
+    } else {
+      setSelectedDate(prev => prev === dateStr ? null : dateStr);
+    }
+  }, [isDemo, onSchedule, openScheduleModal]);
+
+  const handleJobClick = useCallback((job) => {
+    setContextMenu(null);
+    setSelectedJob(job);
+  }, []);
+
+  const handleJobContextMenu = useCallback((job, e) => {
+    setContextMenu({ job, x: e.clientX, y: e.clientY });
+  }, []);
+
+  const closeContextMenu = useCallback(() => setContextMenu(null), []);
+
+  const handleSaveSchedule = useCallback((jobId, date, duration) => {
+    if (onSchedule) onSchedule(jobId, date, duration);
+  }, [onSchedule]);
+
+  const handleRemoveFromCalendar = useCallback((job) => {
+    if (onSchedule) onSchedule(String(job.id), null, null);
+  }, [onSchedule]);
+
+  const handleCompleteJobFromCalendar = useCallback((id) => {
+    if (onComplete) onComplete(id);
+    setSelectedJob(null);
+  }, [onComplete]);
 
   return (
     <div>
+      {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 160 }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Calendar</div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>
-            {scheduledJobs.length} scheduled · {unscheduledJobs.length} need scheduling
-          </div>
+          <div style={{ fontSize: 13, color: '#64748b' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} need scheduling</div>
         </div>
+        {!isDemo && onSchedule && (
+          <button
+            onClick={() => openScheduleModal(TODAY, null)}
+            style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}
+          >
+            + Schedule Job
+          </button>
+        )}
         <div style={{ display: 'flex', gap: 4 }}>
           {['month', 'week', 'day'].map(v => (
             <button key={v} style={{ ...S.filterBtn(view === v), padding: '6px 12px', minHeight: 32, fontSize: 12 }} onClick={() => { setView(v); setSelectedDate(null); }}>
@@ -5726,29 +5863,34 @@ function CalendarTab({ jobs, crew, assignments }) {
         </div>
       </div>
 
+      {/* ── Nav ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <button style={navBtn} onClick={prev}>‹</button>
         <button style={{ ...navBtn, fontSize: 12, padding: '6px 12px' }} onClick={() => { setCurrent(new Date(TODAY + 'T12:00:00')); setSelectedDate(null); }}>Today</button>
         <button style={navBtn} onClick={next}>›</button>
-        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#f1f5f9' }}>
-          {headerLabel}
-        </div>
+        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#f1f5f9' }}>{headerLabel}</div>
       </div>
 
+      {/* ── Unscheduled banner ── */}
       {unscheduledJobs.length > 0 && (
         <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 8, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 13, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>
-            ⚠ {unscheduledJobs.length} unscheduled:
-          </span>
-          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
             {unscheduledJobs.slice(0, 5).map(j => (
-              <span key={j.id} style={{ fontSize: 11, color: '#94a3b8', background: '#1e2535', padding: '2px 8px', borderRadius: 10 }}>{j.customer}</span>
+              <button
+                key={j.id}
+                onClick={() => !isDemo && onSchedule && openScheduleModal(TODAY, j)}
+                style={{ fontSize: 11, color: '#94a3b8', background: '#1e2535', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: !isDemo && onSchedule ? 'pointer' : 'default' }}
+              >
+                {j.customer}
+              </button>
             ))}
             {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#475569' }}>+{unscheduledJobs.length - 5} more</span>}
           </div>
         </div>
       )}
 
+      {/* ── Grid ── */}
       {view === 'month' && (
         <MonthView
           days={monthDays}
@@ -5757,6 +5899,8 @@ function CalendarTab({ jobs, crew, assignments }) {
           dayJobsFn={dayJobsFn}
           onDayClick={handleDayClick}
           selectedDate={selectedDate}
+          onJobClick={handleJobClick}
+          onJobContextMenu={!isDemo ? handleJobContextMenu : null}
         />
       )}
       {view === 'week' && (
@@ -5766,9 +5910,12 @@ function CalendarTab({ jobs, crew, assignments }) {
           dayJobsFn={dayJobsFn}
           onDayClick={handleDayClick}
           selectedDate={selectedDate}
+          onJobClick={handleJobClick}
+          onJobContextMenu={!isDemo ? handleJobContextMenu : null}
         />
       )}
 
+      {/* ── Day dispatch panel ── */}
       {dispatchDate && (
         <DayDispatch
           dateStr={dispatchDate}
@@ -5777,7 +5924,82 @@ function CalendarTab({ jobs, crew, assignments }) {
           assignments={assignments}
           conflicts={conflicts}
           onClose={view !== 'day' ? () => setSelectedDate(null) : null}
+          onJobClick={handleJobClick}
+          onScheduleForDate={!isDemo && onSchedule ? () => openScheduleModal(dispatchDate, null) : null}
         />
+      )}
+
+      {/* ── Unscheduled jobs list ── */}
+      {unscheduledJobs.length > 0 && (
+        <div style={{ marginTop: 24 }}>
+          <div style={S.sectionLabel}>Unscheduled Jobs</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {unscheduledJobs.map(job => {
+              const tc = TRADE_COLORS[job.trade] || '#64748b';
+              return (
+                <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#161b27', border: '1px solid #1e2535', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                    <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
+                  </div>
+                  {!isDemo && onSchedule && (
+                    <button
+                      onClick={e => { e.stopPropagation(); openScheduleModal(TODAY, job); }}
+                      style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
+                    >
+                      Schedule
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Schedule modal ── */}
+      {scheduleModal && (
+        <ScheduleJobModal
+          defaultDate={scheduleModal.defaultDate}
+          targetJob={scheduleModal.targetJob}
+          jobs={jobs}
+          onSave={handleSaveSchedule}
+          onClose={() => setScheduleModal(null)}
+        />
+      )}
+
+      {/* ── Job detail modal ── */}
+      {selectedJob && (
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          customChecklist={customChecklist}
+          crew={crew}
+          assignments={assignments}
+          onAssign={isDemo ? null : onAssign}
+          onUnassign={isDemo ? null : onUnassign}
+          currentUser={currentUser}
+          demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
+          onComplete={isDemo ? null : (id) => handleCompleteJobFromCalendar(id)}
+          onUpdateSteps={isDemo ? null : onUpdateSteps}
+          onUpdateSchedule={isDemo ? null : (jobId, date, dur) => { handleSaveSchedule(jobId, date, dur); setSelectedJob(null); }}
+        />
+      )}
+
+      {/* ── Context menu ── */}
+      {contextMenu && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 1999 }} onClick={closeContextMenu} />
+          <CalendarContextMenu
+            job={contextMenu.job}
+            x={contextMenu.x}
+            y={contextMenu.y}
+            onView={() => { setSelectedJob(contextMenu.job); closeContextMenu(); }}
+            onReschedule={() => { openScheduleModal(contextMenu.job.scheduledDate || TODAY, contextMenu.job); closeContextMenu(); }}
+            onRemove={() => { handleRemoveFromCalendar(contextMenu.job); closeContextMenu(); }}
+            onComplete={() => { handleCompleteJobFromCalendar(String(contextMenu.job.id)); closeContextMenu(); }}
+          />
+        </>
       )}
     </div>
   );
@@ -6168,8 +6390,8 @@ export default function App() {
     setUserJobs(prev => prev.map(j => j.id === jobId ? { ...j, completedSteps } : j));
   };
   const handleScheduleJob = (jobId, scheduledDate, duration) => {
-    setUserLeads(prev => prev.map(l => l.id === jobId ? { ...l, scheduledDate, duration } : l));
-    setUserJobs(prev => prev.map(j => j.id === jobId ? { ...j, scheduledDate, duration } : j));
+    setUserLeads(prev => prev.map(l => String(l.id) === String(jobId) ? { ...l, scheduledDate, duration } : l));
+    setUserJobs(prev => prev.map(j => String(j.id) === String(jobId) ? { ...j, scheduledDate, duration } : j));
   };
   const handleAssign = (jobId, crewId) => {
     setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
@@ -6356,6 +6578,15 @@ export default function App() {
             jobs={jobs}
             crew={crew}
             assignments={assignments}
+            onSchedule={isDemo ? null : handleScheduleJob}
+            onComplete={isDemo ? null : handleCompleteJob}
+            onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
+            onAssign={isDemo ? null : handleAssign}
+            onUnassign={isDemo ? null : handleUnassign}
+            currentUser={currentUser}
+            demoMessages={isDemo ? DEMO_MESSAGES : null}
+            customChecklist={userCustomChecklist}
+            isDemo={isDemo}
           />
         )}
         {tab === 'crew' && (
