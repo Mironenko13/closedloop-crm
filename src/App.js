@@ -6054,17 +6054,96 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
   );
 }
 
+// ─── Day Action Modal ──────────────────────────────────────────────────────────
+function DayActionModal({ date, unscheduledJobs, existingNote, onScheduleExisting, onCreateNew, onAddNote, onClose }) {
+  const [mode, setMode] = useState('menu'); // 'menu' | 'note'
+  const [note, setNote] = useState(existingNote || '');
+  const noteRef = useRef(null);
+
+  useEffect(() => { if (mode === 'note' && noteRef.current) noteRef.current.focus(); }, [mode]);
+
+  const displayDate = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const actionBtn = (icon, label, sub, onClick) => (
+    <button
+      onClick={onClick}
+      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 9, cursor: 'pointer', textAlign: 'left', marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e2535'; e.currentTarget.style.background = '#161b27'; }}
+    >
+      <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0' }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{sub}</div>}
+      </div>
+    </button>
+  );
+
+  return (
+    <div style={S.modalOverlay} onClick={onClose}>
+      <div style={{ ...S.modal, maxWidth: 380 }} onClick={e => e.stopPropagation()}>
+        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 2 }}>{displayDate}</div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20 }}>What would you like to do?</div>
+
+        {mode === 'menu' && (
+          <div>
+            {actionBtn('📋', 'Schedule Existing Job',
+              unscheduledJobs.length > 0 ? `${unscheduledJobs.length} job${unscheduledJobs.length !== 1 ? 's' : ''} awaiting scheduling` : 'Pick from pipeline jobs',
+              () => { onScheduleExisting(date); onClose(); }
+            )}
+            {actionBtn('✏️', 'Create New Job', 'Quick-create and schedule for this date',
+              () => { onCreateNew(date); onClose(); }
+            )}
+            {actionBtn('📝', existingNote ? 'Edit Note' : 'Add Note', existingNote ? `"${existingNote.slice(0, 40)}${existingNote.length > 40 ? '…' : ''}"` : 'Office closed, rain day, site visit…',
+              () => setMode('note')
+            )}
+          </div>
+        )}
+
+        {mode === 'note' && (
+          <div>
+            <textarea
+              ref={noteRef}
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { onAddNote(date, note.trim()); onClose(); } }}
+              placeholder="e.g. Office closed, rain day, equipment delivery…"
+              rows={3}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+            />
+            <div style={{ fontSize: 11, color: '#334155', marginBottom: 10 }}>Ctrl+Enter to save</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setMode('menu')} style={{ flex: 1, padding: '9px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 7, color: '#94a3b8', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>← Back</button>
+              <button
+                onClick={() => { onAddNote(date, note.trim()); onClose(); }}
+                disabled={!note.trim()}
+                style={{ flex: 2, padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
+              >
+                Save Note
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Calendar Tab ─────────────────────────────────────────────────────────────
 function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdateSteps, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, customChecklist, isDemo, onCreate, onUpdate, onChangeStage, onDeleteJob, userTrade }) {
   const [view, setView] = useState('month');
   const [current, setCurrent] = useState(new Date(TODAY + 'T12:00:00'));
   const [selectedDate, setSelectedDate] = useState(null);
-  const [quickBar, setQuickBar] = useState(null);           // null | { date, job }
-  const [scheduleModal, setScheduleModal] = useState(null); // null | { defaultDate, targetJob }
+  const [dayActionModal, setDayActionModal] = useState(null); // null | { date }
+  const [dayNotes, setDayNotes] = useState({});               // { [dateStr]: string }
+  const [quickBar, setQuickBar] = useState(null);             // null | { date, job }
+  const [scheduleModal, setScheduleModal] = useState(null);   // null | { defaultDate, targetJob }
   const [selectedJob, setSelectedJob] = useState(null);
   const [stageChangeJob, setStageChangeJob] = useState(null);
   const [quickCrewJob, setQuickCrewJob] = useState(null);
-  const [contextMenu, setContextMenu] = useState(null);     // null | { job, x, y }
+  const [contextMenu, setContextMenu] = useState(null);       // null | { job, x, y }
   const [dragJobId, setDragJobId] = useState(null);
   const [dragOverDate, setDragOverDate] = useState(null);
   const isMobile = useMobile();
@@ -6118,15 +6197,14 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
   const closeAll = useCallback(() => { setContextMenu(null); setDragJobId(null); setDragOverDate(null); }, []);
 
   const handleDayClick = useCallback((dateStr) => {
-    if (!isDemo && onCreate) { setQuickBar({ date: dateStr, job: null }); setSelectedDate(dateStr); }
-    else setSelectedDate(prev => prev === dateStr ? null : dateStr);
-  }, [isDemo, onCreate]);
+    setSelectedDate(dateStr);
+    setDayActionModal({ date: dateStr });
+  }, []);
 
   const handleJobClick = useCallback((job) => {
     closeAll();
-    if (!isDemo && (onCreate || onUpdate)) setQuickBar({ date: job.scheduledDate || TODAY, job });
-    else setSelectedJob(job);
-  }, [closeAll, isDemo, onCreate, onUpdate]);
+    setSelectedJob(job);
+  }, [closeAll]);
 
   const handleJobContextMenu = useCallback((job, e) => {
     setContextMenu({ job, x: e.clientX, y: e.clientY });
@@ -6257,10 +6335,30 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         </div>
       )}
 
+      {/* ── Day note ── */}
+      {dispatchDate && dayNotes[dispatchDate] && (
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8, padding: '10px 14px', marginTop: 8 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>📝</span>
+          <div style={{ flex: 1, fontSize: 13, color: '#c7d2fe' }}>{dayNotes[dispatchDate]}</div>
+          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#475569', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
+        </div>
+      )}
+
       {/* ── Today's summary panel ── */}
       <TodaySummaryPanel jobs={jobs} crew={crew} assignments={assignments} conflicts={conflicts} onJobClick={handleJobClick} />
 
       {/* ── Modals ── */}
+      {dayActionModal && (
+        <DayActionModal
+          date={dayActionModal.date}
+          unscheduledJobs={unscheduledJobs}
+          existingNote={dayNotes[dayActionModal.date] || ''}
+          onScheduleExisting={date => setScheduleModal({ defaultDate: date, targetJob: null })}
+          onCreateNew={date => setQuickBar({ date, job: null })}
+          onAddNote={(date, text) => setDayNotes(prev => ({ ...prev, [date]: text }))}
+          onClose={() => setDayActionModal(null)}
+        />
+      )}
       {scheduleModal && (
         <ScheduleJobModal
           defaultDate={scheduleModal.defaultDate}
