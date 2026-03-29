@@ -1,4 +1,35 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback, useContext, createContext } from 'react';
+
+// ─── Toast System ─────────────────────────────────────────────────────────────
+const ToastCtx = createContext(null);
+function useToast() { return useContext(ToastCtx) || (() => {}); }
+function ToastProvider({ children }) {
+  const [toasts, setToasts] = useState([]);
+  const show = useCallback((msg, type = 'success') => {
+    const id = Date.now() + Math.random();
+    setToasts(p => [...p, { id, msg, type }]);
+    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 3000);
+  }, []);
+  return (
+    <ToastCtx.Provider value={show}>
+      {children}
+      <div style={{ position: 'fixed', bottom: 80, right: 20, zIndex: 9999, display: 'flex', flexDirection: 'column-reverse', gap: 8, pointerEvents: 'none' }}>
+        {toasts.map(t => (
+          <div key={t.id} style={{
+            background: t.type === 'error' ? '#450a0a' : '#052e16',
+            border: `1px solid ${t.type === 'error' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'}`,
+            borderRadius: 8, padding: '10px 16px',
+            color: '#f1f5f9', fontSize: 13, fontWeight: 500,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            maxWidth: 300,
+          }}>
+            {t.type === 'error' ? '✕ ' : '✓ '}{t.msg}
+          </div>
+        ))}
+      </div>
+    </ToastCtx.Provider>
+  );
+}
 
 // ─── Trades ──────────────────────────────────────────────────────────────────
 const TRADE_LIST = [
@@ -2032,119 +2063,98 @@ function DisabledTooltip({ active, label, children }) {
 }
 
 // ─── Lead Card ───────────────────────────────────────────────────────────────
-function LeadCard({ lead, onClick, onEdit, onDelete, demoMode }) {
+
+// ─── Pipeline Tab ─────────────────────────────────────────────────────────────
+// ─── Kanban Card ──────────────────────────────────────────────────────────────
+function KanbanCard({ lead, urgencyBorder, staleDays, onClick, onEdit, onDelete, demoMode }) {
   const [hovered, setHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const days = diffDays(lead.callbackDate);
-  const isOverdue = days !== null && days < 0;
+
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('leadId', String(lead.id));
+    e.dataTransfer.effectAllowed = 'move';
+  };
 
   return (
     <div
-      style={S.card(hovered)}
+      draggable
+      onDragStart={handleDragStart}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setConfirmDelete(false); }}
       onClick={() => onClick(lead)}
+      style={{
+        background: hovered ? '#1a2035' : '#161b27',
+        border: urgencyBorder,
+        borderRadius: 8, padding: '10px 12px',
+        cursor: 'grab', position: 'relative',
+        transition: 'background 0.15s',
+        userSelect: 'none',
+      }}
     >
-      <div style={S.cardHeader}>
-        <div>
-          <div style={S.cardName}>{lead.name}</div>
-          <div style={S.cardContact}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
-        <span style={S.statusBadge(lead.status)}>{lead.status}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{fmt(lead.value)}</span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-        <span style={S.stageBadge(lead.stage)}>{STAGE_LABELS[lead.stage] || lead.stage}</span>
-        <span style={{ ...S.tradeBadge(lead.trade), marginTop: 0 }}>{lead.trade}</span>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
+        <span style={{ ...S.tradeBadge(lead.trade), marginTop: 0, fontSize: 9, padding: '1px 6px' }}>{lead.trade}</span>
+        <span style={{ ...S.statusBadge(lead.status), fontSize: 9 }}>{lead.status}</span>
       </div>
 
-      <div style={S.cardMeta}>
-        <div style={S.metaItem}>Value: <span style={S.metaValue}>{fmt(lead.value)}</span></div>
-        <div style={S.metaItem}>Age: <span style={S.metaValue}>{lead.dealAge}d</span></div>
-      </div>
+      {staleDays > 7 && (
+        <div style={{ fontSize: 10, color: staleDays > 14 ? '#ef4444' : '#eab308', marginTop: 3 }}>
+          {staleDays > 14 ? '🔴' : '🟡'} {staleDays}d no contact
+        </div>
+      )}
 
       {lead.stallReason && (
-        <div style={S.stallTag}>⚠ {STALL_LABELS[lead.stallReason]}</div>
+        <div style={{ fontSize: 10, color: '#f97316', marginTop: 2 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
       )}
 
-      {lead.callbackDate && (
+      {/* Hover preview tooltip */}
+      {hovered && (lead.address || lead.callbackDate || lead.notes) && (
         <div style={{
-          marginTop: 10, fontSize: 11,
-          color: isOverdue ? '#ef4444' : days === 0 ? '#f97316' : '#64748b',
-          display: 'flex', alignItems: 'center', gap: 4,
+          position: 'absolute', bottom: '100%', left: 0, right: 0, zIndex: 100,
+          background: '#0f1117', border: '1px solid #2d3748', borderRadius: 8,
+          padding: '10px 12px', marginBottom: 4,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+          fontSize: 11, color: '#94a3b8', lineHeight: 1.7,
+          pointerEvents: 'none',
         }}>
-          <span>{isOverdue ? '🔴' : days === 0 ? '🟡' : '📅'}</span>
-          <span>
-            {isOverdue
-              ? `Overdue — ${Math.abs(days)}d ago`
-              : days === 0 ? 'Callback today'
-              : `Callback in ${days}d`}
-          </span>
+          {lead.address && <div>📍 {lead.address}</div>}
+          {lead.callbackDate && <div>📅 Callback: {lead.callbackDate}</div>}
+          {lead.notes && <div style={{ marginTop: 4, color: '#64748b', fontStyle: 'italic' }}>{lead.notes.slice(0, 80)}{lead.notes.length > 80 ? '…' : ''}</div>}
+          <div style={{ marginTop: 4, color: '#475569' }}>Deal age: {lead.dealAge}d{lead.industry ? ` · ${lead.industry}` : ''}</div>
         </div>
       )}
 
-      {(demoMode || onEdit || onDelete) && hovered && (
-        <div
-          style={{
-            display: 'flex', gap: 6, marginTop: 12, paddingTop: 10,
-            borderTop: '1px solid #1e2535',
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          <DisabledTooltip active={demoMode} label="Sign up to add your own data">
+      {/* Action row on hover */}
+      {hovered && (
+        <div style={{ display: 'flex', gap: 4, marginTop: 8, paddingTop: 8, borderTop: '1px solid #1e2535' }} onClick={e => e.stopPropagation()}>
+          <DisabledTooltip active={demoMode} label="Sign up to edit">
             <button
-              style={{
-                flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
-                background: 'transparent', border: '1px solid #1e2535',
-                borderRadius: 6, color: demoMode ? '#3d4f63' : '#94a3b8',
-                cursor: demoMode ? 'not-allowed' : 'pointer',
-                minWidth: 70,
-              }}
+              style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: demoMode ? '#3d4f63' : '#94a3b8', cursor: demoMode ? 'not-allowed' : 'pointer' }}
               onClick={demoMode ? undefined : () => onEdit && onEdit(lead)}
             >
               ✏ Edit
             </button>
           </DisabledTooltip>
-
-          {!confirmDelete && (
-            <DisabledTooltip active={demoMode} label="Sign up to add your own data">
+          {!confirmDelete ? (
+            <DisabledTooltip active={demoMode} label="Sign up to delete">
               <button
-                style={{
-                  flex: 1, padding: '5px 0', fontSize: 12, fontWeight: 500,
-                  background: 'transparent', border: '1px solid #1e2535',
-                  borderRadius: 6, color: demoMode ? '#3d4f63' : '#64748b',
-                  cursor: demoMode ? 'not-allowed' : 'pointer',
-                  minWidth: 70,
-                }}
-                onClick={demoMode ? undefined : () => onDelete && setConfirmDelete(true)}
+                style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: demoMode ? '#3d4f63' : '#64748b', cursor: demoMode ? 'not-allowed' : 'pointer' }}
+                onClick={demoMode ? undefined : () => setConfirmDelete(true)}
               >
-                🗑 Delete
+                🗑 Del
               </button>
             </DisabledTooltip>
-          )}
-          {!demoMode && onDelete && confirmDelete && (
+          ) : (
             <>
-              <span style={{ fontSize: 11, color: '#94a3b8', alignSelf: 'center', flex: 1 }}>Sure?</span>
-              <button
-                style={{
-                  padding: '5px 12px', fontSize: 12, fontWeight: 600,
-                  background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
-                  borderRadius: 6, color: '#ef4444', cursor: 'pointer',
-                }}
-                onClick={() => onDelete(lead.id)}
-              >
-                Delete
-              </button>
-              <button
-                style={{
-                  padding: '5px 12px', fontSize: 12,
-                  background: 'transparent', border: '1px solid #1e2535',
-                  borderRadius: 6, color: '#64748b', cursor: 'pointer',
-                }}
-                onClick={() => setConfirmDelete(false)}
-              >
-                Cancel
-              </button>
+              <button style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 5, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Yes</button>
+              <button style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
             </>
           )}
         </div>
@@ -2153,142 +2163,210 @@ function LeadCard({ lead, onClick, onEdit, onDelete, demoMode }) {
   );
 }
 
-// ─── Pipeline Tab ─────────────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode }) {
-  const [filter, setFilter] = useState('all');
+// ─── Pipeline Tab (Kanban) ─────────────────────────────────────────────────────
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange }) {
+  const [search, setSearch] = useState('');
   const [tradeFilter, setTradeFilter] = useState('all');
+  const [dragOver, setDragOver] = useState(null);
+  const showToast = useToast();
   const isMobile = useMobile();
-  const filters = ['all', 'active', 'stalled', 'cold', 'won', 'lost'];
 
-  const filtered = useMemo(() => {
-    let result = filter === 'all' ? leads : leads.filter(l => l.status === filter);
-    if (tradeFilter !== 'all') result = result.filter(l => l.trade === tradeFilter);
-    return result;
-  }, [leads, filter, tradeFilter]);
+  const KANBAN_STAGES = [
+    { key: 'lead', label: 'Lead' },
+    { key: 'inspection', label: 'Inspection' },
+    { key: 'estimate', label: 'Estimate' },
+    { key: 'approved', label: 'Approved' },
+    { key: 'in_progress', label: 'In Progress' },
+    { key: 'completed', label: 'Completed' },
+  ];
 
-  const total = filtered.reduce((s, l) => s + l.value, 0);
+  const today = new Date(TODAY);
+  const staleDays = (lead) => {
+    if (!lead.lastContact) return 0;
+    return Math.round((today - new Date(lead.lastContact)) / 86400000);
+  };
 
-  const scrollRow = {
-    display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center',
-    overflowX: 'auto', flexWrap: 'nowrap',
-    WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
-    msOverflowStyle: 'none', paddingBottom: 4,
+  const urgencyBorder = (lead) => {
+    const d = staleDays(lead);
+    if (d > 14) return '2px solid #ef4444';
+    if (d > 7) return '2px solid #eab308';
+    return '1px solid #1e2535';
+  };
+
+  const filteredLeads = useMemo(() => {
+    let r = leads.filter(l => l.stage !== 'lost');
+    if (tradeFilter !== 'all') r = r.filter(l => l.trade === tradeFilter);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      r = r.filter(l =>
+        l.name.toLowerCase().includes(q) ||
+        (l.contact && l.contact.toLowerCase().includes(q)) ||
+        (l.address && l.address.toLowerCase().includes(q)) ||
+        (l.trade && l.trade.toLowerCase().includes(q))
+      );
+    }
+    return r;
+  }, [leads, tradeFilter, search]);
+
+  const byStage = useMemo(() => {
+    const map = {};
+    KANBAN_STAGES.forEach(s => { map[s.key] = filteredLeads.filter(l => l.stage === s.key); });
+    return map;
+  }, [filteredLeads]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const stageStats = KANBAN_STAGES.map(s => ({
+    ...s,
+    count: (byStage[s.key] || []).length,
+    value: (byStage[s.key] || []).reduce((sum, l) => sum + l.value, 0),
+  }));
+
+  const totalPipeline = filteredLeads.reduce((s, l) => s + l.value, 0);
+
+  const handleDrop = (e, stage) => {
+    e.preventDefault();
+    const leadId = e.dataTransfer.getData('leadId');
+    if (!leadId || !onStageChange) { setDragOver(null); return; }
+    const lead = leads.find(l => String(l.id) === leadId);
+    if (lead && lead.stage !== stage) {
+      onStageChange(leadId, stage);
+      showToast(`Moved "${lead.name}" → ${STAGE_LABELS[stage]}`);
+    }
+    setDragOver(null);
   };
 
   return (
     <div>
-      {/* Status filter row */}
-      <div style={isMobile ? scrollRow : S.filterRow}>
-        {filters.map(f => (
-          <button key={f} style={S.filterBtn(filter === f)} onClick={() => setFilter(f)}>
-            {f === 'all'
-              ? `All (${leads.length})`
-              : `${f.charAt(0).toUpperCase() + f.slice(1)} (${leads.filter(l => l.status === f).length})`}
-          </button>
-        ))}
-        {!isMobile && (
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ fontSize: 13, color: '#94a3b8' }}>
-              Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>{fmt(total)}</span>
-            </div>
-            {(onAddLead || demoMode) && (
-              <DisabledTooltip active={demoMode} label="Sign up to add your own data">
-                <button
-                  style={{
-                    padding: '8px 16px',
-                    background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
-                    border: demoMode ? '1px solid #2d3748' : 'none',
-                    borderRadius: 7,
-                    color: demoMode ? '#3d4f63' : '#fff',
-                    fontWeight: 700, fontSize: 13,
-                    cursor: demoMode ? 'not-allowed' : 'pointer',
-                    minHeight: 36,
-                  }}
-                  onClick={demoMode ? undefined : onAddLead}
-                >
-                  + Add Lead
-                </button>
-              </DisabledTooltip>
-            )}
+      {/* Summary bar */}
+      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#161b27', border: '1px solid #1e2535', borderRadius: 10, overflow: 'hidden', overflowX: 'auto' }}>
+        {stageStats.map((s, i) => (
+          <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #1e2535' : 'none', textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#f97316' }}>{s.count}</div>
+            <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+            {s.value > 0 && <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
+        ))}
+        <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', background: 'rgba(249,115,22,0.04)' }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{fmt(totalPipeline)}</div>
+          <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
+        </div>
+      </div>
+
+      {/* Search + trade filter */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+        <input
+          placeholder="Search client, address, trade..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ ...FI, flex: '1 1 200px', padding: '8px 12px', fontSize: 13 }}
+        />
+        <select
+          value={tradeFilter}
+          onChange={e => setTradeFilter(e.target.value)}
+          style={{ ...FI, flex: '0 0 auto', padding: '8px 12px', fontSize: 13 }}
+        >
+          <option value="all">All Trades</option>
+          {TRADE_LIST.filter(t => leads.some(l => l.trade === t)).map(t => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+        {(onAddLead || demoMode) && (
+          <DisabledTooltip active={demoMode} label="Sign up to add leads">
+            <button
+              style={{
+                padding: '8px 16px',
+                background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
+                border: demoMode ? '1px solid #2d3748' : 'none', borderRadius: 7,
+                color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 13,
+                cursor: demoMode ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
+              }}
+              onClick={demoMode ? undefined : onAddLead}
+            >
+              + Add Lead
+            </button>
+          </DisabledTooltip>
         )}
       </div>
 
-      {/* Mobile: total + Add Lead on own row */}
-      {isMobile && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <div style={{ fontSize: 13, color: '#94a3b8' }}>
-            Total: <span style={{ color: '#f97316', fontWeight: 700 }}>{fmt(total)}</span>
-          </div>
-          {(onAddLead || demoMode) && (
-            <DisabledTooltip active={demoMode} label="Sign up to add your own data">
-              <button
-                style={{
-                  padding: '10px 18px',
-                  background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
-                  border: demoMode ? '1px solid #2d3748' : 'none',
-                  borderRadius: 8,
-                  color: demoMode ? '#3d4f63' : '#fff',
-                  fontWeight: 700, fontSize: 14,
-                  cursor: demoMode ? 'not-allowed' : 'pointer',
-                  minHeight: 44,
-                  WebkitTapHighlightColor: 'transparent',
-                }}
-                onClick={demoMode ? undefined : onAddLead}
-              >
-                + Add Lead
-              </button>
-            </DisabledTooltip>
-          )}
-        </div>
-      )}
+      {/* Kanban board */}
+      <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, WebkitOverflowScrolling: 'touch', alignItems: 'flex-start' }}>
+        {KANBAN_STAGES.map(stg => {
+          const cards = byStage[stg.key] || [];
+          const colValue = cards.reduce((s, l) => s + l.value, 0);
+          const isOver = dragOver === stg.key;
 
-      {/* Trade filter row — always horizontal scroll */}
-      <div style={{
-        ...S.tradeFilterRow,
-        overflowX: 'auto', flexWrap: 'nowrap',
-        WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-      }}>
-        <button
-          style={S.tradeFilterBtn(tradeFilter === 'all', '#f97316')}
-          onClick={() => setTradeFilter('all')}
-        >
-          All Trades
-        </button>
-        {TRADE_LIST.filter(t => leads.some(l => l.trade === t)).map(t => (
-          <button
-            key={t}
-            style={S.tradeFilterBtn(tradeFilter === t, TRADE_COLORS[t])}
-            onClick={() => setTradeFilter(tradeFilter === t ? 'all' : t)}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+          return (
+            <div
+              key={stg.key}
+              onDragOver={e => { e.preventDefault(); setDragOver(stg.key); }}
+              onDragLeave={() => setDragOver(null)}
+              onDrop={e => handleDrop(e, stg.key)}
+              style={{
+                minWidth: isMobile ? 230 : 220,
+                flex: isMobile ? '0 0 230px' : '1 1 0',
+                background: isOver ? 'rgba(249,115,22,0.04)' : '#0d1117',
+                border: `1px solid ${isOver ? '#f97316' : '#1e2535'}`,
+                borderRadius: 10,
+                transition: 'border-color 0.15s, background 0.15s',
+              }}
+            >
+              {/* Column header */}
+              <div style={{ padding: '10px 12px', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                <div style={{ minWidth: 0 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: STAGE_COLORS[stg.key] || '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
+                  <span style={{ fontSize: 11, color: '#475569', marginLeft: 6 }}>{cards.length}</span>
+                  {colValue > 0 && <div style={{ fontSize: 10, color: '#374151' }}>{fmt(colValue)}</div>}
+                </div>
+                {stg.key === 'lead' && (onAddLead || demoMode) && (
+                  <DisabledTooltip active={demoMode} label="Sign up to add leads">
+                    <button
+                      style={{
+                        padding: '3px 8px',
+                        background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
+                        border: demoMode ? '1px solid #2d3748' : 'none', borderRadius: 5,
+                        color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 10,
+                        cursor: demoMode ? 'not-allowed' : 'pointer', flexShrink: 0,
+                      }}
+                      onClick={demoMode ? undefined : onAddLead}
+                    >
+                      + New
+                    </button>
+                  </DisabledTooltip>
+                )}
+              </div>
 
-      <div style={{
-        ...S.grid,
-        ...(isMobile ? { gridTemplateColumns: '1fr', gap: 12 } : {}),
-      }}>
-        {filtered.map(lead => (
-          <LeadCard
-            key={lead.id}
-            lead={lead}
-            onClick={onSelectLead}
-            onEdit={onEditLead}
-            onDelete={onDeleteLead}
-            demoMode={demoMode}
-          />
-        ))}
+              {/* Cards */}
+              <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 120 }}>
+                {cards.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '20px 8px', color: '#2d3748', fontSize: 11 }}>
+                    Drop here
+                  </div>
+                ) : cards.map(lead => (
+                  <KanbanCard
+                    key={lead.id}
+                    lead={lead}
+                    urgencyBorder={urgencyBorder(lead)}
+                    staleDays={staleDays(lead)}
+                    onClick={onSelectLead}
+                    onEdit={onEditLead}
+                    onDelete={onDeleteLead}
+                    demoMode={demoMode}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 // ─── Callbacks Tab ────────────────────────────────────────────────────────────
-function CallbacksTab({ leads, onSelectLead }) {
+function CallbacksTab({ leads, onSelectLead, onUpdateLead }) {
   const [hovered, setHovered] = useState(null);
+  const [snoozeModal, setSnoozeModal] = useState(null);
+  const [snoozeDate, setSnoozeDate] = useState('');
+  const showToast = useToast();
 
   const withCallbacks = leads
     .filter(l => l.callbackDate && l.status !== 'won' && l.status !== 'lost')
@@ -2297,6 +2375,30 @@ function CallbacksTab({ leads, onSelectLead }) {
   const overdue = withCallbacks.filter(l => diffDays(l.callbackDate) < 0);
   const today = withCallbacks.filter(l => diffDays(l.callbackDate) === 0);
   const upcoming = withCallbacks.filter(l => diffDays(l.callbackDate) > 0);
+
+  const handleMarkCalled = (lead, e) => {
+    e.stopPropagation();
+    if (!onUpdateLead) return;
+    onUpdateLead({ ...lead, lastContact: TODAY, callbackDate: null });
+    showToast(`Marked "${lead.name}" as called`);
+  };
+
+  const handleSnooze = (lead, e) => {
+    e.stopPropagation();
+    if (!onUpdateLead) return;
+    const tomorrow = new Date(TODAY);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    setSnoozeDate(tomorrowStr);
+    setSnoozeModal(lead);
+  };
+
+  const confirmSnooze = () => {
+    if (!snoozeModal || !snoozeDate) return;
+    onUpdateLead({ ...snoozeModal, callbackDate: snoozeDate });
+    showToast(`Snoozed "${snoozeModal.name}" to ${snoozeDate}`);
+    setSnoozeModal(null);
+  };
 
   const CbSection = ({ title, items, color }) => {
     if (!items.length) return null;
@@ -2308,32 +2410,47 @@ function CallbacksTab({ leads, onSelectLead }) {
         </div>
         {items.map(lead => {
           const days = diffDays(lead.callbackDate);
+          const isOverdue = days < 0;
           return (
             <div
               key={lead.id}
-              style={S.cbRow(hovered === lead.id)}
+              style={{ ...S.cbRow(hovered === lead.id), border: isOverdue ? '1px solid rgba(239,68,68,0.25)' : '1px solid #1e2535' }}
               onMouseEnter={() => setHovered(lead.id)}
               onMouseLeave={() => setHovered(null)}
               onClick={() => onSelectLead(lead)}
             >
-              <div style={S.cbDate(days < 0)}>
+              <div style={S.cbDate(isOverdue)}>
                 {days < 0 ? `${Math.abs(days)}d ago` : days === 0 ? 'Today' : `in ${days}d`}
               </div>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={S.cbName}>{lead.name}</div>
                 <div style={S.cbContact}>
                   {lead.contact} · {STAGE_LABELS[lead.stage] || lead.stage}
-                  <span style={{ ...S.tradeBadge(lead.trade), marginLeft: 8 }}>{lead.trade}</span>
+                  {lead.phone && <span style={{ marginLeft: 8, color: '#94a3b8' }}>{lead.phone}</span>}
                 </div>
+                {lead.stallReason && (
+                  <div style={{ fontSize: 11, color: '#f97316', marginTop: 3 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
+                )}
               </div>
-              {lead.stallReason && (
-                <div style={{ fontSize: 11, color: '#f97316' }}>
-                  {STALL_LABELS[lead.stallReason]}
-                </div>
-              )}
-              <div style={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={S.cbValue}>{fmt(lead.value)}</div>
-                <div style={{ fontSize: 11, color: '#374151' }}>{lead.callbackDate}</div>
+                <div style={{ fontSize: 11, color: '#374151', marginBottom: 6 }}>{lead.callbackDate}</div>
+                {onUpdateLead && (
+                  <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+                    <button
+                      style={{ padding: '3px 8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 5, color: '#22c55e', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}
+                      onClick={e => handleMarkCalled(lead, e)}
+                    >
+                      ✓ Called
+                    </button>
+                    <button
+                      style={{ padding: '3px 8px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 5, color: '#818cf8', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}
+                      onClick={e => handleSnooze(lead, e)}
+                    >
+                      Snooze
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -2348,8 +2465,27 @@ function CallbacksTab({ leads, onSelectLead }) {
       <CbSection title="🟡  Due Today" items={today} color="#f97316" />
       <CbSection title="🟢  Upcoming" items={upcoming} color="#22c55e" />
       {!overdue.length && !today.length && !upcoming.length && (
-        <div style={{ textAlign: 'center', color: '#374151', padding: 60 }}>
-          No callbacks scheduled
+        <div style={{ textAlign: 'center', padding: '80px 24px' }}>
+          <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>📞</div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 8 }}>No callbacks scheduled</div>
+          <div style={{ fontSize: 13, color: '#475569', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
+        </div>
+      )}
+
+      {/* Snooze modal */}
+      {snoozeModal && (
+        <div style={S.modalOverlay} onClick={() => setSnoozeModal(null)}>
+          <div style={{ ...S.modal, maxWidth: 360 }} onClick={e => e.stopPropagation()}>
+            <button style={S.closeBtn} onClick={() => setSnoozeModal(null)}>×</button>
+            <div style={{ ...S.modalTitle, paddingRight: 48 }}>Snooze Callback</div>
+            <div style={{ ...S.modalSub }}>{snoozeModal.name}</div>
+            <label style={FLbl}>New Callback Date</label>
+            <input type="date" style={{ ...FI, marginBottom: 20 }} value={snoozeDate} onChange={e => setSnoozeDate(e.target.value)} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
+              <button style={{ flex: 2, padding: '8px', background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer' }} onClick={confirmSnooze}>Set Snooze Date</button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -2362,6 +2498,7 @@ function AnalyticsTab({ leads, tier }) {
   const active = leads.filter(l => ['active', 'stalled', 'cold'].includes(l.status));
   const stalled = leads.filter(l => l.status === 'stalled');
   const won = leads.filter(l => l.status === 'won');
+  const lost = leads.filter(l => l.status === 'lost');
 
   const totalPipeline = active.reduce((s, l) => s + l.value, 0);
   const stalledValue = stalled.reduce((s, l) => s + l.value, 0);
@@ -2373,6 +2510,9 @@ function AnalyticsTab({ leads, tier }) {
   const avgDealAge = active.length
     ? Math.round(active.reduce((s, l) => s + l.dealAge, 0) / active.length) : 0;
 
+  const avgJobValue = closedDeals.length
+    ? Math.round(closedDeals.reduce((s, l) => s + l.value, 0) / closedDeals.length) : 0;
+
   const stallBreakdown = Object.entries(
     stalled.reduce((acc, l) => {
       if (l.stallReason) acc[l.stallReason] = (acc[l.stallReason] || 0) + 1;
@@ -2382,57 +2522,74 @@ function AnalyticsTab({ leads, tier }) {
 
   const stageFunnel = STAGE_ORDER.map(stage => ({
     stage,
-    count: active.filter(l => l.stage === stage).length,
-    value: active.filter(l => l.stage === stage).reduce((s, l) => s + l.value, 0),
+    count: leads.filter(l => l.stage === stage).length,
+    value: leads.filter(l => l.stage === stage).reduce((s, l) => s + l.value, 0),
+    avgAge: (() => {
+      const stageLeads = active.filter(l => l.stage === stage);
+      return stageLeads.length ? Math.round(stageLeads.reduce((s, l) => s + l.dealAge, 0) / stageLeads.length) : 0;
+    })(),
   })).filter(s => s.count > 0);
 
-  const maxStageCount = Math.max(...stageFunnel.map(s => s.count), 1);
+  const maxStageValue = Math.max(...stageFunnel.map(s => s.value), 1);
   const maxStallCount = Math.max(...stallBreakdown.map(s => s[1]), 1);
 
-  const STAGE_COLORS = ['#6366f1', '#8b5cf6', '#f97316', '#f59e0b', '#22c55e', '#ef4444'];
+  const STAGE_CHART_COLORS = { lead: '#64748b', inspection: '#3b82f6', estimate: '#f59e0b', approved: '#10b981', in_progress: '#f97316', completed: '#22c55e' };
   const STALL_COLORS = {
     price_objection: '#f97316', budget_freeze: '#6366f1', no_response: '#ef4444',
     competitor: '#f59e0b', timing: '#64748b', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
   };
 
+  const kpis = [
+    { val: fmt(totalPipeline), label: 'Active Pipeline', color: '#f97316' },
+    { val: fmt(stalledValue), label: 'Value at Risk', color: '#ef4444' },
+    { val: fmt(wonValue), label: 'Won This Period', color: '#22c55e' },
+    { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#f97316' : '#ef4444' },
+    { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#94a3b8' },
+    { val: fmt(avgJobValue), label: 'Avg Job Value', color: '#6366f1' },
+    { val: stalled.length, label: 'Stalled Deals', color: '#f59e0b' },
+    { val: `${lost.length}`, label: 'Lost Deals', color: '#475569' },
+  ];
+
   return (
     <div>
       <div style={{
-        ...S.statsRow,
-        ...(isMobile ? { gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 } : {}),
+        display: 'grid',
+        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+        gap: isMobile ? 10 : 14,
+        marginBottom: 24,
       }}>
-        {[
-          { val: fmt(totalPipeline), label: 'Active Pipeline' },
-          { val: fmt(stalledValue), label: 'Value at Risk' },
-          { val: fmt(wonValue), label: 'Won This Period' },
-          { val: `${winRate}%`, label: 'Win Rate' },
-          { val: `${avgDealAge}d`, label: 'Avg Deal Age' },
-          { val: stalled.length, label: 'Stalled Deals' },
-        ].map(({ val, label }) => (
-          <div key={label} style={{ ...S.statCard, ...(isMobile ? { padding: 14 } : {}) }}>
-            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 22 } : {}) }}>{val}</div>
+        {kpis.map(({ val, label, color }) => (
+          <div key={label} style={{ ...S.statCard, ...(isMobile ? { padding: 12 } : {}) }}>
+            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 20 } : {}), color }}>{val}</div>
             <div style={S.statLabel}>{label}</div>
           </div>
         ))}
       </div>
 
       <div style={{ ...S.chartSection, ...(isMobile ? { gridTemplateColumns: '1fr' } : {}) }}>
+        {/* Revenue pipeline by stage */}
         <div style={S.chartCard}>
-          <div style={S.chartTitle}>Pipeline by Stage</div>
-          {stageFunnel.map(({ stage, count, value }, i) => (
+          <div style={S.chartTitle}>Revenue by Stage</div>
+          {stageFunnel.length === 0 ? (
+            <div style={{ color: '#475569', fontSize: 13 }}>No active leads</div>
+          ) : stageFunnel.map(({ stage, count, value, avgAge }) => (
             <div key={stage} style={S.barRow}>
-              <div style={S.barLabel}>{STAGE_LABELS[stage] || stage}</div>
+              <div style={{ ...S.barLabel, width: 110 }}>{STAGE_LABELS[stage] || stage}</div>
               <div style={S.barTrack}>
-                <div style={S.barFill(count / maxStageCount * 100, STAGE_COLORS[i % STAGE_COLORS.length])} />
+                <div style={S.barFill(value / maxStageValue * 100, STAGE_CHART_COLORS[stage] || '#f97316')} />
               </div>
-              <div style={S.barCount}>{count}</div>
-              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>
-                {fmt(value)}
-              </div>
+              <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{count}</div>
+              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{fmt(value)}</div>
+              {avgAge > 0 && <div style={{ fontSize: 10, color: '#374151', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
             </div>
           ))}
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #1e2535' }}>
+            <div style={{ fontSize: 11, color: '#64748b' }}>Total pipeline value</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#f97316', marginTop: 4 }}>{fmt(totalPipeline)}</div>
+          </div>
         </div>
 
+        {/* Stall reason breakdown */}
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Stall Reason Breakdown</div>
           {stallBreakdown.length === 0 && (
@@ -2455,28 +2612,78 @@ function AnalyticsTab({ leads, tier }) {
             <div style={{ fontSize: 24, fontWeight: 700, color: '#f97316' }}>{fmt(stalledValue)}</div>
           </div>
         </div>
+
+        {/* Win/Loss funnel */}
+        <div style={S.chartCard}>
+          <div style={S.chartTitle}>Win / Loss Analysis</div>
+          {[
+            { label: 'Total Leads', count: leads.length, color: '#64748b' },
+            { label: 'Active', count: active.length, color: '#3b82f6' },
+            { label: 'Won', count: won.length, color: '#22c55e' },
+            { label: 'Lost', count: lost.length, color: '#ef4444' },
+            { label: 'Stalled', count: stalled.length, color: '#f59e0b' },
+          ].map(({ label, count, color }) => (
+            <div key={label} style={S.barRow}>
+              <div style={{ ...S.barLabel, width: 80 }}>{label}</div>
+              <div style={S.barTrack}>
+                <div style={S.barFill(leads.length > 0 ? count / leads.length * 100 : 0, color)} />
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color, width: 28, textAlign: 'right' }}>{count}</div>
+            </div>
+          ))}
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #1e2535' }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 11, color: '#64748b' }}>Win Rate</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: winRate >= 60 ? '#22c55e' : '#f97316' }}>{winRate}%</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: '#64748b' }}>Avg Job Value</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmt(avgJobValue)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trade distribution */}
+        <div style={S.chartCard}>
+          <div style={S.chartTitle}>Pipeline by Trade</div>
+          {(() => {
+            const tradeCounts = leads.reduce((acc, l) => {
+              if (!['won', 'lost'].includes(l.status)) {
+                if (!acc[l.trade]) acc[l.trade] = { count: 0, value: 0 };
+                acc[l.trade].count++;
+                acc[l.trade].value += l.value;
+              }
+              return acc;
+            }, {});
+            const sorted = Object.entries(tradeCounts).sort((a, b) => b[1].value - a[1].value).slice(0, 7);
+            const maxVal = Math.max(...sorted.map(s => s[1].value), 1);
+            return sorted.map(([trade, data]) => (
+              <div key={trade} style={S.barRow}>
+                <div style={{ ...S.barLabel, width: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{trade}</div>
+                <div style={S.barTrack}>
+                  <div style={S.barFill(data.value / maxVal * 100, TRADE_COLORS[trade] || '#f97316')} />
+                </div>
+                <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{data.count}</div>
+                <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
+              </div>
+            ));
+          })()}
+        </div>
       </div>
 
-      {/* Export row — Business tier only in demo; always visible with upgrade nudge otherwise */}
       {tier !== undefined && (
-        <div style={{
-          marginTop: 24, display: 'flex', justifyContent: 'flex-end',
-        }}>
-          <DisabledTooltip
-            active={tier !== 'business'}
-            label={tier === 'business' ? '' : 'Export — Business feature. Click to upgrade.'}
-          >
+        <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
+          <DisabledTooltip active={tier !== 'business'} label={tier === 'business' ? '' : 'Export — Business feature.'}>
             <button
-              onClick={() => tier === 'business' && window.location.href === void 0}
+              onClick={() => tier === 'business' && void 0}
               style={{
                 padding: '8px 20px',
-                background: tier === 'business'
-                  ? 'linear-gradient(135deg, #6366f1, #4f46e5)'
-                  : '#1a1f2e',
+                background: tier === 'business' ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#1a1f2e',
                 border: tier === 'business' ? 'none' : '1px solid #2d3748',
                 borderRadius: 7, color: tier === 'business' ? '#fff' : '#475569',
-                fontWeight: 600, fontSize: 13,
-                cursor: tier === 'business' ? 'pointer' : 'not-allowed',
+                fontWeight: 600, fontSize: 13, cursor: tier === 'business' ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', gap: 7,
               }}
             >
@@ -7148,6 +7355,14 @@ export default function App() {
     setUserLeads(prev => prev.filter(l => l.id !== id));
   };
 
+  const handleLeadStageChange = (leadId, stage) => {
+    setUserLeads(prev => prev.map(l => String(l.id) === String(leadId) ? { ...l, stage } : l));
+  };
+
+  const handleUpdateLead = (leadData) => {
+    setUserLeads(prev => prev.map(l => l.id === leadData.id ? { ...leadData } : l));
+  };
+
   const isMobile = useMobile();
 
   if (screen === 'login') {
@@ -7191,6 +7406,7 @@ export default function App() {
   const deleteLeadHandler = isDemo ? null : handleDeleteLead;
 
   return (
+    <ToastProvider>
     <div style={S.app}>
       <header style={{
         ...S.header,
@@ -7256,10 +7472,12 @@ export default function App() {
                 onAddLead={addLeadHandler}
                 onEditLead={editLeadHandler}
                 onDeleteLead={deleteLeadHandler}
+                demoMode={isDemo}
+                onStageChange={isDemo ? null : handleLeadStageChange}
               />
         )}
         {tab === 'callbacks' && (
-          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} />
+          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={isDemo ? null : handleUpdateLead} />
         )}
         {tab === 'analytics' && (
           <AnalyticsTab leads={leads} />
@@ -7358,5 +7576,6 @@ export default function App() {
         <AddJobModal onSave={handleAddJob} onClose={() => setJobModal(false)} />
       )}
     </div>
+    </ToastProvider>
   );
 }
