@@ -2071,7 +2071,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onClick, onEdit, onDelete,
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const handleDragStart = (e) => {
-    e.dataTransfer.setData('leadId', String(lead.id));
+    e.dataTransfer.setData('text/plain', String(lead.id));
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -2224,7 +2224,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
 
   const handleDrop = (e, stage) => {
     e.preventDefault();
-    const leadId = e.dataTransfer.getData('leadId');
+    const leadId = e.dataTransfer.getData('text/plain');
     if (!leadId || !onStageChange) { setDragOver(null); return; }
     const lead = leads.find(l => String(l.id) === leadId);
     if (lead && lead.stage !== stage) {
@@ -2297,7 +2297,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           return (
             <div
               key={stg.key}
-              onDragOver={e => { e.preventDefault(); setDragOver(stg.key); }}
+              onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver(stg.key); }}
               onDragLeave={() => setDragOver(null)}
               onDrop={e => handleDrop(e, stg.key)}
               style={{
@@ -7234,6 +7234,8 @@ export default function App() {
     } catch { return []; }
   });
 
+  const [demoLeadStageOverrides, setDemoLeadStageOverrides] = useState({});
+
   // Persist to localStorage whenever userLeads changes (non-demo only)
   useEffect(() => {
     if (session && !session.isDemo) {
@@ -7356,7 +7358,11 @@ export default function App() {
   };
 
   const handleLeadStageChange = (leadId, stage) => {
-    setUserLeads(prev => prev.map(l => String(l.id) === String(leadId) ? { ...l, stage } : l));
+    if (session?.isDemo) {
+      setDemoLeadStageOverrides(prev => ({ ...prev, [String(leadId)]: stage }));
+    } else {
+      setUserLeads(prev => prev.map(l => String(l.id) === String(leadId) ? { ...l, stage } : l));
+    }
   };
 
   const handleUpdateLead = (leadData) => {
@@ -7384,7 +7390,9 @@ export default function App() {
   }
 
   const isDemo = session?.isDemo;
-  const leads = isDemo ? DEMO_LEADS : userLeads;
+  const leads = isDemo
+    ? DEMO_LEADS.map(l => demoLeadStageOverrides[String(l.id)] ? { ...l, stage: demoLeadStageOverrides[String(l.id)] } : l)
+    : userLeads;
   const crew = isDemo ? DEMO_CREW : userCrew;
 
   // Derive jobs from pipeline leads that have reached a job-execution stage,
@@ -7473,7 +7481,7 @@ export default function App() {
                 onEditLead={editLeadHandler}
                 onDeleteLead={deleteLeadHandler}
                 demoMode={isDemo}
-                onStageChange={isDemo ? null : handleLeadStageChange}
+                onStageChange={handleLeadStageChange}
               />
         )}
         {tab === 'callbacks' && (
@@ -7554,9 +7562,7 @@ export default function App() {
           lead={selectedLead}
           onClose={() => setSelectedLead(null)}
           onStageChange={(newStage) => {
-            setUserLeads(prev => prev.map(l =>
-              l.id === selectedLead.id ? { ...l, stage: newStage } : l
-            ));
+            handleLeadStageChange(selectedLead.id, newStage);
             setSelectedLead(prev => ({ ...prev, stage: newStage }));
           }}
         />
