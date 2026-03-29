@@ -618,6 +618,12 @@ const STAGE_COLORS = {
   lost:        '#ef4444',
 };
 
+const ISSUE_PRESETS = [
+  'Wrong Contact', 'Bad Timing', 'No Response', 'Budget Freeze',
+  'Price Objection', 'Competitor', 'Weather Delay', 'Material Shortage',
+  'Permit Issue', 'HOA Approval Needed',
+];
+
 // Operational next-step tips shown inside the job detail modal, keyed by pipeline stage
 const STAGE_TIPS = {
   lead: [
@@ -2066,27 +2072,31 @@ function DisabledTooltip({ active, label, children }) {
 
 // ─── Pipeline Tab ─────────────────────────────────────────────────────────────
 // ─── Kanban Card ──────────────────────────────────────────────────────────────
-function KanbanCard({ lead, urgencyBorder, staleDays, onClick, onEdit, onDelete, demoMode }) {
+function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDelete, demoMode }) {
   const [hovered, setHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const handleDragStart = (e) => {
     e.dataTransfer.setData('text/plain', String(lead.id));
     e.dataTransfer.effectAllowed = 'move';
+    setDragging(true);
   };
+  const handleDragEnd = () => setDragging(false);
 
   return (
     <div
       draggable
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setConfirmDelete(false); }}
-      onClick={() => onClick(lead)}
+      onClick={() => !dragging && onQuickEdit && onQuickEdit(lead)}
       style={{
         background: hovered ? '#1a2035' : '#161b27',
         border: urgencyBorder,
         borderRadius: 8, padding: '10px 12px',
-        cursor: 'grab', position: 'relative',
+        cursor: 'pointer', position: 'relative',
         transition: 'background 0.15s',
         userSelect: 'none',
       }}
@@ -2114,48 +2124,44 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onClick, onEdit, onDelete,
         <div style={{ fontSize: 10, color: '#f97316', marginTop: 2 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
       )}
 
-      {/* Hover preview tooltip */}
-      {hovered && (lead.address || lead.callbackDate || lead.notes) && (
-        <div style={{
-          position: 'absolute', bottom: '100%', left: 0, right: 0, zIndex: 100,
-          background: '#0f1117', border: '1px solid #2d3748', borderRadius: 8,
-          padding: '10px 12px', marginBottom: 4,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
-          fontSize: 11, color: '#94a3b8', lineHeight: 1.7,
-          pointerEvents: 'none',
-        }}>
-          {lead.address && <div>📍 {lead.address}</div>}
-          {lead.callbackDate && <div>📅 Callback: {lead.callbackDate}</div>}
-          {lead.notes && <div style={{ marginTop: 4, color: '#64748b', fontStyle: 'italic' }}>{lead.notes.slice(0, 80)}{lead.notes.length > 80 ? '…' : ''}</div>}
-          <div style={{ marginTop: 4, color: '#475569' }}>Deal age: {lead.dealAge}d{lead.industry ? ` · ${lead.industry}` : ''}</div>
+      {/* Issues badges */}
+      {lead.issues && lead.issues.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4 }}>
+          {lead.issues.slice(0, 2).map(issue => (
+            <span key={issue} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>{issue}</span>
+          ))}
+          {lead.issues.length > 2 && <span style={{ fontSize: 9, color: '#64748b' }}>+{lead.issues.length - 2}</span>}
         </div>
       )}
 
-      {/* Action row on hover */}
+      {/* Last update preview */}
+      {lead.lastUpdate && (
+        <div style={{ fontSize: 10, color: '#475569', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
+          <span style={{ color: '#374151' }}>↳ </span>
+          {lead.lastUpdate.length > 60 ? lead.lastUpdate.slice(0, 60) + '…' : lead.lastUpdate}
+        </div>
+      )}
+
+      {/* Hover hint */}
       {hovered && (
-        <div style={{ display: 'flex', gap: 4, marginTop: 8, paddingTop: 8, borderTop: '1px solid #1e2535' }} onClick={e => e.stopPropagation()}>
-          <DisabledTooltip active={demoMode} label="Sign up to edit">
-            <button
-              style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: demoMode ? '#3d4f63' : '#94a3b8', cursor: demoMode ? 'not-allowed' : 'pointer' }}
-              onClick={demoMode ? undefined : () => onEdit && onEdit(lead)}
-            >
-              ✏ Edit
-            </button>
-          </DisabledTooltip>
-          {!confirmDelete ? (
-            <DisabledTooltip active={demoMode} label="Sign up to delete">
-              <button
-                style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: demoMode ? '#3d4f63' : '#64748b', cursor: demoMode ? 'not-allowed' : 'pointer' }}
-                onClick={demoMode ? undefined : () => setConfirmDelete(true)}
-              >
-                🗑 Del
-              </button>
-            </DisabledTooltip>
-          ) : (
-            <>
-              <button style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 5, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Yes</button>
-              <button style={{ flex: 1, padding: '4px 0', fontSize: 11, background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
-            </>
+        <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 10, color: '#2d3748' }}>Click to edit</span>
+          {!demoMode && (
+            <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+              {!confirmDelete ? (
+                <button
+                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: '#475569', cursor: 'pointer' }}
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  🗑
+                </button>
+              ) : (
+                <>
+                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Del</button>
+                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
+                </>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -2163,11 +2169,276 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onClick, onEdit, onDelete,
   );
 }
 
+// ─── Card Quick Edit Modal ─────────────────────────────────────────────────────
+function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser }) {
+  const [stage, setStage] = useState(lead.stage);
+  const [status, setStatus] = useState(lead.status || 'active');
+  const [updateText, setUpdateText] = useState('');
+  const [issues, setIssues] = useState(lead.issues || []);
+  const [showIssueMenu, setShowIssueMenu] = useState(false);
+  const [customIssue, setCustomIssue] = useState('');
+  const showToast = useToast();
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (textareaRef.current) textareaRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const user = currentUser || 'You';
+  const now = () => new Date().toISOString();
+
+  const addEntry = (log, type, message) => [...(log || []), { timestamp: now(), type, message, user }];
+
+  const postUpdate = () => {
+    if (!updateText.trim()) return;
+    const newLog = addEntry(lead.activityLog, 'update', updateText.trim());
+    onUpdate({ ...lead, issues, activityLog: newLog, lastUpdate: updateText.trim() });
+    setUpdateText('');
+    showToast('Update posted');
+  };
+
+  const logContact = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const newLog = addEntry(lead.activityLog, 'contact', `Contact logged on ${today}`);
+    onUpdate({ ...lead, issues, lastContact: today, activityLog: newLog });
+    showToast('Contact logged');
+  };
+
+  const addIssue = (issue) => {
+    const trimmed = issue.trim();
+    if (!trimmed || issues.includes(trimmed)) { setShowIssueMenu(false); setCustomIssue(''); return; }
+    const newIssues = [...issues, trimmed];
+    setIssues(newIssues);
+    const newLog = addEntry(lead.activityLog, 'issue', `Issue added: ${trimmed}`);
+    onUpdate({ ...lead, issues: newIssues, activityLog: newLog });
+    setShowIssueMenu(false);
+    setCustomIssue('');
+  };
+
+  const removeIssue = (issue) => {
+    const newIssues = issues.filter(i => i !== issue);
+    setIssues(newIssues);
+    const newLog = addEntry(lead.activityLog, 'issue', `Issue removed: ${issue}`);
+    onUpdate({ ...lead, issues: newIssues, activityLog: newLog });
+  };
+
+  const save = () => {
+    let log = [...(lead.activityLog || [])];
+    if (stage !== lead.stage) log = addEntry(log, 'stage', `Stage changed from ${STAGE_LABELS[lead.stage] || lead.stage} to ${STAGE_LABELS[stage] || stage}`);
+    if (status !== lead.status) log = addEntry(log, 'status', `Status changed to ${status}`);
+    onUpdate({ ...lead, stage, status, issues, activityLog: log });
+    onClose();
+    showToast('Saved');
+  };
+
+  const recentActivity = [...(lead.activityLog || [])].reverse().slice(0, 4);
+
+  const ACTIVITY_ICONS = { stage: '→', status: '◉', update: '✎', contact: '📞', issue: '⚑' };
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: '#0d1117', border: '1px solid #1e2535', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+            <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+              {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{fmt(lead.value)}</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+            {onOpenDetail && (
+              <button
+                onClick={onOpenDetail}
+                style={{ background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >
+                AI Coach ↗
+              </button>
+            )}
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
+          </div>
+        </div>
+
+        <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+
+          {/* ── Post Update (most prominent) ── */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.6px' }}>✎ Post Update</div>
+            <textarea
+              ref={textareaRef}
+              value={updateText}
+              onChange={e => setUpdateText(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) postUpdate(); }}
+              placeholder="e.g. Spoke with owner, waiting on HOA approval…&#10;Materials ordered from ABC Supply…&#10;Client wants to wait until spring."
+              rows={4}
+              style={{
+                width: '100%', boxSizing: 'border-box',
+                background: '#060a12', border: '1px solid #2d3748', borderRadius: 8,
+                color: '#f1f5f9', fontSize: 13, padding: '10px 12px',
+                resize: 'vertical', outline: 'none', fontFamily: 'inherit', lineHeight: 1.6,
+              }}
+            />
+            <button
+              onClick={postUpdate}
+              disabled={!updateText.trim()}
+              style={{
+                marginTop: 8, width: '100%', padding: '10px 0',
+                background: updateText.trim() ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#0f1117',
+                border: updateText.trim() ? 'none' : '1px solid #1e2535',
+                borderRadius: 8, color: updateText.trim() ? '#fff' : '#3d4f63',
+                fontWeight: 700, fontSize: 14, cursor: updateText.trim() ? 'pointer' : 'not-allowed',
+                transition: 'background 0.15s',
+              }}
+            >
+              Post Update {updateText.trim() ? '(Ctrl+Enter)' : ''}
+            </button>
+          </div>
+
+          {/* ── Stage + Status ── */}
+          <div style={{ display: 'flex', gap: 12 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stage</div>
+              <select
+                value={stage}
+                onChange={e => setStage(e.target.value)}
+                style={{ width: '100%', ...FI, padding: '8px 10px', fontSize: 13 }}
+              >
+                {Object.entries(STAGE_LABELS).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</div>
+              <select
+                value={status}
+                onChange={e => setStatus(e.target.value)}
+                style={{ width: '100%', ...FI, padding: '8px 10px', fontSize: 13 }}
+              >
+                <option value="active">Active</option>
+                <option value="stalled">Stalled</option>
+                <option value="cold">Cold</option>
+                <option value="won">Won</option>
+                <option value="lost">Lost</option>
+              </select>
+            </div>
+          </div>
+
+          {/* ── Log Contact ── */}
+          <button
+            onClick={logContact}
+            style={{
+              width: '100%', padding: '10px 0',
+              background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
+              borderRadius: 8, color: '#22c55e', fontWeight: 600, fontSize: 13, cursor: 'pointer',
+            }}
+          >
+            📞 Log Contact — resets "no contact" timer
+          </button>
+
+          {/* ── Issues ── */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Issues</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+              {issues.map(issue => (
+                <span key={issue} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#fca5a5' }}>
+                  {issue}
+                  <button onClick={() => removeIssue(issue)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 0, fontSize: 13, lineHeight: 1, marginLeft: 1 }}>✕</button>
+                </span>
+              ))}
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setShowIssueMenu(v => !v)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed #2d3748', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#475569', cursor: 'pointer' }}
+                >
+                  + Add Issue
+                </button>
+                {showIssueMenu && (
+                  <div
+                    style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 200, background: '#0d1117', border: '1px solid #2d3748', borderRadius: 10, padding: '6px 0', minWidth: 210, boxShadow: '0 12px 32px rgba(0,0,0,0.6)' }}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    {ISSUE_PRESETS.filter(p => !issues.includes(p)).map(p => (
+                      <div
+                        key={p}
+                        onClick={() => addIssue(p)}
+                        style={{ padding: '7px 14px', fontSize: 12, color: '#94a3b8', cursor: 'pointer' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#1a2035'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {p}
+                      </div>
+                    ))}
+                    <div style={{ borderTop: '1px solid #1e2535', margin: '4px 0', padding: '4px 8px' }}>
+                      <input
+                        value={customIssue}
+                        onChange={e => setCustomIssue(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter' && customIssue.trim()) addIssue(customIssue); }}
+                        placeholder="Custom issue... (Enter)"
+                        autoFocus
+                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Recent Activity ── */}
+          {recentActivity.length > 0 && (
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Recent Activity</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                {recentActivity.map((entry, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 8, fontSize: 11 }}>
+                    <span style={{ color: '#374151', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
+                    <div style={{ minWidth: 0 }}>
+                      <span style={{ color: '#64748b' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
+                      <span style={{ color: '#475569' }}>{entry.message}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Save & Close ── */}
+          <button
+            onClick={save}
+            style={{
+              width: '100%', padding: '12px 0',
+              background: 'linear-gradient(135deg, #1d3461, #1a2d4a)',
+              border: '1px solid rgba(59,130,246,0.25)', borderRadius: 9,
+              color: '#93c5fd', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+            }}
+          >
+            Save & Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Pipeline Tab (Kanban) ─────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange }) {
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser }) {
   const [search, setSearch] = useState('');
   const [tradeFilter, setTradeFilter] = useState('all');
   const [dragOver, setDragOver] = useState(null);
+  const [quickEditLead, setQuickEditLead] = useState(null);
   const showToast = useToast();
   const isMobile = useMobile();
 
@@ -2229,7 +2500,12 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
     const lead = leads.find(l => String(l.id) === leadId);
     if (lead && lead.stage !== stage) {
       onStageChange(leadId, stage);
-      showToast(`Moved "${lead.name}" → ${STAGE_LABELS[stage]}`);
+      // Also add activity log entry via onUpdateLead if available
+      if (onUpdateLead) {
+        const entry = { timestamp: new Date().toISOString(), type: 'stage', message: `Stage changed from ${STAGE_LABELS[lead.stage] || lead.stage} to ${STAGE_LABELS[stage] || stage}`, user: currentUser || 'You' };
+        onUpdateLead({ ...lead, stage, activityLog: [...(lead.activityLog || []), entry] });
+      }
+      showToast(`"${lead.name}" → ${STAGE_LABELS[stage]}`);
     }
     setDragOver(null);
   };
@@ -2346,7 +2622,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                     lead={lead}
                     urgencyBorder={urgencyBorder(lead)}
                     staleDays={staleDays(lead)}
-                    onClick={onSelectLead}
+                    onQuickEdit={setQuickEditLead}
                     onEdit={onEditLead}
                     onDelete={onDeleteLead}
                     demoMode={demoMode}
@@ -2357,6 +2633,21 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           );
         })}
       </div>
+
+      {/* Quick Edit Modal */}
+      {quickEditLead && (
+        <CardQuickEdit
+          lead={quickEditLead}
+          onClose={() => setQuickEditLead(null)}
+          onUpdate={(updated) => {
+            if (onUpdateLead) onUpdateLead(updated);
+            // keep quickEditLead in sync so the panel reflects immediate changes
+            setQuickEditLead(updated);
+          }}
+          onOpenDetail={onSelectLead ? () => { setQuickEditLead(null); onSelectLead(quickEditLead); } : null}
+          currentUser={currentUser}
+        />
+      )}
     </div>
   );
 }
@@ -7234,7 +7525,7 @@ export default function App() {
     } catch { return []; }
   });
 
-  const [demoLeadStageOverrides, setDemoLeadStageOverrides] = useState({});
+  const [demoLeadOverrides, setDemoLeadOverrides] = useState({});
 
   // Persist to localStorage whenever userLeads changes (non-demo only)
   useEffect(() => {
@@ -7359,14 +7650,21 @@ export default function App() {
 
   const handleLeadStageChange = (leadId, stage) => {
     if (session?.isDemo) {
-      setDemoLeadStageOverrides(prev => ({ ...prev, [String(leadId)]: stage }));
+      setDemoLeadOverrides(prev => {
+        const cur = prev[String(leadId)] || {};
+        return { ...prev, [String(leadId)]: { ...cur, stage } };
+      });
     } else {
       setUserLeads(prev => prev.map(l => String(l.id) === String(leadId) ? { ...l, stage } : l));
     }
   };
 
   const handleUpdateLead = (leadData) => {
-    setUserLeads(prev => prev.map(l => l.id === leadData.id ? { ...leadData } : l));
+    if (session?.isDemo) {
+      setDemoLeadOverrides(prev => ({ ...prev, [String(leadData.id)]: leadData }));
+    } else {
+      setUserLeads(prev => prev.map(l => l.id === leadData.id ? { ...leadData } : l));
+    }
   };
 
   const isMobile = useMobile();
@@ -7391,7 +7689,7 @@ export default function App() {
 
   const isDemo = session?.isDemo;
   const leads = isDemo
-    ? DEMO_LEADS.map(l => demoLeadStageOverrides[String(l.id)] ? { ...l, stage: demoLeadStageOverrides[String(l.id)] } : l)
+    ? DEMO_LEADS.map(l => demoLeadOverrides[String(l.id)] ? { ...l, ...demoLeadOverrides[String(l.id)] } : l)
     : userLeads;
   const crew = isDemo ? DEMO_CREW : userCrew;
 
@@ -7482,6 +7780,8 @@ export default function App() {
                 onDeleteLead={deleteLeadHandler}
                 demoMode={isDemo}
                 onStageChange={handleLeadStageChange}
+                onUpdateLead={handleUpdateLead}
+                currentUser={currentUser}
               />
         )}
         {tab === 'callbacks' && (
