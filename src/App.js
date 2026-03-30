@@ -2988,6 +2988,709 @@ function AnalyticsTab({ leads, tier }) {
   );
 }
 
+// ─── Crew Pay ─────────────────────────────────────────────────────────────────
+const CP_UNITS = ['SQ', 'EA', 'LF', 'SF', 'FT', 'PC', 'HR', 'BDL'];
+const CP_LINE_TPLS_KEY = 'cl_crewpay_line_templates';
+const CP_RATE_TPLS_KEY = 'cl_crewpay_rate_templates';
+
+const CP_ASPHALT_ITEMS = [
+  { id: 'cp_a1', section: 'Shingle Squares by Pitch', label: 'Second Layer', unit: 'SQ' },
+  { id: 'cp_a2', section: 'Shingle Squares by Pitch', label: '8/12\u20139/12 Shingles', unit: 'SQ' },
+  { id: 'cp_a3', section: 'Shingle Squares by Pitch', label: '10/12\u201311/12 Shingles', unit: 'SQ' },
+  { id: 'cp_a4', section: 'Shingle Squares by Pitch', label: '12/12 Shingles', unit: 'SQ' },
+  { id: 'cp_a5', section: 'Shingle Squares by Pitch', label: '13/12+ Shingles', unit: 'SQ' },
+  { id: 'cp_a6', section: 'Shingle Squares by Pitch', label: 'W/ Harness Add', unit: 'SQ', note: 'Verbal feedback needs to be given before deducting any SQs' },
+  { id: 'cp_a7', section: 'Components', label: 'Small Chimney Counter Flashing', unit: 'EA' },
+  { id: 'cp_a8', section: 'Components', label: 'Large Chimney Counter Flashing', unit: 'EA' },
+  { id: 'cp_a9', section: 'Components', label: 'Plywood', unit: 'PC' },
+  { id: 'cp_a10', section: 'Components', label: 'Boards', unit: 'FT' },
+  { id: 'cp_a11', section: 'Components', label: 'Skylights', unit: 'EA' },
+  { id: 'cp_a12', section: 'Components', label: 'Skylights Flashing Only', unit: 'EA' },
+  { id: 'cp_a13', section: 'Additional Work', label: 'EPDM Removal & Install', unit: 'SF' },
+  { id: 'cp_a14', section: 'Additional Work', label: 'Fascia', unit: 'LF' },
+  { id: 'cp_a15', section: 'Additional Work', label: 'Soffit', unit: 'SF' },
+  { id: 'cp_a16', section: 'Additional Work', label: 'Counter Flashing', unit: 'LF' },
+  { id: 'cp_a17', section: 'Additional Work', label: 'Labor Hours', unit: 'HR' },
+];
+
+function cpMakeInit(job, crewNames) {
+  return {
+    jobInfo: {
+      subContractors: crewNames,
+      jobName: job.customer || '',
+      installDate: job.scheduledDate || '',
+      recordId: String(job.id),
+      address: job.address || '',
+    },
+    lineItems: CP_ASPHALT_ITEMS.map(item => ({ ...item, qty: '' })),
+    sqUpdates: [
+      { id: 'cp_sq1', label: 'Additional Shingles', unit: 'BDL', helper: '# of extra shingles you had to go buy to finish the job', qty: '' },
+      { id: 'cp_sq2', label: 'Leftover Shingles', unit: 'BDL', helper: '# of leftover shingles not needed to finish the job', qty: '' },
+    ],
+    miscCharges: [],
+    rates: {},
+    crewSplit: { type: 'equal', amounts: {} },
+    signOff: { inspectionPass: '', subContractorName: '', siteSupervisor: '', submitted: false },
+  };
+}
+
+function CrewPayPanel({ job, crew, assignments }) {
+  const cpKey = `cl_crewpay_${job.id}`;
+  const assignedIds = assignments[String(job.id)] || [];
+  const assignedCrew = (crew || []).filter(m => assignedIds.includes(m.id));
+
+  const [page, setPage] = useState(1);
+  const [data, setData] = useState(() => {
+    try {
+      const s = localStorage.getItem(cpKey);
+      if (s) return JSON.parse(s);
+    } catch (e) { /* ignore */ }
+    return cpMakeInit(job, assignedCrew.map(m => m.name).join(', '));
+  });
+
+  const [lineTpls, setLineTpls] = useState(() => {
+    try {
+      const s = localStorage.getItem(CP_LINE_TPLS_KEY);
+      const arr = s ? JSON.parse(s) : [];
+      if (!arr.some(t => t.name === 'Asphalt Roof Replacement')) {
+        return [{ name: 'Asphalt Roof Replacement', items: CP_ASPHALT_ITEMS }, ...arr];
+      }
+      return arr;
+    } catch (e) {
+      return [{ name: 'Asphalt Roof Replacement', items: CP_ASPHALT_ITEMS }];
+    }
+  });
+
+  const [rateTpls, setRateTpls] = useState(() => {
+    try {
+      const s = localStorage.getItem(CP_RATE_TPLS_KEY);
+      return s ? JSON.parse(s) : [];
+    } catch (e) { return []; }
+  });
+
+  const [ratesOpen, setRatesOpen] = useState(false);
+  const [showAddItem, setShowAddItem] = useState(false);
+  const [newItem, setNewItem] = useState({ label: '', unit: 'SQ', section: '' });
+  const [showSaveTpl, setShowSaveTpl] = useState(false);
+  const [saveTplName, setSaveTplName] = useState('');
+  const [showSaveRate, setShowSaveRate] = useState(false);
+  const [saveRateName, setSaveRateName] = useState('');
+
+  useEffect(() => {
+    try { localStorage.setItem(cpKey, JSON.stringify(data)); } catch (e) { /* ignore */ }
+  }, [data, cpKey]);
+
+  useEffect(() => {
+    try { localStorage.setItem(CP_LINE_TPLS_KEY, JSON.stringify(lineTpls)); } catch (e) { /* ignore */ }
+  }, [lineTpls]);
+
+  useEffect(() => {
+    try { localStorage.setItem(CP_RATE_TPLS_KEY, JSON.stringify(rateTpls)); } catch (e) { /* ignore */ }
+  }, [rateTpls]);
+
+  const updInfo = (f, v) => setData(d => ({ ...d, jobInfo: { ...d.jobInfo, [f]: v } }));
+  const updRate = (id, v) => setData(d => ({ ...d, rates: { ...d.rates, [id]: v } }));
+  const updLineQty = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, qty: v } : li) }));
+  const updLineLabel = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, label: v } : li) }));
+  const updLineUnit = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, unit: v } : li) }));
+  const stepLine = (id, delta) => setData(d => ({
+    ...d,
+    lineItems: d.lineItems.map(li => li.id === id ? { ...li, qty: String(Math.max(0, (parseFloat(li.qty) || 0) + delta)) } : li),
+  }));
+  const removeLine = (id) => setData(d => ({ ...d, lineItems: d.lineItems.filter(li => li.id !== id) }));
+  const moveLine = (id, dir) => setData(d => {
+    const arr = [...d.lineItems];
+    const i = arr.findIndex(li => li.id === id);
+    if (i < 0) return d;
+    const j = i + dir;
+    if (j < 0 || j >= arr.length) return d;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    return { ...d, lineItems: arr };
+  });
+  const addLine = () => {
+    if (!newItem.label.trim()) return;
+    const unit = newItem.unit.trim().toUpperCase() || 'UNIT';
+    setData(d => ({
+      ...d,
+      lineItems: [...d.lineItems, {
+        id: `cp_c${Date.now()}`,
+        section: newItem.section.trim() || 'Additional Work',
+        label: newItem.label.trim(),
+        unit,
+        qty: '',
+      }],
+    }));
+    setNewItem({ label: '', unit: 'SQ', section: '' });
+    setShowAddItem(false);
+  };
+
+  const updSqQty = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, qty: v } : s) }));
+  const updSqLabel = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, label: v } : s) }));
+  const updSqUnit = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, unit: v } : s) }));
+  const stepSq = (id, delta) => setData(d => ({
+    ...d,
+    sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, qty: String(Math.max(0, (parseFloat(s.qty) || 0) + delta)) } : s),
+  }));
+  const removeSq = (id) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.filter(s => s.id !== id) }));
+  const addSqItem = () => setData(d => ({
+    ...d,
+    sqUpdates: [...d.sqUpdates, { id: `cp_sqc${Date.now()}`, label: 'Custom Item', unit: 'BDL', qty: '' }],
+  }));
+
+  const addMisc = () => setData(d => ({
+    ...d,
+    miscCharges: [...d.miscCharges, { id: `mc${Date.now()}`, description: '', amount: '' }],
+  }));
+  const updMisc = (id, f, v) => setData(d => ({
+    ...d,
+    miscCharges: d.miscCharges.map(mc => mc.id === id ? { ...mc, [f]: v } : mc),
+  }));
+  const removeMisc = (id) => setData(d => ({ ...d, miscCharges: d.miscCharges.filter(mc => mc.id !== id) }));
+  const updSignOff = (f, v) => setData(d => ({ ...d, signOff: { ...d.signOff, [f]: v } }));
+  const updSplitType = (t) => setData(d => ({ ...d, crewSplit: { ...d.crewSplit, type: t } }));
+  const updCrewAmt = (id, v) => setData(d => ({
+    ...d,
+    crewSplit: { ...d.crewSplit, amounts: { ...d.crewSplit.amounts, [id]: v } },
+  }));
+
+  const loadLineTpl = (name) => {
+    const tpl = lineTpls.find(t => t.name === name);
+    if (!tpl) return;
+    setData(d => ({ ...d, lineItems: tpl.items.map(item => ({ ...item, qty: '' })) }));
+  };
+  const saveLineTpl = () => {
+    if (!saveTplName.trim()) return;
+    const items = data.lineItems.map(item => { const c = { ...item }; delete c.qty; return c; });
+    setLineTpls(prev => [...prev.filter(t => t.name !== saveTplName.trim()), { name: saveTplName.trim(), items }]);
+    setSaveTplName('');
+    setShowSaveTpl(false);
+  };
+  const loadRateTpl = (name) => {
+    const tpl = rateTpls.find(t => t.name === name);
+    if (!tpl) return;
+    setData(d => ({ ...d, rates: { ...tpl.rates } }));
+  };
+  const saveRateTpl = () => {
+    if (!saveRateName.trim()) return;
+    setRateTpls(prev => [...prev.filter(t => t.name !== saveRateName.trim()), { name: saveRateName.trim(), rates: { ...data.rates } }]);
+    setSaveRateName('');
+    setShowSaveRate(false);
+  };
+
+  const lineCalc = (item) => (parseFloat(item.qty) || 0) * (parseFloat(data.rates[item.id]) || 0);
+  const prodSubtotal = data.lineItems.reduce((s, li) => s + lineCalc(li), 0);
+  const miscTotal = data.miscCharges.reduce((s, mc) => s + (parseFloat(mc.amount) || 0), 0);
+  const grandTotal = prodSubtotal + miscTotal;
+  const itemsWithQty = data.lineItems.filter(li => (parseFloat(li.qty) || 0) > 0);
+  const equalPay = assignedCrew.length > 0 ? grandTotal / assignedCrew.length : 0;
+
+  const sections = data.lineItems.reduce((acc, item) => {
+    const sec = item.section || 'Other';
+    const found = acc.find(s => s.title === sec);
+    if (found) { found.items.push(item); } else { acc.push({ title: sec, items: [item] }); }
+    return acc;
+  }, []);
+
+  const fmtPay = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+  const CP_INP = {
+    width: '100%', padding: '12px 14px', background: '#0f1117',
+    border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0',
+    fontSize: 16, outline: 'none', boxSizing: 'border-box',
+    fontFamily: "'Inter', -apple-system, sans-serif",
+  };
+  const CP_LBL = {
+    fontSize: 11, fontWeight: 600, color: '#64748b',
+    textTransform: 'uppercase', letterSpacing: '0.4px',
+    marginBottom: 6, display: 'block',
+  };
+  const CP_MONO = { fontFamily: "'Courier New', 'Consolas', monospace", textAlign: 'right' };
+  const CP_STEP = {
+    width: 48, height: 48, background: '#1e2535', border: 'none',
+    borderRadius: 8, color: '#e2e8f0', fontSize: 22,
+    cursor: 'pointer', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', flexShrink: 0,
+    WebkitTapHighlightColor: 'transparent',
+  };
+  const cpNav = (dis) => ({
+    width: 52, height: 52,
+    background: dis ? 'transparent' : '#1e2535',
+    border: `1px solid ${dis ? '#1e2535' : '#2d3748'}`,
+    borderRadius: 12, color: dis ? '#334155' : '#e2e8f0',
+    fontSize: 26, cursor: dis ? 'default' : 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0, WebkitTapHighlightColor: 'transparent',
+  });
+  const PAGE_TITLES = ['Job Info', 'Production Line Items', 'Shingle SQ Updates', 'Misc Charges', 'Grand Total & Sign Off'];
+
+  return (
+    <div>
+      {/* Page navigation */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={cpNav(page === 1)}>‹</button>
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <div style={{ fontSize: 11, color: '#475569', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Page {page} of 5</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{PAGE_TITLES[page - 1]}</div>
+        </div>
+        <button onClick={() => setPage(p => Math.min(5, p + 1))} disabled={page === 5} style={cpNav(page === 5)}>›</button>
+      </div>
+
+      {/* ── Page 1: Job Info ── */}
+      {page === 1 && (
+        <div>
+          {[
+            { f: 'subContractors', label: 'Sub-Contractor Name(s)', type: 'text' },
+            { f: 'jobName', label: 'Job Name / Client', type: 'text' },
+            { f: 'installDate', label: 'Install Date', type: 'date' },
+            { f: 'recordId', label: 'Record / Job ID', type: 'text' },
+            { f: 'address', label: 'Address', type: 'text' },
+          ].map(({ f, label, type }) => (
+            <div key={f} style={{ marginBottom: 18 }}>
+              <label style={CP_LBL}>{label}</label>
+              <input type={type} value={data.jobInfo[f]} onChange={e => updInfo(f, e.target.value)} style={CP_INP} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Page 2: Production Line Items ── */}
+      {page === 2 && (
+        <div>
+          {/* Template toolbar */}
+          <div style={{ background: '#0f1117', borderRadius: 8, padding: 12, marginBottom: 14 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
+              <select
+                style={{ flex: 1, minWidth: 140, padding: '10px 12px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#94a3b8', fontSize: 13, outline: 'none' }}
+                defaultValue=""
+                onChange={e => { if (e.target.value) { loadLineTpl(e.target.value); e.target.value = ''; } }}
+              >
+                <option value="">Load Template…</option>
+                {lineTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+              </select>
+              <button
+                onClick={() => setShowAddItem(s => !s)}
+                style={{ padding: '10px 14px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 8, color: '#f97316', fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+              >
+                + Add Item
+              </button>
+            </div>
+            <button
+              onClick={() => setShowSaveTpl(s => !s)}
+              style={{ padding: '8px 12px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Save as Template
+            </button>
+          </div>
+
+          {showSaveTpl && (
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: 12, marginBottom: 14, display: 'flex', gap: 8 }}>
+              <input
+                value={saveTplName}
+                onChange={e => setSaveTplName(e.target.value)}
+                placeholder="Template name (e.g. Metal Roofing)"
+                style={{ ...CP_INP, flex: 1, padding: '10px 12px', fontSize: 14 }}
+              />
+              <button onClick={saveLineTpl} style={{ padding: '10px 16px', background: '#f97316', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
+            </div>
+          )}
+
+          {showAddItem && (
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: 14, marginBottom: 14 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#f97316', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>New Line Item</div>
+              <div style={{ marginBottom: 10 }}>
+                <label style={CP_LBL}>Item Name</label>
+                <input value={newItem.label} onChange={e => setNewItem(n => ({ ...n, label: e.target.value }))} placeholder="e.g. Pipe Flashing" style={{ ...CP_INP, padding: '11px 12px', fontSize: 15 }} />
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={CP_LBL}>Unit</label>
+                  <input
+                    list="cp_unit_dl"
+                    value={newItem.unit}
+                    onChange={e => setNewItem(n => ({ ...n, unit: e.target.value }))}
+                    style={{ ...CP_INP, padding: '11px 12px', fontSize: 15 }}
+                  />
+                  <datalist id="cp_unit_dl">
+                    {CP_UNITS.map(u => <option key={u} value={u} />)}
+                  </datalist>
+                </div>
+                <div style={{ flex: 2 }}>
+                  <label style={CP_LBL}>Section</label>
+                  <input value={newItem.section} onChange={e => setNewItem(n => ({ ...n, section: e.target.value }))} placeholder="e.g. Components" style={{ ...CP_INP, padding: '11px 12px', fontSize: 15 }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setShowAddItem(false)} style={{ flex: 1, padding: '11px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
+                <button onClick={addLine} style={{ flex: 2, padding: '11px', background: '#f97316', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Add Item</button>
+              </div>
+            </div>
+          )}
+
+          {sections.map(sec => (
+            <div key={sec.title} style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', padding: '8px 0 6px', borderBottom: '1px solid #1e2535', marginBottom: 8 }}>
+                {sec.title}
+              </div>
+              {sec.items.map((item, secIdx) => (
+                <div key={item.id} style={{ background: '#0f1117', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
+                      <button
+                        onClick={() => moveLine(item.id, -1)}
+                        disabled={secIdx === 0}
+                        style={{ width: 24, height: 22, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: secIdx === 0 ? '#1e2535' : '#64748b', cursor: secIdx === 0 ? 'default' : 'pointer', fontSize: 9, lineHeight: 1, padding: 0 }}
+                      >▲</button>
+                      <button
+                        onClick={() => moveLine(item.id, 1)}
+                        disabled={secIdx === sec.items.length - 1}
+                        style={{ width: 24, height: 22, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: secIdx === sec.items.length - 1 ? '#1e2535' : '#64748b', cursor: secIdx === sec.items.length - 1 ? 'default' : 'pointer', fontSize: 9, lineHeight: 1, padding: 0 }}
+                      >▼</button>
+                    </div>
+                    <input
+                      value={item.label}
+                      onChange={e => updLineLabel(item.id, e.target.value)}
+                      style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid #1e2535', color: '#e2e8f0', fontSize: 14, outline: 'none', padding: '3px 4px', fontFamily: "'Inter', -apple-system, sans-serif", minWidth: 0 }}
+                    />
+                    <button onClick={() => removeLine(item.id)} style={{ width: 30, height: 30, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <select
+                      value={CP_UNITS.includes(item.unit) ? item.unit : '_other'}
+                      onChange={e => updLineUnit(item.id, e.target.value === '_other' ? item.unit : e.target.value)}
+                      style={{ padding: '8px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#94a3b8', fontSize: 12, outline: 'none', flexShrink: 0 }}
+                    >
+                      {CP_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                      {!CP_UNITS.includes(item.unit) && <option value="_other">{item.unit}</option>}
+                    </select>
+                    <div style={{ flex: 1 }} />
+                    <button onClick={() => stepLine(item.id, -1)} style={CP_STEP}>−</button>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={item.qty}
+                      onChange={e => updLineQty(item.id, e.target.value)}
+                      style={{ width: 80, padding: '10px 8px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0', fontSize: 20, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', flexShrink: 0 }}
+                    />
+                    <button onClick={() => stepLine(item.id, 1)} style={CP_STEP}>+</button>
+                  </div>
+                  {item.note && (
+                    <div style={{ marginTop: 6, fontSize: 11, color: '#f97316', fontStyle: 'italic', padding: '5px 8px', background: 'rgba(249,115,22,0.07)', borderRadius: 6 }}>
+                      ⚠ {item.note}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Page 3: Shingle SQ Updates ── */}
+      {page === 3 && (
+        <div>
+          {data.sqUpdates.map(item => (
+            <div key={item.id} style={{ background: '#0f1117', borderRadius: 8, padding: '14px', marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <input
+                  value={item.label}
+                  onChange={e => updSqLabel(item.id, e.target.value)}
+                  style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid #1e2535', color: '#e2e8f0', fontSize: 15, fontWeight: 600, outline: 'none', padding: '3px 4px', fontFamily: "'Inter', -apple-system, sans-serif", minWidth: 0 }}
+                />
+                <select
+                  value={CP_UNITS.includes(item.unit) ? item.unit : '_other'}
+                  onChange={e => updSqUnit(item.id, e.target.value === '_other' ? item.unit : e.target.value)}
+                  style={{ padding: '7px 8px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#94a3b8', fontSize: 12, outline: 'none', flexShrink: 0 }}
+                >
+                  {CP_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                  {!CP_UNITS.includes(item.unit) && <option value="_other">{item.unit}</option>}
+                </select>
+                <button onClick={() => removeSq(item.id)} style={{ width: 30, height: 30, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
+              </div>
+              {item.helper && (
+                <div style={{ fontSize: 12, color: '#475569', marginBottom: 12, fontStyle: 'italic' }}>{item.helper}</div>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button onClick={() => stepSq(item.id, -1)} style={CP_STEP}>−</button>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  value={item.qty}
+                  onChange={e => updSqQty(item.id, e.target.value)}
+                  style={{ flex: 1, padding: '12px 14px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0', fontSize: 24, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none' }}
+                />
+                <button onClick={() => stepSq(item.id, 1)} style={CP_STEP}>+</button>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={addSqItem}
+            style={{ width: '100%', padding: '14px', background: 'transparent', border: '1px dashed #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', fontSize: 14, WebkitTapHighlightColor: 'transparent' }}
+          >
+            + Add Custom Item
+          </button>
+        </div>
+      )}
+
+      {/* ── Page 4: Misc Charges ── */}
+      {page === 4 && (
+        <div>
+          {data.miscCharges.length === 0 && (
+            <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0 16px', fontStyle: 'italic' }}>No charges added yet</div>
+          )}
+          {data.miscCharges.map((mc, mcIdx) => (
+            <div key={mc.id} style={{ background: '#0f1117', borderRadius: 8, padding: '14px', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Charge #{mcIdx + 1}</span>
+                <button onClick={() => removeMisc(mc.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 20, lineHeight: 1, padding: '0 4px', WebkitTapHighlightColor: 'transparent' }}>×</button>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={CP_LBL}>Description</label>
+                <textarea
+                  value={mc.description}
+                  onChange={e => updMisc(mc.id, 'description', e.target.value)}
+                  placeholder="What is the above charge for?"
+                  rows={3}
+                  style={{ ...CP_INP, resize: 'none', fontSize: 15 }}
+                />
+              </div>
+              <div>
+                <label style={CP_LBL}>Amount</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 18, lineHeight: 1 }}>$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={mc.amount}
+                    onChange={e => updMisc(mc.id, 'amount', e.target.value)}
+                    style={{ ...CP_INP, paddingLeft: 32, fontSize: 20, fontFamily: "'Courier New', monospace", textAlign: 'right' }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={addMisc}
+            style={{ width: '100%', padding: '14px', background: 'transparent', border: '1px dashed rgba(249,115,22,0.3)', borderRadius: 8, color: '#f97316', cursor: 'pointer', fontSize: 14, fontWeight: 600, WebkitTapHighlightColor: 'transparent' }}
+          >
+            + Add Another Charge
+          </button>
+        </div>
+      )}
+
+      {/* ── Page 5: Grand Total & Sign Off ── */}
+      {page === 5 && (
+        <div>
+          {/* a. Rate Configuration */}
+          <div style={{ background: '#0f1117', borderRadius: 8, marginBottom: 16, border: '1px solid #1e2535' }}>
+            <button
+              onClick={() => setRatesOpen(o => !o)}
+              style={{ width: '100%', padding: '14px 16px', background: 'transparent', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#f97316' }}>Configure Rates</span>
+              <span style={{ color: '#64748b', fontSize: 14 }}>{ratesOpen ? '▲' : '▼'}</span>
+            </button>
+            {ratesOpen && (
+              <div style={{ padding: '0 14px 14px' }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+                  <select
+                    style={{ flex: 1, minWidth: 140, padding: '9px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#94a3b8', fontSize: 13, outline: 'none' }}
+                    defaultValue=""
+                    onChange={e => { if (e.target.value) { loadRateTpl(e.target.value); e.target.value = ''; } }}
+                  >
+                    <option value="">Load Rate Template…</option>
+                    {rateTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+                  </select>
+                </div>
+                {data.lineItems.map(item => (
+                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                    <span style={{ flex: 1, fontSize: 13, color: '#94a3b8', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.label} <span style={{ color: '#475569' }}>/{item.unit}</span>
+                    </span>
+                    <div style={{ position: 'relative', flexShrink: 0, width: 110 }}>
+                      <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={data.rates[item.id] || ''}
+                        onChange={e => updRate(item.id, e.target.value)}
+                        placeholder="0.00"
+                        style={{ width: '100%', padding: '9px 8px 9px 22px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 14, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {showSaveRate ? (
+                  <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+                    <input value={saveRateName} onChange={e => setSaveRateName(e.target.value)} placeholder="Rate template name" style={{ flex: 1, padding: '9px 12px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+                    <button onClick={saveRateTpl} style={{ padding: '9px 14px', background: '#f97316', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
+                    <button onClick={() => setShowSaveRate(false)} style={{ padding: '9px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>✕</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowSaveRate(true)} style={{ marginTop: 14, padding: '9px 14px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
+                    Save Rates as Template
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* b. Production Summary */}
+          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Production</div>
+            {itemsWithQty.length === 0 && (
+              <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic', marginBottom: 10 }}>No items with quantity entered yet</div>
+            )}
+            {itemsWithQty.map(item => {
+              const rate = parseFloat(data.rates[item.id]) || 0;
+              return (
+                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</div>
+                    <div style={{ fontSize: 11, color: '#475569' }}>{item.qty} {item.unit}</div>
+                  </div>
+                  <div style={{ position: 'relative', flexShrink: 0, width: 96 }}>
+                    <span style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 12 }}>$</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={data.rates[item.id] || ''}
+                      onChange={e => updRate(item.id, e.target.value)}
+                      placeholder="0.00"
+                      style={{ width: '100%', padding: '7px 6px 7px 20px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div style={{ width: 86, textAlign: 'right', fontFamily: "'Courier New', 'Consolas', monospace", fontSize: 14, flexShrink: 0 }}>
+                    {rate > 0
+                      ? <span style={{ color: '#e2e8f0' }}>{fmtPay(lineCalc(item))}</span>
+                      : <span style={{ fontSize: 10, color: '#334155' }}>No rate set</span>}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid #1e2535', marginTop: 4 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Subtotal</span>
+              <span style={{ ...CP_MONO, fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>{fmtPay(prodSubtotal)}</span>
+            </div>
+          </div>
+
+          {/* c. Misc Charges */}
+          {data.miscCharges.length > 0 && (
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Misc Charges</div>
+              {data.miscCharges.map(mc => (
+                <div key={mc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8', flex: 1, marginRight: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mc.description || 'Unnamed charge'}</span>
+                  <span style={{ ...CP_MONO, fontSize: 14, color: '#e2e8f0', flexShrink: 0 }}>{fmtPay(parseFloat(mc.amount) || 0)}</span>
+                </div>
+              ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid #1e2535' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Misc Total</span>
+                <span style={{ ...CP_MONO, fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>{fmtPay(miscTotal)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* d. Grand Total */}
+          <div style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.12), rgba(234,88,12,0.06))', border: '1px solid rgba(249,115,22,0.35)', borderRadius: 10, padding: '16px 18px', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#f97316' }}>Grand Total Crew Pay</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 26, fontWeight: 700, color: '#f97316' }}>{fmtPay(grandTotal)}</span>
+            </div>
+          </div>
+
+          {/* e. Crew Split */}
+          {assignedCrew.length > 0 && (
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Split</div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                {['equal', 'custom'].map(t => (
+                  <button
+                    key={t}
+                    onClick={() => updSplitType(t)}
+                    style={{ flex: 1, padding: '11px', background: data.crewSplit.type === t ? 'rgba(249,115,22,0.12)' : 'transparent', border: `1px solid ${data.crewSplit.type === t ? '#f97316' : '#1e2535'}`, borderRadius: 8, color: data.crewSplit.type === t ? '#f97316' : '#64748b', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                  >
+                    {t === 'equal' ? 'Equal Split' : 'Custom'}
+                  </button>
+                ))}
+              </div>
+              {assignedCrew.map(member => (
+                <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#f97316', flexShrink: 0 }}>
+                    {member.name ? member.name.charAt(0).toUpperCase() : '?'}
+                  </div>
+                  <span style={{ flex: 1, fontSize: 14, color: '#e2e8f0', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</span>
+                  {data.crewSplit.type === 'equal' ? (
+                    <span style={{ fontFamily: "'Courier New', monospace", fontSize: 16, fontWeight: 700, color: '#22c55e', flexShrink: 0 }}>{fmtPay(equalPay)}</span>
+                  ) : (
+                    <div style={{ position: 'relative', flexShrink: 0, width: 110 }}>
+                      <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 14 }}>$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={data.crewSplit.amounts[member.id] || ''}
+                        onChange={e => updCrewAmt(member.id, e.target.value)}
+                        placeholder="0.00"
+                        style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0', fontSize: 15, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* f. Sign Off */}
+          {data.signOff.submitted ? (
+            <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 10, padding: '20px 18px', textAlign: 'center' }}>
+              <div style={{ fontSize: 28, marginBottom: 6 }}>✓</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#22c55e', marginBottom: 4 }}>Submitted & Locked</div>
+              <div style={{ fontSize: 12, color: '#64748b' }}>This form has been submitted and locked.</div>
+            </div>
+          ) : (
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 14 }}>Sign Off</div>
+              <div style={{ marginBottom: 14 }}>
+                <label style={CP_LBL}>Inspection Pass?</label>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {['yes', 'no'].map(v => (
+                    <button
+                      key={v}
+                      onClick={() => updSignOff('inspectionPass', v)}
+                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#1e2535'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#64748b', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                    >
+                      {v === 'yes' ? 'Yes ✓' : 'No ✗'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 14 }}>
+                <label style={CP_LBL}>Sub-Contractor Name</label>
+                <input value={data.signOff.subContractorName} onChange={e => updSignOff('subContractorName', e.target.value)} style={CP_INP} />
+              </div>
+              <div style={{ marginBottom: 18 }}>
+                <label style={CP_LBL}>Site Supervisor Name</label>
+                <input value={data.signOff.siteSupervisor} onChange={e => updSignOff('siteSupervisor', e.target.value)} style={CP_INP} />
+              </div>
+              <button
+                onClick={() => updSignOff('submitted', true)}
+                style={{ width: '100%', padding: '15px', background: 'linear-gradient(135deg, #22c55e, #16a34a)', border: 'none', borderRadius: 10, color: '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+              >
+                Submit & Lock
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Job Modal ────────────────────────────────────────────────────────────────
 function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule }) {
   const steps = (job.taskList && job.taskList.length ? job.taskList.map((label, i) => ({ id: i + 1, label })) : null)
@@ -3009,6 +3712,15 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const [modalTab, setModalTab] = useState('checklist');
   const [msgCount, setMsgCount] = useState(0);
   const [photoCount, setPhotoCount] = useState(0);
+  const [hasCrewPay, setHasCrewPay] = useState(() => {
+    try { return !!localStorage.getItem(`cl_crewpay_${job.id}`); } catch (e) { return false; }
+  });
+
+  useEffect(() => {
+    if (modalTab !== 'crewpay') {
+      try { setHasCrewPay(!!localStorage.getItem(`cl_crewpay_${job.id}`)); } catch (e) { /* ignore */ }
+    }
+  }, [modalTab, job.id]);
   const [confirmComplete, setConfirmComplete] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(false);
   const [schedDate, setSchedDate] = useState(job.scheduledDate || '');
@@ -3091,6 +3803,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             { key: 'crew', label: 'Crew' },
             { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
             { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
+            { key: 'crewpay', label: hasCrewPay ? 'Crew Pay ●' : 'Crew Pay' },
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -3260,6 +3973,10 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
         {modalTab === 'chat' && (
           <JobChatPanel jobId={job.id} currentUser={currentUser} demoMessages={demoMessages} onCountChange={setMsgCount} />
+        )}
+
+        {modalTab === 'crewpay' && (
+          <CrewPayPanel job={job} crew={crew || []} assignments={assignments || {}} />
         )}
       </div>
     </div>
