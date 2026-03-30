@@ -3093,20 +3093,7 @@ function CrewPayPanel({ job, crew, assignments }) {
   const updLineQty = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, qty: v } : li) }));
   const updLineLabel = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, label: v } : li) }));
   const updLineUnit = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, unit: v } : li) }));
-  const stepLine = (id, delta) => setData(d => ({
-    ...d,
-    lineItems: d.lineItems.map(li => li.id === id ? { ...li, qty: String(Math.max(0, (parseFloat(li.qty) || 0) + delta)) } : li),
-  }));
   const removeLine = (id) => setData(d => ({ ...d, lineItems: d.lineItems.filter(li => li.id !== id) }));
-  const moveLine = (id, dir) => setData(d => {
-    const arr = [...d.lineItems];
-    const i = arr.findIndex(li => li.id === id);
-    if (i < 0) return d;
-    const j = i + dir;
-    if (j < 0 || j >= arr.length) return d;
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-    return { ...d, lineItems: arr };
-  });
   const addLine = () => {
     if (!newItem.label.trim()) return;
     const unit = newItem.unit.trim().toUpperCase() || 'UNIT';
@@ -3127,10 +3114,6 @@ function CrewPayPanel({ job, crew, assignments }) {
   const updSqQty = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, qty: v } : s) }));
   const updSqLabel = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, label: v } : s) }));
   const updSqUnit = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, unit: v } : s) }));
-  const stepSq = (id, delta) => setData(d => ({
-    ...d,
-    sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, qty: String(Math.max(0, (parseFloat(s.qty) || 0) + delta)) } : s),
-  }));
   const removeSq = (id) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.filter(s => s.id !== id) }));
   const addSqItem = () => setData(d => ({
     ...d,
@@ -3205,12 +3188,11 @@ function CrewPayPanel({ job, crew, assignments }) {
     marginBottom: 6, display: 'block',
   };
   const CP_MONO = { fontFamily: "'Courier New', 'Consolas', monospace", textAlign: 'right' };
-  const CP_STEP = {
-    width: 48, height: 48, background: '#1e2535', border: 'none',
-    borderRadius: 8, color: '#e2e8f0', fontSize: 22,
-    cursor: 'pointer', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', flexShrink: 0,
-    WebkitTapHighlightColor: 'transparent',
+  const CP_NUM = {
+    width: '100%', padding: '13px 14px', background: '#161b27',
+    border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0',
+    fontSize: 22, fontFamily: "'Courier New', 'Consolas', monospace",
+    textAlign: 'right', outline: 'none', boxSizing: 'border-box',
   };
   const cpNav = (dis) => ({
     width: 52, height: 52,
@@ -3331,49 +3313,32 @@ function CrewPayPanel({ job, crew, assignments }) {
               <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', padding: '8px 0 6px', borderBottom: '1px solid #1e2535', marginBottom: 8 }}>
                 {sec.title}
               </div>
-              {sec.items.map((item, secIdx) => (
+              {sec.items.map((item) => (
                 <div key={item.id} style={{ background: '#0f1117', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
-                      <button
-                        onClick={() => moveLine(item.id, -1)}
-                        disabled={secIdx === 0}
-                        style={{ width: 24, height: 22, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: secIdx === 0 ? '#1e2535' : '#64748b', cursor: secIdx === 0 ? 'default' : 'pointer', fontSize: 9, lineHeight: 1, padding: 0 }}
-                      >▲</button>
-                      <button
-                        onClick={() => moveLine(item.id, 1)}
-                        disabled={secIdx === sec.items.length - 1}
-                        style={{ width: 24, height: 22, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: secIdx === sec.items.length - 1 ? '#1e2535' : '#64748b', cursor: secIdx === sec.items.length - 1 ? 'default' : 'pointer', fontSize: 9, lineHeight: 1, padding: 0 }}
-                      >▼</button>
-                    </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <input
                       value={item.label}
                       onChange={e => updLineLabel(item.id, e.target.value)}
-                      style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid #1e2535', color: '#e2e8f0', fontSize: 14, outline: 'none', padding: '3px 4px', fontFamily: "'Inter', -apple-system, sans-serif", minWidth: 0 }}
+                      style={{ flex: 1, background: 'transparent', border: 'none', color: '#94a3b8', fontSize: 12, fontWeight: 600, outline: 'none', padding: '2px 0', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.4px', minWidth: 0 }}
                     />
-                    <button onClick={() => removeLine(item.id)} style={{ width: 30, height: 30, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <select
                       value={CP_UNITS.includes(item.unit) ? item.unit : '_other'}
                       onChange={e => updLineUnit(item.id, e.target.value === '_other' ? item.unit : e.target.value)}
-                      style={{ padding: '8px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#94a3b8', fontSize: 12, outline: 'none', flexShrink: 0 }}
+                      style={{ padding: '4px 6px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: '#475569', fontSize: 11, outline: 'none', flexShrink: 0 }}
                     >
                       {CP_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                       {!CP_UNITS.includes(item.unit) && <option value="_other">{item.unit}</option>}
                     </select>
-                    <div style={{ flex: 1 }} />
-                    <button onClick={() => stepLine(item.id, -1)} style={CP_STEP}>−</button>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      value={item.qty}
-                      onChange={e => updLineQty(item.id, e.target.value)}
-                      style={{ width: 80, padding: '10px 8px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0', fontSize: 20, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', flexShrink: 0 }}
-                    />
-                    <button onClick={() => stepLine(item.id, 1)} style={CP_STEP}>+</button>
+                    <button onClick={() => removeLine(item.id)} style={{ width: 28, height: 28, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
                   </div>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={item.qty}
+                    onChange={e => updLineQty(item.id, e.target.value)}
+                    placeholder="0.00"
+                    style={{ ...CP_NUM, color: item.qty ? '#e2e8f0' : undefined }}
+                  />
                   {item.note && (
                     <div style={{ marginTop: 6, fontSize: 11, color: '#f97316', fontStyle: 'italic', padding: '5px 8px', background: 'rgba(249,115,22,0.07)', borderRadius: 6 }}>
                       ⚠ {item.note}
@@ -3408,20 +3373,16 @@ function CrewPayPanel({ job, crew, assignments }) {
                 <button onClick={() => removeSq(item.id)} style={{ width: 30, height: 30, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
               </div>
               {item.helper && (
-                <div style={{ fontSize: 12, color: '#475569', marginBottom: 12, fontStyle: 'italic' }}>{item.helper}</div>
+                <div style={{ fontSize: 12, color: '#475569', marginBottom: 10, fontStyle: 'italic' }}>{item.helper}</div>
               )}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <button onClick={() => stepSq(item.id, -1)} style={CP_STEP}>−</button>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  value={item.qty}
-                  onChange={e => updSqQty(item.id, e.target.value)}
-                  style={{ flex: 1, padding: '12px 14px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0', fontSize: 24, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none' }}
-                />
-                <button onClick={() => stepSq(item.id, 1)} style={CP_STEP}>+</button>
-              </div>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={item.qty}
+                onChange={e => updSqQty(item.id, e.target.value)}
+                placeholder="0.00"
+                style={CP_NUM}
+              />
             </div>
           ))}
           <button
@@ -3460,11 +3421,11 @@ function CrewPayPanel({ job, crew, assignments }) {
                 <div style={{ position: 'relative' }}>
                   <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 18, lineHeight: 1 }}>$</span>
                   <input
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type="text"
+                    inputMode="decimal"
                     value={mc.amount}
                     onChange={e => updMisc(mc.id, 'amount', e.target.value)}
+                    placeholder="0.00"
                     style={{ ...CP_INP, paddingLeft: 32, fontSize: 20, fontFamily: "'Courier New', monospace", textAlign: 'right' }}
                   />
                 </div>
@@ -3512,9 +3473,8 @@ function CrewPayPanel({ job, crew, assignments }) {
                     <div style={{ position: 'relative', flexShrink: 0, width: 110 }}>
                       <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>$</span>
                       <input
-                        type="number"
-                        step="0.01"
-                        min="0"
+                        type="text"
+                        inputMode="decimal"
                         value={data.rates[item.id] || ''}
                         onChange={e => updRate(item.id, e.target.value)}
                         placeholder="0.00"
@@ -3555,9 +3515,8 @@ function CrewPayPanel({ job, crew, assignments }) {
                   <div style={{ position: 'relative', flexShrink: 0, width: 96 }}>
                     <span style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 12 }}>$</span>
                     <input
-                      type="number"
-                      step="0.01"
-                      min="0"
+                      type="text"
+                      inputMode="decimal"
                       value={data.rates[item.id] || ''}
                       onChange={e => updRate(item.id, e.target.value)}
                       placeholder="0.00"
@@ -3630,9 +3589,8 @@ function CrewPayPanel({ job, crew, assignments }) {
                     <div style={{ position: 'relative', flexShrink: 0, width: 110 }}>
                       <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 14 }}>$</span>
                       <input
-                        type="number"
-                        step="0.01"
-                        min="0"
+                        type="text"
+                        inputMode="decimal"
                         value={data.crewSplit.amounts[member.id] || ''}
                         onChange={e => updCrewAmt(member.id, e.target.value)}
                         placeholder="0.00"
