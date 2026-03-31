@@ -3130,7 +3130,15 @@ function CrewPayPanel({ job, crew, assignments }) {
   const [data, setData] = useState(() => {
     try {
       const s = localStorage.getItem(cpKey);
-      if (s) return JSON.parse(s);
+      if (s) {
+        const parsed = JSON.parse(s);
+        if (
+          parsed &&
+          parsed.materials && Array.isArray(parsed.materials.sections) &&
+          parsed.labor && Array.isArray(parsed.labor.sections) &&
+          parsed.jobInfo && parsed.signOff
+        ) return parsed;
+      }
     } catch (e) { /* ignore */ }
     return cpNewMakeInit(job, assignedCrew.map(m => m.name).join(', '));
   });
