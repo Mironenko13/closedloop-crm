@@ -2988,7 +2988,7 @@ function AnalyticsTab({ leads, tier }) {
   );
 }
 
-// ─── Crew Pay ─────────────────────────────────────────────────────────────────
+// ─── Cost Manager ─────────────────────────────────────────────────────────────
 const CP_UNITS = ['EA', 'SQ', 'BDL', 'LF', 'SF', 'FT', 'PC', 'GAL', 'BOX', 'ROLL', 'HR'];
 const CP_MAT_KEY = 'cl_crewpay_mat_tpls';
 const CP_RATE_KEY = 'cl_crewpay_rate_tpls';
@@ -3121,7 +3121,7 @@ function cpNewMakeInit(job, crewNames) {
   };
 }
 
-function CrewPayPanel({ job, crew, assignments }) {
+function CostManagerPanel({ job, crew, assignments }) {
   const cpKey = `cl_crewpay_${job.id}`;
   const assignedIds = assignments[String(job.id)] || [];
   const assignedCrew = (crew || []).filter(m => assignedIds.includes(m.id));
@@ -3877,13 +3877,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const [modalTab, setModalTab] = useState('checklist');
   const [msgCount, setMsgCount] = useState(0);
   const [photoCount, setPhotoCount] = useState(0);
-  const [hasCrewPay, setHasCrewPay] = useState(() => {
+  const [hasCostMgr, setHasCostMgr] = useState(() => {
     try { return !!localStorage.getItem(`cl_crewpay_${job.id}`); } catch (e) { return false; }
   });
 
   useEffect(() => {
     if (modalTab !== 'crewpay') {
-      try { setHasCrewPay(!!localStorage.getItem(`cl_crewpay_${job.id}`)); } catch (e) { /* ignore */ }
+      try { setHasCostMgr(!!localStorage.getItem(`cl_crewpay_${job.id}`)); } catch (e) { /* ignore */ }
     }
   }, [modalTab, job.id]);
   const [confirmComplete, setConfirmComplete] = useState(false);
@@ -3968,7 +3968,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             { key: 'crew', label: 'Crew' },
             { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
             { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
-            { key: 'crewpay', label: hasCrewPay ? 'Crew Pay ●' : 'Crew Pay' },
+            { key: 'crewpay', label: hasCostMgr ? 'Cost Manager ●' : 'Cost Manager' },
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -4141,7 +4141,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
         )}
 
         {modalTab === 'crewpay' && (
-          <CrewPayPanel job={job} crew={crew || []} assignments={assignments || {}} />
+          <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} />
         )}
       </div>
     </div>
