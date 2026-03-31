@@ -3399,25 +3399,13 @@ function CrewPayPanel({ job, crew, assignments }) {
   const fmtC = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   const profitColor = profitMargin >= 20 ? '#22c55e' : profitMargin >= 10 ? '#f59e0b' : '#ef4444';
 
-  // ── shared styles ────────────────────────────────────────────────────────────
-  const CINP = {
-    padding: '7px 8px', background: '#0d1117', border: '1px solid #1e2535',
-    borderRadius: 5, color: '#e2e8f0', fontSize: 13,
-    fontFamily: "'Courier New', 'Consolas', monospace", textAlign: 'right',
-    outline: 'none', width: '100%', boxSizing: 'border-box',
-  };
-  const TINP = {
-    ...CINP,
-    fontFamily: "'Inter', -apple-system, sans-serif",
-    textAlign: 'left',
-    fontSize: 13,
-  };
-  const SINP = {
-    padding: '7px 6px', background: '#0d1117', border: '1px solid #1e2535',
-    borderRadius: 5, color: '#94a3b8', fontSize: 11,
-    outline: 'none', width: '100%', boxSizing: 'border-box',
-  };
-  const LROW = { fontSize: 11, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 };
+  // ── shared cell styles ───────────────────────────────────────────────────────
+  const NINP = { background: '#161b27', border: '1px solid #1e2535', borderRadius: 4, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box' };
+  const UINP = { background: '#161b27', border: '1px solid #1e2535', borderRadius: 4, color: '#64748b', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' };
+  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' };
+  const MAT_COLS = '1fr 44px 58px 72px 72px 20px';
+  const LAB_COLS = '1fr 44px 58px 72px 72px 20px';
+  const WASTE_COLS = '1fr 44px 64px 20px';
 
   // ── sub-tab nav ──────────────────────────────────────────────────────────────
   const SUB_TABS = [
@@ -3431,59 +3419,63 @@ function CrewPayPanel({ job, crew, assignments }) {
   const renderMatSection = (sec) => {
     const secTot = matSecTot(sec);
     return (
-      <div key={sec.id} style={{ marginBottom: 6 }}>
-        {/* Section header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1a2035', borderRadius: 6, padding: '8px 10px', marginBottom: sec.collapsed ? 0 : 4, cursor: 'pointer' }} onClick={() => toggleMatSec(sec.id)}>
-          <span style={{ color: '#f97316', fontSize: 11, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
+      <div key={sec.id} style={{ marginBottom: 4 }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a2035', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '7px 10px', cursor: 'pointer' }}
+          onClick={() => toggleMatSec(sec.id)}
+        >
+          <span style={{ color: '#f97316', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
           <input
             value={sec.title}
             onChange={e => { e.stopPropagation(); updMatSecTitle(sec.id, e.target.value); }}
             onClick={e => e.stopPropagation()}
-            style={{ flex: 1, background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 12, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'text' }}
+            style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
           />
-          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#f1f5f9' : '#334155', flexShrink: 0 }}>{secTot > 0 ? fmtC(secTot) : '—'}</span>
+          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#f97316' : '#334155', flexShrink: 0 }}>
+            {secTot > 0 ? fmtC(secTot) : '—'}
+          </span>
         </div>
         {!sec.collapsed && (
-          <div style={{ background: '#0f1117', borderRadius: 6, overflow: 'hidden' }}>
-            {/* Column headers */}
-            <div style={{ display: 'flex', gap: 4, padding: '5px 8px', borderBottom: '1px solid #1e2535' }}>
-              <div style={{ ...LROW, flex: 1, marginBottom: 0 }}>Item</div>
-              <div style={{ ...LROW, width: 50, marginBottom: 0, textAlign: 'center' }}>Unit</div>
-              <div style={{ ...LROW, width: 68, marginBottom: 0, textAlign: 'right' }}>Qty</div>
-              <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>$/Unit</div>
-              <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Total</div>
-              <div style={{ width: 24 }} />
+          <div style={{ background: '#0c1020', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #1e2535' }}>
+              <div style={{ ...CHEAD }}>Item</div>
+              <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
+              <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
+              <div style={{ ...CHEAD, textAlign: 'right' }}>$/Unit</div>
+              <div style={{ ...CHEAD, textAlign: 'right' }}>Total</div>
+              <div />
             </div>
-            {/* Items */}
             {sec.items.map(item => {
               const tot = matItemTot(item);
+              const filled = tot > 0;
               return (
-                <div key={item.id} style={{ padding: '4px 8px', borderBottom: '1px solid #0a0e18' }}>
-                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginBottom: 3 }}>
-                    <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ ...TINP, flex: 1, padding: '5px 7px' }} />
-                    <input value={item.description} onChange={e => updMat(sec.id, item.id, 'description', e.target.value)} placeholder="Description…" style={{ ...TINP, flex: 1, padding: '5px 7px', fontSize: 11, color: '#64748b' }} />
-                    <button onClick={() => removeMatItem(sec.id, item.id)} style={{ width: 24, height: 24, background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, flexShrink: 0, padding: 0, lineHeight: 1 }}>×</button>
+                <div key={item.id} style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, alignItems: 'center', padding: '3px 8px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.03)' : 'transparent', borderLeft: filled ? '2px solid rgba(249,115,22,0.35)' : '2px solid transparent' }}>
+                  <input
+                    value={item.item}
+                    onChange={e => updMat(sec.id, item.id, 'item', e.target.value)}
+                    placeholder="Item name"
+                    style={{ background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: 13, fontWeight: 500, outline: 'none', width: '100%', fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0' }}
+                  />
+                  <input list="cp_unit_dl" value={item.unit} onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
+                  <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
+                  <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />
+                  <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>
+                    {filled ? fmtC(tot) : '—'}
                   </div>
-                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    <input
-                      list="cp_unit_dl"
-                      value={item.unit}
-                      onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)}
-                      style={{ ...SINP, width: 50, textAlign: 'center', padding: '6px 4px' }}
-                    />
-                    <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...CINP, width: 68, padding: '6px 7px' }} />
-                    <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...CINP, width: 80, padding: '6px 7px' }} />
-                    <div style={{ width: 80, fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: tot > 0 ? '#e2e8f0' : '#334155', flexShrink: 0 }}>
-                      {tot > 0 ? fmtC(tot) : '—'}
-                    </div>
-                    <div style={{ width: 24 }} />
-                  </div>
+                  <button onClick={() => removeMatItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#2d3748', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
-            <button onClick={() => addMatItem(sec.id)} style={{ display: 'block', width: '100%', padding: '7px', background: 'transparent', border: 'none', borderTop: '1px dashed #1e2535', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left' }}>
-              + Add Item
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
+              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>
+                + Add Item
+              </button>
+              {secTot > 0 && (
+                <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>
+                  Subtotal: <strong style={{ color: '#f97316' }}>{fmtC(secTot)}</strong>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -3493,74 +3485,75 @@ function CrewPayPanel({ job, crew, assignments }) {
   // ── labor grid ───────────────────────────────────────────────────────────────
   const renderLaborSection = (sec) => {
     const secTot = laborSecTot(sec);
+    const cols = sec.isWaste ? WASTE_COLS : LAB_COLS;
     return (
-      <div key={sec.id} style={{ marginBottom: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1a2035', borderRadius: 6, padding: '8px 10px', marginBottom: sec.collapsed ? 0 : 4, cursor: 'pointer' }} onClick={() => toggleLaborSec(sec.id)}>
-          <span style={{ color: '#6366f1', fontSize: 11, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
+      <div key={sec.id} style={{ marginBottom: 4 }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#161e35', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '7px 10px', cursor: 'pointer' }}
+          onClick={() => toggleLaborSec(sec.id)}
+        >
+          <span style={{ color: '#6366f1', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
           <input
             value={sec.title}
             onChange={e => { e.stopPropagation(); updLaborSecTitle(sec.id, e.target.value); }}
             onClick={e => e.stopPropagation()}
-            style={{ flex: 1, background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 12, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'text' }}
+            style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
           />
-          {!sec.isWaste && <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#f1f5f9' : '#334155', flexShrink: 0 }}>{secTot > 0 ? fmtC(secTot) : '—'}</span>}
+          {!sec.isWaste && (
+            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#6366f1' : '#334155', flexShrink: 0 }}>
+              {secTot > 0 ? fmtC(secTot) : '—'}
+            </span>
+          )}
         </div>
         {!sec.collapsed && (
-          <div style={{ background: '#0f1117', borderRadius: 6, overflow: 'hidden' }}>
-            {!sec.isWaste && (
-              <div style={{ display: 'flex', gap: 4, padding: '5px 8px', borderBottom: '1px solid #1e2535' }}>
-                <div style={{ ...LROW, flex: 1, marginBottom: 0 }}>Item</div>
-                <div style={{ ...LROW, width: 50, marginBottom: 0, textAlign: 'center' }}>Unit</div>
-                <div style={{ ...LROW, width: 68, marginBottom: 0, textAlign: 'right' }}>Qty</div>
-                <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Rate</div>
-                <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Total</div>
-                <div style={{ width: 24 }} />
-              </div>
-            )}
-            {sec.isWaste && (
-              <div style={{ display: 'flex', gap: 4, padding: '5px 8px', borderBottom: '1px solid #1e2535' }}>
-                <div style={{ ...LROW, flex: 1, marginBottom: 0 }}>Item</div>
-                <div style={{ ...LROW, width: 50, marginBottom: 0, textAlign: 'center' }}>Unit</div>
-                <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Qty</div>
-                <div style={{ width: 24 }} />
-              </div>
-            )}
+          <div style={{ background: '#0c1020', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #1e2535' }}>
+              <div style={{ ...CHEAD }}>Item</div>
+              <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
+              <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
+              {!sec.isWaste && <div style={{ ...CHEAD, textAlign: 'right' }}>Rate</div>}
+              {!sec.isWaste && <div style={{ ...CHEAD, textAlign: 'right' }}>Total</div>}
+              <div />
+            </div>
             {sec.items.map(item => {
               const tot = sec.isWaste ? 0 : laborItemTot(item);
+              const filled = !sec.isWaste && tot > 0;
               return (
-                <div key={item.id} style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '6px 8px', borderBottom: '1px solid #0a0e18' }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <input value={item.label} onChange={e => updLabor(sec.id, item.id, 'label', e.target.value)} placeholder="Item name" style={{ ...TINP, padding: '5px 7px', width: '100%' }} />
-                    {item.note && <div style={{ fontSize: 10, color: '#475569', marginTop: 2, fontStyle: 'italic', paddingLeft: 4 }}>{item.note}</div>}
+                <div key={item.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, alignItems: 'center', padding: '3px 8px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(99,102,241,0.04)' : 'transparent', borderLeft: filled ? '2px solid rgba(99,102,241,0.35)' : '2px solid transparent' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label || <span style={{ color: '#334155' }}>—</span>}</div>
+                    {item.note && <div style={{ fontSize: 10, color: '#334155', fontStyle: 'italic' }}>{item.note}</div>}
                   </div>
-                  <input
-                    list="cp_unit_dl"
-                    value={item.unit}
-                    onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)}
-                    style={{ ...SINP, width: 50, textAlign: 'center', padding: '6px 4px' }}
-                  />
-                  <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...CINP, width: 68, padding: '6px 7px' }} />
+                  <input list="cp_unit_dl" value={item.unit} onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
+                  <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {!sec.isWaste && (
                     <>
-                      <input type="text" inputMode="decimal" value={item.rate} onChange={e => updLabor(sec.id, item.id, 'rate', e.target.value)} placeholder="0.00" style={{ ...CINP, width: 80, padding: '6px 7px' }} />
-                      <div style={{ width: 80, fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: tot > 0 ? '#e2e8f0' : '#334155', flexShrink: 0 }}>
-                        {tot > 0 ? fmtC(tot) : '—'}
+                      <input type="text" inputMode="decimal" value={item.rate} onChange={e => updLabor(sec.id, item.id, 'rate', e.target.value)} placeholder="0.00" style={{ ...NINP }} />
+                      <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>
+                        {filled ? fmtC(tot) : '—'}
                       </div>
                     </>
                   )}
-                  <button onClick={() => removeLaborItem(sec.id, item.id)} style={{ width: 24, height: 24, background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, flexShrink: 0, padding: 0, lineHeight: 1 }}>×</button>
+                  <button onClick={() => removeLaborItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#2d3748', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
             {!sec.isWaste && (
-              <button onClick={() => addLaborItem(sec.id)} style={{ display: 'block', width: '100%', padding: '7px', background: 'transparent', border: 'none', borderTop: '1px dashed #1e2535', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left' }}>
-                + Add Item
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
+                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>
+                  + Add Item
+                </button>
+                {secTot > 0 && (
+                  <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>
+                    Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong>
+                  </div>
+                )}
+              </div>
             )}
             {sec.isWaste && (
-              <div style={{ padding: '8px 10px', borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ padding: '6px 8px 8px', borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 12, color: '#64748b' }}>Net Waste</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
               </div>
             )}
           </div>
@@ -3628,9 +3621,9 @@ function CrewPayPanel({ job, crew, assignments }) {
           >
             + Add Section
           </button>
-          {/* Materials Total */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', marginTop: 12, background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#f97316' }}>Materials Total</span>
+          {/* Materials Grand Total — sticky */}
+          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Materials Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#f97316' }}>{fmtC(matTotal)}</span>
           </div>
         </div>
@@ -3675,9 +3668,9 @@ function CrewPayPanel({ job, crew, assignments }) {
           >
             + Add Section
           </button>
-          {/* Labor Total */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', marginTop: 12, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#6366f1' }}>Labor Total</span>
+          {/* Labor Grand Total — sticky */}
+          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Labor Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmtC(laborTotal)}</span>
           </div>
         </div>
