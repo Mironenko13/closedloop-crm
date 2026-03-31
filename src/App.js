@@ -2989,9 +2989,8 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Cost Manager ─────────────────────────────────────────────────────────────
-const CP_UNITS = ['EA', 'SQ', 'BDL', 'LF', 'SF', 'FT', 'PC', 'GAL', 'BOX', 'ROLL', 'HR'];
-const CP_MAT_KEY = 'cl_crewpay_mat_tpls';
-const CP_RATE_KEY = 'cl_crewpay_rate_tpls';
+const CP_UNITS = ['EA', 'SQ', 'BDL', 'LF', 'SF', 'FT', 'PC', 'GAL', 'BOX', 'ROLL', 'HR', 'CY', 'TON', 'LB', 'SY', 'PK', 'FLAT', 'LOAD'];
+const CP_TPL_KEY = 'cl_costmgr_tpls';
 
 const CP_DEF_MATS = [
   { id: 'ms1', title: 'Shingles & Roofing', items: [
@@ -3087,7 +3086,245 @@ const CP_DEF_LABOR = [
   ]},
 ];
 
+const CP_TRADE_TEMPLATES = {
+  'Roofing': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Landscaping': {
+    materials: [
+      { id: 'lsc_ms1', title: 'Soil & Ground Cover', items: [
+        { id: 'lsc_ma1', item: 'Topsoil', unit: 'CY' }, { id: 'lsc_ma2', item: 'Mulch', unit: 'CY' },
+        { id: 'lsc_ma3', item: 'Gravel/Stone', unit: 'TON' }, { id: 'lsc_ma4', item: 'River Rock', unit: 'TON' },
+        { id: 'lsc_ma5', item: 'Landscape Fabric', unit: 'ROLL' }, { id: 'lsc_ma6', item: 'Sod', unit: 'SF' },
+        { id: 'lsc_ma7', item: 'Seed Mix', unit: 'LB' }, { id: 'lsc_ma8', item: 'Fertilizer', unit: 'BAG' },
+      ]},
+      { id: 'lsc_ms2', title: 'Hardscape & Structure', items: [
+        { id: 'lsc_mb1', item: 'Pavers', unit: 'SF' }, { id: 'lsc_mb2', item: 'Edging', unit: 'LF' },
+        { id: 'lsc_mb3', item: 'Retaining Wall Block', unit: 'EA' }, { id: 'lsc_mb4', item: 'Timber/Landscape Ties', unit: 'EA' },
+        { id: 'lsc_mb5', item: 'Concrete Mix', unit: 'BAG' }, { id: 'lsc_mb6', item: 'Drainage Pipe', unit: 'LF' },
+      ]},
+      { id: 'lsc_ms3', title: 'Plants & Irrigation', items: [
+        { id: 'lsc_mc1', item: 'Plants/Shrubs', unit: 'EA' }, { id: 'lsc_mc2', item: 'Trees', unit: 'EA' },
+        { id: 'lsc_mc3', item: 'Flowers/Annuals', unit: 'FLAT' }, { id: 'lsc_mc4', item: 'Irrigation Pipe', unit: 'LF' },
+        { id: 'lsc_mc5', item: 'Sprinkler Heads', unit: 'EA' }, { id: 'lsc_mc6', item: 'Drip Line', unit: 'LF' },
+        { id: 'lsc_mc7', item: 'Outdoor Lighting', unit: 'EA' },
+      ]},
+    ],
+    labor: [{ id: 'lsc_ls1', title: 'Installation Labor', isWaste: false, items: [
+      { id: 'lsc_la1', label: 'Grading/Leveling', unit: 'HR' }, { id: 'lsc_la2', label: 'Sod Installation', unit: 'SF' },
+      { id: 'lsc_la3', label: 'Mulch Spreading', unit: 'CY' }, { id: 'lsc_la4', label: 'Paver Installation', unit: 'SF' },
+      { id: 'lsc_la5', label: 'Retaining Wall Build', unit: 'LF' }, { id: 'lsc_la6', label: 'Tree Planting', unit: 'EA' },
+      { id: 'lsc_la7', label: 'Shrub Planting', unit: 'EA' }, { id: 'lsc_la8', label: 'Irrigation Install', unit: 'LF' },
+      { id: 'lsc_la9', label: 'Drainage Install', unit: 'LF' }, { id: 'lsc_la10', label: 'Demolition/Removal', unit: 'HR' },
+      { id: 'lsc_la11', label: 'Hauling/Disposal', unit: 'LOAD' }, { id: 'lsc_la12', label: 'Design Consultation', unit: 'HR' },
+    ]}],
+  },
+  'Plumbing': {
+    materials: [
+      { id: 'plm_ms1', title: 'Pipes & Fittings', items: [
+        { id: 'plm_ma1', item: 'Copper Pipe', unit: 'LF' }, { id: 'plm_ma2', item: 'PVC Pipe', unit: 'LF' },
+        { id: 'plm_ma3', item: 'PEX Tubing', unit: 'LF' }, { id: 'plm_ma4', item: 'Fittings/Connectors', unit: 'EA' },
+        { id: 'plm_ma5', item: 'Shut-off Valves', unit: 'EA' }, { id: 'plm_ma6', item: 'Drain Line', unit: 'LF' },
+        { id: 'plm_ma7', item: 'Vent Pipe', unit: 'LF' }, { id: 'plm_ma8', item: 'Pipe Hangers', unit: 'EA' },
+        { id: 'plm_ma9', item: 'Teflon Tape', unit: 'ROLL' }, { id: 'plm_ma10', item: 'Solder/Flux', unit: 'EA' },
+        { id: 'plm_ma11', item: 'Silicone Sealant', unit: 'EA' },
+      ]},
+      { id: 'plm_ms2', title: 'Fixtures & Equipment', items: [
+        { id: 'plm_mb1', item: 'Water Heater', unit: 'EA' }, { id: 'plm_mb2', item: 'Faucet', unit: 'EA' },
+        { id: 'plm_mb3', item: 'Toilet', unit: 'EA' }, { id: 'plm_mb4', item: 'Sink', unit: 'EA' },
+        { id: 'plm_mb5', item: 'Garbage Disposal', unit: 'EA' }, { id: 'plm_mb6', item: 'Sump Pump', unit: 'EA' },
+      ]},
+    ],
+    labor: [{ id: 'plm_ls1', title: 'Plumbing Labor', isWaste: false, items: [
+      { id: 'plm_la1', label: 'Rough-In', unit: 'HR' }, { id: 'plm_la2', label: 'Fixture Install', unit: 'EA' },
+      { id: 'plm_la3', label: 'Water Heater Install', unit: 'EA' }, { id: 'plm_la4', label: 'Drain Cleaning', unit: 'HR' },
+      { id: 'plm_la5', label: 'Pipe Repair', unit: 'HR' }, { id: 'plm_la6', label: 'Re-pipe', unit: 'LF' },
+      { id: 'plm_la7', label: 'Gas Line', unit: 'LF' }, { id: 'plm_la8', label: 'Sewer Line', unit: 'LF' },
+      { id: 'plm_la9', label: 'Camera Inspection', unit: 'EA' }, { id: 'plm_la10', label: 'Permit Fees', unit: 'EA' },
+    ]}],
+  },
+  'Electrical': {
+    materials: [
+      { id: 'elc_ms1', title: 'Wire & Conduit', items: [
+        { id: 'elc_ma1', item: 'Romex 14/2', unit: 'FT' }, { id: 'elc_ma2', item: 'Romex 12/2', unit: 'FT' },
+        { id: 'elc_ma3', item: 'Romex 10/3', unit: 'FT' }, { id: 'elc_ma4', item: 'Conduit', unit: 'LF' },
+        { id: 'elc_ma5', item: 'Low Voltage Wire', unit: 'FT' }, { id: 'elc_ma6', item: 'Wire Nuts', unit: 'BOX' },
+      ]},
+      { id: 'elc_ms2', title: 'Devices & Fixtures', items: [
+        { id: 'elc_mb1', item: 'Outlets/Receptacles', unit: 'EA' }, { id: 'elc_mb2', item: 'Switches', unit: 'EA' },
+        { id: 'elc_mb3', item: 'GFCI Outlets', unit: 'EA' }, { id: 'elc_mb4', item: 'Breakers', unit: 'EA' },
+        { id: 'elc_mb5', item: 'Panel Box', unit: 'EA' }, { id: 'elc_mb6', item: 'Junction Box', unit: 'EA' },
+        { id: 'elc_mb7', item: 'Light Fixtures', unit: 'EA' }, { id: 'elc_mb8', item: 'Recessed Can', unit: 'EA' },
+        { id: 'elc_mb9', item: 'Ceiling Fan', unit: 'EA' }, { id: 'elc_mb10', item: 'Smoke Detector', unit: 'EA' },
+        { id: 'elc_mb11', item: 'Outdoor Fixture', unit: 'EA' },
+      ]},
+    ],
+    labor: [{ id: 'elc_ls1', title: 'Electrical Labor', isWaste: false, items: [
+      { id: 'elc_la1', label: 'Rough-In', unit: 'HR' }, { id: 'elc_la2', label: 'Panel Upgrade', unit: 'EA' },
+      { id: 'elc_la3', label: 'Circuit Install', unit: 'EA' }, { id: 'elc_la4', label: 'Fixture Install', unit: 'EA' },
+      { id: 'elc_la5', label: 'Outlet/Switch Install', unit: 'EA' }, { id: 'elc_la6', label: 'Ceiling Fan Install', unit: 'EA' },
+      { id: 'elc_la7', label: 'Troubleshooting', unit: 'HR' }, { id: 'elc_la8', label: 'Inspection Prep', unit: 'HR' },
+      { id: 'elc_la9', label: 'Generator Install', unit: 'EA' }, { id: 'elc_la10', label: 'EV Charger Install', unit: 'EA' },
+    ]}],
+  },
+  'HVAC': {
+    materials: [
+      { id: 'hvc_ms1', title: 'Ductwork & Distribution', items: [
+        { id: 'hvc_ma1', item: 'Ductwork', unit: 'LF' }, { id: 'hvc_ma2', item: 'Flex Duct', unit: 'LF' },
+        { id: 'hvc_ma3', item: 'Registers/Grilles', unit: 'EA' }, { id: 'hvc_ma4', item: 'Dampers', unit: 'EA' },
+        { id: 'hvc_ma5', item: 'Condensate Line', unit: 'LF' }, { id: 'hvc_ma6', item: 'Insulation Wrap', unit: 'ROLL' },
+        { id: 'hvc_ma7', item: 'Duct Tape/Mastic', unit: 'EA' }, { id: 'hvc_ma8', item: 'Filter', unit: 'EA' },
+      ]},
+      { id: 'hvc_ms2', title: 'Equipment', items: [
+        { id: 'hvc_mb1', item: 'AC Unit', unit: 'EA' }, { id: 'hvc_mb2', item: 'Furnace', unit: 'EA' },
+        { id: 'hvc_mb3', item: 'Heat Pump', unit: 'EA' }, { id: 'hvc_mb4', item: 'Mini Split', unit: 'EA' },
+        { id: 'hvc_mb5', item: 'Thermostat', unit: 'EA' }, { id: 'hvc_mb6', item: 'Refrigerant', unit: 'LB' },
+      ]},
+    ],
+    labor: [{ id: 'hvc_ls1', title: 'HVAC Labor', isWaste: false, items: [
+      { id: 'hvc_la1', label: 'System Install', unit: 'EA' }, { id: 'hvc_la2', label: 'Ductwork Install', unit: 'LF' },
+      { id: 'hvc_la3', label: 'Unit Replacement', unit: 'EA' }, { id: 'hvc_la4', label: 'Repair/Service', unit: 'HR' },
+      { id: 'hvc_la5', label: 'Maintenance/Tune-up', unit: 'EA' }, { id: 'hvc_la6', label: 'Thermostat Install', unit: 'EA' },
+      { id: 'hvc_la7', label: 'Mini Split Install', unit: 'EA' }, { id: 'hvc_la8', label: 'Duct Cleaning', unit: 'EA' },
+      { id: 'hvc_la9', label: 'Refrigerant Charge', unit: 'EA' },
+    ]}],
+  },
+  'Painting': {
+    materials: [
+      { id: 'pnt_ms1', title: 'Paint & Finish', items: [
+        { id: 'pnt_ma1', item: 'Interior Paint', unit: 'GAL' }, { id: 'pnt_ma2', item: 'Exterior Paint', unit: 'GAL' },
+        { id: 'pnt_ma3', item: 'Primer', unit: 'GAL' }, { id: 'pnt_ma4', item: 'Stain', unit: 'GAL' },
+        { id: 'pnt_ma5', item: 'Paint Thinner', unit: 'GAL' }, { id: 'pnt_ma6', item: 'Patching Compound', unit: 'EA' },
+        { id: 'pnt_ma7', item: 'Caulk', unit: 'EA' },
+      ]},
+      { id: 'pnt_ms2', title: 'Supplies', items: [
+        { id: 'pnt_mb1', item: "Painter's Tape", unit: 'ROLL' }, { id: 'pnt_mb2', item: 'Drop Cloths', unit: 'EA' },
+        { id: 'pnt_mb3', item: 'Rollers/Covers', unit: 'EA' }, { id: 'pnt_mb4', item: 'Brushes', unit: 'EA' },
+        { id: 'pnt_mb5', item: 'Sandpaper', unit: 'PK' },
+      ]},
+    ],
+    labor: [{ id: 'pnt_ls1', title: 'Painting Labor', isWaste: false, items: [
+      { id: 'pnt_la1', label: 'Interior Walls', unit: 'SF' }, { id: 'pnt_la2', label: 'Interior Trim', unit: 'LF' },
+      { id: 'pnt_la3', label: 'Exterior Walls', unit: 'SF' }, { id: 'pnt_la4', label: 'Exterior Trim', unit: 'LF' },
+      { id: 'pnt_la5', label: 'Ceiling', unit: 'SF' }, { id: 'pnt_la6', label: 'Cabinet Painting', unit: 'EA' },
+      { id: 'pnt_la7', label: 'Deck/Fence Staining', unit: 'SF' }, { id: 'pnt_la8', label: 'Pressure Wash', unit: 'SF' },
+      { id: 'pnt_la9', label: 'Prep/Scraping', unit: 'HR' }, { id: 'pnt_la10', label: 'Wallpaper Removal', unit: 'SF' },
+    ]}],
+  },
+  'Siding': {
+    materials: [
+      { id: 'sid_ms1', title: 'Siding Material', items: [
+        { id: 'sid_ma1', item: 'Vinyl Siding', unit: 'SQ' }, { id: 'sid_ma2', item: 'Fiber Cement Siding', unit: 'SQ' },
+        { id: 'sid_ma3', item: 'Wood Siding', unit: 'SQ' }, { id: 'sid_ma4', item: 'Metal Siding', unit: 'SQ' },
+        { id: 'sid_ma5', item: 'House Wrap', unit: 'ROLL' }, { id: 'sid_ma6', item: 'Flashing', unit: 'LF' },
+        { id: 'sid_ma7', item: 'Nails/Fasteners', unit: 'BOX' }, { id: 'sid_ma8', item: 'Caulk', unit: 'EA' },
+        { id: 'sid_ma9', item: 'Touch-up Paint', unit: 'EA' },
+      ]},
+      { id: 'sid_ms2', title: 'Trim & Accessories', items: [
+        { id: 'sid_mb1', item: 'J-Channel', unit: 'LF' }, { id: 'sid_mb2', item: 'Corner Posts', unit: 'EA' },
+        { id: 'sid_mb3', item: 'Starter Strip', unit: 'LF' }, { id: 'sid_mb4', item: 'Soffit', unit: 'LF' },
+        { id: 'sid_mb5', item: 'Fascia', unit: 'LF' },
+      ]},
+    ],
+    labor: [{ id: 'sid_ls1', title: 'Siding Labor', isWaste: false, items: [
+      { id: 'sid_la1', label: 'Siding Install', unit: 'SQ' }, { id: 'sid_la2', label: 'Tear-off Old Siding', unit: 'SQ' },
+      { id: 'sid_la3', label: 'Soffit Install', unit: 'LF' }, { id: 'sid_la4', label: 'Fascia Install', unit: 'LF' },
+      { id: 'sid_la5', label: 'Trim Work', unit: 'LF' }, { id: 'sid_la6', label: 'Window/Door Wrap', unit: 'EA' },
+      { id: 'sid_la7', label: 'Repair/Patch', unit: 'HR' },
+    ]}],
+  },
+  'Fencing': {
+    materials: [{ id: 'fnc_ms1', title: 'Fence Materials', items: [
+      { id: 'fnc_ma1', item: 'Wood Posts', unit: 'EA' }, { id: 'fnc_ma2', item: 'Metal Posts', unit: 'EA' },
+      { id: 'fnc_ma3', item: 'Rails', unit: 'EA' }, { id: 'fnc_ma4', item: 'Pickets/Boards', unit: 'EA' },
+      { id: 'fnc_ma5', item: 'Chain Link Fabric', unit: 'LF' }, { id: 'fnc_ma6', item: 'Vinyl Panels', unit: 'EA' },
+      { id: 'fnc_ma7', item: 'Gate', unit: 'EA' }, { id: 'fnc_ma8', item: 'Hardware/Hinges', unit: 'EA' },
+      { id: 'fnc_ma9', item: 'Concrete Mix', unit: 'BAG' }, { id: 'fnc_ma10', item: 'Post Caps', unit: 'EA' },
+      { id: 'fnc_ma11', item: 'Stain/Sealer', unit: 'GAL' }, { id: 'fnc_ma12', item: 'Screws/Nails', unit: 'BOX' },
+    ]}],
+    labor: [{ id: 'fnc_ls1', title: 'Fencing Labor', isWaste: false, items: [
+      { id: 'fnc_la1', label: 'Post Setting', unit: 'EA' }, { id: 'fnc_la2', label: 'Fence Install', unit: 'LF' },
+      { id: 'fnc_la3', label: 'Gate Install', unit: 'EA' }, { id: 'fnc_la4', label: 'Tear-out Old Fence', unit: 'LF' },
+      { id: 'fnc_la5', label: 'Staining/Sealing', unit: 'LF' }, { id: 'fnc_la6', label: 'Repair', unit: 'HR' },
+    ]}],
+  },
+  'General Construction': {
+    materials: [
+      { id: 'gnc_ms1', title: 'Framing & Structure', items: [
+        { id: 'gnc_ma1', item: 'Lumber 2x4', unit: 'FT' }, { id: 'gnc_ma2', item: 'Lumber 2x6', unit: 'FT' },
+        { id: 'gnc_ma3', item: 'Plywood', unit: 'PC' }, { id: 'gnc_ma4', item: 'OSB', unit: 'PC' },
+        { id: 'gnc_ma5', item: 'Concrete', unit: 'CY' }, { id: 'gnc_ma6', item: 'Rebar', unit: 'LF' },
+        { id: 'gnc_ma7', item: 'Insulation', unit: 'ROLL' }, { id: 'gnc_ma8', item: 'Vapor Barrier', unit: 'ROLL' },
+        { id: 'gnc_ma9', item: 'Flashing', unit: 'LF' },
+      ]},
+      { id: 'gnc_ms2', title: 'Finishing', items: [
+        { id: 'gnc_mb1', item: 'Drywall', unit: 'PC' }, { id: 'gnc_mb2', item: 'Joint Compound', unit: 'EA' },
+        { id: 'gnc_mb3', item: 'Screws', unit: 'BOX' }, { id: 'gnc_mb4', item: 'Nails', unit: 'BOX' },
+        { id: 'gnc_mb5', item: 'Hardware/Misc', unit: 'EA' },
+      ]},
+    ],
+    labor: [{ id: 'gnc_ls1', title: 'Construction Labor', isWaste: false, items: [
+      { id: 'gnc_la1', label: 'Framing', unit: 'HR' }, { id: 'gnc_la2', label: 'Drywall Hang', unit: 'SF' },
+      { id: 'gnc_la3', label: 'Drywall Finish', unit: 'SF' }, { id: 'gnc_la4', label: 'Concrete Work', unit: 'HR' },
+      { id: 'gnc_la5', label: 'Demolition', unit: 'HR' }, { id: 'gnc_la6', label: 'General Labor', unit: 'HR' },
+      { id: 'gnc_la7', label: 'Supervision', unit: 'HR' }, { id: 'gnc_la8', label: 'Cleanup', unit: 'HR' },
+    ]}],
+  },
+  'Flooring': {
+    materials: [
+      { id: 'flr_ms1', title: 'Flooring Material', items: [
+        { id: 'flr_ma1', item: 'Hardwood', unit: 'SF' }, { id: 'flr_ma2', item: 'Laminate', unit: 'SF' },
+        { id: 'flr_ma3', item: 'Vinyl Plank/LVP', unit: 'SF' }, { id: 'flr_ma4', item: 'Tile', unit: 'SF' },
+        { id: 'flr_ma5', item: 'Carpet', unit: 'SY' }, { id: 'flr_ma6', item: 'Underlayment', unit: 'ROLL' },
+      ]},
+      { id: 'flr_ms2', title: 'Installation Supplies', items: [
+        { id: 'flr_mb1', item: 'Thinset/Mortar', unit: 'BAG' }, { id: 'flr_mb2', item: 'Grout', unit: 'BAG' },
+        { id: 'flr_mb3', item: 'Baseboards', unit: 'LF' }, { id: 'flr_mb4', item: 'Transition Strips', unit: 'EA' },
+        { id: 'flr_mb5', item: 'Adhesive', unit: 'GAL' }, { id: 'flr_mb6', item: 'Spacers', unit: 'PK' },
+      ]},
+    ],
+    labor: [{ id: 'flr_ls1', title: 'Flooring Labor', isWaste: false, items: [
+      { id: 'flr_la1', label: 'Floor Install', unit: 'SF' }, { id: 'flr_la2', label: 'Tile Install', unit: 'SF' },
+      { id: 'flr_la3', label: 'Carpet Install', unit: 'SY' }, { id: 'flr_la4', label: 'Floor Removal', unit: 'SF' },
+      { id: 'flr_la5', label: 'Subfloor Repair', unit: 'SF' }, { id: 'flr_la6', label: 'Baseboard Install', unit: 'LF' },
+      { id: 'flr_la7', label: 'Floor Leveling', unit: 'SF' }, { id: 'flr_la8', label: 'Staining/Finishing', unit: 'SF' },
+    ]}],
+  },
+  'Windows & Doors': {
+    materials: [
+      { id: 'wnd_ms1', title: 'Windows & Doors', items: [
+        { id: 'wnd_ma1', item: 'Window', unit: 'EA' }, { id: 'wnd_ma2', item: 'Entry Door', unit: 'EA' },
+        { id: 'wnd_ma3', item: 'Interior Door', unit: 'EA' }, { id: 'wnd_ma4', item: 'Sliding Door', unit: 'EA' },
+        { id: 'wnd_ma5', item: 'Storm Door', unit: 'EA' }, { id: 'wnd_ma6', item: 'Hardware/Locks', unit: 'EA' },
+        { id: 'wnd_ma7', item: 'Weatherstripping', unit: 'LF' },
+      ]},
+      { id: 'wnd_ms2', title: 'Installation Supplies', items: [
+        { id: 'wnd_mb1', item: 'Trim/Casing', unit: 'LF' }, { id: 'wnd_mb2', item: 'Shims', unit: 'PK' },
+        { id: 'wnd_mb3', item: 'Spray Foam', unit: 'EA' }, { id: 'wnd_mb4', item: 'Flashing Tape', unit: 'ROLL' },
+      ]},
+    ],
+    labor: [{ id: 'wnd_ls1', title: 'Installation Labor', isWaste: false, items: [
+      { id: 'wnd_la1', label: 'Window Install', unit: 'EA' }, { id: 'wnd_la2', label: 'Window Removal', unit: 'EA' },
+      { id: 'wnd_la3', label: 'Door Install', unit: 'EA' }, { id: 'wnd_la4', label: 'Door Removal', unit: 'EA' },
+      { id: 'wnd_la5', label: 'Trim Install', unit: 'LF' }, { id: 'wnd_la6', label: 'Caulking/Sealing', unit: 'EA' },
+      { id: 'wnd_la7', label: 'Custom Framing', unit: 'HR' },
+    ]}],
+  },
+  'Default': {
+    materials: [{ id: 'def_ms1', title: 'Materials', items: [
+      { id: 'def_ma1', item: 'Material Item 1', unit: 'EA' },
+      { id: 'def_ma2', item: 'Material Item 2', unit: 'EA' },
+      { id: 'def_ma3', item: 'Material Item 3', unit: 'EA' },
+    ]}],
+    labor: [{ id: 'def_ls1', title: 'Labor', isWaste: false, items: [
+      { id: 'def_la1', label: 'Labor Item 1', unit: 'HR' },
+      { id: 'def_la2', label: 'Labor Item 2', unit: 'HR' },
+      { id: 'def_la3', label: 'Labor Item 3', unit: 'HR' },
+    ]}],
+  },
+};
+
 function cpNewMakeInit(job, crewNames) {
+  const tradeName = (job.trade && CP_TRADE_TEMPLATES[job.trade]) ? job.trade : 'Default';
+  const tpl = CP_TRADE_TEMPLATES[tradeName];
   return {
     jobInfo: {
       contractPrice: job.value ? String(job.value) : '',
@@ -3095,16 +3332,17 @@ function cpNewMakeInit(job, crewNames) {
       tax: '0',
       subContractorName: crewNames,
       notes: '',
+      templateName: tradeName,
     },
     materials: {
-      sections: CP_DEF_MATS.map(sec => ({
+      sections: tpl.materials.map(sec => ({
         ...sec,
         collapsed: false,
         items: sec.items.map(item => ({ ...item, qty: '', costPerUnit: '' })),
       })),
     },
     labor: {
-      sections: CP_DEF_LABOR.map(sec => ({
+      sections: tpl.labor.map(sec => ({
         ...sec,
         collapsed: false,
         items: sec.items.map(item => ({ ...item, qty: '', rate: '' })),
@@ -3142,28 +3380,20 @@ function CostManagerPanel({ job, crew, assignments }) {
     } catch (e) { /* ignore */ }
     return cpNewMakeInit(job, assignedCrew.map(m => m.name).join(', '));
   });
-  const [matTpls, setMatTpls] = useState(() => {
-    try { const s = localStorage.getItem(CP_MAT_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; }
+  const [jobTpls, setJobTpls] = useState(() => {
+    try { const s = localStorage.getItem(CP_TPL_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; }
   });
-  const [rateTpls, setRateTpls] = useState(() => {
-    try { const s = localStorage.getItem(CP_RATE_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; }
-  });
-  const [showMatSave, setShowMatSave] = useState(false);
-  const [matTplName, setMatTplName] = useState('');
-  const [showRateSave, setShowRateSave] = useState(false);
-  const [rateTplName, setRateTplName] = useState('');
+  const [showTplSave, setShowTplSave] = useState(false);
+  const [tplName, setTplName] = useState('');
+  const [pendingTpl, setPendingTpl] = useState(null);
 
   useEffect(() => {
     try { localStorage.setItem(cpKey, JSON.stringify(data)); } catch (e) { /* ignore */ }
   }, [data, cpKey]);
 
   useEffect(() => {
-    try { localStorage.setItem(CP_MAT_KEY, JSON.stringify(matTpls)); } catch (e) { /* ignore */ }
-  }, [matTpls]);
-
-  useEffect(() => {
-    try { localStorage.setItem(CP_RATE_KEY, JSON.stringify(rateTpls)); } catch (e) { /* ignore */ }
-  }, [rateTpls]);
+    try { localStorage.setItem(CP_TPL_KEY, JSON.stringify(jobTpls)); } catch (e) { /* ignore */ }
+  }, [jobTpls]);
 
   // ── material handlers ───────────────────────────────────────────────────────
   const updMat = (secId, itemId, field, val) => setData(d => ({
@@ -3310,58 +3540,32 @@ function CostManagerPanel({ job, crew, assignments }) {
   const updSignOff = (field, val) => setData(d => ({ ...d, signOff: { ...d.signOff, [field]: val } }));
 
   // ── template handlers ───────────────────────────────────────────────────────
-  const saveMatTpl = () => {
-    if (!matTplName.trim()) return;
-    const sections = data.materials.sections.map(sec => ({
-      ...sec,
-      items: sec.items.map(item => { const c = { ...item }; delete c.qty; delete c.costPerUnit; return c; }),
+  const saveJobTpl = () => {
+    if (!tplName.trim()) return;
+    const materials = data.materials.sections.map(sec => ({
+      ...sec, items: sec.items.map(item => { const c = { ...item }; delete c.qty; delete c.costPerUnit; return c; }),
     }));
-    setMatTpls(prev => [...prev.filter(t => t.name !== matTplName.trim()), { name: matTplName.trim(), sections }]);
-    setMatTplName('');
-    setShowMatSave(false);
+    const labor = data.labor.sections.map(sec => ({
+      ...sec, items: sec.items.map(item => { const c = { ...item }; delete c.qty; delete c.rate; return c; }),
+    }));
+    setJobTpls(prev => [...prev.filter(t => t.name !== tplName.trim()), { name: tplName.trim(), materials, labor }]);
+    setTplName('');
+    setShowTplSave(false);
   };
 
-  const loadMatTpl = (name) => {
-    const tpl = matTpls.find(t => t.name === name);
-    if (!tpl) return;
+  const applyTpl = (name) => {
+    const builtIn = CP_TRADE_TEMPLATES[name];
+    const custom = jobTpls.find(t => t.name === name);
+    if (!builtIn && !custom) return;
+    const matSecs = builtIn ? builtIn.materials : custom.materials;
+    const labSecs = builtIn ? builtIn.labor : custom.labor;
     setData(d => ({
       ...d,
-      materials: {
-        ...d.materials,
-        sections: tpl.sections.map(sec => ({
-          ...sec,
-          collapsed: false,
-          items: sec.items.map(item => ({ ...item, qty: '', costPerUnit: '' })),
-        })),
-      },
+      jobInfo: { ...d.jobInfo, templateName: name },
+      materials: { sections: matSecs.map(sec => ({ ...sec, collapsed: false, items: sec.items.map(item => ({ ...item, qty: '', costPerUnit: '' })) })) },
+      labor: { sections: labSecs.map(sec => ({ ...sec, collapsed: false, items: sec.items.map(item => ({ ...item, qty: '', rate: '' })) })) },
     }));
-  };
-
-  const saveRateTpl = () => {
-    if (!rateTplName.trim()) return;
-    const sections = data.labor.sections.map(sec => ({
-      ...sec,
-      items: sec.items.map(item => { const c = { ...item }; delete c.qty; return c; }),
-    }));
-    setRateTpls(prev => [...prev.filter(t => t.name !== rateTplName.trim()), { name: rateTplName.trim(), sections }]);
-    setRateTplName('');
-    setShowRateSave(false);
-  };
-
-  const loadRateTpl = (name) => {
-    const tpl = rateTpls.find(t => t.name === name);
-    if (!tpl) return;
-    setData(d => ({
-      ...d,
-      labor: {
-        ...d.labor,
-        sections: tpl.sections.map(sec => ({
-          ...sec,
-          collapsed: false,
-          items: sec.items.map(item => ({ ...item, qty: '' })),
-        })),
-      },
-    }));
+    setPendingTpl(null);
   };
 
   // ── calculations ────────────────────────────────────────────────────────────
@@ -3568,6 +3772,52 @@ function CostManagerPanel({ job, crew, assignments }) {
         {CP_UNITS.map(u => <option key={u} value={u} />)}
       </datalist>
 
+      {/* ── Template bar ── */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
+        <select
+          value={data.jobInfo.templateName || ''}
+          onChange={e => {
+            const name = e.target.value;
+            if (!name) return;
+            const hasData = data.materials.sections.some(sec => sec.items.some(item => item.qty || item.costPerUnit));
+            if (hasData) { setPendingTpl(name); } else { applyTpl(name); }
+          }}
+          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+        >
+          <option value="">Select template…</option>
+          <optgroup label="Built-in">
+            {Object.keys(CP_TRADE_TEMPLATES).map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </optgroup>
+          {jobTpls.length > 0 && (
+            <optgroup label="Custom">
+              {jobTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+            </optgroup>
+          )}
+        </select>
+        <button
+          onClick={() => setShowTplSave(s => !s)}
+          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+        >
+          Save as Template
+        </button>
+      </div>
+      {showTplSave && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+          <button onClick={saveJobTpl} style={{ padding: '7px 14px', background: '#f97316', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
+        </div>
+      )}
+      {pendingTpl && (
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 7, padding: '9px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, color: '#fca5a5', flex: 1 }}>Replace all line items with the <strong>{pendingTpl}</strong> template?</span>
+          <button onClick={() => applyTpl(pendingTpl)} style={{ padding: '5px 12px', background: '#ef4444', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Yes, Replace</button>
+          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #334155', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
+        </div>
+      )}
+
       {/* Sub-tab navigation */}
       <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 16, overflowX: 'auto' }}>
         {SUB_TABS.map(({ key, label }) => (
@@ -3590,29 +3840,6 @@ function CostManagerPanel({ job, crew, assignments }) {
       {/* ── Materials Tab ── */}
       {subTab === 'materials' && (
         <div>
-          {/* Template toolbar */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
-            <select
-              style={{ flex: 1, minWidth: 130, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#94a3b8', fontSize: 13, outline: 'none' }}
-              defaultValue=""
-              onChange={e => { if (e.target.value) { loadMatTpl(e.target.value); e.target.value = ''; } }}
-            >
-              <option value="">Load Template…</option>
-              {matTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-            </select>
-            <button
-              onClick={() => setShowMatSave(s => !s)}
-              style={{ padding: '8px 12px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
-            >
-              Save as Template
-            </button>
-          </div>
-          {showMatSave && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <input value={matTplName} onChange={e => setMatTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
-              <button onClick={saveMatTpl} style={{ padding: '8px 14px', background: '#f97316', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
-            </div>
-          )}
           {/* Sections */}
           {data.materials.sections.map(sec => renderMatSection(sec))}
           <button
@@ -3632,29 +3859,6 @@ function CostManagerPanel({ job, crew, assignments }) {
       {/* ── Labor Tab ── */}
       {subTab === 'labor' && (
         <div>
-          {/* Template toolbar */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
-            <select
-              style={{ flex: 1, minWidth: 130, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#94a3b8', fontSize: 13, outline: 'none' }}
-              defaultValue=""
-              onChange={e => { if (e.target.value) { loadRateTpl(e.target.value); e.target.value = ''; } }}
-            >
-              <option value="">Load Rate Template…</option>
-              {rateTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-            </select>
-            <button
-              onClick={() => setShowRateSave(s => !s)}
-              style={{ padding: '8px 12px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
-            >
-              Save Rate Template
-            </button>
-          </div>
-          {showRateSave && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <input value={rateTplName} onChange={e => setRateTplName(e.target.value)} placeholder="Rate template name" style={{ flex: 1, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
-              <button onClick={saveRateTpl} style={{ padding: '8px 14px', background: '#f97316', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
-            </div>
-          )}
           {/* Sub-contractor info */}
           <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Sub-Contractor Name(s)</div>
