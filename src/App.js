@@ -2989,48 +2989,135 @@ function AnalyticsTab({ leads, tier }) {
 }
 
 // ─── Crew Pay ─────────────────────────────────────────────────────────────────
-const CP_UNITS = ['SQ', 'EA', 'LF', 'SF', 'FT', 'PC', 'HR', 'BDL'];
-const CP_LINE_TPLS_KEY = 'cl_crewpay_line_templates';
-const CP_RATE_TPLS_KEY = 'cl_crewpay_rate_templates';
+const CP_UNITS = ['EA', 'SQ', 'BDL', 'LF', 'SF', 'FT', 'PC', 'GAL', 'BOX', 'ROLL', 'HR'];
+const CP_MAT_KEY = 'cl_crewpay_mat_tpls';
+const CP_RATE_KEY = 'cl_crewpay_rate_tpls';
 
-const CP_ASPHALT_ITEMS = [
-  { id: 'cp_a1', section: 'Shingle Squares by Pitch', label: 'Second Layer', unit: 'SQ' },
-  { id: 'cp_a2', section: 'Shingle Squares by Pitch', label: '8/12\u20139/12 Shingles', unit: 'SQ' },
-  { id: 'cp_a3', section: 'Shingle Squares by Pitch', label: '10/12\u201311/12 Shingles', unit: 'SQ' },
-  { id: 'cp_a4', section: 'Shingle Squares by Pitch', label: '12/12 Shingles', unit: 'SQ' },
-  { id: 'cp_a5', section: 'Shingle Squares by Pitch', label: '13/12+ Shingles', unit: 'SQ' },
-  { id: 'cp_a6', section: 'Shingle Squares by Pitch', label: 'W/ Harness Add', unit: 'SQ', note: 'Verbal feedback needs to be given before deducting any SQs' },
-  { id: 'cp_a7', section: 'Components', label: 'Small Chimney Counter Flashing', unit: 'EA' },
-  { id: 'cp_a8', section: 'Components', label: 'Large Chimney Counter Flashing', unit: 'EA' },
-  { id: 'cp_a9', section: 'Components', label: 'Plywood', unit: 'PC' },
-  { id: 'cp_a10', section: 'Components', label: 'Boards', unit: 'FT' },
-  { id: 'cp_a11', section: 'Components', label: 'Skylights', unit: 'EA' },
-  { id: 'cp_a12', section: 'Components', label: 'Skylights Flashing Only', unit: 'EA' },
-  { id: 'cp_a13', section: 'Additional Work', label: 'EPDM Removal & Install', unit: 'SF' },
-  { id: 'cp_a14', section: 'Additional Work', label: 'Fascia', unit: 'LF' },
-  { id: 'cp_a15', section: 'Additional Work', label: 'Soffit', unit: 'SF' },
-  { id: 'cp_a16', section: 'Additional Work', label: 'Counter Flashing', unit: 'LF' },
-  { id: 'cp_a17', section: 'Additional Work', label: 'Labor Hours', unit: 'HR' },
+const CP_DEF_MATS = [
+  { id: 'ms1', title: 'Shingles & Roofing', items: [
+    { id: 'ma1', item: '3-Tab Shingles', description: '', unit: 'BDL' },
+    { id: 'ma2', item: 'Architectural Shingles', description: '', unit: 'BDL' },
+    { id: 'ma3', item: 'Premium/Designer Shingles', description: '', unit: 'BDL' },
+    { id: 'ma4', item: 'Ridge Cap Shingles', description: '', unit: 'BDL' },
+    { id: 'ma5', item: 'Starter Strip', description: '', unit: 'LF' },
+    { id: 'ma6', item: 'Hip & Ridge', description: '', unit: 'LF' },
+  ]},
+  { id: 'ms2', title: 'Underlayment & Barriers', items: [
+    { id: 'mb1', item: 'Synthetic Underlayment', description: '', unit: 'ROLL' },
+    { id: 'mb2', item: 'Felt Paper 15#', description: '', unit: 'ROLL' },
+    { id: 'mb3', item: 'Felt Paper 30#', description: '', unit: 'ROLL' },
+    { id: 'mb4', item: 'Ice & Water Shield', description: '', unit: 'ROLL' },
+  ]},
+  { id: 'ms3', title: 'Flashing & Metal', items: [
+    { id: 'mc1', item: 'Drip Edge', description: '', unit: 'LF' },
+    { id: 'mc2', item: 'Step Flashing', description: '', unit: 'EA' },
+    { id: 'mc3', item: 'Valley Metal', description: '', unit: 'LF' },
+    { id: 'mc4', item: 'Counter Flashing', description: '', unit: 'LF' },
+    { id: 'mc5', item: 'Pipe Boot/Jack', description: '', unit: 'EA' },
+    { id: 'mc6', item: 'Small Chimney Flashing', description: '', unit: 'EA' },
+    { id: 'mc7', item: 'Large Chimney Flashing', description: '', unit: 'EA' },
+    { id: 'mc8', item: 'Skylight Flashing', description: '', unit: 'EA' },
+    { id: 'mc9', item: 'Wall Flashing', description: '', unit: 'LF' },
+  ]},
+  { id: 'ms4', title: 'Decking & Structural', items: [
+    { id: 'md1', item: 'Plywood 4x8 Sheet', description: '', unit: 'PC' },
+    { id: 'md2', item: 'OSB 4x8 Sheet', description: '', unit: 'PC' },
+    { id: 'md3', item: 'Boards/Lumber', description: '', unit: 'FT' },
+    { id: 'md4', item: '2x4 Lumber', description: '', unit: 'FT' },
+    { id: 'md5', item: '2x6 Lumber', description: '', unit: 'FT' },
+  ]},
+  { id: 'ms5', title: 'Ventilation', items: [
+    { id: 'me1', item: 'Ridge Vent', description: '', unit: 'LF' },
+    { id: 'me2', item: 'Box Vent', description: '', unit: 'EA' },
+    { id: 'me3', item: 'Soffit Vent', description: '', unit: 'EA' },
+    { id: 'me4', item: 'Power Vent', description: '', unit: 'EA' },
+    { id: 'me5', item: 'Turbine Vent', description: '', unit: 'EA' },
+  ]},
+  { id: 'ms6', title: 'Gutters & Drainage', items: [
+    { id: 'mf1', item: 'Gutter 5"', description: '', unit: 'LF' },
+    { id: 'mf2', item: 'Gutter 6"', description: '', unit: 'LF' },
+    { id: 'mf3', item: 'Downspout', description: '', unit: 'LF' },
+    { id: 'mf4', item: 'Gutter Guard', description: '', unit: 'LF' },
+    { id: 'mf5', item: 'End Cap', description: '', unit: 'EA' },
+    { id: 'mf6', item: 'Elbow', description: '', unit: 'EA' },
+  ]},
+  { id: 'ms7', title: 'Sealants & Fasteners', items: [
+    { id: 'mg1', item: 'Roofing Nails', description: '', unit: 'BOX' },
+    { id: 'mg2', item: 'Coil Nails', description: '', unit: 'BOX' },
+    { id: 'mg3', item: 'Roofing Cement/Tar', description: '', unit: 'GAL' },
+    { id: 'mg4', item: 'Caulk/Sealant', description: '', unit: 'EA' },
+  ]},
+  { id: 'ms8', title: 'Miscellaneous', items: [
+    { id: 'mh1', item: 'Dumpster/Disposal', description: '', unit: 'EA' },
+    { id: 'mh2', item: 'Tarps/Protection', description: '', unit: 'EA' },
+  ]},
 ];
 
-function cpMakeInit(job, crewNames) {
+const CP_DEF_LABOR = [
+  { id: 'ls1', title: 'Shingle Installation by Slope', isWaste: false, items: [
+    { id: 'la1', label: 'Standard Slope (4/12\u20137/12)', unit: 'SQ' },
+    { id: 'la2', label: 'Steep Slope (8/12\u20139/12)', unit: 'SQ' },
+    { id: 'la3', label: 'Very Steep (10/12\u201311/12)', unit: 'SQ' },
+    { id: 'la4', label: 'Extreme (12/12)', unit: 'SQ' },
+    { id: 'la5', label: 'Extreme+ (13/12+)', unit: 'SQ' },
+    { id: 'la6', label: 'Second Layer Add-on', unit: 'SQ' },
+    { id: 'la7', label: 'Harness Required Add-on', unit: 'SQ' },
+  ]},
+  { id: 'ls2', title: 'Tear-Off', isWaste: false, items: [
+    { id: 'lb1', label: 'Tear-off Single Layer', unit: 'SQ' },
+    { id: 'lb2', label: 'Tear-off Double Layer', unit: 'SQ' },
+    { id: 'lb3', label: 'Tear-off Flat/Built-up', unit: 'SQ' },
+  ]},
+  { id: 'ls3', title: 'Additional Labor', isWaste: false, items: [
+    { id: 'lc1', label: 'Flashing Work', unit: 'HR' },
+    { id: 'lc2', label: 'Chimney Flashing', unit: 'EA' },
+    { id: 'lc3', label: 'Skylight Install', unit: 'EA' },
+    { id: 'lc4', label: 'Skylight Reflashing', unit: 'EA' },
+    { id: 'lc5', label: 'Gutter Install', unit: 'LF' },
+    { id: 'lc6', label: 'Gutter Repair', unit: 'LF' },
+    { id: 'lc7', label: 'Fascia Repair/Replace', unit: 'LF' },
+    { id: 'lc8', label: 'Soffit Repair/Replace', unit: 'SF' },
+    { id: 'lc9', label: 'Decking Repair', unit: 'PC' },
+    { id: 'lc10', label: 'EPDM/Flat Roof', unit: 'SF' },
+  ]},
+  { id: 'ls4', title: 'Waste Tracking', isWaste: true, items: [
+    { id: 'lw1', label: 'Shingles Ordered', unit: 'BDL', note: '' },
+    { id: 'lw2', label: 'Additional Shingles Purchased', unit: 'BDL', note: 'Extra bundles bought to finish' },
+    { id: 'lw3', label: 'Leftover Shingles', unit: 'BDL', note: 'Unused bundles' },
+  ]},
+];
+
+function cpNewMakeInit(job, crewNames) {
   return {
     jobInfo: {
-      subContractors: crewNames,
-      jobName: job.customer || '',
-      installDate: job.scheduledDate || '',
-      recordId: String(job.id),
-      address: job.address || '',
+      contractPrice: job.value ? String(job.value) : '',
+      overhead: '15',
+      tax: '0',
+      subContractorName: crewNames,
+      notes: '',
     },
-    lineItems: CP_ASPHALT_ITEMS.map(item => ({ ...item, qty: '' })),
-    sqUpdates: [
-      { id: 'cp_sq1', label: 'Additional Shingles', unit: 'BDL', helper: '# of extra shingles you had to go buy to finish the job', qty: '' },
-      { id: 'cp_sq2', label: 'Leftover Shingles', unit: 'BDL', helper: '# of leftover shingles not needed to finish the job', qty: '' },
-    ],
-    miscCharges: [],
-    rates: {},
-    crewSplit: { type: 'equal', amounts: {} },
-    signOff: { inspectionPass: '', subContractorName: '', siteSupervisor: '', submitted: false },
+    materials: {
+      sections: CP_DEF_MATS.map(sec => ({
+        ...sec,
+        collapsed: false,
+        items: sec.items.map(item => ({ ...item, qty: '', costPerUnit: '' })),
+      })),
+    },
+    labor: {
+      sections: CP_DEF_LABOR.map(sec => ({
+        ...sec,
+        collapsed: false,
+        items: sec.items.map(item => ({ ...item, qty: '', rate: '' })),
+      })),
+    },
+    signOff: {
+      inspectionPass: '',
+      subName: crewNames,
+      supervisor: '',
+      dateCompleted: '',
+      notes: '',
+      submitted: false,
+    },
   };
 }
 
@@ -3039,582 +3126,684 @@ function CrewPayPanel({ job, crew, assignments }) {
   const assignedIds = assignments[String(job.id)] || [];
   const assignedCrew = (crew || []).filter(m => assignedIds.includes(m.id));
 
-  const [page, setPage] = useState(1);
+  const [subTab, setSubTab] = useState('materials');
   const [data, setData] = useState(() => {
     try {
       const s = localStorage.getItem(cpKey);
       if (s) return JSON.parse(s);
     } catch (e) { /* ignore */ }
-    return cpMakeInit(job, assignedCrew.map(m => m.name).join(', '));
+    return cpNewMakeInit(job, assignedCrew.map(m => m.name).join(', '));
   });
-
-  const [lineTpls, setLineTpls] = useState(() => {
-    try {
-      const s = localStorage.getItem(CP_LINE_TPLS_KEY);
-      const arr = s ? JSON.parse(s) : [];
-      if (!arr.some(t => t.name === 'Asphalt Roof Replacement')) {
-        return [{ name: 'Asphalt Roof Replacement', items: CP_ASPHALT_ITEMS }, ...arr];
-      }
-      return arr;
-    } catch (e) {
-      return [{ name: 'Asphalt Roof Replacement', items: CP_ASPHALT_ITEMS }];
-    }
+  const [matTpls, setMatTpls] = useState(() => {
+    try { const s = localStorage.getItem(CP_MAT_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; }
   });
-
   const [rateTpls, setRateTpls] = useState(() => {
-    try {
-      const s = localStorage.getItem(CP_RATE_TPLS_KEY);
-      return s ? JSON.parse(s) : [];
-    } catch (e) { return []; }
+    try { const s = localStorage.getItem(CP_RATE_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; }
   });
-
-  const [ratesOpen, setRatesOpen] = useState(false);
-  const [showAddItem, setShowAddItem] = useState(false);
-  const [newItem, setNewItem] = useState({ label: '', unit: 'SQ', section: '' });
-  const [showSaveTpl, setShowSaveTpl] = useState(false);
-  const [saveTplName, setSaveTplName] = useState('');
-  const [showSaveRate, setShowSaveRate] = useState(false);
-  const [saveRateName, setSaveRateName] = useState('');
+  const [showMatSave, setShowMatSave] = useState(false);
+  const [matTplName, setMatTplName] = useState('');
+  const [showRateSave, setShowRateSave] = useState(false);
+  const [rateTplName, setRateTplName] = useState('');
 
   useEffect(() => {
     try { localStorage.setItem(cpKey, JSON.stringify(data)); } catch (e) { /* ignore */ }
   }, [data, cpKey]);
 
   useEffect(() => {
-    try { localStorage.setItem(CP_LINE_TPLS_KEY, JSON.stringify(lineTpls)); } catch (e) { /* ignore */ }
-  }, [lineTpls]);
+    try { localStorage.setItem(CP_MAT_KEY, JSON.stringify(matTpls)); } catch (e) { /* ignore */ }
+  }, [matTpls]);
 
   useEffect(() => {
-    try { localStorage.setItem(CP_RATE_TPLS_KEY, JSON.stringify(rateTpls)); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(CP_RATE_KEY, JSON.stringify(rateTpls)); } catch (e) { /* ignore */ }
   }, [rateTpls]);
 
-  const updInfo = (f, v) => setData(d => ({ ...d, jobInfo: { ...d.jobInfo, [f]: v } }));
-  const updRate = (id, v) => setData(d => ({ ...d, rates: { ...d.rates, [id]: v } }));
-  const updLineQty = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, qty: v } : li) }));
-  const updLineLabel = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, label: v } : li) }));
-  const updLineUnit = (id, v) => setData(d => ({ ...d, lineItems: d.lineItems.map(li => li.id === id ? { ...li, unit: v } : li) }));
-  const removeLine = (id) => setData(d => ({ ...d, lineItems: d.lineItems.filter(li => li.id !== id) }));
-  const addLine = () => {
-    if (!newItem.label.trim()) return;
-    const unit = newItem.unit.trim().toUpperCase() || 'UNIT';
+  // ── material handlers ───────────────────────────────────────────────────────
+  const updMat = (secId, itemId, field, val) => setData(d => ({
+    ...d,
+    materials: {
+      ...d.materials,
+      sections: d.materials.sections.map(sec =>
+        sec.id !== secId ? sec : {
+          ...sec,
+          items: sec.items.map(item => item.id !== itemId ? item : { ...item, [field]: val }),
+        }
+      ),
+    },
+  }));
+
+  const addMatItem = (secId) => setData(d => ({
+    ...d,
+    materials: {
+      ...d.materials,
+      sections: d.materials.sections.map(sec =>
+        sec.id !== secId ? sec : {
+          ...sec,
+          items: [...sec.items, { id: `mi${Date.now()}`, item: '', description: '', unit: 'EA', qty: '', costPerUnit: '' }],
+        }
+      ),
+    },
+  }));
+
+  const removeMatItem = (secId, itemId) => setData(d => ({
+    ...d,
+    materials: {
+      ...d.materials,
+      sections: d.materials.sections.map(sec =>
+        sec.id !== secId ? sec : { ...sec, items: sec.items.filter(item => item.id !== itemId) }
+      ),
+    },
+  }));
+
+  const toggleMatSec = (secId) => setData(d => ({
+    ...d,
+    materials: {
+      ...d.materials,
+      sections: d.materials.sections.map(sec =>
+        sec.id !== secId ? sec : { ...sec, collapsed: !sec.collapsed }
+      ),
+    },
+  }));
+
+  const updMatSecTitle = (secId, val) => setData(d => ({
+    ...d,
+    materials: {
+      ...d.materials,
+      sections: d.materials.sections.map(sec =>
+        sec.id !== secId ? sec : { ...sec, title: val }
+      ),
+    },
+  }));
+
+  const addMatSec = () => setData(d => ({
+    ...d,
+    materials: {
+      ...d.materials,
+      sections: [...d.materials.sections, {
+        id: `msc${Date.now()}`,
+        title: 'New Section',
+        collapsed: false,
+        items: [],
+      }],
+    },
+  }));
+
+  // ── labor handlers ──────────────────────────────────────────────────────────
+  const updLabor = (secId, itemId, field, val) => setData(d => ({
+    ...d,
+    labor: {
+      ...d.labor,
+      sections: d.labor.sections.map(sec =>
+        sec.id !== secId ? sec : {
+          ...sec,
+          items: sec.items.map(item => item.id !== itemId ? item : { ...item, [field]: val }),
+        }
+      ),
+    },
+  }));
+
+  const addLaborItem = (secId) => setData(d => ({
+    ...d,
+    labor: {
+      ...d.labor,
+      sections: d.labor.sections.map(sec =>
+        sec.id !== secId ? sec : {
+          ...sec,
+          items: [...sec.items, { id: `li${Date.now()}`, label: '', unit: 'EA', qty: '', rate: '' }],
+        }
+      ),
+    },
+  }));
+
+  const removeLaborItem = (secId, itemId) => setData(d => ({
+    ...d,
+    labor: {
+      ...d.labor,
+      sections: d.labor.sections.map(sec =>
+        sec.id !== secId ? sec : { ...sec, items: sec.items.filter(item => item.id !== itemId) }
+      ),
+    },
+  }));
+
+  const toggleLaborSec = (secId) => setData(d => ({
+    ...d,
+    labor: {
+      ...d.labor,
+      sections: d.labor.sections.map(sec =>
+        sec.id !== secId ? sec : { ...sec, collapsed: !sec.collapsed }
+      ),
+    },
+  }));
+
+  const updLaborSecTitle = (secId, val) => setData(d => ({
+    ...d,
+    labor: {
+      ...d.labor,
+      sections: d.labor.sections.map(sec =>
+        sec.id !== secId ? sec : { ...sec, title: val }
+      ),
+    },
+  }));
+
+  const addLaborSec = () => setData(d => ({
+    ...d,
+    labor: {
+      ...d.labor,
+      sections: [...d.labor.sections, {
+        id: `lsc${Date.now()}`,
+        title: 'New Section',
+        isWaste: false,
+        collapsed: false,
+        items: [],
+      }],
+    },
+  }));
+
+  const updInfo = (field, val) => setData(d => ({ ...d, jobInfo: { ...d.jobInfo, [field]: val } }));
+  const updSignOff = (field, val) => setData(d => ({ ...d, signOff: { ...d.signOff, [field]: val } }));
+
+  // ── template handlers ───────────────────────────────────────────────────────
+  const saveMatTpl = () => {
+    if (!matTplName.trim()) return;
+    const sections = data.materials.sections.map(sec => ({
+      ...sec,
+      items: sec.items.map(item => { const c = { ...item }; delete c.qty; delete c.costPerUnit; return c; }),
+    }));
+    setMatTpls(prev => [...prev.filter(t => t.name !== matTplName.trim()), { name: matTplName.trim(), sections }]);
+    setMatTplName('');
+    setShowMatSave(false);
+  };
+
+  const loadMatTpl = (name) => {
+    const tpl = matTpls.find(t => t.name === name);
+    if (!tpl) return;
     setData(d => ({
       ...d,
-      lineItems: [...d.lineItems, {
-        id: `cp_c${Date.now()}`,
-        section: newItem.section.trim() || 'Additional Work',
-        label: newItem.label.trim(),
-        unit,
-        qty: '',
-      }],
+      materials: {
+        ...d.materials,
+        sections: tpl.sections.map(sec => ({
+          ...sec,
+          collapsed: false,
+          items: sec.items.map(item => ({ ...item, qty: '', costPerUnit: '' })),
+        })),
+      },
     }));
-    setNewItem({ label: '', unit: 'SQ', section: '' });
-    setShowAddItem(false);
   };
 
-  const updSqQty = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, qty: v } : s) }));
-  const updSqLabel = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, label: v } : s) }));
-  const updSqUnit = (id, v) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.map(s => s.id === id ? { ...s, unit: v } : s) }));
-  const removeSq = (id) => setData(d => ({ ...d, sqUpdates: d.sqUpdates.filter(s => s.id !== id) }));
-  const addSqItem = () => setData(d => ({
-    ...d,
-    sqUpdates: [...d.sqUpdates, { id: `cp_sqc${Date.now()}`, label: 'Custom Item', unit: 'BDL', qty: '' }],
-  }));
-
-  const addMisc = () => setData(d => ({
-    ...d,
-    miscCharges: [...d.miscCharges, { id: `mc${Date.now()}`, description: '', amount: '' }],
-  }));
-  const updMisc = (id, f, v) => setData(d => ({
-    ...d,
-    miscCharges: d.miscCharges.map(mc => mc.id === id ? { ...mc, [f]: v } : mc),
-  }));
-  const removeMisc = (id) => setData(d => ({ ...d, miscCharges: d.miscCharges.filter(mc => mc.id !== id) }));
-  const updSignOff = (f, v) => setData(d => ({ ...d, signOff: { ...d.signOff, [f]: v } }));
-  const updSplitType = (t) => setData(d => ({ ...d, crewSplit: { ...d.crewSplit, type: t } }));
-  const updCrewAmt = (id, v) => setData(d => ({
-    ...d,
-    crewSplit: { ...d.crewSplit, amounts: { ...d.crewSplit.amounts, [id]: v } },
-  }));
-
-  const loadLineTpl = (name) => {
-    const tpl = lineTpls.find(t => t.name === name);
-    if (!tpl) return;
-    setData(d => ({ ...d, lineItems: tpl.items.map(item => ({ ...item, qty: '' })) }));
+  const saveRateTpl = () => {
+    if (!rateTplName.trim()) return;
+    const sections = data.labor.sections.map(sec => ({
+      ...sec,
+      items: sec.items.map(item => { const c = { ...item }; delete c.qty; return c; }),
+    }));
+    setRateTpls(prev => [...prev.filter(t => t.name !== rateTplName.trim()), { name: rateTplName.trim(), sections }]);
+    setRateTplName('');
+    setShowRateSave(false);
   };
-  const saveLineTpl = () => {
-    if (!saveTplName.trim()) return;
-    const items = data.lineItems.map(item => { const c = { ...item }; delete c.qty; return c; });
-    setLineTpls(prev => [...prev.filter(t => t.name !== saveTplName.trim()), { name: saveTplName.trim(), items }]);
-    setSaveTplName('');
-    setShowSaveTpl(false);
-  };
+
   const loadRateTpl = (name) => {
     const tpl = rateTpls.find(t => t.name === name);
     if (!tpl) return;
-    setData(d => ({ ...d, rates: { ...tpl.rates } }));
+    setData(d => ({
+      ...d,
+      labor: {
+        ...d.labor,
+        sections: tpl.sections.map(sec => ({
+          ...sec,
+          collapsed: false,
+          items: sec.items.map(item => ({ ...item, qty: '' })),
+        })),
+      },
+    }));
   };
-  const saveRateTpl = () => {
-    if (!saveRateName.trim()) return;
-    setRateTpls(prev => [...prev.filter(t => t.name !== saveRateName.trim()), { name: saveRateName.trim(), rates: { ...data.rates } }]);
-    setSaveRateName('');
-    setShowSaveRate(false);
+
+  // ── calculations ────────────────────────────────────────────────────────────
+  const matItemTot = (item) => (parseFloat(item.qty) || 0) * (parseFloat(item.costPerUnit) || 0);
+  const matSecTot = (sec) => sec.items.reduce((s, item) => s + matItemTot(item), 0);
+  const matTotal = data.materials.sections.reduce((s, sec) => s + matSecTot(sec), 0);
+
+  const laborItemTot = (item) => (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0);
+  const laborSecTot = (sec) => sec.isWaste ? 0 : sec.items.reduce((s, item) => s + laborItemTot(item), 0);
+  const laborTotal = data.labor.sections.reduce((s, sec) => s + laborSecTot(sec), 0);
+
+  const subtotal = matTotal + laborTotal;
+  const overheadPct = parseFloat(data.jobInfo.overhead) || 0;
+  const taxPct = parseFloat(data.jobInfo.tax) || 0;
+  const overheadAmt = subtotal * overheadPct / 100;
+  const taxAmt = (subtotal + overheadAmt) * taxPct / 100;
+  const totalJobCost = subtotal + overheadAmt + taxAmt;
+
+  const contractPrice = parseFloat(data.jobInfo.contractPrice) || 0;
+  const grossProfit = contractPrice - totalJobCost;
+  const profitMargin = contractPrice > 0 ? (grossProfit / contractPrice * 100) : 0;
+
+  const wasteSection = data.labor.sections.find(s => s.isWaste);
+  const wasteOrdered = parseFloat((wasteSection && wasteSection.items[0] && wasteSection.items[0].qty) || 0);
+  const wasteExtra = parseFloat((wasteSection && wasteSection.items[1] && wasteSection.items[1].qty) || 0);
+  const wasteLeftover = parseFloat((wasteSection && wasteSection.items[2] && wasteSection.items[2].qty) || 0);
+  const netWaste = wasteOrdered + wasteExtra - wasteLeftover;
+
+  const installSec = data.labor.sections.find(s => s.title === 'Shingle Installation by Slope');
+  const totalSq = installSec ? installSec.items.reduce((s, item) => s + (parseFloat(item.qty) || 0), 0) : 0;
+  const costPerSq = totalSq > 0 ? totalJobCost / totalSq : 0;
+  const revenuePerSq = totalSq > 0 ? contractPrice / totalSq : 0;
+  const profitPerSq = totalSq > 0 ? grossProfit / totalSq : 0;
+
+  const fmtC = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const profitColor = profitMargin >= 20 ? '#22c55e' : profitMargin >= 10 ? '#f59e0b' : '#ef4444';
+
+  // ── shared styles ────────────────────────────────────────────────────────────
+  const CINP = {
+    padding: '7px 8px', background: '#0d1117', border: '1px solid #1e2535',
+    borderRadius: 5, color: '#e2e8f0', fontSize: 13,
+    fontFamily: "'Courier New', 'Consolas', monospace", textAlign: 'right',
+    outline: 'none', width: '100%', boxSizing: 'border-box',
   };
-
-  const lineCalc = (item) => (parseFloat(item.qty) || 0) * (parseFloat(data.rates[item.id]) || 0);
-  const prodSubtotal = data.lineItems.reduce((s, li) => s + lineCalc(li), 0);
-  const miscTotal = data.miscCharges.reduce((s, mc) => s + (parseFloat(mc.amount) || 0), 0);
-  const grandTotal = prodSubtotal + miscTotal;
-  const itemsWithQty = data.lineItems.filter(li => (parseFloat(li.qty) || 0) > 0);
-  const equalPay = assignedCrew.length > 0 ? grandTotal / assignedCrew.length : 0;
-
-  const sections = data.lineItems.reduce((acc, item) => {
-    const sec = item.section || 'Other';
-    const found = acc.find(s => s.title === sec);
-    if (found) { found.items.push(item); } else { acc.push({ title: sec, items: [item] }); }
-    return acc;
-  }, []);
-
-  const fmtPay = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
-  const CP_INP = {
-    width: '100%', padding: '12px 14px', background: '#0f1117',
-    border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0',
-    fontSize: 16, outline: 'none', boxSizing: 'border-box',
+  const TINP = {
+    ...CINP,
     fontFamily: "'Inter', -apple-system, sans-serif",
+    textAlign: 'left',
+    fontSize: 13,
   };
-  const CP_LBL = {
-    fontSize: 11, fontWeight: 600, color: '#64748b',
-    textTransform: 'uppercase', letterSpacing: '0.4px',
-    marginBottom: 6, display: 'block',
+  const SINP = {
+    padding: '7px 6px', background: '#0d1117', border: '1px solid #1e2535',
+    borderRadius: 5, color: '#94a3b8', fontSize: 11,
+    outline: 'none', width: '100%', boxSizing: 'border-box',
   };
-  const CP_MONO = { fontFamily: "'Courier New', 'Consolas', monospace", textAlign: 'right' };
-  const CP_NUM = {
-    width: '100%', padding: '13px 14px', background: '#161b27',
-    border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0',
-    fontSize: 22, fontFamily: "'Courier New', 'Consolas', monospace",
-    textAlign: 'right', outline: 'none', boxSizing: 'border-box',
-  };
-  const cpNav = (dis) => ({
-    width: 52, height: 52,
-    background: dis ? 'transparent' : '#1e2535',
-    border: `1px solid ${dis ? '#1e2535' : '#2d3748'}`,
-    borderRadius: 12, color: dis ? '#334155' : '#e2e8f0',
-    fontSize: 26, cursor: dis ? 'default' : 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0, WebkitTapHighlightColor: 'transparent',
-  });
-  const PAGE_TITLES = ['Job Info', 'Production Line Items', 'Shingle SQ Updates', 'Misc Charges', 'Grand Total & Sign Off'];
+  const LROW = { fontSize: 11, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 };
 
-  return (
-    <div>
-      {/* Page navigation */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={cpNav(page === 1)}>‹</button>
-        <div style={{ flex: 1, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#475569', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Page {page} of 5</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{PAGE_TITLES[page - 1]}</div>
+  // ── sub-tab nav ──────────────────────────────────────────────────────────────
+  const SUB_TABS = [
+    { key: 'materials', label: 'Materials' },
+    { key: 'labor', label: 'Labor' },
+    { key: 'summary', label: 'Summary' },
+    { key: 'signoff', label: 'Sign Off' },
+  ];
+
+  // ── materials grid ───────────────────────────────────────────────────────────
+  const renderMatSection = (sec) => {
+    const secTot = matSecTot(sec);
+    return (
+      <div key={sec.id} style={{ marginBottom: 6 }}>
+        {/* Section header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1a2035', borderRadius: 6, padding: '8px 10px', marginBottom: sec.collapsed ? 0 : 4, cursor: 'pointer' }} onClick={() => toggleMatSec(sec.id)}>
+          <span style={{ color: '#f97316', fontSize: 11, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
+          <input
+            value={sec.title}
+            onChange={e => { e.stopPropagation(); updMatSecTitle(sec.id, e.target.value); }}
+            onClick={e => e.stopPropagation()}
+            style={{ flex: 1, background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 12, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'text' }}
+          />
+          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#f1f5f9' : '#334155', flexShrink: 0 }}>{secTot > 0 ? fmtC(secTot) : '—'}</span>
         </div>
-        <button onClick={() => setPage(p => Math.min(5, p + 1))} disabled={page === 5} style={cpNav(page === 5)}>›</button>
-      </div>
-
-      {/* ── Page 1: Job Info ── */}
-      {page === 1 && (
-        <div>
-          {[
-            { f: 'subContractors', label: 'Sub-Contractor Name(s)', type: 'text' },
-            { f: 'jobName', label: 'Job Name / Client', type: 'text' },
-            { f: 'installDate', label: 'Install Date', type: 'date' },
-            { f: 'recordId', label: 'Record / Job ID', type: 'text' },
-            { f: 'address', label: 'Address', type: 'text' },
-          ].map(({ f, label, type }) => (
-            <div key={f} style={{ marginBottom: 18 }}>
-              <label style={CP_LBL}>{label}</label>
-              <input type={type} value={data.jobInfo[f]} onChange={e => updInfo(f, e.target.value)} style={CP_INP} />
+        {!sec.collapsed && (
+          <div style={{ background: '#0f1117', borderRadius: 6, overflow: 'hidden' }}>
+            {/* Column headers */}
+            <div style={{ display: 'flex', gap: 4, padding: '5px 8px', borderBottom: '1px solid #1e2535' }}>
+              <div style={{ ...LROW, flex: 1, marginBottom: 0 }}>Item</div>
+              <div style={{ ...LROW, width: 50, marginBottom: 0, textAlign: 'center' }}>Unit</div>
+              <div style={{ ...LROW, width: 68, marginBottom: 0, textAlign: 'right' }}>Qty</div>
+              <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>$/Unit</div>
+              <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Total</div>
+              <div style={{ width: 24 }} />
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── Page 2: Production Line Items ── */}
-      {page === 2 && (
-        <div>
-          {/* Template toolbar */}
-          <div style={{ background: '#0f1117', borderRadius: 8, padding: 12, marginBottom: 14 }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
-              <select
-                style={{ flex: 1, minWidth: 140, padding: '10px 12px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#94a3b8', fontSize: 13, outline: 'none' }}
-                defaultValue=""
-                onChange={e => { if (e.target.value) { loadLineTpl(e.target.value); e.target.value = ''; } }}
-              >
-                <option value="">Load Template…</option>
-                {lineTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-              </select>
-              <button
-                onClick={() => setShowAddItem(s => !s)}
-                style={{ padding: '10px 14px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 8, color: '#f97316', fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
-              >
-                + Add Item
-              </button>
-            </div>
-            <button
-              onClick={() => setShowSaveTpl(s => !s)}
-              style={{ padding: '8px 12px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-            >
-              Save as Template
-            </button>
-          </div>
-
-          {showSaveTpl && (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: 12, marginBottom: 14, display: 'flex', gap: 8 }}>
-              <input
-                value={saveTplName}
-                onChange={e => setSaveTplName(e.target.value)}
-                placeholder="Template name (e.g. Metal Roofing)"
-                style={{ ...CP_INP, flex: 1, padding: '10px 12px', fontSize: 14 }}
-              />
-              <button onClick={saveLineTpl} style={{ padding: '10px 16px', background: '#f97316', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
-            </div>
-          )}
-
-          {showAddItem && (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: 14, marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#f97316', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>New Line Item</div>
-              <div style={{ marginBottom: 10 }}>
-                <label style={CP_LBL}>Item Name</label>
-                <input value={newItem.label} onChange={e => setNewItem(n => ({ ...n, label: e.target.value }))} placeholder="e.g. Pipe Flashing" style={{ ...CP_INP, padding: '11px 12px', fontSize: 15 }} />
-              </div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                <div style={{ flex: 1 }}>
-                  <label style={CP_LBL}>Unit</label>
-                  <input
-                    list="cp_unit_dl"
-                    value={newItem.unit}
-                    onChange={e => setNewItem(n => ({ ...n, unit: e.target.value }))}
-                    style={{ ...CP_INP, padding: '11px 12px', fontSize: 15 }}
-                  />
-                  <datalist id="cp_unit_dl">
-                    {CP_UNITS.map(u => <option key={u} value={u} />)}
-                  </datalist>
-                </div>
-                <div style={{ flex: 2 }}>
-                  <label style={CP_LBL}>Section</label>
-                  <input value={newItem.section} onChange={e => setNewItem(n => ({ ...n, section: e.target.value }))} placeholder="e.g. Components" style={{ ...CP_INP, padding: '11px 12px', fontSize: 15 }} />
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setShowAddItem(false)} style={{ flex: 1, padding: '11px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
-                <button onClick={addLine} style={{ flex: 2, padding: '11px', background: '#f97316', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Add Item</button>
-              </div>
-            </div>
-          )}
-
-          {sections.map(sec => (
-            <div key={sec.title} style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', padding: '8px 0 6px', borderBottom: '1px solid #1e2535', marginBottom: 8 }}>
-                {sec.title}
-              </div>
-              {sec.items.map((item) => (
-                <div key={item.id} style={{ background: '#0f1117', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <input
-                      value={item.label}
-                      onChange={e => updLineLabel(item.id, e.target.value)}
-                      style={{ flex: 1, background: 'transparent', border: 'none', color: '#94a3b8', fontSize: 12, fontWeight: 600, outline: 'none', padding: '2px 0', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.4px', minWidth: 0 }}
-                    />
-                    <select
-                      value={CP_UNITS.includes(item.unit) ? item.unit : '_other'}
-                      onChange={e => updLineUnit(item.id, e.target.value === '_other' ? item.unit : e.target.value)}
-                      style={{ padding: '4px 6px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 5, color: '#475569', fontSize: 11, outline: 'none', flexShrink: 0 }}
-                    >
-                      {CP_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                      {!CP_UNITS.includes(item.unit) && <option value="_other">{item.unit}</option>}
-                    </select>
-                    <button onClick={() => removeLine(item.id)} style={{ width: 28, height: 28, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
-                  </div>
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={item.qty}
-                    onChange={e => updLineQty(item.id, e.target.value)}
-                    placeholder="0.00"
-                    style={{ ...CP_NUM, color: item.qty ? '#e2e8f0' : undefined }}
-                  />
-                  {item.note && (
-                    <div style={{ marginTop: 6, fontSize: 11, color: '#f97316', fontStyle: 'italic', padding: '5px 8px', background: 'rgba(249,115,22,0.07)', borderRadius: 6 }}>
-                      ⚠ {item.note}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── Page 3: Shingle SQ Updates ── */}
-      {page === 3 && (
-        <div>
-          {data.sqUpdates.map(item => (
-            <div key={item.id} style={{ background: '#0f1117', borderRadius: 8, padding: '14px', marginBottom: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <input
-                  value={item.label}
-                  onChange={e => updSqLabel(item.id, e.target.value)}
-                  style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid #1e2535', color: '#e2e8f0', fontSize: 15, fontWeight: 600, outline: 'none', padding: '3px 4px', fontFamily: "'Inter', -apple-system, sans-serif", minWidth: 0 }}
-                />
-                <select
-                  value={CP_UNITS.includes(item.unit) ? item.unit : '_other'}
-                  onChange={e => updSqUnit(item.id, e.target.value === '_other' ? item.unit : e.target.value)}
-                  style={{ padding: '7px 8px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#94a3b8', fontSize: 12, outline: 'none', flexShrink: 0 }}
-                >
-                  {CP_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                  {!CP_UNITS.includes(item.unit) && <option value="_other">{item.unit}</option>}
-                </select>
-                <button onClick={() => removeSq(item.id)} style={{ width: 30, height: 30, background: 'transparent', border: '1px solid #2d1a1a', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}>×</button>
-              </div>
-              {item.helper && (
-                <div style={{ fontSize: 12, color: '#475569', marginBottom: 10, fontStyle: 'italic' }}>{item.helper}</div>
-              )}
-              <input
-                type="text"
-                inputMode="decimal"
-                value={item.qty}
-                onChange={e => updSqQty(item.id, e.target.value)}
-                placeholder="0.00"
-                style={CP_NUM}
-              />
-            </div>
-          ))}
-          <button
-            onClick={addSqItem}
-            style={{ width: '100%', padding: '14px', background: 'transparent', border: '1px dashed #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', fontSize: 14, WebkitTapHighlightColor: 'transparent' }}
-          >
-            + Add Custom Item
-          </button>
-        </div>
-      )}
-
-      {/* ── Page 4: Misc Charges ── */}
-      {page === 4 && (
-        <div>
-          {data.miscCharges.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0 16px', fontStyle: 'italic' }}>No charges added yet</div>
-          )}
-          {data.miscCharges.map((mc, mcIdx) => (
-            <div key={mc.id} style={{ background: '#0f1117', borderRadius: 8, padding: '14px', marginBottom: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Charge #{mcIdx + 1}</span>
-                <button onClick={() => removeMisc(mc.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 20, lineHeight: 1, padding: '0 4px', WebkitTapHighlightColor: 'transparent' }}>×</button>
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <label style={CP_LBL}>Description</label>
-                <textarea
-                  value={mc.description}
-                  onChange={e => updMisc(mc.id, 'description', e.target.value)}
-                  placeholder="What is the above charge for?"
-                  rows={3}
-                  style={{ ...CP_INP, resize: 'none', fontSize: 15 }}
-                />
-              </div>
-              <div>
-                <label style={CP_LBL}>Amount</label>
-                <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 18, lineHeight: 1 }}>$</span>
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={mc.amount}
-                    onChange={e => updMisc(mc.id, 'amount', e.target.value)}
-                    placeholder="0.00"
-                    style={{ ...CP_INP, paddingLeft: 32, fontSize: 20, fontFamily: "'Courier New', monospace", textAlign: 'right' }}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={addMisc}
-            style={{ width: '100%', padding: '14px', background: 'transparent', border: '1px dashed rgba(249,115,22,0.3)', borderRadius: 8, color: '#f97316', cursor: 'pointer', fontSize: 14, fontWeight: 600, WebkitTapHighlightColor: 'transparent' }}
-          >
-            + Add Another Charge
-          </button>
-        </div>
-      )}
-
-      {/* ── Page 5: Grand Total & Sign Off ── */}
-      {page === 5 && (
-        <div>
-          {/* a. Rate Configuration */}
-          <div style={{ background: '#0f1117', borderRadius: 8, marginBottom: 16, border: '1px solid #1e2535' }}>
-            <button
-              onClick={() => setRatesOpen(o => !o)}
-              style={{ width: '100%', padding: '14px 16px', background: 'transparent', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-            >
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#f97316' }}>Configure Rates</span>
-              <span style={{ color: '#64748b', fontSize: 14 }}>{ratesOpen ? '▲' : '▼'}</span>
-            </button>
-            {ratesOpen && (
-              <div style={{ padding: '0 14px 14px' }}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
-                  <select
-                    style={{ flex: 1, minWidth: 140, padding: '9px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, color: '#94a3b8', fontSize: 13, outline: 'none' }}
-                    defaultValue=""
-                    onChange={e => { if (e.target.value) { loadRateTpl(e.target.value); e.target.value = ''; } }}
-                  >
-                    <option value="">Load Rate Template…</option>
-                    {rateTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-                  </select>
-                </div>
-                {data.lineItems.map(item => (
-                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                    <span style={{ flex: 1, fontSize: 13, color: '#94a3b8', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.label} <span style={{ color: '#475569' }}>/{item.unit}</span>
-                    </span>
-                    <div style={{ position: 'relative', flexShrink: 0, width: 110 }}>
-                      <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 13 }}>$</span>
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={data.rates[item.id] || ''}
-                        onChange={e => updRate(item.id, e.target.value)}
-                        placeholder="0.00"
-                        style={{ width: '100%', padding: '9px 8px 9px 22px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 14, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                {showSaveRate ? (
-                  <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-                    <input value={saveRateName} onChange={e => setSaveRateName(e.target.value)} placeholder="Rate template name" style={{ flex: 1, padding: '9px 12px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
-                    <button onClick={saveRateTpl} style={{ padding: '9px 14px', background: '#f97316', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
-                    <button onClick={() => setShowSaveRate(false)} style={{ padding: '9px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>✕</button>
-                  </div>
-                ) : (
-                  <button onClick={() => setShowSaveRate(true)} style={{ marginTop: 14, padding: '9px 14px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
-                    Save Rates as Template
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* b. Production Summary */}
-          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Production</div>
-            {itemsWithQty.length === 0 && (
-              <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic', marginBottom: 10 }}>No items with quantity entered yet</div>
-            )}
-            {itemsWithQty.map(item => {
-              const rate = parseFloat(data.rates[item.id]) || 0;
+            {/* Items */}
+            {sec.items.map(item => {
+              const tot = matItemTot(item);
               return (
-                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</div>
-                    <div style={{ fontSize: 11, color: '#475569' }}>{item.qty} {item.unit}</div>
+                <div key={item.id} style={{ padding: '4px 8px', borderBottom: '1px solid #0a0e18' }}>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginBottom: 3 }}>
+                    <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ ...TINP, flex: 1, padding: '5px 7px' }} />
+                    <input value={item.description} onChange={e => updMat(sec.id, item.id, 'description', e.target.value)} placeholder="Description…" style={{ ...TINP, flex: 1, padding: '5px 7px', fontSize: 11, color: '#64748b' }} />
+                    <button onClick={() => removeMatItem(sec.id, item.id)} style={{ width: 24, height: 24, background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, flexShrink: 0, padding: 0, lineHeight: 1 }}>×</button>
                   </div>
-                  <div style={{ position: 'relative', flexShrink: 0, width: 96 }}>
-                    <span style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 12 }}>$</span>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     <input
-                      type="text"
-                      inputMode="decimal"
-                      value={data.rates[item.id] || ''}
-                      onChange={e => updRate(item.id, e.target.value)}
-                      placeholder="0.00"
-                      style={{ width: '100%', padding: '7px 6px 7px 20px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                      list="cp_unit_dl"
+                      value={item.unit}
+                      onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)}
+                      style={{ ...SINP, width: 50, textAlign: 'center', padding: '6px 4px' }}
                     />
-                  </div>
-                  <div style={{ width: 86, textAlign: 'right', fontFamily: "'Courier New', 'Consolas', monospace", fontSize: 14, flexShrink: 0 }}>
-                    {rate > 0
-                      ? <span style={{ color: '#e2e8f0' }}>{fmtPay(lineCalc(item))}</span>
-                      : <span style={{ fontSize: 10, color: '#334155' }}>No rate set</span>}
+                    <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...CINP, width: 68, padding: '6px 7px' }} />
+                    <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...CINP, width: 80, padding: '6px 7px' }} />
+                    <div style={{ width: 80, fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: tot > 0 ? '#e2e8f0' : '#334155', flexShrink: 0 }}>
+                      {tot > 0 ? fmtC(tot) : '—'}
+                    </div>
+                    <div style={{ width: 24 }} />
                   </div>
                 </div>
               );
             })}
-            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid #1e2535', marginTop: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Subtotal</span>
-              <span style={{ ...CP_MONO, fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>{fmtPay(prodSubtotal)}</span>
-            </div>
+            <button onClick={() => addMatItem(sec.id)} style={{ display: 'block', width: '100%', padding: '7px', background: 'transparent', border: 'none', borderTop: '1px dashed #1e2535', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left' }}>
+              + Add Item
+            </button>
           </div>
+        )}
+      </div>
+    );
+  };
 
-          {/* c. Misc Charges */}
-          {data.miscCharges.length > 0 && (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Misc Charges</div>
-              {data.miscCharges.map(mc => (
-                <div key={mc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, color: '#94a3b8', flex: 1, marginRight: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mc.description || 'Unnamed charge'}</span>
-                  <span style={{ ...CP_MONO, fontSize: 14, color: '#e2e8f0', flexShrink: 0 }}>{fmtPay(parseFloat(mc.amount) || 0)}</span>
-                </div>
-              ))}
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid #1e2535' }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Misc Total</span>
-                <span style={{ ...CP_MONO, fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>{fmtPay(miscTotal)}</span>
+  // ── labor grid ───────────────────────────────────────────────────────────────
+  const renderLaborSection = (sec) => {
+    const secTot = laborSecTot(sec);
+    return (
+      <div key={sec.id} style={{ marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1a2035', borderRadius: 6, padding: '8px 10px', marginBottom: sec.collapsed ? 0 : 4, cursor: 'pointer' }} onClick={() => toggleLaborSec(sec.id)}>
+          <span style={{ color: '#6366f1', fontSize: 11, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
+          <input
+            value={sec.title}
+            onChange={e => { e.stopPropagation(); updLaborSecTitle(sec.id, e.target.value); }}
+            onClick={e => e.stopPropagation()}
+            style={{ flex: 1, background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 12, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'text' }}
+          />
+          {!sec.isWaste && <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#f1f5f9' : '#334155', flexShrink: 0 }}>{secTot > 0 ? fmtC(secTot) : '—'}</span>}
+        </div>
+        {!sec.collapsed && (
+          <div style={{ background: '#0f1117', borderRadius: 6, overflow: 'hidden' }}>
+            {!sec.isWaste && (
+              <div style={{ display: 'flex', gap: 4, padding: '5px 8px', borderBottom: '1px solid #1e2535' }}>
+                <div style={{ ...LROW, flex: 1, marginBottom: 0 }}>Item</div>
+                <div style={{ ...LROW, width: 50, marginBottom: 0, textAlign: 'center' }}>Unit</div>
+                <div style={{ ...LROW, width: 68, marginBottom: 0, textAlign: 'right' }}>Qty</div>
+                <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Rate</div>
+                <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Total</div>
+                <div style={{ width: 24 }} />
               </div>
-            </div>
-          )}
-
-          {/* d. Grand Total */}
-          <div style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.12), rgba(234,88,12,0.06))', border: '1px solid rgba(249,115,22,0.35)', borderRadius: 10, padding: '16px 18px', marginBottom: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#f97316' }}>Grand Total Crew Pay</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 26, fontWeight: 700, color: '#f97316' }}>{fmtPay(grandTotal)}</span>
-            </div>
-          </div>
-
-          {/* e. Crew Split */}
-          {assignedCrew.length > 0 && (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Split</div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-                {['equal', 'custom'].map(t => (
-                  <button
-                    key={t}
-                    onClick={() => updSplitType(t)}
-                    style={{ flex: 1, padding: '11px', background: data.crewSplit.type === t ? 'rgba(249,115,22,0.12)' : 'transparent', border: `1px solid ${data.crewSplit.type === t ? '#f97316' : '#1e2535'}`, borderRadius: 8, color: data.crewSplit.type === t ? '#f97316' : '#64748b', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-                  >
-                    {t === 'equal' ? 'Equal Split' : 'Custom'}
-                  </button>
-                ))}
+            )}
+            {sec.isWaste && (
+              <div style={{ display: 'flex', gap: 4, padding: '5px 8px', borderBottom: '1px solid #1e2535' }}>
+                <div style={{ ...LROW, flex: 1, marginBottom: 0 }}>Item</div>
+                <div style={{ ...LROW, width: 50, marginBottom: 0, textAlign: 'center' }}>Unit</div>
+                <div style={{ ...LROW, width: 80, marginBottom: 0, textAlign: 'right' }}>Qty</div>
+                <div style={{ width: 24 }} />
               </div>
-              {assignedCrew.map(member => (
-                <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#f97316', flexShrink: 0 }}>
-                    {member.name ? member.name.charAt(0).toUpperCase() : '?'}
+            )}
+            {sec.items.map(item => {
+              const tot = sec.isWaste ? 0 : laborItemTot(item);
+              return (
+                <div key={item.id} style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '6px 8px', borderBottom: '1px solid #0a0e18' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <input value={item.label} onChange={e => updLabor(sec.id, item.id, 'label', e.target.value)} placeholder="Item name" style={{ ...TINP, padding: '5px 7px', width: '100%' }} />
+                    {item.note && <div style={{ fontSize: 10, color: '#475569', marginTop: 2, fontStyle: 'italic', paddingLeft: 4 }}>{item.note}</div>}
                   </div>
-                  <span style={{ flex: 1, fontSize: 14, color: '#e2e8f0', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</span>
-                  {data.crewSplit.type === 'equal' ? (
-                    <span style={{ fontFamily: "'Courier New', monospace", fontSize: 16, fontWeight: 700, color: '#22c55e', flexShrink: 0 }}>{fmtPay(equalPay)}</span>
-                  ) : (
-                    <div style={{ position: 'relative', flexShrink: 0, width: 110 }}>
-                      <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 14 }}>$</span>
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={data.crewSplit.amounts[member.id] || ''}
-                        onChange={e => updCrewAmt(member.id, e.target.value)}
-                        placeholder="0.00"
-                        style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 8, color: '#e2e8f0', fontSize: 15, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
-                      />
-                    </div>
+                  <input
+                    list="cp_unit_dl"
+                    value={item.unit}
+                    onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)}
+                    style={{ ...SINP, width: 50, textAlign: 'center', padding: '6px 4px' }}
+                  />
+                  <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...CINP, width: 68, padding: '6px 7px' }} />
+                  {!sec.isWaste && (
+                    <>
+                      <input type="text" inputMode="decimal" value={item.rate} onChange={e => updLabor(sec.id, item.id, 'rate', e.target.value)} placeholder="0.00" style={{ ...CINP, width: 80, padding: '6px 7px' }} />
+                      <div style={{ width: 80, fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: tot > 0 ? '#e2e8f0' : '#334155', flexShrink: 0 }}>
+                        {tot > 0 ? fmtC(tot) : '—'}
+                      </div>
+                    </>
                   )}
+                  <button onClick={() => removeLaborItem(sec.id, item.id)} style={{ width: 24, height: 24, background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, flexShrink: 0, padding: 0, lineHeight: 1 }}>×</button>
+                </div>
+              );
+            })}
+            {!sec.isWaste && (
+              <button onClick={() => addLaborItem(sec.id)} style={{ display: 'block', width: '100%', padding: '7px', background: 'transparent', border: 'none', borderTop: '1px dashed #1e2535', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left' }}>
+                + Add Item
+              </button>
+            )}
+            {sec.isWaste && (
+              <div style={{ padding: '8px 10px', borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Net Waste</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <datalist id="cp_unit_dl">
+        {CP_UNITS.map(u => <option key={u} value={u} />)}
+      </datalist>
+
+      {/* Sub-tab navigation */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 16, overflowX: 'auto' }}>
+        {SUB_TABS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setSubTab(key)}
+            style={{
+              padding: '8px 14px', background: 'transparent', border: 'none',
+              borderBottom: `2px solid ${subTab === key ? '#f97316' : 'transparent'}`,
+              color: subTab === key ? '#f97316' : '#64748b',
+              cursor: 'pointer', fontSize: 13, fontWeight: 600,
+              marginBottom: -1, whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Materials Tab ── */}
+      {subTab === 'materials' && (
+        <div>
+          {/* Template toolbar */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
+            <select
+              style={{ flex: 1, minWidth: 130, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#94a3b8', fontSize: 13, outline: 'none' }}
+              defaultValue=""
+              onChange={e => { if (e.target.value) { loadMatTpl(e.target.value); e.target.value = ''; } }}
+            >
+              <option value="">Load Template…</option>
+              {matTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+            </select>
+            <button
+              onClick={() => setShowMatSave(s => !s)}
+              style={{ padding: '8px 12px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Save as Template
+            </button>
+          </div>
+          {showMatSave && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              <input value={matTplName} onChange={e => setMatTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+              <button onClick={saveMatTpl} style={{ padding: '8px 14px', background: '#f97316', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
+            </div>
+          )}
+          {/* Sections */}
+          {data.materials.sections.map(sec => renderMatSection(sec))}
+          <button
+            onClick={addMatSec}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #1e2535', borderRadius: 7, color: '#475569', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent' }}
+          >
+            + Add Section
+          </button>
+          {/* Materials Total */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', marginTop: 12, background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#f97316' }}>Materials Total</span>
+            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#f97316' }}>{fmtC(matTotal)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── Labor Tab ── */}
+      {subTab === 'labor' && (
+        <div>
+          {/* Template toolbar */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
+            <select
+              style={{ flex: 1, minWidth: 130, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#94a3b8', fontSize: 13, outline: 'none' }}
+              defaultValue=""
+              onChange={e => { if (e.target.value) { loadRateTpl(e.target.value); e.target.value = ''; } }}
+            >
+              <option value="">Load Rate Template…</option>
+              {rateTpls.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+            </select>
+            <button
+              onClick={() => setShowRateSave(s => !s)}
+              style={{ padding: '8px 12px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Save Rate Template
+            </button>
+          </div>
+          {showRateSave && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              <input value={rateTplName} onChange={e => setRateTplName(e.target.value)} placeholder="Rate template name" style={{ flex: 1, padding: '8px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+              <button onClick={saveRateTpl} style={{ padding: '8px 14px', background: '#f97316', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
+            </div>
+          )}
+          {/* Sub-contractor info */}
+          <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Sub-Contractor Name(s)</div>
+            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+          </div>
+          {/* Sections */}
+          {data.labor.sections.map(sec => renderLaborSection(sec))}
+          <button
+            onClick={addLaborSec}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #1e2535', borderRadius: 7, color: '#475569', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent' }}
+          >
+            + Add Section
+          </button>
+          {/* Labor Total */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', marginTop: 12, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#6366f1' }}>Labor Total</span>
+            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmtC(laborTotal)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── Summary Tab ── */}
+      {subTab === 'summary' && (
+        <div>
+          {/* Job Cost Breakdown */}
+          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
+            {[
+              { label: 'Materials', val: matTotal, color: '#f97316' },
+              { label: 'Labor', val: laborTotal, color: '#6366f1' },
+            ].map(({ label, val, color }) => (
+              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color }}>{fmtC(val)}</span>
+              </div>
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #1e2535', marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>Subtotal</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{fmtC(subtotal)}</span>
+            </div>
+            {/* Overhead & Tax */}
+            {[
+              { label: 'Overhead (%)', field: 'overhead', pct: overheadPct, amt: overheadAmt },
+              { label: 'Tax (%)', field: 'tax', pct: taxPct, amt: taxAmt },
+            ].map(({ label, field, pct, amt }) => (
+              <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontSize: 13, color: '#94a3b8', flex: 1 }}>{label}</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={data.jobInfo[field]}
+                  onChange={e => updInfo(field, e.target.value)}
+                  placeholder="0"
+                  style={{ width: 60, padding: '6px 8px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                />
+                <span style={{ fontSize: 11, color: '#475569', width: 14 }}>%</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#64748b', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
+              </div>
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', marginTop: 8, background: '#161b27', borderRadius: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>Total Job Cost</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>{fmtC(totalJobCost)}</span>
+            </div>
+          </div>
+
+          {/* Profitability */}
+          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 15 }}>$</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={data.jobInfo.contractPrice}
+                  onChange={e => updInfo('contractPrice', e.target.value)}
+                  placeholder="0.00"
+                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+            {[
+              { label: 'Total Cost', val: totalJobCost, color: '#e2e8f0' },
+              { label: 'Gross Profit', val: grossProfit, color: profitColor },
+            ].map(({ label, val, color }) => (
+              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color }}>{fmtC(val)}</span>
+              </div>
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${profitColor}14`, border: `1px solid ${profitColor}44`, borderRadius: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 700, color: profitColor }}>Profit Margin</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: profitColor }}>{profitMargin.toFixed(1)}%</span>
+            </div>
+          </div>
+
+          {/* Per-Square Metrics */}
+          {totalSq > 0 && (
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, color: '#94a3b8' }}>Total Squares</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#e2e8f0', fontWeight: 700 }}>{totalSq.toFixed(1)} SQ</span>
+              </div>
+              {[
+                { label: 'Cost / SQ', val: costPerSq },
+                { label: 'Revenue / SQ', val: revenuePerSq },
+                { label: 'Profit / SQ', val: profitPerSq },
+              ].map(({ label, val }) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
+                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#e2e8f0' }}>{fmtC(val)}</span>
                 </div>
               ))}
             </div>
           )}
 
-          {/* f. Sign Off */}
+          {/* Sub-Contractor Pay */}
+          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Sub-Contractor Pay</div>
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Sub-Contractor Name(s)</div>
+              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#6366f1' }}>Total Labor Pay</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 18, fontWeight: 700, color: '#6366f1' }}>{fmtC(laborTotal)}</span>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
+              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Sign Off Tab ── */}
+      {subTab === 'signoff' && (
+        <div>
           {data.signOff.submitted ? (
-            <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 10, padding: '20px 18px', textAlign: 'center' }}>
-              <div style={{ fontSize: 28, marginBottom: 6 }}>✓</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#22c55e', marginBottom: 4 }}>Submitted & Locked</div>
+            <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 10, padding: '24px 18px', textAlign: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#22c55e', marginBottom: 4 }}>Submitted & Locked</div>
               <div style={{ fontSize: 12, color: '#64748b' }}>This form has been submitted and locked.</div>
             </div>
           ) : (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 14 }}>Sign Off</div>
+            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ marginBottom: 14 }}>
-                <label style={CP_LBL}>Inspection Pass?</label>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
                 <div style={{ display: 'flex', gap: 10 }}>
                   {['yes', 'no'].map(v => (
                     <button
@@ -3627,27 +3816,44 @@ function CrewPayPanel({ job, crew, assignments }) {
                   ))}
                 </div>
               </div>
-              <div style={{ marginBottom: 14 }}>
-                <label style={CP_LBL}>Sub-Contractor Name</label>
-                <input value={data.signOff.subContractorName} onChange={e => updSignOff('subContractorName', e.target.value)} style={CP_INP} />
+              {[
+                { field: 'subName', label: 'Sub-Contractor Name', type: 'text' },
+                { field: 'supervisor', label: 'Site Supervisor Name', type: 'text' },
+                { field: 'dateCompleted', label: 'Date Completed', type: 'date' },
+              ].map(({ field, label, type }) => (
+                <div key={field} style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
+                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+                </div>
+              ))}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
+                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
               </div>
-              <div style={{ marginBottom: 18 }}>
-                <label style={CP_LBL}>Site Supervisor Name</label>
-                <input value={data.signOff.siteSupervisor} onChange={e => updSignOff('siteSupervisor', e.target.value)} style={CP_INP} />
-              </div>
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 10 }}>
+            {!data.signOff.submitted && (
               <button
                 onClick={() => updSignOff('submitted', true)}
-                style={{ width: '100%', padding: '15px', background: 'linear-gradient(135deg, #22c55e, #16a34a)', border: 'none', borderRadius: 10, color: '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                style={{ flex: 3, padding: '14px', background: 'linear-gradient(135deg, #22c55e, #16a34a)', border: 'none', borderRadius: 10, color: '#fff', fontWeight: 700, fontSize: 15, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
               >
                 Submit & Lock
               </button>
-            </div>
-          )}
+            )}
+            <button
+              onClick={() => window.print()}
+              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 10, color: '#64748b', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Print
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 }
+
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
 function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule }) {
