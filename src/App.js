@@ -1056,6 +1056,34 @@ const NAV_TABS = [
   { key: 'photos',    label: 'Photos',    icon: '📸' },
 ];
 
+// ─── Demo Role Definitions ────────────────────────────────────────────────────
+const DEMO_ROLES = {
+  owner: {
+    label: 'Owner/Admin', color: '#22c55e',
+    tabs: ['pipeline','callbacks','analytics','jobs','calendar','crew','chat','photos'],
+    seeDollars: true, seeRates: true, seeProfitability: true,
+    seeCostManager: true, seeCrewPay: true, seeAnalyticsRevenue: true,
+  },
+  sales: {
+    label: 'Sales', color: '#6366f1',
+    tabs: ['pipeline','callbacks','jobs','calendar','chat','analytics'],
+    seeDollars: true, seeRates: false, seeProfitability: false,
+    seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: true,
+  },
+  foreman: {
+    label: 'Foreman', color: '#f97316',
+    tabs: ['jobs','calendar','crew','chat','photos'],
+    seeDollars: false, seeRates: false, seeProfitability: false,
+    seeCostManager: true, seeCrewPay: false, seeAnalyticsRevenue: false,
+  },
+  crew: {
+    label: 'Crew', color: '#64748b',
+    tabs: ['jobs','chat','photos'],
+    seeDollars: false, seeRates: false, seeProfitability: false,
+    seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: false,
+  },
+};
+
 function BottomNav({ tab, setTab, tabs, color }) {
   const c = color || '#f97316';
   return (
@@ -2073,7 +2101,7 @@ function DisabledTooltip({ active, label, children }) {
 
 // ─── Pipeline Tab ─────────────────────────────────────────────────────────────
 // ─── Kanban Card ──────────────────────────────────────────────────────────────
-function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDelete, demoMode }) {
+function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDelete, demoMode, rolePerms }) {
   const [hovered, setHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -2107,7 +2135,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
           <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
           <div style={{ fontSize: 11, color: '#64748b', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{fmt(lead.value)}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
       </div>
 
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
@@ -2171,7 +2199,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
 }
 
 // ─── Card Quick Edit Modal ─────────────────────────────────────────────────────
-function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser }) {
+function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rolePerms }) {
   const [stage, setStage] = useState(lead.stage);
   const [status, setStatus] = useState(lead.status || 'active');
   const [updateText, setUpdateText] = useState('');
@@ -2256,7 +2284,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser }) {
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
             <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
-              {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{fmt(lead.value)}</span>
+              {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
@@ -2435,7 +2463,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser }) {
 }
 
 // ─── Pipeline Tab (Kanban) ─────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser }) {
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser, rolePerms }) {
   const [search, setSearch] = useState('');
   const [tradeFilter, setTradeFilter] = useState('all');
   const [dragOver, setDragOver] = useState(null);
@@ -2519,11 +2547,11 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #1e2535' : 'none', textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#f97316' }}>{s.count}</div>
             <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-            {s.value > 0 && <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>{fmt(s.value)}</div>}
+            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
         ))}
         <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', background: 'rgba(249,115,22,0.04)' }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{fmt(totalPipeline)}</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
           <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
         </div>
       </div>
@@ -2591,7 +2619,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                 <div style={{ minWidth: 0 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: STAGE_COLORS[stg.key] || '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
                   <span style={{ fontSize: 11, color: '#475569', marginLeft: 6 }}>{cards.length}</span>
-                  {colValue > 0 && <div style={{ fontSize: 10, color: '#374151' }}>{fmt(colValue)}</div>}
+                  {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#374151' }}>{fmt(colValue)}</div>}
                 </div>
                 {stg.key === 'lead' && (onAddLead || demoMode) && (
                   <DisabledTooltip active={demoMode} label="Sign up to add leads">
@@ -2627,6 +2655,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                     onEdit={onEditLead}
                     onDelete={onDeleteLead}
                     demoMode={demoMode}
+                    rolePerms={rolePerms}
                   />
                 ))}
               </div>
@@ -2647,6 +2676,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           }}
           onOpenDetail={onSelectLead ? () => { setQuickEditLead(null); onSelectLead(quickEditLead); } : null}
           currentUser={currentUser}
+          rolePerms={rolePerms}
         />
       )}
     </div>
@@ -2654,7 +2684,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
 }
 
 // ─── Callbacks Tab ────────────────────────────────────────────────────────────
-function CallbacksTab({ leads, onSelectLead, onUpdateLead }) {
+function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
   const [hovered, setHovered] = useState(null);
   const [snoozeModal, setSnoozeModal] = useState(null);
   const [snoozeDate, setSnoozeDate] = useState('');
@@ -2725,7 +2755,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead }) {
                 )}
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div style={S.cbValue}>{fmt(lead.value)}</div>
+                <div style={S.cbValue}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</div>
                 <div style={{ fontSize: 11, color: '#374151', marginBottom: 6 }}>{lead.callbackDate}</div>
                 {onUpdateLead && (
                   <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
@@ -2785,7 +2815,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead }) {
 }
 
 // ─── Analytics Tab ────────────────────────────────────────────────────────────
-function AnalyticsTab({ leads, tier }) {
+function AnalyticsTab({ leads, tier, rolePerms }) {
   const isMobile = useMobile();
   const active = leads.filter(l => ['active', 'stalled', 'cold'].includes(l.status));
   const stalled = leads.filter(l => l.status === 'stalled');
@@ -2831,13 +2861,14 @@ function AnalyticsTab({ leads, tier }) {
     competitor: '#f59e0b', timing: '#64748b', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
   };
 
+  const D = rolePerms?.seeDollars !== false;
   const kpis = [
-    { val: fmt(totalPipeline), label: 'Active Pipeline', color: '#f97316' },
-    { val: fmt(stalledValue), label: 'Value at Risk', color: '#ef4444' },
-    { val: fmt(wonValue), label: 'Won This Period', color: '#22c55e' },
+    { val: D ? fmt(totalPipeline) : '—', label: 'Active Pipeline', color: '#f97316' },
+    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
+    { val: D ? fmt(wonValue) : '—', label: 'Won This Period', color: '#22c55e' },
     { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#f97316' : '#ef4444' },
     { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#94a3b8' },
-    { val: fmt(avgJobValue), label: 'Avg Job Value', color: '#6366f1' },
+    { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value', color: '#6366f1' },
     { val: stalled.length, label: 'Stalled Deals', color: '#f59e0b' },
     { val: `${lost.length}`, label: 'Lost Deals', color: '#475569' },
   ];
@@ -2871,13 +2902,13 @@ function AnalyticsTab({ leads, tier }) {
                 <div style={S.barFill(value / maxStageValue * 100, STAGE_CHART_COLORS[stage] || '#f97316')} />
               </div>
               <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{count}</div>
-              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{fmt(value)}</div>
+              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
               {avgAge > 0 && <div style={{ fontSize: 10, color: '#374151', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
             </div>
           ))}
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #1e2535' }}>
             <div style={{ fontSize: 11, color: '#64748b' }}>Total pipeline value</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#f97316', marginTop: 4 }}>{fmt(totalPipeline)}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#f97316', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
           </div>
         </div>
 
@@ -3360,7 +3391,7 @@ function cpNewMakeInit(job, crewNames) {
   };
 }
 
-function CostManagerPanel({ job, crew, assignments }) {
+function CostManagerPanel({ job, crew, assignments, rolePerms }) {
   const cpKey = `cl_crewpay_${job.id}`;
   const assignedIds = assignments[String(job.id)] || [];
   const assignedCrew = (crew || []).filter(m => assignedIds.includes(m.id));
@@ -3610,15 +3641,16 @@ function CostManagerPanel({ job, crew, assignments }) {
   const NINP = { background: '#161b27', border: '1px solid #1e2535', borderRadius: 4, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box' };
   const UINP = { background: '#161b27', border: '1px solid #1e2535', borderRadius: 4, color: '#64748b', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' };
   const CHEAD = { fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' };
-  const MAT_COLS = '1fr 44px 58px 72px 72px 20px';
-  const LAB_COLS = '1fr 44px 58px 72px 72px 20px';
+  const seeRates = rolePerms?.seeRates !== false;
+  const MAT_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
+  const LAB_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
   const WASTE_COLS = '1fr 44px 64px 20px';
 
   // ── sub-tab nav ──────────────────────────────────────────────────────────────
   const SUB_TABS = [
     { key: 'materials', label: 'Materials' },
     { key: 'labor', label: 'Labor' },
-    { key: 'summary', label: 'Summary' },
+    ...(seeRates ? [{ key: 'summary', label: 'Summary' }] : []),
     { key: 'signoff', label: 'Sign Off' },
   ];
 
@@ -3657,7 +3689,7 @@ function CostManagerPanel({ job, crew, assignments }) {
                       <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
                       <button onClick={() => removeMatItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#334155', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr 1fr 1fr', gap: 8, alignItems: 'end' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr', gap: 8, alignItems: 'end' }}>
                       <div>
                         <div style={{ ...CHEAD, marginBottom: 4 }}>Unit</div>
                         <input list="cp_unit_dl" value={item.unit} onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP, minHeight: 44 }} />
@@ -3666,14 +3698,14 @@ function CostManagerPanel({ job, crew, assignments }) {
                         <div style={{ ...CHEAD, marginBottom: 4 }}>Qty</div>
                         <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP, minHeight: 44, fontSize: 15 }} />
                       </div>
-                      <div>
+                      {seeRates && <div>
                         <div style={{ ...CHEAD, marginBottom: 4 }}>$/Unit</div>
                         <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP, minHeight: 44, fontSize: 15 }} />
-                      </div>
-                      <div>
+                      </div>}
+                      {seeRates && <div>
                         <div style={{ ...CHEAD, marginBottom: 4 }}>Total</div>
                         <div style={{ minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: filled ? '#f97316' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
-                      </div>
+                      </div>}
                     </div>
                   </div>
                 );
@@ -3696,8 +3728,8 @@ function CostManagerPanel({ job, crew, assignments }) {
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
               <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
-              <div style={{ ...CHEAD, textAlign: 'right' }}>$/Unit</div>
-              <div style={{ ...CHEAD, textAlign: 'right' }}>Total</div>
+              {seeRates && <div style={{ ...CHEAD, textAlign: 'right' }}>$/Unit</div>}
+              {seeRates && <div style={{ ...CHEAD, textAlign: 'right' }}>Total</div>}
               <div />
             </div>
             {sec.items.map(item => {
@@ -3708,15 +3740,15 @@ function CostManagerPanel({ job, crew, assignments }) {
                   <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: 13, fontWeight: 500, outline: 'none', width: '100%', fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0' }} />
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
-                  <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />
-                  <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
+                  {seeRates && <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />}
+                  {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>}
                   <button onClick={() => removeMatItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#2d3748', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
             <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
               <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-              {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#f97316' }}>{fmtC(secTot)}</strong></div>}
+              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#f97316' }}>{fmtC(secTot)}</strong></div>}
             </div>
           </div>
         )}
@@ -3740,7 +3772,7 @@ function CostManagerPanel({ job, crew, assignments }) {
           onClick={e => e.stopPropagation()}
           style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
-        {!sec.isWaste && (
+        {!sec.isWaste && seeRates && (
           <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#6366f1' : '#334155', flexShrink: 0 }}>
             {secTot > 0 ? fmtC(secTot) : '—'}
           </span>
@@ -3765,7 +3797,7 @@ function CostManagerPanel({ job, crew, assignments }) {
                       </div>
                       <button onClick={() => removeLaborItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#334155', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: sec.isWaste ? '52px 1fr' : '52px 1fr 1fr 1fr', gap: 8, alignItems: 'end' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: sec.isWaste ? '52px 1fr' : (seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr'), gap: 8, alignItems: 'end' }}>
                       <div>
                         <div style={{ ...CHEAD, marginBottom: 4 }}>Unit</div>
                         <input list="cp_unit_dl" value={item.unit} onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP, minHeight: 44 }} />
@@ -3774,7 +3806,7 @@ function CostManagerPanel({ job, crew, assignments }) {
                         <div style={{ ...CHEAD, marginBottom: 4 }}>Qty</div>
                         <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP, minHeight: 44, fontSize: 15 }} />
                       </div>
-                      {!sec.isWaste && (
+                      {!sec.isWaste && seeRates && (
                         <>
                           <div>
                             <div style={{ ...CHEAD, marginBottom: 4 }}>Rate</div>
@@ -3793,7 +3825,7 @@ function CostManagerPanel({ job, crew, assignments }) {
               {!sec.isWaste && (
                 <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
                   <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                  {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
+                  {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
                 </div>
               )}
               {sec.isWaste && (
@@ -3816,8 +3848,8 @@ function CostManagerPanel({ job, crew, assignments }) {
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
               <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
-              {!sec.isWaste && <div style={{ ...CHEAD, textAlign: 'right' }}>Rate</div>}
-              {!sec.isWaste && <div style={{ ...CHEAD, textAlign: 'right' }}>Total</div>}
+              {!sec.isWaste && seeRates && <div style={{ ...CHEAD, textAlign: 'right' }}>Rate</div>}
+              {!sec.isWaste && seeRates && <div style={{ ...CHEAD, textAlign: 'right' }}>Total</div>}
               <div />
             </div>
             {sec.items.map(item => {
@@ -3831,7 +3863,7 @@ function CostManagerPanel({ job, crew, assignments }) {
                   </div>
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
-                  {!sec.isWaste && (
+                  {!sec.isWaste && seeRates && (
                     <>
                       <input type="text" inputMode="decimal" value={item.rate} onChange={e => updLabor(sec.id, item.id, 'rate', e.target.value)} placeholder="0.00" style={{ ...NINP }} />
                       <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
@@ -3844,7 +3876,7 @@ function CostManagerPanel({ job, crew, assignments }) {
             {!sec.isWaste && (
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
                 <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
+                {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
               </div>
             )}
             {sec.isWaste && (
@@ -3942,10 +3974,12 @@ function CostManagerPanel({ job, crew, assignments }) {
             + Add Section
           </button>
           {/* Materials Grand Total — sticky */}
+          {seeRates && (
           <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Materials Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#f97316' }}>{fmtC(matTotal)}</span>
           </div>
+          )}
         </div>
       )}
 
@@ -3966,10 +4000,12 @@ function CostManagerPanel({ job, crew, assignments }) {
             + Add Section
           </button>
           {/* Labor Grand Total — sticky */}
+          {seeRates && (
           <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Labor Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmtC(laborTotal)}</span>
           </div>
+          )}
         </div>
       )}
 
@@ -4154,7 +4190,7 @@ function CostManagerPanel({ job, crew, assignments }) {
 
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule }) {
+function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
   const steps = (job.taskList && job.taskList.length ? job.taskList.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
@@ -4241,7 +4277,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           </span>
         </div>
         <div style={S.modalSub}>
-          {job.address} · {fmt(job.value)}
+          {job.address}{rolePerms?.seeDollars !== false ? ` · ${fmt(job.value)}` : ''}
         </div>
         <div style={{ marginBottom: 20 }}>
           <span style={{
@@ -4271,7 +4307,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             { key: 'crew', label: 'Crew' },
             { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
             { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
-            { key: 'crewpay', label: hasCostMgr ? 'Cost Manager ●' : 'Cost Manager' },
+            ...(rolePerms?.seeCostManager !== false ? [{ key: 'crewpay', label: hasCostMgr ? 'Cost Manager ●' : 'Cost Manager' }] : []),
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -4445,7 +4481,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
         )}
 
         {modalTab === 'crewpay' && (
-          <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} />
+          <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} rolePerms={rolePerms} />
         )}
       </div>
     </div>
@@ -4453,7 +4489,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
-function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule }) {
+function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -4481,7 +4517,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
         ))}
         <div style={{ marginLeft: 'auto', fontSize: 13, color: '#94a3b8' }}>
           Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>
-            {fmt(filtered.reduce((s, j) => s + j.value, 0))}
+            {rolePerms?.seeDollars !== false ? fmt(filtered.reduce((s, j) => s + j.value, 0)) : '—'}
           </span>
         </div>
       </div>
@@ -4547,7 +4583,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
               </span>
 
               <div style={S.cardMeta}>
-                <div style={S.metaItem}>Value: <span style={{ ...S.metaValue, color: '#22c55e' }}>{fmt(job.value)}</span></div>
+                <div style={S.metaItem}>Value: <span style={{ ...S.metaValue, color: '#22c55e' }}>{rolePerms?.seeDollars !== false ? fmt(job.value) : '—'}</span></div>
               </div>
 
               <div style={{ marginTop: 12 }}>
@@ -4587,6 +4623,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           onComplete={onComplete ? (id) => { onComplete(id); setSelectedJob(null); } : null}
           onUpdateSteps={onUpdateSteps}
           onUpdateSchedule={onUpdateSchedule}
+          rolePerms={rolePerms}
         />
       )}
     </div>
@@ -8706,6 +8743,7 @@ export default function App() {
   const [screen, setScreen] = useState('login'); // 'login' | 'onboarding' | 'app'
   const [session, setSession] = useState(null);
   const [tab, setTab] = useState('pipeline');
+  const [demoRole, setDemoRole] = useState('owner');
   const [selectedLead, setSelectedLead] = useState(null);
   const [leadModal, setLeadModal] = useState(null); // null | 'add' | lead-object (edit)
 
@@ -8861,6 +8899,13 @@ export default function App() {
 
   const isMobile = useMobile();
 
+  // Reset tab when demo role changes and current tab is not accessible
+  useEffect(() => {
+    if (session?.isDemo && !DEMO_ROLES[demoRole].tabs.includes(tab)) {
+      setTab(DEMO_ROLES[demoRole].tabs[0] || 'pipeline');
+    }
+  }, [demoRole, session, tab]);
+
   if (screen === 'login') {
     return (
       <LoginScreen
@@ -8880,6 +8925,9 @@ export default function App() {
   }
 
   const isDemo = session?.isDemo;
+  const rolePerms = DEMO_ROLES[isDemo ? demoRole : 'owner'];
+  const visibleTabs = isDemo ? NAV_TABS.filter(t => DEMO_ROLES[demoRole].tabs.includes(t.key)) : NAV_TABS;
+
   const leads = isDemo
     ? DEMO_LEADS.map(l => demoLeadOverrides[String(l.id)] ? { ...l, ...demoLeadOverrides[String(l.id)] } : l)
     : userLeads;
@@ -8921,6 +8969,24 @@ export default function App() {
               DEMO
             </span>
           )}
+          {isDemo && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEMO_ROLES[demoRole].color, flexShrink: 0 }} />
+              <select
+                value={demoRole}
+                onChange={e => setDemoRole(e.target.value)}
+                style={{
+                  background: '#161b27', border: '1px solid #1e2535', borderRadius: 6,
+                  color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 600,
+                  padding: '3px 6px', cursor: 'pointer', outline: 'none',
+                }}
+              >
+                {Object.entries(DEMO_ROLES).map(([key, r]) => (
+                  <option key={key} value={key}>{r.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
           {!isMobile && companyName !== 'RidgeOS' && (
             <span style={S.logoSub}>{companyName}</span>
           )}
@@ -8929,7 +8995,7 @@ export default function App() {
         {/* Desktop tabs */}
         {!isMobile && (
           <div style={S.tabs}>
-            {NAV_TABS.map(({ key, label }) => (
+            {visibleTabs.map(({ key, label }) => (
               <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
                 {label}
               </button>
@@ -8974,13 +9040,14 @@ export default function App() {
                 onStageChange={handleLeadStageChange}
                 onUpdateLead={handleUpdateLead}
                 currentUser={currentUser}
+                rolePerms={rolePerms}
               />
         )}
         {tab === 'callbacks' && (
-          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={isDemo ? null : handleUpdateLead} />
+          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={isDemo ? null : handleUpdateLead} rolePerms={rolePerms} />
         )}
         {tab === 'analytics' && (
-          <AnalyticsTab leads={leads} />
+          <AnalyticsTab leads={leads} rolePerms={rolePerms} />
         )}
         {tab === 'jobs' && (
           jobs.length === 0
@@ -9004,6 +9071,7 @@ export default function App() {
                 onComplete={isDemo ? null : handleCompleteJob}
                 onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
                 onUpdateSchedule={isDemo ? null : handleScheduleJob}
+                rolePerms={rolePerms}
               />
         )}
         {tab === 'calendar' && (
@@ -9047,7 +9115,7 @@ export default function App() {
       </main>
 
       {/* Mobile bottom navigation */}
-      {isMobile && <BottomNav tab={tab} setTab={setTab} />}
+      {isMobile && <BottomNav tab={tab} setTab={setTab} tabs={visibleTabs} />}
 
       {selectedLead && (
         <CoachPanel
