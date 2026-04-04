@@ -776,7 +776,7 @@ const S = {
   },
   header: {
     background: '#161b27',
-    borderBottom: '1px solid #1e2535',
+    borderBottom: '1px solid #253048',
     padding: '0 24px',
     display: 'flex',
     alignItems: 'center',
@@ -787,15 +787,16 @@ const S = {
   logoSub: { fontSize: 12, color: '#64748b', marginLeft: 4 },
   tabs: { display: 'flex', gap: 4, marginLeft: 'auto' },
   tab: (active) => ({
-    padding: '6px 16px',
+    padding: '7px 16px',
     borderRadius: 6,
-    border: 'none',
+    border: active ? 'none' : '1px solid transparent',
     cursor: 'pointer',
     fontSize: 13,
-    fontWeight: 500,
-    background: active ? '#f97316' : 'transparent',
-    color: active ? '#fff' : '#94a3b8',
+    fontWeight: active ? 700 : 500,
+    background: active ? 'linear-gradient(135deg,#f97316,#e8640c)' : 'transparent',
+    color: active ? '#fff' : '#8899b8',
     transition: 'all 0.15s',
+    boxShadow: active ? '0 2px 10px rgba(249,115,22,0.35)' : 'none',
   }),
   body: { padding: 24, maxWidth: 1400, margin: '0 auto' },
 
@@ -807,9 +808,9 @@ const S = {
   filterBtn: (active) => ({
     padding: '8px 14px',
     borderRadius: 20,
-    border: `1px solid ${active ? '#f97316' : '#1e2535'}`,
+    border: `1px solid ${active ? '#f97316' : '#2e3d5c'}`,
     background: active ? 'rgba(249,115,22,0.12)' : 'transparent',
-    color: active ? '#f97316' : '#94a3b8',
+    color: active ? '#f97316' : '#8899b8',
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 500,
@@ -835,25 +836,26 @@ const S = {
     gap: 16,
   },
   card: (hovered) => ({
-    background: hovered ? '#1a2035' : '#161b27',
-    border: '1px solid #1e2535',
+    background: hovered ? '#1e2a40' : '#1a2236',
+    border: `1px solid ${hovered ? '#3a4d6b' : '#253048'}`,
     borderRadius: 10,
     padding: 16,
     cursor: 'pointer',
     transition: 'all 0.15s',
     transform: hovered ? 'translateY(-2px)' : 'none',
-    boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.4)' : 'none',
+    boxShadow: hovered ? '0 8px 28px rgba(0,0,0,0.55)' : '0 1px 4px rgba(0,0,0,0.3)',
   }),
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
   cardName: { fontSize: 15, fontWeight: 600, color: '#f1f5f9' },
   cardContact: { fontSize: 12, color: '#64748b', marginTop: 2 },
   statusBadge: (status) => ({
     fontSize: 10,
-    fontWeight: 600,
-    padding: '2px 8px',
+    fontWeight: 700,
+    padding: '3px 9px',
     borderRadius: 10,
-    background: STATUS_COLORS[status] + '22',
+    background: STATUS_COLORS[status] + '33',
     color: STATUS_COLORS[status],
+    border: `1px solid ${STATUS_COLORS[status]}55`,
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     whiteSpace: 'nowrap',
@@ -864,8 +866,9 @@ const S = {
     fontWeight: 600,
     padding: '2px 8px',
     borderRadius: 10,
-    background: (TRADE_COLORS[trade] || '#64748b') + '22',
+    background: (TRADE_COLORS[trade] || '#64748b') + '2e',
     color: TRADE_COLORS[trade] || '#64748b',
+    border: `1px solid ${(TRADE_COLORS[trade] || '#64748b')}44`,
     letterSpacing: '0.3px',
     whiteSpace: 'nowrap',
     marginTop: 6,
@@ -899,7 +902,7 @@ const S = {
   // Callbacks
   cbSection: { marginBottom: 28 },
   cbSectionHeader: {
-    fontSize: 13, fontWeight: 600, color: '#94a3b8',
+    fontSize: 13, fontWeight: 700, color: '#b0c0d8',
     textTransform: 'uppercase', letterSpacing: '0.5px',
     marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8,
   },
@@ -907,11 +910,11 @@ const S = {
     background: color + '22', color, padding: '1px 8px', borderRadius: 10, fontSize: 11,
   }),
   cbRow: (hovered) => ({
-    background: hovered ? '#1a2035' : '#161b27',
-    border: '1px solid #1e2535', borderRadius: 8,
+    background: hovered ? '#1c2840' : '#1a2236',
+    border: `1px solid ${hovered ? '#3a4d6b' : '#253048'}`, borderRadius: 8,
     padding: '12px 16px', marginBottom: 8,
     display: 'flex', alignItems: 'center', gap: 16,
-    cursor: 'pointer', transition: 'background 0.15s',
+    cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s',
   }),
   cbDate: (overdue) => ({
     fontSize: 13, fontWeight: 600,
@@ -928,15 +931,17 @@ const S = {
     gap: 16, marginBottom: 28,
   },
   statCard: {
-    background: '#161b27', border: '1px solid #1e2535',
+    background: '#1a2236', border: '1px solid #253048',
     borderRadius: 10, padding: 20, textAlign: 'center',
+    boxShadow: '0 1px 6px rgba(0,0,0,0.3)',
   },
   statVal: { fontSize: 28, fontWeight: 700, color: '#f97316' },
   statLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
   chartSection: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 },
   chartCard: {
-    background: '#161b27', border: '1px solid #1e2535',
+    background: '#1a2236', border: '1px solid #253048',
     borderRadius: 10, padding: 20,
+    boxShadow: '0 1px 6px rgba(0,0,0,0.3)',
   },
   chartTitle: { fontSize: 14, fontWeight: 600, color: '#94a3b8', marginBottom: 16 },
   barRow: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 },
@@ -949,7 +954,7 @@ const S = {
   barCount: { fontSize: 12, color: '#64748b', width: 28, textAlign: 'right' },
 
   // Jobs
-  progressTrack: { height: 6, background: '#1e2535', borderRadius: 3, overflow: 'hidden', marginTop: 10 },
+  progressTrack: { height: 6, background: '#253048', borderRadius: 3, overflow: 'hidden', marginTop: 10 },
   progressFill: (pct, color) => ({
     height: '100%', width: `${pct}%`, background: color,
     borderRadius: 3, transition: 'width 0.4s ease',
@@ -958,14 +963,16 @@ const S = {
   // Checklist modal
   checklistItem: () => ({
     display: 'flex', alignItems: 'center', gap: 12,
-    padding: '10px 0', borderBottom: '1px solid #1e2535', cursor: 'pointer',
+    padding: '10px 4px', borderBottom: '1px solid #1f2d42', cursor: 'pointer',
+    borderRadius: 4, transition: 'background 0.1s',
   }),
   checkbox: (done) => ({
     width: 20, height: 20, borderRadius: 4, flexShrink: 0,
-    border: `2px solid ${done ? '#f97316' : '#2d3748'}`,
+    border: `2px solid ${done ? '#f97316' : '#3a4d6b'}`,
     background: done ? '#f97316' : 'transparent',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     transition: 'all 0.15s',
+    boxShadow: done ? '0 0 6px rgba(249,115,22,0.35)' : 'none',
   }),
   checkLabel: (done) => ({
     fontSize: 13, color: done ? '#64748b' : '#cbd5e1',
@@ -985,20 +992,22 @@ const S = {
     zIndex: 1000, padding: 20,
   },
   modal: {
-    background: '#161b27', border: '1px solid #1e2535',
+    background: '#1a2236', border: '1px solid #2e3d5c',
     borderRadius: 14, width: '100%', maxWidth: 560,
     maxHeight: '85vh', overflow: 'auto', padding: 28, position: 'relative',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
   },
   modalTitle: { fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 },
   modalSub: { fontSize: 13, color: '#64748b', marginBottom: 20 },
   closeBtn: {
     position: 'absolute', top: 12, right: 12,
-    background: 'rgba(255,255,255,0.05)', border: '1px solid #1e2535',
+    background: 'rgba(255,255,255,0.07)', border: '1px solid #2e3d5c',
     borderRadius: 8,
     color: '#94a3b8', cursor: 'pointer', fontSize: 20, lineHeight: 1,
     width: 40, height: 40,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     WebkitTapHighlightColor: 'transparent',
+    transition: 'color 0.15s, background 0.15s',
   },
   sectionLabel: {
     fontSize: 11, fontWeight: 600, color: '#f97316',
@@ -1084,12 +1093,40 @@ const DEMO_ROLES = {
   },
 };
 
+function GlobalStyles() {
+  return (
+    <style>{`
+      .ri-btn { transition: filter 0.15s, transform 0.12s, box-shadow 0.15s; }
+      .ri-btn-primary { background: linear-gradient(135deg,#f97316,#e8640c) !important; color:#fff !important; border:none !important; font-weight:700 !important; }
+      .ri-btn-primary:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 4px 18px rgba(249,115,22,0.45); }
+      .ri-btn-secondary { background:transparent !important; border:1px solid #3a4d6b !important; color:#94a3b8 !important; }
+      .ri-btn-secondary:hover:not(:disabled) { border-color:#f97316 !important; color:#f1f5f9 !important; background:rgba(249,115,22,0.07) !important; }
+      .ri-btn-danger { background:rgba(239,68,68,0.12) !important; border:1px solid rgba(239,68,68,0.35) !important; color:#ef4444 !important; }
+      .ri-btn-danger:hover:not(:disabled) { background:rgba(239,68,68,0.22) !important; border-color:rgba(239,68,68,0.6) !important; }
+      .ri-del { transition:color 0.12s !important; color:#475569 !important; }
+      .ri-del:hover { color:#ef4444 !important; }
+      input:focus, select:focus, textarea:focus { border-color:#f97316 !important; box-shadow:0 0 0 3px rgba(249,115,22,0.12) !important; outline:none !important; }
+      .ri-nav-tab { transition:color 0.15s, background 0.15s; }
+      .ri-nav-tab:hover { color:#f1f5f9 !important; background:rgba(249,115,22,0.08) !important; }
+      .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
+      .ri-cb-row:hover { background:#1c2840 !important; border-color:#3a4d6b !important; }
+      .ri-sec-hdr { transition:background 0.12s; }
+      .ri-sec-hdr:hover { background:#1e2a42 !important; }
+      .ri-sub-tab { transition:color 0.15s, border-color 0.15s; }
+      .ri-sub-tab:hover { color:#f1f5f9 !important; }
+      ::-webkit-scrollbar { width:5px; height:5px; }
+      ::-webkit-scrollbar-track { background:transparent; }
+      ::-webkit-scrollbar-thumb { background:#2d3748; border-radius:3px; }
+    `}</style>
+  );
+}
+
 function BottomNav({ tab, setTab, tabs, color }) {
   const c = color || '#f97316';
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: '#161b27', borderTop: '1px solid #1e2535',
+      background: '#141c2e', borderTop: '2px solid #253048',
       display: 'flex', height: 64, zIndex: 200,
       boxShadow: '0 -4px 12px rgba(0,0,0,0.35)',
       overflowX: 'auto', scrollbarWidth: 'none',
@@ -1183,13 +1220,14 @@ const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat 
 const LEAD_STAGES = ['lead', 'inspection', 'estimate', 'approved', 'in_progress', 'completed'];
 
 const FI = { // form input base
-  width: '100%', padding: '9px 12px', background: '#0f1117',
-  border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0',
+  width: '100%', padding: '9px 12px', background: '#111823',
+  border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0',
   fontSize: 13, outline: 'none', boxSizing: 'border-box',
   fontFamily: "'Inter', -apple-system, sans-serif",
+  transition: 'border-color 0.15s',
 };
 const FLbl = {
-  display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b',
+  display: 'block', fontSize: 11, fontWeight: 600, color: '#7a8faa',
   marginBottom: 5, marginTop: 14, textTransform: 'uppercase', letterSpacing: '0.4px',
 };
 const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
@@ -1376,23 +1414,26 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
 
         <div style={{ display: 'flex', gap: 10, marginTop: 20, paddingBottom: isMobile ? 8 : 0 }}>
           <button
+            className="ri-btn ri-btn-primary"
             style={{
               flex: 1, padding: isMobile ? '14px 16px' : '10px 16px',
-              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              background: 'linear-gradient(135deg, #f97316, #e8640c)',
               border: 'none', borderRadius: 8, color: '#fff',
               fontWeight: 700, fontSize: 15, cursor: 'pointer',
               minHeight: 48, WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 12px rgba(249,115,22,0.35)',
             }}
             onClick={handleSave}
           >
             {isEdit ? 'Save Changes' : 'Add Lead'}
           </button>
           <button
+            className="ri-btn ri-btn-secondary"
             style={{
               padding: isMobile ? '14px 20px' : '10px 20px',
               background: 'transparent',
-              border: '1px solid #1e2535', borderRadius: 8,
-              color: '#64748b', cursor: 'pointer', fontSize: 14,
+              border: '1px solid #3a4d6b', borderRadius: 8,
+              color: '#94a3b8', cursor: 'pointer', fontSize: 14,
               minHeight: 48, WebkitTapHighlightColor: 'transparent',
             }}
             onClick={onClose}
@@ -2122,12 +2163,13 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
       onMouseLeave={() => { setHovered(false); setConfirmDelete(false); }}
       onClick={() => !dragging && onQuickEdit && onQuickEdit(lead)}
       style={{
-        background: hovered ? '#1a2035' : '#161b27',
+        background: hovered ? '#1e2a40' : '#1a2236',
         border: urgencyBorder,
         borderRadius: 8, padding: '10px 12px',
         cursor: 'pointer', position: 'relative',
-        transition: 'background 0.15s',
+        transition: 'all 0.15s',
         userSelect: 'none',
+        boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.25)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
@@ -2490,7 +2532,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
     const d = staleDays(lead);
     if (d > 14) return '2px solid #ef4444';
     if (d > 7) return '2px solid #eab308';
-    return '1px solid #1e2535';
+    return '1px solid #253048';
   };
 
   const filteredLeads = useMemo(() => {
@@ -3659,7 +3701,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
     const secTot = matSecTot(sec);
     const secHdr = (
       <div
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a2035', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
+        className="ri-sec-hdr"
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1c2640', borderLeft: '3px solid #f97316', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
         onClick={() => toggleMatSec(sec.id)}
       >
         <span style={{ color: '#f97316', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
@@ -3762,7 +3805,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
     const cols = sec.isWaste ? WASTE_COLS : LAB_COLS;
     const labHdr = (
       <div
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#161e35', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
+        className="ri-sec-hdr"
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a2038', borderLeft: '3px solid #6366f1', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
         onClick={() => toggleLaborSec(sec.id)}
       >
         <span style={{ color: '#6366f1', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
@@ -3952,8 +3996,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             style={{
               padding: '8px 14px', background: 'transparent', border: 'none',
               borderBottom: `2px solid ${subTab === key ? '#f97316' : 'transparent'}`,
-              color: subTab === key ? '#f97316' : '#64748b',
-              cursor: 'pointer', fontSize: 13, fontWeight: 600,
+              color: subTab === key ? '#f97316' : '#6b7f9a',
+              cursor: 'pointer', fontSize: 13, fontWeight: subTab === key ? 700 : 500,
               marginBottom: -1, whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent',
             }}
           >
@@ -4315,8 +4359,8 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               style={{
                 padding: '8px 14px', background: 'transparent', border: 'none',
                 borderBottom: `2px solid ${modalTab === key ? '#f97316' : 'transparent'}`,
-                color: modalTab === key ? '#f97316' : '#64748b',
-                cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                color: modalTab === key ? '#f97316' : '#6b7f9a',
+                cursor: 'pointer', fontSize: 13, fontWeight: modalTab === key ? 700 : 500,
                 marginBottom: -1, whiteSpace: 'nowrap', flexShrink: 0,
                 WebkitTapHighlightColor: 'transparent',
               }}
@@ -8953,6 +8997,7 @@ export default function App() {
 
   return (
     <ToastProvider>
+    <GlobalStyles />
     <div style={S.app}>
       <header style={{
         ...S.header,
@@ -8996,7 +9041,7 @@ export default function App() {
         {!isMobile && (
           <div style={S.tabs}>
             {visibleTabs.map(({ key, label }) => (
-              <button key={key} style={S.tab(tab === key)} onClick={() => setTab(key)}>
+              <button key={key} className={tab === key ? '' : 'ri-nav-tab'} style={S.tab(tab === key)} onClick={() => setTab(key)}>
                 {label}
               </button>
             ))}
@@ -9005,10 +9050,11 @@ export default function App() {
 
         <button
           onClick={() => { setScreen('login'); setSession(null); }}
+          className="ri-btn ri-btn-secondary"
           style={{
-            marginLeft: 'auto', background: 'transparent', border: 'none',
-            color: '#475569', cursor: 'pointer', fontSize: isMobile ? 13 : 12,
-            padding: isMobile ? '8px 4px' : '4px 8px', borderRadius: 6,
+            marginLeft: 'auto', background: 'transparent', border: '1px solid #2e3d5c',
+            color: '#6b7f9a', cursor: 'pointer', fontSize: isMobile ? 13 : 12,
+            padding: isMobile ? '8px 10px' : '5px 12px', borderRadius: 6,
             minHeight: isMobile ? 44 : 'auto',
             WebkitTapHighlightColor: 'transparent',
           }}
