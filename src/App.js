@@ -803,7 +803,7 @@ const S = {
   filterRow: { display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' },
   tradeFilterRow: {
     display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center',
-    paddingBottom: 12, borderBottom: '1px solid #1e2535',
+    paddingBottom: 12, borderBottom: '1px solid #253048',
   },
   filterBtn: (active) => ({
     padding: '8px 14px',
@@ -946,7 +946,7 @@ const S = {
   chartTitle: { fontSize: 14, fontWeight: 600, color: '#94a3b8', marginBottom: 16 },
   barRow: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 },
   barLabel: { fontSize: 12, color: '#94a3b8', width: 120, flexShrink: 0 },
-  barTrack: { flex: 1, height: 8, background: '#1e2535', borderRadius: 4, overflow: 'hidden' },
+  barTrack: { flex: 1, height: 8, background: '#253048', borderRadius: 4, overflow: 'hidden' },
   barFill: (pct, color) => ({
     height: '100%', width: `${pct}%`, background: color,
     borderRadius: 4, transition: 'width 0.5s ease',
@@ -1096,27 +1096,36 @@ const DEMO_ROLES = {
 function GlobalStyles() {
   return (
     <style>{`
-      .ri-btn { transition: filter 0.15s, transform 0.12s, box-shadow 0.15s; }
-      .ri-btn-primary { background: linear-gradient(135deg,#f97316,#e8640c) !important; color:#fff !important; border:none !important; font-weight:700 !important; }
-      .ri-btn-primary:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 4px 18px rgba(249,115,22,0.45); }
+      .ri-btn { transition: filter 0.15s, transform 0.12s, box-shadow 0.15s; cursor: pointer; }
+      .ri-btn-primary { background: linear-gradient(135deg,#f97316,#e8640c) !important; color:#fff !important; border:none !important; font-weight:700 !important; box-shadow:0 2px 10px rgba(249,115,22,0.3); }
+      .ri-btn-primary:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 4px 18px rgba(249,115,22,0.5) !important; }
+      .ri-btn-primary:active:not(:disabled) { transform:translateY(0); filter:brightness(0.96); }
       .ri-btn-secondary { background:transparent !important; border:1px solid #3a4d6b !important; color:#94a3b8 !important; }
       .ri-btn-secondary:hover:not(:disabled) { border-color:#f97316 !important; color:#f1f5f9 !important; background:rgba(249,115,22,0.07) !important; }
-      .ri-btn-danger { background:rgba(239,68,68,0.12) !important; border:1px solid rgba(239,68,68,0.35) !important; color:#ef4444 !important; }
-      .ri-btn-danger:hover:not(:disabled) { background:rgba(239,68,68,0.22) !important; border-color:rgba(239,68,68,0.6) !important; }
-      .ri-del { transition:color 0.12s !important; color:#475569 !important; }
+      .ri-btn-danger { background:rgba(239,68,68,0.12) !important; border:1px solid rgba(239,68,68,0.4) !important; color:#f87171 !important; }
+      .ri-btn-danger:hover:not(:disabled) { background:rgba(239,68,68,0.24) !important; border-color:rgba(239,68,68,0.7) !important; }
+      .ri-del { transition:color 0.12s, background 0.12s; cursor:pointer; }
       .ri-del:hover { color:#ef4444 !important; }
-      input:focus, select:focus, textarea:focus { border-color:#f97316 !important; box-shadow:0 0 0 3px rgba(249,115,22,0.12) !important; outline:none !important; }
+      input:focus, select:focus, textarea:focus { border-color:#f97316 !important; box-shadow:0 0 0 3px rgba(249,115,22,0.14) !important; outline:none !important; }
       .ri-nav-tab { transition:color 0.15s, background 0.15s; }
-      .ri-nav-tab:hover { color:#f1f5f9 !important; background:rgba(249,115,22,0.08) !important; }
+      .ri-nav-tab:hover { color:#f1f5f9 !important; background:rgba(249,115,22,0.09) !important; }
       .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
       .ri-cb-row:hover { background:#1c2840 !important; border-color:#3a4d6b !important; }
       .ri-sec-hdr { transition:background 0.12s; }
       .ri-sec-hdr:hover { background:#1e2a42 !important; }
-      .ri-sub-tab { transition:color 0.15s, border-color 0.15s; }
+      .ri-sub-tab { transition:color 0.15s, border-color 0.15s; cursor:pointer; }
       .ri-sub-tab:hover { color:#f1f5f9 !important; }
+      .ri-card-btn:hover { color:#f1f5f9 !important; background:rgba(249,115,22,0.1) !important; }
+      .ri-close-btn:hover { color:#f1f5f9 !important; background:rgba(255,255,255,0.12) !important; }
+      .ri-add-item:hover { color:#94a3b8 !important; border-color:#3a4d6b !important; }
       ::-webkit-scrollbar { width:5px; height:5px; }
       ::-webkit-scrollbar-track { background:transparent; }
       ::-webkit-scrollbar-thumb { background:#2d3748; border-radius:3px; }
+      @media (max-width:768px) {
+        .ri-btn { min-height:48px; }
+        .ri-btn-primary { font-size:15px !important; }
+        .ri-btn-secondary { font-size:15px !important; }
+      }
     `}</style>
   );
 }
@@ -1140,8 +1149,8 @@ function BottomNav({ tab, setTab, tabs, color }) {
             minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             background: 'transparent', border: 'none',
-            color: locked ? '#2d3748' : tab === key ? c : '#64748b',
-            fontSize: 10, fontWeight: 600,
+            color: locked ? '#2d3748' : tab === key ? c : '#7a93b0',
+            fontSize: 10, fontWeight: tab === key ? 700 : 500,
             cursor: locked ? 'not-allowed' : 'pointer',
             gap: 3, minHeight: 64, padding: 0,
             borderTop: tab === key && !locked ? `2px solid ${c}` : '2px solid transparent',
@@ -1149,7 +1158,7 @@ function BottomNav({ tab, setTab, tabs, color }) {
             WebkitTapHighlightColor: 'transparent',
           }}
         >
-          <span style={{ fontSize: 18, lineHeight: 1 }}>
+          <span style={{ fontSize: tab === key ? 22 : 18, lineHeight: 1, transition: 'font-size 0.15s' }}>
             {locked ? '🔒' : icon}
           </span>
           {label}
@@ -1309,7 +1318,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
   return (
     <div style={isMobile ? mobileOverlay : { ...S.overlay }} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div style={isMobile ? mobileModal : { ...S.modal, maxWidth: 560 }}>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ ...S.modalTitle, paddingRight: 48 }}>{isEdit ? 'Edit Lead' : 'Add New Lead'}</div>
         <div style={{ ...S.modalSub, marginBottom: 4 }}>
           {isEdit ? `Editing: ${lead.name}` : 'Required fields are marked with *'}
@@ -1727,8 +1736,8 @@ function JobPhotosPanel({ lead, onCountChange }) {
       <div style={{ marginBottom: 14 }}>
         <input
           style={{
-            width: '100%', padding: '8px 12px', background: '#0f1117',
-            border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0',
+            width: '100%', padding: '8px 12px', background: '#111823',
+            border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0',
             fontSize: 13, outline: 'none', boxSizing: 'border-box',
             fontFamily: 'inherit', marginBottom: 8,
           }}
@@ -1798,7 +1807,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
               onClick={() => setLightbox(photo)}
               style={{
                 position: 'relative', borderRadius: 8, overflow: 'hidden',
-                cursor: 'pointer', border: '1px solid #1e2535',
+                cursor: 'pointer', border: '1px solid #253048',
                 aspectRatio: '4/3', background: '#0d1117',
               }}
             >
@@ -1963,7 +1972,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
   return (
     <div style={coachOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div style={coachModal}>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ ...S.modalTitle, paddingRight: 52 }}>{lead.name}</div>
         <div style={S.modalSub}>
           {lead.contact} · {lead.role} · {fmt(lead.value)} · {STAGE_LABELS[lead.stage] || lead.stage}
@@ -2221,7 +2230,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
             <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
               {!confirmDelete ? (
                 <button
-                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: '#475569', cursor: 'pointer' }}
+                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #2e3d5c', borderRadius: 4, color: '#64748b', cursor: 'pointer' }}
                   onClick={() => setConfirmDelete(true)}
                 >
                   🗑
@@ -2229,7 +2238,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
               ) : (
                 <>
                   <button style={{ padding: '2px 6px', fontSize: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Del</button>
-                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #1e2535', borderRadius: 4, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
+                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #2e3d5c', borderRadius: 4, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
                 </>
               )}
             </div>
@@ -2318,7 +2327,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
       onClick={onClose}
     >
       <div
-        style={{ background: '#0d1117', border: '1px solid #1e2535', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}
+        style={{ background: '#0d1117', border: '1px solid #253048', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -2333,7 +2342,8 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
             {onOpenDetail && (
               <button
                 onClick={onOpenDetail}
-                style={{ background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                className="ri-btn ri-btn-secondary"
+                style={{ background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 AI Coach ↗
               </button>
@@ -2366,11 +2376,12 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               disabled={!updateText.trim()}
               style={{
                 marginTop: 8, width: '100%', padding: '10px 0',
-                background: updateText.trim() ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#0f1117',
-                border: updateText.trim() ? 'none' : '1px solid #1e2535',
+                background: updateText.trim() ? 'linear-gradient(135deg, #f97316, #e8640c)' : '#111823',
+                border: updateText.trim() ? 'none' : '1px solid #2e3d5c',
                 borderRadius: 8, color: updateText.trim() ? '#fff' : '#3d4f63',
                 fontWeight: 700, fontSize: 14, cursor: updateText.trim() ? 'pointer' : 'not-allowed',
                 transition: 'background 0.15s',
+                boxShadow: updateText.trim() ? '0 2px 10px rgba(249,115,22,0.3)' : 'none',
               }}
             >
               Post Update {updateText.trim() ? '(Ctrl+Enter)' : ''}
@@ -2584,7 +2595,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   return (
     <div>
       {/* Summary bar */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#161b27', border: '1px solid #1e2535', borderRadius: 10, overflow: 'hidden', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#161b27', border: '1px solid #253048', borderRadius: 10, overflow: 'hidden', overflowX: 'auto' }}>
         {stageStats.map((s, i) => (
           <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #1e2535' : 'none', textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#f97316' }}>{s.count}</div>
@@ -2621,10 +2632,11 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             <button
               style={{
                 padding: '8px 16px',
-                background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
-                border: demoMode ? '1px solid #2d3748' : 'none', borderRadius: 7,
+                background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #e8640c)',
+                border: demoMode ? '1px solid #2e3d5c' : 'none', borderRadius: 7,
                 color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 13,
                 cursor: demoMode ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
+                boxShadow: demoMode ? 'none' : '0 2px 10px rgba(249,115,22,0.3)',
               }}
               onClick={demoMode ? undefined : onAddLead}
             >
@@ -2650,8 +2662,8 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               style={{
                 minWidth: isMobile ? 230 : 220,
                 flex: isMobile ? '0 0 230px' : '1 1 0',
-                background: isOver ? 'rgba(249,115,22,0.04)' : '#0d1117',
-                border: `1px solid ${isOver ? '#f97316' : '#1e2535'}`,
+                background: isOver ? 'rgba(249,115,22,0.06)' : '#131a28',
+                border: `1px solid ${isOver ? '#f97316' : '#253048'}`,
                 borderRadius: 10,
                 transition: 'border-color 0.15s, background 0.15s',
               }}
@@ -2668,8 +2680,8 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                     <button
                       style={{
                         padding: '3px 8px',
-                        background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #ea580c)',
-                        border: demoMode ? '1px solid #2d3748' : 'none', borderRadius: 5,
+                        background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #e8640c)',
+                        border: demoMode ? '1px solid #2e3d5c' : 'none', borderRadius: 5,
                         color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 10,
                         cursor: demoMode ? 'not-allowed' : 'pointer', flexShrink: 0,
                       }}
@@ -2802,13 +2814,13 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
                 {onUpdateLead && (
                   <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
                     <button
-                      style={{ padding: '3px 8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 5, color: '#22c55e', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}
+                      style={{ padding: '5px 10px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', borderRadius: 5, color: '#4ade80', fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'background 0.15s' }}
                       onClick={e => handleMarkCalled(lead, e)}
                     >
                       ✓ Called
                     </button>
                     <button
-                      style={{ padding: '3px 8px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 5, color: '#818cf8', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}
+                      style={{ padding: '5px 10px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 5, color: '#a5b4fc', fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'background 0.15s' }}
                       onClick={e => handleSnooze(lead, e)}
                     >
                       Snooze
@@ -2846,7 +2858,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
             <label style={FLbl}>New Callback Date</label>
             <input type="date" style={{ ...FI, marginBottom: 20 }} value={snoozeDate} onChange={e => setSnoozeDate(e.target.value)} />
             <div style={{ display: 'flex', gap: 8 }}>
-              <button style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
+              <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 7, color: '#94a3b8', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
               <button style={{ flex: 2, padding: '8px', background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer' }} onClick={confirmSnooze}>Set Snooze Date</button>
             </div>
           </div>
@@ -3680,8 +3692,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
   const isMobile = useMobile();
 
   // ── shared cell styles ───────────────────────────────────────────────────────
-  const NINP = { background: '#161b27', border: '1px solid #1e2535', borderRadius: 4, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box' };
-  const UINP = { background: '#161b27', border: '1px solid #1e2535', borderRadius: 4, color: '#64748b', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' };
+  const NINP = { background: '#111823', border: '1px solid #2e3d5c', borderRadius: 4, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s' };
+  const UINP = { background: '#111823', border: '1px solid #2e3d5c', borderRadius: 4, color: '#94a3b8', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' };
   const CHEAD = { fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' };
   const seeRates = rolePerms?.seeRates !== false;
   const MAT_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
@@ -3730,7 +3742,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   <div key={item.id} style={{ padding: '8px 10px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.04)' : 'transparent', borderLeft: filled ? '3px solid rgba(249,115,22,0.4)' : '3px solid transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7 }}>
                       <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
-                      <button onClick={() => removeMatItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#334155', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
+                      <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr', gap: 8, alignItems: 'end' }}>
                       <div>
@@ -3785,7 +3797,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {seeRates && <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />}
                   {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>}
-                  <button onClick={() => removeMatItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#2d3748', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
+                  <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
@@ -3839,7 +3851,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                         <div style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
                         {item.note && <div style={{ fontSize: 10, color: '#475569', fontStyle: 'italic' }}>{item.note}</div>}
                       </div>
-                      <button onClick={() => removeLaborItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#334155', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
+                      <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: sec.isWaste ? '52px 1fr' : (seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr'), gap: 8, alignItems: 'end' }}>
                       <div>
@@ -3913,7 +3925,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                       <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
                     </>
                   )}
-                  <button onClick={() => removeLaborItem(sec.id, item.id)} style={{ background: 'transparent', border: 'none', color: '#2d3748', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
+                  <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
@@ -3952,7 +3964,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             const hasData = data.materials.sections.some(sec => sec.items.some(item => item.qty || item.costPerUnit));
             if (hasData) { setPendingTpl(name); } else { applyTpl(name); }
           }}
-          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none' }}
+          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', transition: 'border-color 0.15s' }}
         >
           <option value="">Select template…</option>
           <optgroup label="Built-in">
@@ -3968,14 +3980,15 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         </select>
         <button
           onClick={() => setShowTplSave(s => !s)}
-          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+          className="ri-btn ri-btn-secondary"
+          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
         >
           Save as Template
         </button>
       </div>
       {showTplSave && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#0f1117', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           <button onClick={saveJobTpl} style={{ padding: '7px 14px', background: '#f97316', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
         </div>
       )}
@@ -4013,7 +4026,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           {data.materials.sections.map(sec => renderMatSection(sec))}
           <button
             onClick={addMatSec}
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #1e2535', borderRadius: 7, color: '#475569', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent' }}
+            className="ri-add-item"
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #2e3d5c', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
@@ -4031,15 +4045,16 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       {subTab === 'labor' && (
         <div>
           {/* Sub-contractor info */}
-          <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
+          <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Sub-Contractor Name(s)</div>
-            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           </div>
           {/* Sections */}
           {data.labor.sections.map(sec => renderLaborSection(sec))}
           <button
             onClick={addLaborSec}
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #1e2535', borderRadius: 7, color: '#475569', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent' }}
+            className="ri-add-item"
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #2e3d5c', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
@@ -4085,7 +4100,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   value={data.jobInfo[field]}
                   onChange={e => updInfo(field, e.target.value)}
                   placeholder="0"
-                  style={{ width: 60, padding: '6px 8px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                  style={{ width: 60, padding: '6px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
                 <span style={{ fontSize: 11, color: '#475569', width: 14 }}>%</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#64748b', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
@@ -4110,7 +4125,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   value={data.jobInfo.contractPrice}
                   onChange={e => updInfo('contractPrice', e.target.value)}
                   placeholder="0.00"
-                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
               </div>
             </div>
@@ -4155,7 +4170,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Sub-Contractor Pay</div>
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Sub-Contractor Name(s)</div>
-              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#6366f1' }}>Total Labor Pay</span>
@@ -4163,7 +4178,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             </div>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
-              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
           </div>
         </div>
@@ -4201,12 +4216,12 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               ].map(({ field, label, type }) => (
                 <div key={field} style={{ marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
-                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
                 </div>
               ))}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
-                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 7, color: '#e2e8f0', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
               </div>
             </div>
           )}
@@ -4221,7 +4236,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             )}
             <button
               onClick={() => window.print()}
-              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 10, color: '#64748b', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+              className="ri-btn ri-btn-secondary"
+              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 10, color: '#94a3b8', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
             >
               Print
             </button>
@@ -4308,7 +4324,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   return (
     <div style={jobOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div style={jobModal}>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
           <div style={S.modalTitle}>{job.customer}</div>
@@ -4430,7 +4446,8 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                     <button
-                      style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 12 }}
+                      className="ri-btn ri-btn-secondary"
+                      style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 12 }}
                       onClick={() => setEditingSchedule(false)}
                     >
                       Cancel
@@ -4461,7 +4478,8 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   </div>
                   {onUpdateSchedule && (
                     <button
-                      style={{ padding: '4px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
+                      className="ri-btn ri-btn-secondary"
+                      style={{ padding: '4px 10px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
                       onClick={() => setEditingSchedule(true)}
                     >
                       {job.scheduledDate ? 'Reschedule' : 'Schedule'}
@@ -4485,13 +4503,14 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8, padding: '12px 14px' }}>
                     <div style={{ fontSize: 13, color: '#f97316', marginBottom: 10 }}>Not all checklist items are done. Complete anyway?</div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
+                      <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 7, color: '#94a3b8', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
                       <button style={{ flex: 2, padding: '8px', background: '#22c55e', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }} onClick={() => onComplete(job.id)}>Complete Anyway</button>
                     </div>
                   </div>
                 ) : (
                   <button
-                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                    className="ri-btn ri-btn-secondary"
+                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 8, color: '#94a3b8', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                     onClick={() => setConfirmComplete(true)}
                   >
                     Mark as Complete
@@ -4721,7 +4740,7 @@ function TeamTab() {
           { label: 'Callbacks Due', value: totals.callbacks, color: '#ef4444' },
         ].map(({ label, value, color }) => (
           <div key={label} style={{
-            background: '#161b27', border: '1px solid #1e2535', borderRadius: 10,
+            background: '#161b27', border: '1px solid #253048', borderRadius: 10,
             padding: '14px 16px',
           }}>
             <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
@@ -4804,7 +4823,7 @@ const A = {
   },
   card: {
     background: '#161b27',
-    border: '1px solid #1e2535',
+    border: '1px solid #253048',
     borderRadius: 16,
     padding: '40px 40px',
     width: '100%',
@@ -4835,8 +4854,8 @@ const A = {
   input: {
     width: '100%',
     padding: '10px 14px',
-    background: '#0f1117',
-    border: '1px solid #1e2535',
+    background: '#111823',
+    border: '1px solid #2e3d5c',
     borderRadius: 8,
     color: '#e2e8f0',
     fontSize: 14,
@@ -4864,7 +4883,7 @@ const A = {
     padding: '11px 16px',
     marginTop: 10,
     background: 'transparent',
-    border: '1px solid #1e2535',
+    border: '1px solid #3a4d6b',
     borderRadius: 8,
     color: '#94a3b8',
     fontSize: 14,
@@ -5271,7 +5290,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
               </button>
             ) : (
               <div style={{
-                background: '#0f1117', border: '1px solid #1e2535',
+                background: '#0f1117', border: '1px solid #253048',
                 borderRadius: 8, padding: '14px', marginBottom: 16,
               }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 10 }}>
@@ -6052,7 +6071,7 @@ function TradeSelectScreen({ onSelect }) {
         {/* Custom trade panel */}
         {showCustom && (
           <div style={{
-            background: '#161b27', border: '1px solid #1e2535',
+            background: '#161b27', border: '1px solid #253048',
             borderRadius: 12, padding: '20px 20px',
             marginBottom: 32,
           }}>
@@ -6342,7 +6361,7 @@ function PhotoLogTab({ tier }) {
               <div
                 key={photo.id}
                 style={{
-                  background: '#161b27', border: '1px solid #1e2535',
+                  background: '#161b27', border: '1px solid #253048',
                   borderRadius: 10, overflow: 'hidden',
                 }}
               >
@@ -6508,7 +6527,7 @@ function GlobalPhotoLog() {
                 onClick={() => setLightbox(photo)}
                 style={{
                   position: 'relative', borderRadius: 8, overflow: 'hidden',
-                  cursor: 'pointer', border: '1px solid #1e2535',
+                  cursor: 'pointer', border: '1px solid #253048',
                   aspectRatio: '4/3', background: '#0d1117',
                 }}
               >
@@ -6654,7 +6673,7 @@ function AddJobModal({ onSave, onClose }) {
   return (
     <div style={mobOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={mobModal}>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add New Job</div>
         <div style={S.modalSub}>Required fields marked with *</div>
 
@@ -6684,8 +6703,8 @@ function AddJobModal({ onSave, onClose }) {
         <textarea style={{ ...fi('notes'), minHeight: 72, resize: 'vertical' }} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Job details, materials, crew notes..." />
 
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
-          <button style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }} onClick={handleSave}>Add Job</button>
+          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 8, color: '#94a3b8', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>Add Job</button>
         </div>
       </div>
     </div>
@@ -6777,7 +6796,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
       </div>
 
       {showAssign && (
-        <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
+        <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
           {/* Text input — always visible, fastest path */}
           <div style={{ display: 'flex', gap: 8, marginBottom: unassignedCrew.length > 0 ? 10 : 4 }}>
             <input
@@ -6801,7 +6820,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             <div>
               <div style={{ fontSize: 11, color: '#475569', marginBottom: 6 }}>Or pick from your crew:</div>
               {unassignedCrew.map(member => (
-                <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#161b27', border: '1px solid #1e2535' }}>
+                <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#161b27', border: '1px solid #253048' }}>
                   <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#64748b' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
@@ -6899,7 +6918,7 @@ function CrewMemberModal({ member, onSave, onClose }) {
   return (
     <div style={mobOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={mobModal}>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ ...S.modalTitle, paddingRight: 48 }}>{member ? 'Edit Crew Member' : 'Add Crew Member'}</div>
         <div style={S.modalSub}>Profile and trade specialties</div>
 
@@ -6927,8 +6946,8 @@ function CrewMemberModal({ member, onSave, onClose }) {
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-          <button style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 8, color: '#64748b', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
-          <button style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }} onClick={handleSave}>{member ? 'Save Changes' : 'Add Member'}</button>
+          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 8, color: '#94a3b8', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>{member ? 'Save Changes' : 'Add Member'}</button>
         </div>
       </div>
     </div>
@@ -7025,7 +7044,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                     {member.phone && <div style={{ fontSize: 12, color: '#475569', marginTop: 1 }}>{member.phone}</div>}
                   </div>
                   <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-                    <button style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #1e2535', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
+                    <button className="ri-btn ri-btn-secondary" style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
                     <button style={{ padding: '5px 8px', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 13, lineHeight: 1, WebkitTapHighlightColor: 'transparent' }} onClick={() => onDeleteMember(member.id)}>×</button>
                   </div>
                 </div>
@@ -7139,7 +7158,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
         ) : messages.map(msg => (
           msg.type === 'system' ? (
             <div key={msg.id} style={{ textAlign: 'center', padding: '5px 0', margin: '4px 0' }}>
-              <span style={{ fontSize: 11, color: '#475569', background: '#0f1117', padding: '3px 12px', borderRadius: 20, border: '1px solid #1e2535' }}>
+              <span style={{ fontSize: 11, color: '#475569', background: '#0f1117', padding: '3px 12px', borderRadius: 20, border: '1px solid #253048' }}>
                 {msg.text}
               </span>
             </div>
@@ -7164,7 +7183,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
           <textarea
             style={{
               flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
-              background: '#0f1117', border: '1px solid #1e2535', borderRadius: 7,
+              background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7,
               color: '#e2e8f0', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
               resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
               lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
@@ -7178,7 +7197,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
           <button
             style={{
               padding: '8px 14px', border: 'none', borderRadius: 7,
-              background: text.trim() ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#1e2535',
+              background: text.trim() ? 'linear-gradient(135deg, #f97316, #e8640c)' : '#1a2236',
               color: text.trim() ? '#fff' : '#475569',
               cursor: text.trim() ? 'pointer' : 'default',
               fontWeight: 600, fontSize: 13, flexShrink: 0,
@@ -7259,7 +7278,7 @@ function ChatTab({ jobs }) {
               </div>
             ) : (
               <div key={msg.id} style={{
-                background: '#161b27', border: '1px solid #1e2535', borderRadius: 8,
+                background: '#161b27', border: '1px solid #253048', borderRadius: 8,
                 padding: '12px 16px', marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12,
               }}>
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
@@ -7303,7 +7322,7 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 18, paddingRight: 40 }}>{title}</div>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {!targetJob && (
           <>
             <label style={FLbl}>Job</label>
@@ -7485,7 +7504,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{taskList.length} items</span>}
 
         {showChecklist && (
-          <div style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '10px 12px' }}>
+          <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 8, padding: '10px 12px' }}>
             {/* Input row */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
               <input
@@ -7548,7 +7567,7 @@ function StageChangeModal({ job, onSave, onClose }) {
       <div style={{ ...S.modal, maxWidth: 300 }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {stages.map(s => (
             <button key={s.key} onClick={() => { onSave(s.key); onClose(); }} style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${s.color}44`, background: `${s.color}18`, color: s.color, fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
@@ -7569,7 +7588,7 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
       <div style={{ ...S.modal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {crew.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
         ) : (
@@ -7707,7 +7726,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
   const dayJobs = jobs.filter(j => jobOccupiesDate(j, dateStr));
 
   return (
-    <div style={{ background: '#161b27', border: '1px solid #1e2535', borderRadius: 10, padding: 16, marginTop: 12 }}>
+    <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 10, padding: 16, marginTop: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14, gap: 8 }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>
@@ -7944,9 +7963,9 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const actionBtn = (icon, label, sub, onClick) => (
     <button
       onClick={onClick}
-      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px', background: '#161b27', border: '1px solid #1e2535', borderRadius: 9, cursor: 'pointer', textAlign: 'left', marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px', background: '#161b27', border: '1px solid #253048', borderRadius: 9, cursor: 'pointer', textAlign: 'left', marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e2535'; e.currentTarget.style.background = '#161b27'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = '#253048'; e.currentTarget.style.background = '#161b27'; }}
     >
       <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
       <div>
@@ -7975,9 +7994,9 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     return (
       <button
         onClick={alreadyHere ? undefined : () => { onScheduleExisting(date, job.id); setJustScheduled(job); }}
-        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#0f1117' : '#161b27', border: '1px solid #1e2535', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#0f1117' : '#161b27', border: '1px solid #253048', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
         onMouseEnter={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; })}
-        onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#1e2535'; e.currentTarget.style.background = '#161b27'; })}
+        onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#253048'; e.currentTarget.style.background = '#161b27'; })}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748b' : '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
@@ -8011,7 +8030,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   return (
     <div style={dayOverlay} onClick={onClose}>
       <div style={dayModalStyle} onClick={e => e.stopPropagation()}>
-        <button style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 2 }}>{displayDate}</div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20 }}>{subTitle}</div>
@@ -8331,7 +8350,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
             {unscheduledJobs.map(job => {
               const tc = TRADE_COLORS[job.trade] || '#64748b';
               return (
-                <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#161b27', border: '1px solid #1e2535', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
+                <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#161b27', border: '1px solid #253048', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
                     <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
@@ -8607,8 +8626,8 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         <button
           onClick={onChangeTrade}
           style={{
-            background: 'transparent', border: '1px solid #1e2535',
-            borderRadius: 6, color: '#64748b', fontSize: isMobile ? 13 : 12,
+            background: 'transparent', border: '1px solid #3a4d6b',
+            borderRadius: 6, color: '#94a3b8', fontSize: isMobile ? 13 : 12,
             cursor: 'pointer', padding: isMobile ? '8px 10px' : '5px 12px',
             whiteSpace: 'nowrap', minHeight: isMobile ? 38 : 'auto',
             WebkitTapHighlightColor: 'transparent',
@@ -9021,9 +9040,10 @@ export default function App() {
                 value={demoRole}
                 onChange={e => setDemoRole(e.target.value)}
                 style={{
-                  background: '#161b27', border: '1px solid #1e2535', borderRadius: 6,
-                  color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 600,
-                  padding: '3px 6px', cursor: 'pointer', outline: 'none',
+                  background: '#1a2236', border: '1px solid #3a4d6b', borderRadius: 6,
+                  color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 700,
+                  padding: '4px 8px', cursor: 'pointer', outline: 'none',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
                 }}
               >
                 {Object.entries(DEMO_ROLES).map(([key, r]) => (
