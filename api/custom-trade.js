@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   const client = new Anthropic({ apiKey });
 
   try {
-    const prompt = `You are configuring a contractor CRM for a "${tradeName}" business.\nReturn ONLY valid JSON with no markdown, no explanation, no backticks. Format:\n{\n  "checklist": ["step 1", "step 2", ...],\n  "pipeline": ["Stage 1", "Stage 2", ...]\n}`;
+    const prompt = `You are configuring a roofing CRM for a "${tradeName}" specialty within a roofing business operating in central Pennsylvania.\nReturn ONLY valid JSON with no markdown, no explanation, no backticks. Format:\n{\n  "checklist": ["step 1", "step 2", ...],\n  "pipeline": ["Stage 1", "Stage 2", ...]\n}`;
     const msg = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,

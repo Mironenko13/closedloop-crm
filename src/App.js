@@ -31,550 +31,323 @@ function ToastProvider({ children }) {
   );
 }
 
-// ─── Trades ──────────────────────────────────────────────────────────────────
+// ─── Job Types (Roofing-Only) ────────────────────────────────────────────────
 const TRADE_LIST = [
-  'Roofing', 'Gutters', 'Siding', 'Windows', 'Excavation',
-  'General Construction', 'HVAC', 'Plumbing', 'Welding', 'Electrical',
-  'Masonry', 'Painting', 'Flooring', 'Insulation', 'Drywall',
-  'Landscaping', 'Concrete', 'Fencing', 'Carpentry', 'Waterproofing',
-  'Solar', 'Garage Doors', 'Demolition', 'Septic', 'Tree Service',
-  'Pressure Washing', 'Seal Coating', 'Real Estate',
+  'Full Replacement', 'Repair', 'Inspection', 'Storm Damage',
+  'Gutter Install', 'Skylight', 'Flashing Repair', 'Ventilation',
+  'Emergency Tarp',
 ];
 
 const TRADE_COLORS = {
-  'Roofing': '#f97316',
-  'Gutters': '#06b6d4',
-  'Siding': '#8b5cf6',
-  'Windows': '#3b82f6',
-  'Excavation': '#b45309',
-  'General Construction': '#64748b',
-  'HVAC': '#ef4444',
-  'Plumbing': '#0ea5e9',
-  'Welding': '#f59e0b',
-  'Electrical': '#eab308',
-  'Masonry': '#a8a29e',
-  'Painting': '#ec4899',
-  'Flooring': '#84cc16',
-  'Insulation': '#14b8a6',
-  'Drywall': '#cbd5e1',
-  'Landscaping': '#22c55e',
-  'Concrete': '#94a3b8',
-  'Fencing': '#d97706',
-  'Carpentry': '#fb923c',
-  'Waterproofing': '#0284c7',
-  'Solar': '#fbbf24',
-  'Garage Doors': '#7c3aed',
-  'Demolition': '#dc2626',
-  'Septic': '#65a30d',
-  'Tree Service': '#15803d',
-  'Pressure Washing': '#0891b2',
-  'Seal Coating': '#57534e',
-  'Real Estate': '#10b981',
+  'Full Replacement': '#f97316',
+  'Repair':           '#3b82f6',
+  'Inspection':       '#8b5cf6',
+  'Storm Damage':     '#ef4444',
+  'Gutter Install':   '#06b6d4',
+  'Skylight':         '#f59e0b',
+  'Flashing Repair':  '#ec4899',
+  'Ventilation':      '#10b981',
+  'Emergency Tarp':   '#dc2626',
 };
 
 const TRADE_CHECKLISTS = {
-  'Roofing': [
-    { id: 1, label: 'Site inspection / measurements' },
+  'Full Replacement': [
+    { id: 1, label: 'Site inspection & measurements' },
     { id: 2, label: 'Material order & delivery' },
     { id: 3, label: 'Tear off old roof' },
-    { id: 4, label: 'Install underlayment' },
-    { id: 5, label: 'Install new roof' },
-    { id: 6, label: 'Flashing & sealing' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
+    { id: 4, label: 'Inspect & repair decking' },
+    { id: 5, label: 'Install drip edge' },
+    { id: 6, label: 'Install ice & water shield' },
+    { id: 7, label: 'Install underlayment' },
+    { id: 8, label: 'Install shingles' },
+    { id: 9, label: 'Install ridge vent & cap' },
+    { id: 10, label: 'Flashing & sealing' },
+    { id: 11, label: 'Magnetic nail sweep' },
+    { id: 12, label: 'Final inspection' },
+    { id: 13, label: 'Invoice sent' },
+    { id: 14, label: 'Payment received' },
   ],
-  'Gutters': [
+  'Repair': [
+    { id: 1, label: 'Identify damage area' },
+    { id: 2, label: 'Material pickup' },
+    { id: 3, label: 'Remove damaged shingles' },
+    { id: 4, label: 'Inspect decking underneath' },
+    { id: 5, label: 'Patch or replace decking' },
+    { id: 6, label: 'Install new shingles' },
+    { id: 7, label: 'Seal & test' },
+    { id: 8, label: 'Final inspection' },
+    { id: 9, label: 'Invoice sent' },
+    { id: 10, label: 'Payment received' },
+  ],
+  'Inspection': [
+    { id: 1, label: 'Ground-level photos (4 sides)' },
+    { id: 2, label: 'Ladder / drone roof access' },
+    { id: 3, label: 'Document shingle condition' },
+    { id: 4, label: 'Check flashing & penetrations' },
+    { id: 5, label: 'Inspect ridge, valleys & eaves' },
+    { id: 6, label: 'Check gutters & downspouts' },
+    { id: 7, label: 'Attic inspection (if accessible)' },
+    { id: 8, label: 'Write inspection report' },
+    { id: 9, label: 'Deliver report to customer' },
+  ],
+  'Storm Damage': [
+    { id: 1, label: 'Emergency site assessment' },
+    { id: 2, label: 'Document all damage (photos & notes)' },
+    { id: 3, label: 'Tarp exposed areas if needed' },
+    { id: 4, label: 'File insurance claim with homeowner' },
+    { id: 5, label: 'Meet adjuster on site' },
+    { id: 6, label: 'Scope agreement & supplement' },
+    { id: 7, label: 'Material order & delivery' },
+    { id: 8, label: 'Tear off damaged sections' },
+    { id: 9, label: 'Install new roofing system' },
+    { id: 10, label: 'Final inspection' },
+    { id: 11, label: 'Invoice & insurance payment' },
+  ],
+  'Gutter Install': [
     { id: 1, label: 'Measure & quote' },
     { id: 2, label: 'Material order' },
     { id: 3, label: 'Remove old gutters' },
-    { id: 4, label: 'Install new gutters' },
-    { id: 5, label: 'Downspout install' },
-    { id: 6, label: 'Sealing & testing' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Siding': [
-    { id: 1, label: 'Inspection & measurements' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Remove old siding' },
-    { id: 4, label: 'Weather barrier install' },
-    { id: 5, label: 'Siding install' },
-    { id: 6, label: 'Trim & finishing' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Windows': [
-    { id: 1, label: 'Measure & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Remove old windows' },
-    { id: 4, label: 'Frame prep' },
-    { id: 5, label: 'Window install' },
-    { id: 6, label: 'Seal & insulate' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Excavation': [
-    { id: 1, label: 'Site survey' },
-    { id: 2, label: 'Permits' },
-    { id: 3, label: 'Equipment mobilization' },
-    { id: 4, label: 'Excavation' },
-    { id: 5, label: 'Grading' },
-    { id: 6, label: 'Backfill & compaction' },
-    { id: 7, label: 'Site cleanup' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'General Construction': [
-    { id: 1, label: 'Project scoping' },
-    { id: 2, label: 'Permits & approvals' },
-    { id: 3, label: 'Site prep' },
-    { id: 4, label: 'Foundation' },
-    { id: 5, label: 'Framing' },
-    { id: 6, label: 'Mechanicals rough-in' },
-    { id: 7, label: 'Drywall & finishes' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'HVAC': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Equipment order' },
-    { id: 3, label: 'Old unit removal' },
-    { id: 4, label: 'New unit install' },
-    { id: 5, label: 'Ductwork' },
-    { id: 6, label: 'Refrigerant charge' },
-    { id: 7, label: 'System test' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Plumbing': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Rough-in plumbing' },
-    { id: 4, label: 'Fixture install' },
-    { id: 5, label: 'Pressure test' },
-    { id: 6, label: 'Final inspection' },
-    { id: 7, label: 'Invoice sent' },
-    { id: 8, label: 'Payment received' },
-  ],
-  'Welding': [
-    { id: 1, label: 'Project scoping' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Fabrication' },
-    { id: 4, label: 'On-site install' },
-    { id: 5, label: 'Grinding & finishing' },
-    { id: 6, label: 'Final inspection' },
-    { id: 7, label: 'Invoice sent' },
-    { id: 8, label: 'Payment received' },
-  ],
-  'Electrical': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Permits' },
-    { id: 3, label: 'Panel/service work' },
-    { id: 4, label: 'Rough-in wiring' },
-    { id: 5, label: 'Device install' },
-    { id: 6, label: 'Inspection & testing' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Masonry': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Site prep' },
-    { id: 4, label: 'Foundation/footing' },
-    { id: 5, label: 'Masonry work' },
-    { id: 6, label: 'Mortar & sealing' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Painting': [
-    { id: 1, label: 'Surface assessment' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Surface prep & patching' },
-    { id: 4, label: 'Prime coat' },
-    { id: 5, label: 'Paint coat 1' },
-    { id: 6, label: 'Paint coat 2' },
-    { id: 7, label: 'Trim & detail work' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Flooring': [
-    { id: 1, label: 'Measure & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Remove old flooring' },
-    { id: 4, label: 'Subfloor prep' },
-    { id: 5, label: 'Flooring install' },
-    { id: 6, label: 'Trim & transitions' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Insulation': [
-    { id: 1, label: 'Assessment & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Air sealing' },
-    { id: 4, label: 'Insulation install' },
-    { id: 5, label: 'Vapor barrier' },
-    { id: 6, label: 'Final inspection' },
-    { id: 7, label: 'Invoice sent' },
-    { id: 8, label: 'Payment received' },
-  ],
-  'Drywall': [
-    { id: 1, label: 'Measure & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Frame inspection' },
-    { id: 4, label: 'Drywall hang' },
-    { id: 5, label: 'Tape & mud' },
-    { id: 6, label: 'Sand & prime' },
-    { id: 7, label: 'Final inspection' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Landscaping': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Design approval' },
-    { id: 3, label: 'Material & plant order' },
-    { id: 4, label: 'Site prep' },
-    { id: 5, label: 'Hardscape install' },
-    { id: 6, label: 'Planting' },
-    { id: 7, label: 'Irrigation' },
-    { id: 8, label: 'Cleanup' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Concrete': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Permits' },
-    { id: 3, label: 'Excavation & prep' },
-    { id: 4, label: 'Form setup' },
-    { id: 5, label: 'Rebar/wire mesh' },
-    { id: 6, label: 'Pour concrete' },
-    { id: 7, label: 'Finishing & sealing' },
-    { id: 8, label: 'Cure time' },
+    { id: 4, label: 'Install fascia board (if needed)' },
+    { id: 5, label: 'Install new gutters' },
+    { id: 6, label: 'Install downspouts & extensions' },
+    { id: 7, label: 'Install gutter guards (if ordered)' },
+    { id: 8, label: 'Test water flow' },
     { id: 9, label: 'Final inspection' },
     { id: 10, label: 'Invoice sent' },
     { id: 11, label: 'Payment received' },
   ],
-  'Fencing': [
-    { id: 1, label: 'Measure & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Mark & locate utilities' },
-    { id: 4, label: 'Post holes & setting' },
-    { id: 5, label: 'Rail install' },
-    { id: 6, label: 'Picket/panel install' },
-    { id: 7, label: 'Gates' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
+  'Skylight': [
+    { id: 1, label: 'Measure opening & select unit' },
+    { id: 2, label: 'Order skylight & flashing kit' },
+    { id: 3, label: 'Cut roof opening' },
+    { id: 4, label: 'Frame curb' },
+    { id: 5, label: 'Install skylight unit' },
+    { id: 6, label: 'Install step & counter flashing' },
+    { id: 7, label: 'Seal & waterproof' },
+    { id: 8, label: 'Interior trim (if applicable)' },
+    { id: 9, label: 'Final inspection' },
+    { id: 10, label: 'Invoice sent' },
+    { id: 11, label: 'Payment received' },
   ],
-  'Carpentry': [
-    { id: 1, label: 'Project scoping' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Site prep' },
-    { id: 4, label: 'Framing/rough carpentry' },
-    { id: 5, label: 'Finish carpentry' },
-    { id: 6, label: 'Trim & molding' },
+  'Flashing Repair': [
+    { id: 1, label: 'Identify leak source' },
+    { id: 2, label: 'Remove old flashing & sealant' },
+    { id: 3, label: 'Inspect substrate condition' },
+    { id: 4, label: 'Install new flashing' },
+    { id: 5, label: 'Apply sealant & counterflashing' },
+    { id: 6, label: 'Water test' },
     { id: 7, label: 'Final inspection' },
     { id: 8, label: 'Invoice sent' },
     { id: 9, label: 'Payment received' },
   ],
-  'Waterproofing': [
-    { id: 1, label: 'Assessment & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Excavation if needed' },
-    { id: 4, label: 'Surface prep' },
-    { id: 5, label: 'Membrane/coating apply' },
-    { id: 6, label: 'Drainage install' },
-    { id: 7, label: 'Backfill' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
+  'Ventilation': [
+    { id: 1, label: 'Attic airflow assessment' },
+    { id: 2, label: 'Calculate intake/exhaust requirements' },
+    { id: 3, label: 'Order vents & materials' },
+    { id: 4, label: 'Cut openings' },
+    { id: 5, label: 'Install ridge vent / box vents' },
+    { id: 6, label: 'Install soffit vents' },
+    { id: 7, label: 'Seal & flash around new vents' },
+    { id: 8, label: 'Verify balanced airflow' },
+    { id: 9, label: 'Final inspection' },
+    { id: 10, label: 'Invoice sent' },
+    { id: 11, label: 'Payment received' },
   ],
-  'Solar': [
-    { id: 1, label: 'Site & roof assessment' },
-    { id: 2, label: 'Permit & utility approval' },
-    { id: 3, label: 'Material order' },
-    { id: 4, label: 'Roof mount install' },
-    { id: 5, label: 'Panel install' },
-    { id: 6, label: 'Inverter & wiring' },
-    { id: 7, label: 'Utility inspection' },
-    { id: 8, label: 'System activation' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Garage Doors': [
-    { id: 1, label: 'Measure & quote' },
-    { id: 2, label: 'Material order' },
-    { id: 3, label: 'Remove old door' },
-    { id: 4, label: 'Track & spring install' },
-    { id: 5, label: 'Door panel install' },
-    { id: 6, label: 'Opener install' },
-    { id: 7, label: 'Test & adjust' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Demolition': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Permits' },
-    { id: 3, label: 'Utility disconnect' },
-    { id: 4, label: 'Hazmat check' },
-    { id: 5, label: 'Demolition' },
-    { id: 6, label: 'Debris removal' },
-    { id: 7, label: 'Site grading' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Septic': [
-    { id: 1, label: 'Site assessment' },
-    { id: 2, label: 'Permits' },
-    { id: 3, label: 'Excavation' },
-    { id: 4, label: 'Tank install' },
-    { id: 5, label: 'Leach field install' },
-    { id: 6, label: 'Inspection & test' },
-    { id: 7, label: 'Backfill' },
-    { id: 8, label: 'Final inspection' },
-    { id: 9, label: 'Invoice sent' },
-    { id: 10, label: 'Payment received' },
-  ],
-  'Tree Service': [
-    { id: 1, label: 'Site assessment & quote' },
-    { id: 2, label: 'Equipment setup' },
-    { id: 3, label: 'Tree removal/trimming' },
-    { id: 4, label: 'Stump grinding' },
-    { id: 5, label: 'Debris chipping' },
-    { id: 6, label: 'Haul away' },
-    { id: 7, label: 'Site cleanup' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Pressure Washing': [
-    { id: 1, label: 'Assessment & quote' },
-    { id: 2, label: 'Equipment setup' },
-    { id: 3, label: 'Pre-treatment' },
-    { id: 4, label: 'Pressure wash' },
-    { id: 5, label: 'Rinse & inspect' },
-    { id: 6, label: 'Post-treatment seal' },
-    { id: 7, label: 'Final walkthrough' },
-    { id: 8, label: 'Invoice sent' },
-    { id: 9, label: 'Payment received' },
-  ],
-  'Seal Coating': [
-    { id: 1, label: 'Inspect surface for cracks and damage' },
-    { id: 2, label: 'Clean and degrease surface' },
-    { id: 3, label: 'Fill cracks and potholes' },
-    { id: 4, label: 'Edge and trim around borders' },
-    { id: 5, label: 'Apply first coat of sealer' },
-    { id: 6, label: 'Apply second coat if required' },
-    { id: 7, label: 'Block off area for curing time' },
-    { id: 8, label: 'Final inspection with client' },
-  ],
-  'Real Estate': [
-    { id: 1,  label: 'Initial client consultation' },
-    { id: 2,  label: 'Property valuation / CMA' },
-    { id: 3,  label: 'Listing agreement signed' },
-    { id: 4,  label: 'Photos and staging arranged' },
-    { id: 5,  label: 'MLS listing live' },
-    { id: 6,  label: 'Showings scheduled' },
-    { id: 7,  label: 'Offer received and reviewed' },
-    { id: 8,  label: 'Inspection contingency cleared' },
-    { id: 9,  label: 'Closing date confirmed' },
-    { id: 10, label: 'Keys handed over' },
+  'Emergency Tarp': [
+    { id: 1, label: 'Emergency dispatch' },
+    { id: 2, label: 'Assess damage on arrival' },
+    { id: 3, label: 'Secure tarp over exposed area' },
+    { id: 4, label: 'Anchor with boards & fasteners' },
+    { id: 5, label: 'Document damage for insurance' },
+    { id: 6, label: 'Schedule follow-up repair' },
+    { id: 7, label: 'Invoice sent' },
+    { id: 8, label: 'Payment received' },
   ],
 };
 
 // ─── Demo Data ───────────────────────────────────────────────────────────────
 const DEMO_LEADS = [
   {
-    id: 1, name: 'Hargrove Residence', contact: 'Frank Hargrove', role: 'Homeowner',
-    trade: 'Roofing', status: 'stalled', value: 14800, stage: 'estimate',
+    id: 1, name: 'Shumaker Residence', contact: 'Dave Shumaker', role: 'Homeowner',
+    trade: 'Full Replacement', status: 'stalled', value: 14800, stage: 'estimate_sent',
     callbackDate: '2026-03-25', lastContact: '2026-03-10',
-    stallReason: 'price_objection', notes: 'Wants 15% off. Comparing 2 other bids.',
-    industry: 'Residential', dealAge: 22,
+    stallReason: 'price_objection', notes: '28 sq, 7/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off over plywood deck. Wants 15% off — comparing 2 other bids from Lewisburg area roofers.',
+    industry: 'Residential', dealAge: 22, address: '142 Chestnut St, Mifflinburg PA 17844',
   },
   {
-    id: 2, name: 'Greenfield Office Park', contact: 'Dana Nguyen', role: 'Property Manager',
-    trade: 'HVAC', status: 'stalled', value: 23500, stage: 'approved',
+    id: 2, name: 'Susquehanna Valley Mall', contact: 'Denise Rhoads', role: 'Property Manager',
+    trade: 'Full Replacement', status: 'stalled', value: 23500, stage: 'contract_signed',
     callbackDate: '2026-03-24', lastContact: '2026-03-08',
-    stallReason: 'budget_freeze', notes: 'Q1 budget locked. Revisit April per board decision.',
-    industry: 'Commercial', dealAge: 38,
+    stallReason: 'budget_freeze', notes: 'TPO membrane, 140 sq flat roof on anchor store wing. Q1 budget locked — revisit April per ownership group. 2 HVAC curbs need reflashing.',
+    industry: 'Commercial', dealAge: 38, address: '1 Susquehanna Valley Mall Dr, Selinsgrove PA 17870',
   },
   {
-    id: 3, name: 'Martinez Family', contact: 'Rosa Martinez', role: 'Homeowner',
-    trade: 'Windows', status: 'active', value: 18700, stage: 'inspection',
+    id: 3, name: 'Bowman Family', contact: 'Tina Bowman', role: 'Homeowner',
+    trade: 'Storm Damage', status: 'active', value: 18700, stage: 'inspection_scheduled',
     callbackDate: '2026-03-23', lastContact: '2026-03-20',
-    stallReason: null, notes: 'Replacing 12 windows. Anderson 400 series preferred.',
-    industry: 'Residential', dealAge: 9,
+    stallReason: null, notes: 'Wind damage from 3/15 storm. Insurance claim filed with Erie Insurance. Adjuster visit pending. Architectural shingles, 24 sq, 6/12 pitch.',
+    industry: 'Residential', dealAge: 9, address: '227 Market St, Lewisburg PA 17837',
   },
   {
-    id: 4, name: 'Sunridge Apartments', contact: 'Todd Whitfield', role: 'Building Manager',
-    trade: 'Plumbing', status: 'stalled', value: 11400, stage: 'estimate',
+    id: 4, name: 'Northumberland Apartments', contact: 'Rick Hess', role: 'Building Manager',
+    trade: 'Repair', status: 'stalled', value: 4200, stage: 'estimate_sent',
     callbackDate: '2026-03-19', lastContact: '2026-03-05',
-    stallReason: 'no_response', notes: '3 follow-ups, no reply. 24-unit re-pipe job.',
-    industry: 'Commercial', dealAge: 41,
+    stallReason: 'no_response', notes: '3 follow-ups, no reply. Active leak in Bldg C — valley flashing failed. 3-tab, 6/12 pitch. Decking shows some staining.',
+    industry: 'Commercial', dealAge: 41, address: '350 Front St, Northumberland PA 17857',
   },
   {
-    id: 5, name: 'Pinnacle Retail Center', contact: 'Jeff Bloom', role: 'Facilities Director',
-    trade: 'Electrical', status: 'active', value: 31200, stage: 'approved',
+    id: 5, name: 'Monroe Township Offices', contact: 'Jeff Weaver', role: 'Facilities Director',
+    trade: 'Full Replacement', status: 'active', value: 31200, stage: 'contract_signed',
     callbackDate: '2026-03-26', lastContact: '2026-03-21',
-    stallReason: null, notes: '400A panel upgrade + 6 EV charger circuits. Near close.',
-    industry: 'Commercial', dealAge: 27,
+    stallReason: null, notes: '42 sq, low-slope modified bitumen on municipal bldg. 2 layers to tear off. Decking likely needs 10-15 sheets. Snyder County permit in hand.',
+    industry: 'Commercial', dealAge: 27, address: '88 W Main St, Selinsgrove PA 17870',
   },
   {
     id: 6, name: 'Keller Residence', contact: 'Amy Keller', role: 'Homeowner',
-    trade: 'Siding', status: 'stalled', value: 22600, stage: 'estimate',
+    trade: 'Full Replacement', status: 'stalled', value: 22600, stage: 'estimate_sent',
     callbackDate: '2026-03-22', lastContact: '2026-03-12',
-    stallReason: 'competitor', notes: 'Got lower bid from another company. Need to show value.',
-    industry: 'Residential', dealAge: 35,
+    stallReason: 'competitor', notes: '32 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. 1 layer over OSB deck. Competitor bid $2k less — need to show SureStart warranty value.',
+    industry: 'Residential', dealAge: 35, address: '415 Chestnut St, Milton PA 17847',
   },
   {
-    id: 7, name: 'Westview HOA', contact: 'Susan Park', role: 'HOA President',
-    trade: 'General Construction', status: 'active', value: 94000, stage: 'inspection',
+    id: 7, name: 'Riverwoods HOA', contact: 'Susan Yoder', role: 'HOA President',
+    trade: 'Full Replacement', status: 'active', value: 94000, stage: 'inspection_scheduled',
     callbackDate: '2026-03-27', lastContact: '2026-03-18',
-    stallReason: null, notes: 'Community center addition. Board vote scheduled for 3/28.',
-    industry: 'HOA', dealAge: 18,
+    stallReason: null, notes: '12-building townhome complex, ~280 sq total. Phased replacement. Board vote 3/28. Architectural shingles, color TBD by HOA. Ice & water shield required at eaves.',
+    industry: 'HOA', dealAge: 18, address: '200 Riverwoods Dr, Lewisburg PA 17837',
   },
   {
-    id: 8, name: 'Magnolia Square', contact: 'Ryan Chen', role: 'Property Manager',
-    trade: 'Gutters', status: 'stalled', value: 5800, stage: 'estimate',
+    id: 8, name: 'Market Street Commons', contact: 'Tom Brubaker', role: 'Property Manager',
+    trade: 'Gutter Install', status: 'stalled', value: 5800, stage: 'estimate_sent',
     callbackDate: '2026-03-15', lastContact: '2026-03-03',
-    stallReason: 'technical_fit', notes: 'Concerned about K-style vs half-round fit on older building.',
-    industry: 'Commercial', dealAge: 49,
+    stallReason: 'technical_fit', notes: '220 LF seamless aluminum 5". K-style vs half-round debate on 1890s building facade. Include leaf guards. Historic district review may apply.',
+    industry: 'Commercial', dealAge: 49, address: '118 Market St, Sunbury PA 17801',
   },
   {
-    id: 9, name: 'Clearwater Gym', contact: 'Marcus Brown', role: 'Owner',
-    trade: 'Flooring', status: 'cold', value: 17200, stage: 'lead',
+    id: 9, name: 'Valley Fitness', contact: 'Marcus Stover', role: 'Owner',
+    trade: 'Repair', status: 'cold', value: 3400, stage: 'lead',
     callbackDate: '2026-04-05', lastContact: '2026-02-20',
-    stallReason: 'timing', notes: 'Remodel on hold until summer. Follow up Q2.',
-    industry: 'Commercial', dealAge: 64,
+    stallReason: 'timing', notes: 'Ponding water on flat section. TPO seam separation near HVAC curb. Wants to wait until summer. Follow up Q2.',
+    industry: 'Commercial', dealAge: 64, address: '1420 N Susquehanna Trail, Selinsgrove PA 17870',
   },
   {
-    id: 10, name: 'Riverside Church', contact: 'Pastor James Willis', role: 'Facilities Coord',
-    trade: 'Painting', status: 'won', value: 9400, stage: 'completed',
+    id: 10, name: 'Christ Lutheran Mifflinburg', contact: 'Pastor Ed Zimmerman', role: 'Facilities Coord',
+    trade: 'Storm Damage', status: 'won', value: 9400, stage: 'paid',
     callbackDate: null, lastContact: '2026-03-17',
-    stallReason: null, notes: 'Closed! Exterior repaint starting April 1.',
-    industry: 'Institutional', dealAge: 55,
+    stallReason: null, notes: 'Closed! Wind damage to ridge cap + 3 sq of shingles on sanctuary. Nationwide Insurance covered. CertainTeed Landmark, Weathered Wood.',
+    industry: 'Institutional', dealAge: 55, address: '130 S 5th St, Mifflinburg PA 17844',
   },
   {
-    id: 11, name: 'Sagebrush Ranch', contact: 'Dale Cooper', role: 'Ranch Owner',
-    trade: 'Fencing', status: 'stalled', value: 28500, stage: 'approved',
+    id: 11, name: 'Hartman Residence', contact: 'Joe Hartman', role: 'Homeowner',
+    trade: 'Skylight', status: 'stalled', value: 4800, stage: 'contract_signed',
     callbackDate: '2026-03-23', lastContact: '2026-03-13',
-    stallReason: 'wrong_contact', notes: 'Need to reach spouse who holds the purse strings.',
-    industry: 'Residential', dealAge: 46,
+    stallReason: 'wrong_contact', notes: '2 Velux skylights, curb-mount, bathroom + kitchen. Need to confirm size with wife who picked them out.',
+    industry: 'Residential', dealAge: 46, address: '78 Pine Creek Rd, Watsontown PA 17777',
   },
   {
-    id: 12, name: 'Brookhaven Commons', contact: 'Tina Rosario', role: 'HOA Director',
-    trade: 'Landscaping', status: 'active', value: 34800, stage: 'estimate',
+    id: 12, name: 'Buffalo Valley Townhomes', contact: 'Karen Bender', role: 'HOA Director',
+    trade: 'Full Replacement', status: 'active', value: 34800, stage: 'estimate_sent',
     callbackDate: '2026-03-24', lastContact: '2026-03-22',
-    stallReason: null, notes: 'Common area redesign. Proposal well received by board.',
-    industry: 'HOA', dealAge: 14,
+    stallReason: null, notes: '6 townhome units, 180 sq total. GAF Timberline architectural, Hickory. Ice & water at all valleys. Proposal well received by board.',
+    industry: 'HOA', dealAge: 14, address: '450 Buffalo Rd, Lewisburg PA 17837',
   },
   {
-    id: 13, name: 'Morrison Trucking', contact: 'Bill Morrison', role: 'Owner',
-    trade: 'Concrete', status: 'lost', value: 19600, stage: 'lost',
+    id: 13, name: 'Klinger Trucking', contact: 'Jim Klinger', role: 'Owner',
+    trade: 'Full Replacement', status: 'lost', value: 19600, stage: 'lost',
     callbackDate: null, lastContact: '2026-03-09',
-    stallReason: 'competitor', notes: 'Lost on price. $3k lower bid from local outfit.',
-    industry: 'Commercial', dealAge: 61,
+    stallReason: 'competitor', notes: 'Lost on price. 26 sq standing seam metal on shop. Competitor bid $3k less — no manufacturer warranty.',
+    industry: 'Commercial', dealAge: 61, address: '1100 Industrial Park Rd, Milton PA 17847',
   },
   {
-    id: 14, name: 'Torres Residence', contact: 'Miguel Torres', role: 'Homeowner',
-    trade: 'Solar', status: 'stalled', value: 42000, stage: 'approved',
+    id: 14, name: 'Deimler Residence', contact: 'Scott Deimler', role: 'Homeowner',
+    trade: 'Full Replacement', status: 'stalled', value: 42000, stage: 'materials_ordered',
     callbackDate: '2026-03-23', lastContact: '2026-03-15',
-    stallReason: 'budget_freeze', notes: 'Waiting on utility rebate approval. Big deal.',
-    industry: 'Residential', dealAge: 74,
+    stallReason: 'budget_freeze', notes: '48 sq, standing seam metal Burnished Slate. 10/12 pitch, harness required. Materials on order at Boise Cascade Sunbury but homeowner paused — waiting on HELOC.',
+    industry: 'Residential', dealAge: 74, address: '22 Mountain Rd, New Berlin PA 17855',
   },
   {
-    id: 15, name: 'Lakewood Auto', contact: 'Steve Kim', role: 'Shop Owner',
-    trade: 'Garage Doors', status: 'active', value: 7200, stage: 'inspection',
+    id: 15, name: 'Blasius Chevrolet', contact: 'Steve Blasius', role: 'Shop Owner',
+    trade: 'Flashing Repair', status: 'active', value: 2800, stage: 'inspection_complete',
     callbackDate: '2026-03-28', lastContact: '2026-03-23',
-    stallReason: null, notes: '3 commercial overhead doors. Second call scheduled.',
-    industry: 'Commercial', dealAge: 8,
+    stallReason: null, notes: 'Chimney flashing failed on service bay. Active leak into office below. Counter-flashing pulling away from limestone mortar.',
+    industry: 'Commercial', dealAge: 8, address: '400 S Market St, Selinsgrove PA 17870',
   },
   {
-    id: 16, name: 'Heritage Inn', contact: 'Patricia Lawson', role: 'General Manager',
-    trade: 'Masonry', status: 'active', value: 26400, stage: 'estimate',
+    id: 16, name: 'Packwood House Museum', contact: 'Patricia Landis', role: 'Facilities Manager',
+    trade: 'Repair', status: 'active', value: 6400, stage: 'estimate_sent',
     callbackDate: '2026-03-26', lastContact: '2026-03-19',
-    stallReason: null, notes: 'Retaining wall + patio resurfacing. Historic property.',
-    industry: 'Commercial', dealAge: 20,
+    stallReason: null, notes: 'Slate roof — 8 cracked tiles + ridge mortar repointing. Historic property, must match existing PA slate. 12/12 pitch.',
+    industry: 'Commercial', dealAge: 20, address: '15 N Water St, Lewisburg PA 17837',
   },
   {
-    id: 17, name: 'City Storage LLC', contact: 'Nick Ferreira', role: 'Operations Mgr',
-    trade: 'Demolition', status: 'stalled', value: 38000, stage: 'estimate',
+    id: 17, name: 'Susquehanna Industrial Park', contact: 'Nick Etter', role: 'Operations Mgr',
+    trade: 'Full Replacement', status: 'stalled', value: 38000, stage: 'estimate_sent',
     callbackDate: '2026-03-20', lastContact: '2026-03-04',
-    stallReason: 'budget_freeze', notes: 'Old warehouse demo. Full board approval pending.',
-    industry: 'Commercial', dealAge: 53,
+    stallReason: 'budget_freeze', notes: '52 sq TPO, flat warehouse roof. 2 layers existing. Full board approval pending. Northumberland County permit needed.',
+    industry: 'Commercial', dealAge: 53, address: '825 Point Township Dr, Northumberland PA 17857',
   },
   {
-    id: 18, name: 'Oakwood Estates', contact: 'Carol Jensen', role: 'Homeowner',
-    trade: 'Septic', status: 'active', value: 15800, stage: 'inspection',
+    id: 18, name: 'Flickinger Residence', contact: 'Carol Flickinger', role: 'Homeowner',
+    trade: 'Emergency Tarp', status: 'active', value: 1200, stage: 'inspection_scheduled',
     callbackDate: '2026-03-25', lastContact: '2026-03-20',
-    stallReason: null, notes: 'Failing system. Urgent job. Permits in process.',
-    industry: 'Residential', dealAge: 12,
+    stallReason: null, notes: 'Oak tree fell on roof during wind storm. Active water intrusion into upstairs bedroom. Tarp ASAP, then scope full replacement.',
+    industry: 'Residential', dealAge: 12, address: '56 Maple Ave, Middleburg PA 17842',
   },
   {
-    id: 19, name: 'Highland Park HOA', contact: 'David Moore', role: 'Board President',
-    trade: 'Tree Service', status: 'cold', value: 8600, stage: 'lead',
+    id: 19, name: 'Danville Heritage Villas', contact: 'Dave Moyer', role: 'Board President',
+    trade: 'Inspection', status: 'cold', value: 1800, stage: 'lead',
     callbackDate: '2026-04-10', lastContact: '2026-02-28',
-    stallReason: 'timing', notes: '15 trees to remove. Waiting on spring budget approval.',
-    industry: 'HOA', dealAge: 71,
+    stallReason: 'timing', notes: '15-building annual roof inspection. Waiting on spring maintenance budget approval. Could lead to multi-phase replacement — most roofs are 18+ years.',
+    industry: 'HOA', dealAge: 71, address: '300 Montour Blvd, Danville PA 17821',
   },
   {
-    id: 20, name: 'Bay Area Car Wash', contact: 'Lena Torres', role: 'Owner',
-    trade: 'Pressure Washing', status: 'won', value: 4200, stage: 'completed',
+    id: 20, name: 'Sheetz #412', contact: 'Brian Lehr', role: 'Facilities Coord',
+    trade: 'Repair', status: 'won', value: 4200, stage: 'invoiced',
     callbackDate: null, lastContact: '2026-03-18',
-    stallReason: null, notes: 'Closed! Full lot + canopy wash scheduled 3/27.',
-    industry: 'Commercial', dealAge: 29,
+    stallReason: null, notes: 'Closed! Patched 4 sq of wind-damaged 3-tab on flat canopy section. Resealed all pipe boots and HVAC curbs.',
+    industry: 'Commercial', dealAge: 29, address: '1250 N Susquehanna Trail, Selinsgrove PA 17870',
   },
   {
-    id: 21, name: 'Summit Developers', contact: 'Greg Patterson', role: 'Project Manager',
-    trade: 'Excavation', status: 'stalled', value: 67000, stage: 'approved',
+    id: 21, name: 'Evangelical Community Hospital', contact: 'Greg Stauffer', role: 'Facilities Manager',
+    trade: 'Full Replacement', status: 'stalled', value: 67000, stage: 'contract_signed',
     callbackDate: '2026-03-22', lastContact: '2026-03-11',
-    stallReason: 'price_objection', notes: 'Large site clearing. Need to value-engineer scope.',
-    industry: 'Commercial', dealAge: 45,
+    stallReason: 'price_objection', notes: 'Outpatient wing, 320 sq TPO. Hospital procurement wants to value-engineer. Union County permit in hand.',
+    industry: 'Institutional', dealAge: 45, address: '1 Hospital Dr, Lewisburg PA 17837',
   },
   {
-    id: 22, name: 'Iron Works Industrial', contact: 'Carlos Reyes', role: 'Plant Manager',
-    trade: 'Welding', status: 'active', value: 19800, stage: 'inspection',
+    id: 22, name: 'Rohrer Residence', contact: 'Mike Rohrer', role: 'Homeowner',
+    trade: 'Ventilation', status: 'active', value: 3200, stage: 'inspection_complete',
     callbackDate: '2026-03-27', lastContact: '2026-03-21',
-    stallReason: null, notes: 'Steel platform fabrication + install. Strong fit.',
-    industry: 'Industrial', dealAge: 17,
+    stallReason: null, notes: 'Attic hitting 145°F in summer. No ridge vent, only 2 box vents on 1960s ranch. OSB decking — need full intake/exhaust rebalance + check for moisture damage.',
+    industry: 'Residential', dealAge: 17, address: '340 Fairground Rd, Bloomsburg PA 17815',
   },
   {
-    id: 23, name: 'Northgate Mall', contact: 'Janet Farley', role: 'Facilities Mgr',
-    trade: 'Insulation', status: 'stalled', value: 31500, stage: 'estimate',
+    id: 23, name: 'Susquehanna Valley Mall — JCPenney Wing', contact: 'Janet Groff', role: 'Facilities Mgr',
+    trade: 'Flashing Repair', status: 'stalled', value: 8500, stage: 'estimate_sent',
     callbackDate: '2026-03-21', lastContact: '2026-03-07',
-    stallReason: 'no_response', notes: 'Submitted proposal 2 weeks ago. Zero feedback.',
-    industry: 'Commercial', dealAge: 58,
+    stallReason: 'no_response', notes: 'Parapet wall flashing failing on 3 sections. Submitted proposal 2 weeks ago. Zero feedback from corporate ownership.',
+    industry: 'Commercial', dealAge: 58, address: '1 Susquehanna Valley Mall Dr, Selinsgrove PA 17870',
   },
   {
-    id: 24, name: 'Sunrise Senior Living', contact: 'Andrew Mills', role: 'Maintenance Dir',
-    trade: 'Drywall', status: 'active', value: 13200, stage: 'estimate',
+    id: 24, name: 'RiverWoods Senior Living', contact: 'Andrew Musser', role: 'Maintenance Dir',
+    trade: 'Gutter Install', status: 'active', value: 13200, stage: 'estimate_sent',
     callbackDate: '2026-03-26', lastContact: '2026-03-20',
-    stallReason: null, notes: 'Wing renovation. 40 rooms. On track.',
-    industry: 'Institutional', dealAge: 22,
+    stallReason: null, notes: '480 LF 6" commercial gutters + 12 downspouts on main building. Include splash guards at all walkways. On track.',
+    industry: 'Institutional', dealAge: 22, address: '150 RiverWoods Dr, Lewisburg PA 17837',
   },
   {
-    id: 25, name: 'The Craftsman Kitchen', contact: 'Sandra Yee', role: 'Owner',
-    trade: 'Carpentry', status: 'stalled', value: 24100, stage: 'approved',
+    id: 25, name: 'Brenner Residence', contact: 'Sandra Brenner', role: 'Homeowner',
+    trade: 'Skylight', status: 'stalled', value: 6100, stage: 'scheduled_for_install',
     callbackDate: '2026-03-23', lastContact: '2026-03-14',
-    stallReason: 'technical_fit', notes: 'Custom cabinet specs need rework. Awaiting revisions.',
-    industry: 'Commercial', dealAge: 40,
+    stallReason: 'technical_fit', notes: '3 Velux deck-mount skylights in cathedral ceiling. Flashing kit on backorder at Boise Cascade — ETA pushed 2 weeks. Homeowner frustrated.',
+    industry: 'Residential', dealAge: 40, address: '19 Covered Bridge Rd, Hughesville PA 17737',
   },
   {
-    id: 26, name: 'Harbor View Condos', contact: 'Robert Chang', role: 'Board Treasurer',
-    trade: 'Waterproofing', status: 'stalled', value: 47500, stage: 'estimate',
+    id: 26, name: 'Shamokin Creek Condos', contact: 'Bob Reider', role: 'Board Treasurer',
+    trade: 'Storm Damage', status: 'stalled', value: 47500, stage: 'estimate_sent',
     callbackDate: '2026-03-24', lastContact: '2026-03-10',
-    stallReason: 'wrong_contact', notes: 'Need to engage full board, not just treasurer.',
-    industry: 'HOA', dealAge: 62,
+    stallReason: 'wrong_contact', notes: '6 buildings, wind + ice dam damage. Nationwide Insurance adjusting. Need to engage full board, not just treasurer. Mix of 3-tab and architectural.',
+    industry: 'HOA', dealAge: 62, address: '500 Shamokin Creek Dr, Shamokin PA 17872',
   },
 ];
 
@@ -596,26 +369,42 @@ const STATUS_COLORS = {
   lost: '#ef4444',
 };
 
-const STAGE_ORDER = ['lead', 'inspection', 'estimate', 'approved', 'in_progress', 'completed'];
+const STAGE_ORDER = [
+  'lead', 'inspection_scheduled', 'inspection_complete', 'estimate_sent',
+  'contract_signed', 'materials_ordered', 'scheduled_for_install',
+  'in_progress', 'punch_list', 'completed', 'invoiced', 'paid',
+];
 
 const STAGE_LABELS = {
-  lead: 'Lead',
-  inspection: 'Inspection',
-  estimate: 'Estimate',
-  approved: 'Approved',
-  in_progress: 'In Progress',
-  completed: 'Completed',
-  lost: 'Lost',
+  lead:                  'Lead',
+  inspection_scheduled:  'Inspection Scheduled',
+  inspection_complete:   'Inspection Complete',
+  estimate_sent:         'Estimate Sent',
+  contract_signed:       'Contract Signed',
+  materials_ordered:     'Materials Ordered',
+  scheduled_for_install: 'Scheduled for Install',
+  in_progress:           'In Progress',
+  punch_list:            'Punch List',
+  completed:             'Completed',
+  invoiced:              'Invoiced',
+  paid:                  'Paid',
+  lost:                  'Lost',
 };
 
 const STAGE_COLORS = {
-  lead:        '#64748b',
-  inspection:  '#3b82f6',
-  estimate:    '#f59e0b',
-  approved:    '#10b981',
-  in_progress: '#f97316',
-  completed:   '#22c55e',
-  lost:        '#ef4444',
+  lead:                  '#64748b',
+  inspection_scheduled:  '#3b82f6',
+  inspection_complete:   '#60a5fa',
+  estimate_sent:         '#f59e0b',
+  contract_signed:       '#10b981',
+  materials_ordered:     '#8b5cf6',
+  scheduled_for_install: '#06b6d4',
+  in_progress:           '#f97316',
+  punch_list:            '#ec4899',
+  completed:             '#22c55e',
+  invoiced:              '#a855f7',
+  paid:                  '#14b8a6',
+  lost:                  '#ef4444',
 };
 
 const ISSUE_PRESETS = [
@@ -627,40 +416,76 @@ const ISSUE_PRESETS = [
 // Operational next-step tips shown inside the job detail modal, keyed by pipeline stage
 const STAGE_TIPS = {
   lead: [
-    'Call or visit the property to confirm scope and identify any visible damage',
-    'Check Google Maps satellite view of the property before the site visit',
-    'Ask about insurance claim status before quoting — it changes the entire conversation',
-    'Log contact details, job address, and initial scope notes before moving forward',
+    'Call or visit the property to confirm scope and identify any visible damage — many older homes in the valley have multiple layers',
+    'Check Google Maps satellite view before the site visit — estimate roof pitch, identify dormers, and spot access issues on rural properties',
+    'Ask about insurance claim status before quoting — Erie, State Farm, and Nationwide all handle storm claims differently in PA',
+    'Log contact details, job address, and initial scope notes — note if the property is in a township that requires permits (varies by county)',
   ],
-  inspection: [
-    'Take photos of all four sides, close-ups of damage areas, ridge, valleys, and all penetrations',
-    'Measure total square footage and note roof pitch — both directly affect material quantities',
-    'Identify flashing condition at chimney, skylights, and valleys — the most common callback sources',
-    'Walk the attic if accessible — note soft spots or rot that must be priced before the estimate',
+  inspection_scheduled: [
+    'Confirm the inspection date and time the day before — cell service can be spotty in rural parts of Union and Snyder counties',
+    'Prep your inspection kit: drone, ladder, measuring wheel, moisture meter, and camera — PA attics often show ice dam damage from winter',
+    'Check the 10-day forecast — central PA spring weather is unpredictable, reschedule early if rain or 20+ mph winds are expected',
+    'Review the property on Google Maps satellite view — many valley homes have steep pitches (8/12+) and older slate or metal roofs',
   ],
-  estimate: [
-    'Include a line item for each material: shingles, underlayment, ice & water shield, drip edge, flashing, ridge cap',
-    'Add a conditional deck repair line item — unexpected rot found during tear-off needs prior approval',
-    'Send the estimate within 24 hours of inspection — close rate drops significantly after 48 hours',
-    'Follow up by phone 48 hours after sending — ask about specific line items, not just "did you see it"',
+  inspection_complete: [
+    'Upload all photos within 24 hours — four sides, close-ups of damage, ridge, valleys, and all penetrations. Use Drone Shots category for aerials.',
+    'Measure total square footage and note roof pitch — steep PA homes (8/12 to 12/12) significantly affect labor and safety costs',
+    'Document flashing condition at chimney, skylights, and valleys — limestone chimneys common in the valley are the #1 callback source',
+    'Walk the attic if accessible — check for ice dam staining, moisture damage, and inadequate ventilation common in older PA homes',
   ],
-  approved: [
-    'Order all materials now — lock in pricing and eliminate last-minute delivery delays',
-    'Assign the crew lead and confirm availability for the scheduled start date in writing',
-    'Pull the permit if required — verify local requirements before the crew arrives on site',
-    'Confirm payment schedule with the customer: deposit amount, method, and balance due on completion',
+  estimate_sent: [
+    'Include a line item for each material: shingles, underlayment, ice & water shield (required at eaves in PA), drip edge, flashing, ridge cap',
+    'Add a conditional deck repair line — many valley homes have original 1x6 board decking that needs overlay or replacement during tear-off',
+    'Send the estimate within 24 hours of inspection — close rate drops significantly after 48 hours, especially during spring roofing season',
+    'Follow up by phone 48 hours after sending — in Mennonite communities, a face-to-face visit often works better than phone or email',
+  ],
+  contract_signed: [
+    'Collect the deposit and confirm payment method before scheduling — some rural customers prefer check or cash; confirm before crew day',
+    'Check permit requirements — varies by township in Union, Snyder, and Northumberland counties. Some townships don\'t require permits for re-roofs',
+    'Confirm material selections: shingle color, brand, and warranty tier. Order from Boise Cascade Sunbury or ABC Supply for fastest delivery.',
+    'Send a written confirmation with the start date, scope, and payment schedule — weather delays are common April through November in central PA',
+  ],
+  materials_ordered: [
+    'Order from Boise Cascade Sunbury or ABC Supply — lock pricing now, material costs shift seasonally and specific colors can be backordered',
+    'Schedule delivery for the day before or morning of install — confirm the driveway can handle a delivery truck on rural properties',
+    'Verify the order includes ice & water shield for eaves, valleys, and around penetrations — PA code requires it in most jurisdictions',
+    'Confirm dumpster delivery — check if the township requires a road permit for dumpster placement on rural roads',
+  ],
+  scheduled_for_install: [
+    'Assign the crew lead and confirm start date — spring is peak season in the valley, so lock crew availability early',
+    'Send the homeowner a reminder with start date, crew arrival time (usually 7 AM), and what to expect — noise, debris, driveway access',
+    'Verify the permit is in hand if required — do not start without it. Check township requirements for Union, Snyder, or Northumberland counties.',
+    'Check the 5-day forecast one more time — PA spring storms can push a job mid-week. Have a backup date ready.',
   ],
   in_progress: [
-    'Check in with the crew lead at noon — confirm daily progress and flag material shortages early',
-    'Take before, during, and after photos at each phase — they protect you on warranty claims',
-    'Get written customer approval before adding any scope found during tear-off (deck damage, rotted fascia)',
-    'Run a magnetic nail sweep around the perimeter at end of each day — nail callbacks are avoidable',
+    'Check in with the crew lead at noon — confirm daily progress, flag material shortages, and check weather for afternoon thunderstorms',
+    'Take photos at each phase using the photo categories: Before, During Tear-off, Decking, Underlayment, and Final — they protect you on warranty claims',
+    'Get written customer approval before adding any scope found during tear-off — rotted board decking and ice dam damage are common surprises in valley homes',
+    'Run a magnetic nail sweep at end of each day — especially critical on rural properties where customers mow their own fields nearby',
+  ],
+  punch_list: [
+    'Walk the roof and property with the crew lead — check ridge cap alignment, all flashing seals, and drip edge continuity',
+    'Inspect all flashing points carefully — limestone chimneys and older skylights are the most common callback issues in central PA',
+    'Verify gutter reattachment, downspout alignment, and soffit/fascia condition — PA freeze-thaw cycles punish any loose connections',
+    'Run a full magnetic nail sweep — driveway, lawn, sidewalk, and gravel areas. One nail in a tire costs more in goodwill than the sweep costs in time.',
   ],
   completed: [
-    'Walk the completed job with the customer before requesting final payment',
-    'Run a full magnetic nail sweep — driveway, lawn, and sidewalk — before leaving the site',
-    'File the permit close-out inspection if required by your jurisdiction',
-    'Ask for a Google review and one referral within 48 hours — this is your highest-converting window',
+    'Walk the completed job with the customer before requesting final payment — let them see the quality up close from the ground',
+    'Take final photos from all four sides for your portfolio — drone shots of valley homes with mountain backdrops make great marketing content',
+    'File the permit close-out if required by the township — some PA jurisdictions issue lien notices if not closed within 30 days',
+    'Ask for a Google review and one referral — word of mouth is everything in the Susquehanna Valley. This is your highest-converting window.',
+  ],
+  invoiced: [
+    'Send the final invoice within 24 hours of the walkthrough — delays signal disorganization and give time for second thoughts',
+    'Include before/after photos and a warranty summary — visual proof of the transformation reinforces value, especially for insurance-paid work',
+    'Set a 5-business-day follow-up reminder — if payment hasn\'t arrived, call directly. Don\'t rely on email for rural PA customers.',
+    'For insurance jobs, confirm the supplement has been filed and the adjuster (Erie, State Farm, Nationwide) has the final documentation',
+  ],
+  paid: [
+    'Record the payment and close the job immediately — open jobs distort your pipeline and make your board look cluttered',
+    'Mail or email the warranty certificate and manufacturer registration — this trust-building step costs nothing and protects you on future claims',
+    'Schedule a 6-month follow-up call to check on the roof and ask for referrals — valley communities are tight-knit, one good job leads to the next',
+    'Archive the job folder with all photos, permits, signed contracts, and payment records — clean documentation protects you for years',
   ],
 };
 const TODAY = '2026-03-23';
@@ -668,100 +493,157 @@ const TODAY = '2026-03-23';
 // ─── Jobs Data ────────────────────────────────────────────────────────────────
 const DEMO_JOBS = [
   {
-    id: 101, customer: 'Frank & Linda Hargrove', address: '2847 Maplewood Dr, Austin TX 78745',
-    trade: 'Roofing', value: 18400, status: 'In Progress',
-    scheduledDate: '2026-03-20', completedSteps: [1, 2, 3, 4, 5],
-    notes: 'GAF Timberline HDZ shingles. Crew of 4. Day 2 of 3.',
+    id: 101, customer: 'Dave & Lisa Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
+    trade: 'Full Replacement', value: 14800, status: 'In Progress',
+    scheduledDate: '2026-03-20', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8],
+    notes: 'GAF Timberline HDZ Charcoal. 28 sq, 7/12 pitch. 1 layer tear-off over plywood. Crew of 4, day 2 of 3.',
   },
   {
-    id: 102, customer: 'Greenfield Office Park', address: '510 Oak Creek Blvd, Houston TX 77084',
-    trade: 'HVAC', value: 22800, status: 'Scheduled',
+    id: 102, customer: 'Susquehanna Valley Mall', address: '1 Susquehanna Valley Mall Dr, Selinsgrove PA 17870',
+    trade: 'Full Replacement', value: 23500, status: 'Scheduled',
     scheduledDate: '2026-03-28', completedSteps: [1, 2],
-    notes: 'Carrier 5-ton rooftop unit. Replacement for Suite A.',
+    notes: 'TPO membrane, 140 sq flat roof on anchor store wing. Materials on order from Boise Cascade Sunbury. Dumpster confirmed.',
   },
   {
-    id: 103, customer: 'Rosa & Carlos Martinez', address: '91 Birchwood Ct, Dallas TX 75208',
-    trade: 'Windows', value: 18700, status: 'Complete',
-    scheduledDate: '2026-03-14', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-    notes: 'Anderson 400 series, 12 windows. Fully sealed and inspected.',
+    id: 103, customer: 'Tina & Mark Bowman', address: '227 Market St, Lewisburg PA 17837',
+    trade: 'Storm Damage', value: 18700, status: 'Complete',
+    scheduledDate: '2026-03-14', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    notes: 'Erie Insurance claim — wind damage. 24 sq architectural. Adjuster approved full replacement. Union County permit closed out.',
   },
   {
-    id: 104, customer: 'Sunridge Apartments — Bldg B', address: '3300 Sunridge Pkwy, San Antonio TX 78230',
-    trade: 'Plumbing', value: 11400, status: 'In Progress',
+    id: 104, customer: 'Northumberland Apartments — Bldg C', address: '350 Front St, Northumberland PA 17857',
+    trade: 'Repair', value: 4200, status: 'In Progress',
     scheduledDate: '2026-03-21', completedSteps: [1, 2, 3, 4],
-    notes: 'Re-piping units 12–24. PEX throughout. Pressure test pending.',
+    notes: 'Valley flashing repair + 3 sq shingle replacement. 3-tab match, 6/12 pitch. Leak stopped. Decking OK.',
   },
   {
-    id: 105, customer: 'Pinnacle Retail Center', address: '668 Elmwood Ave, Plano TX 75023',
-    trade: 'Electrical', value: 29600, status: 'Scheduled',
+    id: 105, customer: 'Monroe Township Offices', address: '88 W Main St, Selinsgrove PA 17870',
+    trade: 'Full Replacement', value: 31200, status: 'Scheduled',
     scheduledDate: '2026-04-01', completedSteps: [1, 2],
-    notes: '400A panel upgrade + 6 EV charger circuits. Permits pulled.',
+    notes: '42 sq modified bitumen, low-slope municipal bldg. 2 layers tear-off. Snyder County permit pulled.',
   },
   {
-    id: 106, customer: 'Brookhaven Commons HOA', address: '1190 Brookhaven Blvd, Frisco TX 75034',
-    trade: 'Landscaping', value: 34800, status: 'In Progress',
+    id: 106, customer: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801',
+    trade: 'Gutter Install', value: 5800, status: 'In Progress',
     scheduledDate: '2026-03-16', completedSteps: [1, 2, 3, 4, 5],
-    notes: 'Phase 1 hardscape complete. Planting + irrigation starting next week.',
+    notes: '220 LF seamless aluminum 5" K-style + leaf guards. Fascia board replaced on south side. 1890s building.',
   },
   {
-    id: 107, customer: 'Miguel & Carmen Torres', address: '4421 Sunset Ridge Rd, Austin TX 78731',
-    trade: 'Solar', value: 41500, status: 'In Progress',
-    scheduledDate: '2026-03-17', completedSteps: [1, 2, 3, 4],
-    notes: '18-panel system. Mounts installed. Panel install in progress.',
+    id: 107, customer: 'Scott & Beth Deimler', address: '22 Mountain Rd, New Berlin PA 17855',
+    trade: 'Full Replacement', value: 42000, status: 'In Progress',
+    scheduledDate: '2026-03-17', completedSteps: [1, 2, 3, 4, 5, 6],
+    notes: '48 sq standing seam metal Burnished Slate, 10/12 pitch. Tear-off done. Underlayment installed. Panels going up. Harness required.',
   },
   {
-    id: 108, customer: 'Sagebrush Ranch', address: '8801 County Rd 312, Waco TX 76708',
-    trade: 'Fencing', value: 27200, status: 'Complete',
-    scheduledDate: '2026-03-11', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    notes: '1,200 ft cedar privacy fence. All gates hung and tested.',
+    id: 108, customer: 'Joe & Barb Hartman', address: '78 Pine Creek Rd, Watsontown PA 17777',
+    trade: 'Skylight', value: 4800, status: 'Complete',
+    scheduledDate: '2026-03-11', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    notes: '2 Velux curb-mount skylights installed. Flashing sealed, interior trim complete. No leaks after rain test.',
   },
   {
-    id: 109, customer: 'Morrison Trucking Depot', address: '2244 Industrial Blvd, Dallas TX 75207',
-    trade: 'Concrete', value: 19600, status: 'Scheduled',
-    scheduledDate: '2026-04-07', completedSteps: [1, 2],
-    notes: '4" reinforced slab, 6,000 sq ft truck yard. Forms set next week.',
+    id: 109, customer: 'Carol Flickinger', address: '56 Maple Ave, Middleburg PA 17842',
+    trade: 'Emergency Tarp', value: 1200, status: 'Scheduled',
+    scheduledDate: '2026-03-25', completedSteps: [1, 2],
+    notes: 'Oak tree fell on roof — active water into upstairs bedroom. Emergency tarp dispatch. Full replacement scope to follow.',
   },
   {
-    id: 110, customer: 'Riverside Church', address: '200 Riverside Ave, Fort Worth TX 76107',
-    trade: 'Painting', value: 9400, status: 'Scheduled',
-    scheduledDate: '2026-04-01', completedSteps: [1, 2, 3],
-    notes: 'Exterior repaint, full building. Sherwin-Williams Duration.',
+    id: 110, customer: 'Christ Lutheran Mifflinburg', address: '130 S 5th St, Mifflinburg PA 17844',
+    trade: 'Storm Damage', value: 9400, status: 'Complete',
+    scheduledDate: '2026-03-10', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    notes: 'Wind damage — ridge cap + 3 sq on sanctuary. CertainTeed Landmark, Weathered Wood. Nationwide paid in full.',
   },
   {
-    id: 111, customer: 'Westview HOA — Phase 1', address: '5500 Westview Commons, Irving TX 75038',
-    trade: 'General Construction', value: 94000, status: 'In Progress',
-    scheduledDate: '2026-03-10', completedSteps: [1, 2, 3, 4],
-    notes: 'Community center addition. Framing complete. Mechanicals next.',
+    id: 111, customer: 'Riverwoods HOA — Phase 1', address: '200 Riverwoods Dr, Lewisburg PA 17837',
+    trade: 'Full Replacement', value: 94000, status: 'In Progress',
+    scheduledDate: '2026-03-10', completedSteps: [1, 2, 3, 4, 5, 6, 7],
+    notes: 'Phase 1: 4 of 12 buildings. 96 sq done. GAF Timberline architectural, Weathered Wood. On schedule.',
   },
   {
-    id: 112, customer: 'Heritage Inn', address: '312 Heritage Blvd, San Antonio TX 78205',
-    trade: 'Masonry', value: 26400, status: 'Scheduled',
+    id: 112, customer: 'Mike & Jen Rohrer', address: '340 Fairground Rd, Bloomsburg PA 17815',
+    trade: 'Ventilation', value: 3200, status: 'Scheduled',
     scheduledDate: '2026-04-03', completedSteps: [1, 2, 3],
-    notes: 'Retaining wall + patio resurfacing. Historic limestone.',
+    notes: 'Ridge vent install (42 LF) + 8 soffit vents on 1960s ranch. OSB decking checked — no moisture damage. Materials from Boise Cascade.',
   },
 ];
 
 const DEMO_CREW = [
-  { id: 'dc1', name: 'Jake Martinez', role: 'Lead Installer', phone: '(555) 234-5678', specialties: ['Roofing', 'Siding'] },
-  { id: 'dc2', name: 'Tom Walsh', role: 'Foreman', phone: '(555) 345-6789', specialties: ['Gutters', 'Roofing', 'Windows'] },
-  { id: 'dc3', name: 'Luis Reyes', role: 'Helper', phone: '(555) 456-7890', specialties: ['Roofing'] },
+  { id: 'dc1', name: 'Jake Stoltzfus', role: 'Foreman', phone: '(570) 555-2341', specialties: ['Full Replacement', 'Storm Damage'] },
+  { id: 'dc2', name: 'Tom Bricker', role: 'Install Crew', phone: '(570) 555-3456', specialties: ['Full Replacement', 'Gutter Install', 'Skylight'] },
+  { id: 'dc3', name: 'Luis Ortiz', role: 'Tear-off Crew', phone: '(570) 555-4567', specialties: ['Full Replacement', 'Repair'] },
+  { id: 'dc4', name: 'Ryan Hess', role: 'Ground Support', phone: '(570) 555-5678', specialties: ['Full Replacement', 'Emergency Tarp'] },
+  { id: 'dc5', name: 'Mark Sensenig', role: 'Estimator', phone: '(570) 555-6789', specialties: ['Full Replacement', 'Storm Damage', 'Inspection'] },
+  { id: 'dc6', name: 'Tara Zimmerman', role: 'Sales Rep', phone: '(570) 555-7890', specialties: ['Full Replacement', 'Storm Damage', 'Gutter Install'] },
 ];
 
 const DEMO_MESSAGES = [
-  { id: 'dm-1', jobId: '101', senderId: 'system', senderName: 'System', text: 'Jake Martinez assigned to this job', timestamp: 1742400000000, type: 'system' },
-  { id: 'dm-2', jobId: '101', senderId: 'dc1', senderName: 'Jake Martinez', text: 'On site. Starting tear-off. Weather is clear.', timestamp: 1742410000000, type: 'user' },
-  { id: 'dm-3', jobId: '101', senderId: 'system', senderName: 'System', text: 'Tom Walsh assigned to this job', timestamp: 1742411000000, type: 'system' },
-  { id: 'dm-4', jobId: '101', senderId: 'dc2', senderName: 'Tom Walsh', text: 'Picked up shingles from Beacon. ETA 20 mins.', timestamp: 1742420000000, type: 'user' },
-  { id: 'dm-5', jobId: '101', senderId: 'dc1', senderName: 'Jake Martinez', text: 'Day 2 done. Underlayment installed, starting shingles tomorrow.', timestamp: 1742500000000, type: 'user' },
+  { id: 'dm-1', jobId: '101', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to this job', timestamp: 1742400000000, type: 'system' },
+  { id: 'dm-2', jobId: '101', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'On site at Chestnut St. Starting tear-off. Weather is clear.', timestamp: 1742410000000, type: 'user' },
+  { id: 'dm-3', jobId: '101', senderId: 'system', senderName: 'System', text: 'Tom Bricker assigned to this job', timestamp: 1742411000000, type: 'system' },
+  { id: 'dm-4', jobId: '101', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Picked up shingles from Boise Cascade Sunbury. ETA 20 mins.', timestamp: 1742420000000, type: 'user' },
+  { id: 'dm-5', jobId: '101', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Day 2 done. Underlayment installed, starting shingles tomorrow AM.', timestamp: 1742500000000, type: 'user' },
   { id: 'dm-6', jobId: '102', senderId: 'system', senderName: 'System', text: 'Job scheduled for 2026-03-28', timestamp: 1742000000000, type: 'system' },
-  { id: 'dm-7', jobId: '102', senderId: 'dc2', senderName: 'Tom Walsh', text: 'Confirmed with property manager. Access code is 4821.', timestamp: 1742100000000, type: 'user' },
-  { id: 'dm-8', jobId: '104', senderId: 'system', senderName: 'System', text: 'Luis Reyes assigned to this job', timestamp: 1742200000000, type: 'system' },
-  { id: 'dm-9', jobId: '104', senderId: 'dc3', senderName: 'Luis Reyes', text: 'Units 1-6 re-piped. Moving to second floor now.', timestamp: 1742300000000, type: 'user' },
+  { id: 'dm-7', jobId: '102', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Confirmed with Denise at the mall. Loading dock access code is 4821.', timestamp: 1742100000000, type: 'user' },
+  { id: 'dm-8', jobId: '104', senderId: 'system', senderName: 'System', text: 'Luis Ortiz assigned to this job', timestamp: 1742200000000, type: 'system' },
+  { id: 'dm-9', jobId: '104', senderId: 'dc3', senderName: 'Luis Ortiz', text: 'Valley flashing removed. Decking looks solid. New flashing going in now.', timestamp: 1742300000000, type: 'user' },
 ];
 
 const DEMO_JOB_DURATIONS = {
   101: 3, 102: 1, 103: 2, 104: 2, 105: 1, 106: 1,
   107: 3, 108: 1, 109: 2, 110: 1, 111: 2, 112: 3,
+};
+
+// Demo crew assignments (jobId → [crewId, ...])
+const DEMO_ASSIGNMENTS = {
+  '101': ['dc1', 'dc2', 'dc3', 'dc4'],  // Shumaker Full Replacement
+  '102': ['dc2'],                         // SV Mall TPO
+  '104': ['dc3'],                         // Northumberland Repair
+  '106': ['dc1', 'dc2'],                  // Market St Commons Gutter
+  '107': ['dc1', 'dc2', 'dc3', 'dc4'],  // Deimler standing seam
+  '109': ['dc3', 'dc4'],                  // Flickinger Emergency Tarp
+  '110': ['dc1', 'dc2'],                  // Christ Lutheran Storm Damage
+  '111': ['dc1', 'dc2', 'dc3', 'dc4'],  // Riverwoods HOA Phase 1
+  '112': ['dc3'],                         // Rohrer Ventilation
+};
+
+// Demo time-tracking data for Day Detail view (keyed by date → jobId → crewId)
+const DEMO_DAY_DETAIL = {
+  '2026-03-16': {
+    106: [
+      { crewId: 'dc1', clockIn: '7:02 AM', status: 'On Site', hoursLogged: 3.5, payRate: 38 },
+      { crewId: 'dc2', clockIn: '7:08 AM', status: 'On Site', hoursLogged: 3.4, payRate: 32 },
+    ],
+  },
+  '2026-03-17': {
+    107: [
+      { crewId: 'dc1', clockIn: '6:45 AM', status: 'On Site', hoursLogged: 4.0, payRate: 38 },
+      { crewId: 'dc2', clockIn: '6:50 AM', status: 'On Site', hoursLogged: 3.8, payRate: 32 },
+      { crewId: 'dc3', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 3.5, payRate: 26 },
+      { crewId: 'dc4', clockIn: '7:15 AM', status: 'On Site', hoursLogged: 3.2, payRate: 22 },
+    ],
+  },
+  '2026-03-20': {
+    101: [
+      { crewId: 'dc1', clockIn: '6:55 AM', status: 'On Site', hoursLogged: 5.5, payRate: 38 },
+      { crewId: 'dc2', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 5.5, payRate: 32 },
+      { crewId: 'dc3', clockIn: '7:10 AM', status: 'On Site', hoursLogged: 5.2, payRate: 26 },
+      { crewId: 'dc4', clockIn: '7:20 AM', status: 'Break', hoursLogged: 4.8, payRate: 22 },
+    ],
+  },
+  '2026-03-21': {
+    104: [
+      { crewId: 'dc3', clockIn: '7:30 AM', status: 'On Site', hoursLogged: 2.5, payRate: 26 },
+    ],
+  },
+  '2026-03-10': {
+    110: [
+      { crewId: 'dc1', clockIn: '7:00 AM', status: 'Clocked Out', hoursLogged: 6.0, payRate: 38 },
+      { crewId: 'dc2', clockIn: '7:05 AM', status: 'Clocked Out', hoursLogged: 5.8, payRate: 32 },
+    ],
+    111: [
+      { crewId: 'dc3', clockIn: '7:15 AM', status: 'On Site', hoursLogged: 4.5, payRate: 26 },
+      { crewId: 'dc4', clockIn: '7:20 AM', status: 'On Site', hoursLogged: 4.2, payRate: 22 },
+    ],
+  },
 };
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
@@ -785,19 +667,22 @@ const S = {
   },
   logo: { fontSize: 18, fontWeight: 700, color: '#f97316', letterSpacing: '-0.5px' },
   logoSub: { fontSize: 12, color: '#64748b', marginLeft: 4 },
-  tabs: { display: 'flex', gap: 4, marginLeft: 'auto' },
-  tab: (active) => ({
-    padding: '7px 16px',
-    borderRadius: 6,
-    border: active ? 'none' : '1px solid transparent',
-    cursor: 'pointer',
-    fontSize: 13,
-    fontWeight: active ? 700 : 500,
-    background: active ? 'linear-gradient(135deg,#f97316,#e8640c)' : 'transparent',
-    color: active ? '#fff' : '#8899b8',
-    transition: 'all 0.15s',
-    boxShadow: active ? '0 2px 10px rgba(249,115,22,0.35)' : 'none',
-  }),
+  tabs: { display: 'flex', gap: 4, marginLeft: 'auto', background: '#161b27', padding: '4px 6px', borderRadius: 8, border: '1px solid #253048' },
+  tab: (active, accent) => {
+    const c = accent || '#f97316';
+    return {
+      padding: '7px 16px',
+      borderRadius: 6,
+      border: active ? 'none' : '1px solid transparent',
+      cursor: 'pointer',
+      fontSize: 13,
+      fontWeight: active ? 700 : 600,
+      background: active ? `linear-gradient(135deg,${c},${c}dd)` : 'transparent',
+      color: active ? '#fff' : '#d1d5db',
+      transition: 'all 0.15s',
+      boxShadow: active ? `0 2px 10px ${c}59` : 'none',
+    };
+  },
   body: { padding: 24, maxWidth: 1400, margin: '0 auto' },
 
   filterRow: { display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' },
@@ -1065,6 +950,31 @@ const NAV_TABS = [
   { key: 'photos',    label: 'Photos',    icon: '📸' },
 ];
 
+// ─── Section Color Map ──────────────────────────────────────────────────────
+// Central color constants for tab accents — easy to tweak in one place.
+const SECTION_COLORS = {
+  // Main nav tabs
+  pipeline:  '#f97316',  // orange
+  callbacks: '#ef4444',  // red
+  analytics: '#8b5cf6',  // purple
+  jobs:      '#3b82f6',  // blue
+  calendar:  '#7c3aed',  // violet
+  crew:      '#eab308',  // yellow
+  chat:      '#10b981',  // green
+  photos:    '#06b6d4',  // cyan
+  // Job detail modal tabs
+  checklist: '#f97316',  // orange
+  crewpay:   '#14b8a6',  // teal (Cost Manager)
+};
+
+// Cost Manager sub-tab teal variants
+const CM_SUB_COLORS = {
+  materials: '#14b8a6',  // teal
+  labor:     '#0d9488',  // teal-600
+  summary:   '#0f766e',  // teal-700
+  signoff:   '#2dd4bf',  // teal-300
+};
+
 // ─── Demo Role Definitions ────────────────────────────────────────────────────
 const DEMO_ROLES = {
   owner: {
@@ -1108,7 +1018,11 @@ function GlobalStyles() {
       .ri-del:hover { color:#ef4444 !important; }
       input:focus, select:focus, textarea:focus { border-color:#f97316 !important; box-shadow:0 0 0 3px rgba(249,115,22,0.14) !important; outline:none !important; }
       .ri-nav-tab { transition:color 0.15s, background 0.15s; }
-      .ri-nav-tab:hover { color:#f1f5f9 !important; background:rgba(249,115,22,0.09) !important; }
+      .ri-nav-tab:hover { color:#f1f5f9 !important; background:rgba(255,255,255,0.06) !important; border-radius:6px; }
+      .ri-modal-tab { transition:all 0.15s; }
+      .ri-modal-tab:hover { background:rgba(255,255,255,0.06) !important; border-radius:6px 6px 0 0; }
+      .ri-bnav-btn { transition:color 0.15s, background 0.15s; }
+      .ri-bnav-btn:hover { background:rgba(255,255,255,0.05) !important; }
       .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
       .ri-cb-row:hover { background:#1c2840 !important; border-color:#3a4d6b !important; }
       .ri-sec-hdr { transition:background 0.12s; }
@@ -1130,40 +1044,44 @@ function GlobalStyles() {
   );
 }
 
-function BottomNav({ tab, setTab, tabs, color }) {
-  const c = color || '#f97316';
+function BottomNav({ tab, setTab, tabs }) {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: '#141c2e', borderTop: '2px solid #253048',
+      background: '#151d30', borderTop: '2px solid #253048',
       display: 'flex', height: 64, zIndex: 200,
       boxShadow: '0 -4px 12px rgba(0,0,0,0.35)',
       overflowX: 'auto', scrollbarWidth: 'none',
       WebkitOverflowScrolling: 'touch',
     }}>
-      {(tabs || NAV_TABS).map(({ key, label, icon, locked }) => (
-        <button
-          key={key}
-          onClick={() => !locked && setTab(key)}
-          style={{
-            minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            background: 'transparent', border: 'none',
-            color: locked ? '#2d3748' : tab === key ? c : '#7a93b0',
-            fontSize: 10, fontWeight: tab === key ? 700 : 500,
-            cursor: locked ? 'not-allowed' : 'pointer',
-            gap: 3, minHeight: 64, padding: 0,
-            borderTop: tab === key && !locked ? `2px solid ${c}` : '2px solid transparent',
-            transition: 'color 0.15s',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          <span style={{ fontSize: tab === key ? 22 : 18, lineHeight: 1, transition: 'font-size 0.15s' }}>
-            {locked ? '🔒' : icon}
-          </span>
-          {label}
-        </button>
-      ))}
+      {(tabs || NAV_TABS).map(({ key, label, icon, locked }) => {
+        const c = SECTION_COLORS[key] || '#f97316';
+        const isActive = tab === key && !locked;
+        return (
+          <button
+            key={key}
+            className={isActive ? '' : 'ri-bnav-btn'}
+            onClick={() => !locked && setTab(key)}
+            style={{
+              minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              background: isActive ? c + '15' : 'transparent', border: 'none',
+              color: locked ? '#2d3748' : isActive ? c : '#cbd5e1',
+              fontSize: 10, fontWeight: isActive ? 700 : 600,
+              cursor: locked ? 'not-allowed' : 'pointer',
+              gap: 3, minHeight: 64, padding: 0,
+              borderTop: isActive ? `2px solid ${c}` : '2px solid transparent',
+              transition: 'color 0.15s, background 0.15s',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <span style={{ fontSize: isActive ? 22 : 18, lineHeight: 1, transition: 'font-size 0.15s' }}>
+              {locked ? '🔒' : icon}
+            </span>
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -1172,18 +1090,24 @@ function BottomNav({ tab, setTab, tabs, color }) {
 const fmt = (n) => '$' + n.toLocaleString();
 
 // Stages at which a lead also appears as an active job
-const JOB_STAGES = ['approved', 'in_progress', 'completed'];
+const JOB_STAGES = [
+  'materials_ordered', 'scheduled_for_install', 'in_progress',
+  'punch_list', 'completed', 'invoiced', 'paid',
+];
 
 function leadToJob(lead) {
+  const s = lead.stage;
+  let status = 'Scheduled';
+  if (s === 'paid' || s === 'invoiced' || s === 'completed') status = 'Complete';
+  else if (s === 'in_progress' || s === 'punch_list') status = 'In Progress';
+
   return {
     id: lead.id,
     customer: lead.name,
     address: lead.address || '',
     trade: lead.trade,
     value: lead.value,
-    status: lead.stage === 'completed' ? 'Complete'
-          : lead.stage === 'in_progress' ? 'In Progress'
-          : 'Scheduled',
+    status,
     scheduledDate: lead.scheduledDate || lead.callbackDate || lead.lastContact || TODAY,
     explicitlyScheduled: !!lead.scheduledDate,
     completedSteps: lead.completedSteps || [],
@@ -1208,17 +1132,29 @@ function getStageAiDemo(lead) {
   const trade = lead.trade;
 
   const responses = {
-    lead: `1. Call ${contact} today to schedule a site visit for the ${name} job — leads that get a same-day visit convert 3× higher than those that wait a week. Ask about insurance coverage before the call ends; it changes the entire pricing conversation.\n\n2. Pull the ${name} property on Google Maps and check the satellite view before visiting — estimate roof pitch, square footage, and any visible damage areas. Arriving prepared on a ${val} ${trade} lead signals professionalism before you've said a word.\n\n3. Check the county assessor site for any open permits on the ${name} address. An existing open permit on a ${val} job can delay your approval at the estimate stage if you don't catch it now.\n\n4. Create the job folder today: address, ${contact}'s contact details, Street View screenshot, and your initial scope notes. Organization from the lead stage sets the pace for every stage that follows.`,
+    lead: `1. Call ${contact} today to schedule a site visit for the ${name} job — leads that get a same-day visit convert 3× higher than those that wait a week. Ask about insurance coverage (Erie, State Farm, Nationwide are the big three in the valley) before the call ends.\n\n2. Pull the ${name} property on Google Maps satellite view before visiting — estimate roof pitch, check for dormers or additions, and spot access issues. Many valley homes have steep pitches and tight driveways. Arriving prepared on a ${val} lead signals professionalism.\n\n3. Check the township requirements for the ${name} address — permit rules vary across Union, Snyder, and Northumberland counties. Some townships don't require permits for re-roofs, but verify before quoting.\n\n4. Create the job folder today: address, ${contact}'s contact details, satellite screenshot, and your initial scope notes. Note if this is a referral — word of mouth is everything in the Susquehanna Valley.`,
 
-    inspection: `1. Take a minimum of 20 photos at the ${name} inspection — four sides from ground level, close-ups of each damage area, the ridge, both valleys, and all penetrations. ${contact} will use these to understand exactly what they're approving at the ${val} estimate stage.\n\n2. Measure the roof in sections: ridge length, each slope's dimensions, and pitch. Accurate square footage on a ${val} ${trade} job prevents under-ordering shingles or padding your estimate with expensive overage.\n\n3. Walk the attic if accessible — inspect the decking for soft spots, rot, and prior patching. Any damaged decking at ${name} must be priced as a conditional line item in the estimate, not discovered mid-job when the crew is already on site.\n\n4. Document flashing condition at every penetration — chimney, skylights, and valleys are the #1 source of callbacks on completed ${trade} jobs. Note what needs replacing now so it's in the ${val} estimate, not an afterthought after approval.`,
+    inspection_scheduled: `1. Confirm the inspection appointment with ${contact} at ${name} — send a text with the date, time, and what you'll need access to (roof, attic, all sides). Cell service can be spotty in parts of Union and Snyder counties, so confirm by text, not just voicemail.\n\n2. Prep your inspection kit: drone (charged), ladder, measuring wheel, moisture meter, camera. Many valley homes have steep pitches (8/12+) and older slate or metal that require extra caution. Missing one tool on a ${val} job means a return trip.\n\n3. Check the 3-day forecast — central PA spring weather is unpredictable. Rain or 20+ mph winds mean a reschedule. Notify ${contact} early rather than canceling on arrival. Rescheduling proactively signals professionalism.\n\n4. Review the ${name} property on Google Maps satellite view — estimate total roof area, count slopes, and identify penetrations. Older valley homes often have multiple additions with complex tie-ins that aren't obvious from the street.`,
 
-    estimate: `1. Send the ${name} estimate within 24 hours of today's inspection — close rate drops sharply after 48 hours. The ${val} estimate should include materials, labor, disposal, and a conditional line item for deck repair with a per-sheet rate.\n\n2. Break the estimate into specific line items: shingles (brand and warranty tier), underlayment, ice & water shield, drip edge, flashing, ridge cap, tear-off, and disposal. ${contact} will compare your bid to others — being itemized makes your ${val} scope impossible to compare directly against a lump-sum competitor.\n\n3. Include your workmanship warranty terms explicitly in the estimate document. Most cheap ${trade} bids carry no written warranty. Putting yours in writing is a direct differentiator at the ${val} level and protects you in future disputes.\n\n4. Follow up with a call to ${contact} 48 hours after sending — don't wait for a response. Ask: "Did you have a chance to look over the line items? Any questions on the material spec?" The goal is a conversation that surfaces concerns, not a silent approval or no-show.`,
+    inspection_complete: `1. Upload all ${name} inspection photos within 24 hours using the Damage Documentation and Drone Shots categories — four sides from ground level, close-ups of each damage area, the ridge, both valleys, and all penetrations. ${contact} will use these to understand exactly what they're approving at the ${val} estimate.\n\n2. Measure the roof in sections: ridge length, each slope's dimensions, and pitch. Many valley homes have 8/12 to 12/12 pitches that significantly increase labor cost. Accurate square footage on a ${val} job prevents under-ordering from Boise Cascade or ABC Supply.\n\n3. Walk the attic if accessible — check for ice dam staining, moisture damage from freeze-thaw cycles, and prior patching with mismatched materials. Damaged decking at ${name} must be priced as a conditional line item, not discovered mid-job.\n\n4. Document flashing condition at every penetration — limestone chimneys common in the Susquehanna Valley are the #1 source of callbacks. Note what needs replacing now so it's in the ${val} estimate, not an afterthought after ${contact} has signed.`,
 
-    approved: `1. Order all materials for ${name} today — shingles, underlayment, drip edge, flashing, and ridge cap. Lock in pricing now. ${trade} supply pricing shifts and specific SKUs can slip if you wait until the week of the job.\n\n2. Assign the crew lead for ${name} and confirm their availability for the scheduled start date in writing. For a ${val} ${trade} job, a confirmed crew lead is not the same as a tentative one — get the name and start time committed before materials are delivered.\n\n3. Check permit requirements for the ${name} address — many jurisdictions require a permit for full ${trade} replacement. Pulling it now prevents the most common avoidable delay: a crew on site with no permit in hand.\n\n4. Confirm the payment schedule with ${contact} before day one: deposit amount, collection method, and balance due on completion. Get this in writing so there is no ambiguity at the ${val} final invoice.`,
+    estimate_sent: `1. The ${name} estimate should have gone out within 24 hours of inspection — close rate drops sharply after 48 hours, especially during spring storm season when competitors are knocking the same doors. The ${val} estimate should include materials, labor, disposal, and a conditional deck repair line item.\n\n2. Break the estimate into specific line items: shingles (GAF, CertainTeed, or Owens Corning — specify brand and warranty tier), underlayment, ice & water shield at eaves and valleys (PA code), drip edge, flashing, ridge cap, tear-off, and disposal. ${contact} will compare your bid — being itemized makes ${val} impossible to compare against a lump-sum competitor.\n\n3. Include your workmanship warranty terms in the estimate. Most storm chasers passing through the valley carry no written warranty. Putting yours in writing is the differentiator at the ${val} level — and protects you if Erie or State Farm questions workmanship later.\n\n4. Follow up with a call to ${contact} 48 hours after sending. For Mennonite or rural customers, a face-to-face visit often works better than phone or email. Ask: "Did you have a chance to look over the line items? Any questions on the material spec?"`,
 
-    in_progress: `1. Check in with the crew lead at ${name} at noon today — confirm progress against the daily plan, flag any material shortages, and get an updated completion estimate. Daily visibility on a ${val} ${trade} job prevents small delays from compounding into schedule problems.\n\n2. Take progress photos at each phase today: deck exposed, underlayment down, and shingles going on. These photos protect you on future warranty claims and give ${contact} confidence the ${val} job is moving as expected.\n\n3. If the crew finds soft or rotted decking at ${name} today, stop and call ${contact} before proceeding — show them a photo, explain the issue, and get written approval before adding scope. Never absorb deck repair on a ${val} job without documented customer sign-off.\n\n4. Confirm your debris disposal plan for end of day — dumpster location, magnet sweep route for nails, and where excess materials will be staged overnight. Nail injuries and neighbor complaints are the two most common issues on active ${trade} jobs.`,
+    contract_signed: `1. Collect the deposit from ${contact} for ${name} immediately — a signed contract without a deposit is just a letter of intent. Some rural valley customers prefer check or cash; confirm the method and amount before moving to material ordering on this ${val} job.\n\n2. Check township permit requirements for the ${name} address — rules vary across Union, Snyder, Northumberland, and Columbia counties. Some townships don't require permits for re-roofs, but pulling one anyway protects you on insurance work.\n\n3. Confirm material selections with ${contact}: shingle color and brand (GAF Timberline HDZ, CertainTeed Landmark, Owens Corning Duration), warranty tier, and any upgrades. Order from Boise Cascade Sunbury or ABC Supply now — popular colors like Charcoal and Weathered Wood can be 2-3 weeks out in peak season.\n\n4. Send ${contact} a written confirmation: start date, scope summary, payment schedule, and your cancellation/change-order policy. Note any Sunday work restrictions if the customer or neighbors have requested it.`,
 
-    completed: `1. Schedule the final walkthrough with ${contact} before requesting the balance on the ${name} job — walk the perimeter together, check the ridge line, and inspect all flashing points. A face-to-face final walkthrough closes the ${val} job cleanly and sets up the referral conversation naturally.\n\n2. Run a magnetic nail sweep around the full perimeter of the ${name} property before leaving — driveway, lawn, and sidewalk. One nail in a tire generates a callback that costs more in goodwill than the sweep takes in time.\n\n3. File the permit close-out inspection if required by your jurisdiction for the ${name} address. Some counties issue lien notices if the final inspection isn't filed within 30 days of completion — don't leave this open on a ${val} job.\n\n4. Ask ${contact} for a Google review and one referral within 48 hours of final sign-off. Say it directly: "If you're happy with the job, a Google review and one referral are the two best ways to help us grow — I'll send you the link right now." This is your highest-converting window on any completed job.`,
+    materials_ordered: `1. Order all materials for ${name} from Boise Cascade Sunbury or ABC Supply — shingles, underlayment, ice & water shield, drip edge, flashing, and ridge cap. Lock pricing now. Spring is peak season in the valley and popular colors go fast.\n\n2. Schedule delivery for the day before or morning of the install start date at ${name}. Verify the supplier has the correct address and driveway access — many rural properties in the valley have narrow lanes or gravel drives that limit truck size.\n\n3. Verify the order matches the ${val} estimate exactly: shingle count by color/type, underlayment rolls, ice & water shield for eaves and valleys (PA code), and ridge cap bundles. A shortage on day one costs a half-day of crew time.\n\n4. Confirm dumpster delivery and placement with ${contact}. Check if the township requires a road permit for dumpster placement — this varies across Union, Snyder, and Northumberland counties.`,
+
+    scheduled_for_install: `1. Assign the crew lead for ${name} and confirm their availability for the start date in writing. Spring is peak season in the Susquehanna Valley — every crew is booked. For a ${val} job, get the foreman's name and 7 AM start time committed.\n\n2. Send ${contact} a reminder with the start date, expected crew arrival time, and what to expect: noise starting early, driveway access for the dumpster, and approximate duration. Note any gravel drive or narrow lane access issues common on rural valley properties.\n\n3. Check the 5-day forecast one more time — PA spring storms can push a job mid-week. Shingles can't be installed below 40°F (GAF and CertainTeed both void warranties). Have a backup date ready and communicate it to ${contact} proactively.\n\n4. Verify the permit is in hand (if required by the township) and confirm all materials + dumpster are scheduled for delivery before the crew arrives at ${name}. Run through the Boise Cascade or ABC Supply order one final time.`,
+
+    in_progress: `1. Check in with the crew lead at ${name} at noon — confirm progress, flag any material shortages, and check the afternoon forecast. Summer thunderstorms in the valley can roll in fast. Daily visibility on a ${val} job prevents small delays from compounding.\n\n2. Take progress photos using the During Tear-off, Decking, and Underlayment categories — these protect you on warranty claims with GAF or CertainTeed, and give ${contact} confidence the ${val} job is moving as expected. Erie Insurance and State Farm both require documentation if this is a claim.\n\n3. If the crew finds rotted board decking or ice dam damage at ${name}, stop and call ${contact} before proceeding — show them a photo, explain the issue, and get written approval. Old valley homes often have 1x6 board decking that needs full OSB overlay. Never absorb deck repair on a ${val} job.\n\n4. Run a magnetic nail sweep at end of each day — especially critical on rural properties where ${contact}'s family mows the yard or kids play outside. Nail injuries and neighbor complaints are avoidable with a 10-minute sweep.`,
+
+    punch_list: `1. Walk the ${name} property with the crew lead — check ridge cap alignment, all flashing seals at limestone chimneys, drip edge continuity, and any visible nail pops. Every item gets a line item and a deadline. Callbacks cost 3x more than catching it now.\n\n2. Verify gutter reattachment and downspout alignment — these are the items ${contact} will notice first from the ground. A loose gutter on a ${val} job undermines the entire quality impression, especially if neighbors are watching (word travels fast in the valley).\n\n3. Run a full magnetic nail sweep — driveway, lawn, sidewalk, gravel areas, and flower beds. One nail in a tire generates a callback that costs more in goodwill than the sweep takes in time.\n\n4. Clear all debris, leftover shingle bundles, and protective tarps from the ${name} property. The site should look better than when you arrived. Take Final category photos before leaving — ${contact} is evaluating the whole experience.`,
+
+    completed: `1. Schedule the final walkthrough with ${contact} at ${name} — walk the perimeter together, check the ridge line, and inspect all flashing points. A face-to-face walkthrough closes the ${val} job cleanly and sets up the referral ask. Valley communities are tight-knit — this moment matters.\n\n2. File the permit close-out if required by the township. Some PA jurisdictions issue lien notices if the final isn't filed within 30 days — don't leave this open on a ${val} job, especially if it's insurance-funded.\n\n3. Take Final category photos and Drone Shots from all four sides. Valley homes with mountain backdrops make great portfolio content. These photos drive future sales more than any ad spend — Susquehanna Valley homeowners check local roofers' work online before calling.\n\n4. Ask ${contact} for a Google review and one referral within 48 hours. Say it directly: "If you're happy with the work, a Google review and one name are the best ways to help us." Word of mouth is everything in communities like Mifflinburg, Lewisburg, and Selinsgrove.`,
+
+    invoiced: `1. The final invoice for ${name} should have gone out within 24 hours of the walkthrough — delays signal disorganization and give ${contact} time to find objections to the ${val} balance.\n\n2. Include before/after photos and a warranty summary (GAF, CertainTeed, or Owens Corning registration details) with the invoice. Visual proof of the transformation reinforces value and reduces pushback.\n\n3. Set a 5-business-day follow-up reminder — if ${contact} hasn't paid, call directly. Don't rely on email for payment in rural PA. Some valley customers prefer to drop off a check or pay in person — accommodate that.\n\n4. If this is an insurance job, confirm the supplement has been filed and the adjuster (Erie, State Farm, Nationwide, or Allstate) has the final documentation including the permit close-out. Insurance delays are the #1 reason roofing invoices go past 30 days in the valley.`,
+
+    paid: `1. Record the payment from ${contact} for ${name} and close the job immediately — open jobs distort your pipeline and make your dispatch board look cluttered heading into the next season push.\n\n2. Mail or email the warranty certificate and manufacturer registration to ${contact}. For GAF Golden Pledge or CertainTeed SureStart Plus, the registration must be filed within 60 days. This protects you and the homeowner.\n\n3. Schedule a 6-month follow-up call with ${contact} to check on the ${name} roof after the first winter freeze-thaw cycle. Ask about ice dams, attic moisture, and any concerns. Then ask for referrals — a proactive check-in after a ${val} job converts past customers into your best lead source in the valley.\n\n4. Archive the ${name} job folder with all photos (Before through Final + Drone Shots), permits, signed contracts, and payment records. Clean documentation protects you on warranty claims for decades — and builds your portfolio for future bids across Union, Snyder, and Northumberland counties.`,
   };
 
   return responses[stage] || responses.lead;
@@ -1226,7 +1162,11 @@ function getStageAiDemo(lead) {
 
 // ─── Add / Edit Lead Modal ────────────────────────────────────────────────────
 const LEAD_SOURCES = ['Referral', 'Door knock', 'Online', 'Phone call', 'Repeat customer', 'Other'];
-const LEAD_STAGES = ['lead', 'inspection', 'estimate', 'approved', 'in_progress', 'completed'];
+const LEAD_STAGES = [
+  'lead', 'inspection_scheduled', 'inspection_complete', 'estimate_sent',
+  'contract_signed', 'materials_ordered', 'scheduled_for_install',
+  'in_progress', 'punch_list', 'completed', 'invoiced', 'paid',
+];
 
 const FI = { // form input base
   width: '100%', padding: '9px 12px', background: '#111823',
@@ -1251,7 +1191,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
     email: lead?.email || '',
     address: lead?.address || '',
     value: lead?.value ? String(lead.value) : '',
-    trade: lead?.trade || defaultTrade || 'Roofing',
+    trade: lead?.trade || defaultTrade || 'Full Replacement',
     stage: lead?.stage || 'lead',
     source: lead?.source || 'Referral',
     notes: lead?.notes || '',
@@ -1355,7 +1295,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
         </div>
 
         <label style={FLbl}>Job Address</label>
-        <input style={isMobile ? mobileInput : fi('address')} value={form.address} placeholder="1234 Oak St, Austin TX 78701"
+        <input style={isMobile ? mobileInput : fi('address')} value={form.address} placeholder="1234 Oak St, Mifflinburg PA 17844"
           onChange={e => set('address', e.target.value)}
           onFocus={() => setFocused('address')} onBlur={() => setFocused(null)} />
 
@@ -1376,7 +1316,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
 
         <div style={mRow}>
           <div>
-            <label style={FLbl}>Trade *</label>
+            <label style={FLbl}>Job Type *</label>
             <select style={isMobile ? { ...mobileInput, ...(errors.trade ? { border: '1px solid #ef4444' } : {}) } : fi('trade')} value={form.trade}
               onChange={e => set('trade', e.target.value)}
               onFocus={() => setFocused('trade')} onBlur={() => setFocused(null)}>
@@ -1673,12 +1613,20 @@ async function compressImage(file) {
   });
 }
 
+// ─── Photo Categories ────────────────────────────────────────────────────────
+const PHOTO_CATEGORIES = [
+  'Before', 'During Tear-off', 'Decking', 'Underlayment',
+  'Final', 'Damage Documentation', 'Drone Shots',
+];
+
 // ─── Job Photos Panel ─────────────────────────────────────────────────────────
 function JobPhotosPanel({ lead, onCountChange }) {
   const [photos, setPhotos] = useState([]);
   const [lightbox, setLightbox] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [caption, setCaption] = useState('');
+  const [photoCategory, setPhotoCategory] = useState('Before');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const isMobile = useMobile();
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
@@ -1707,6 +1655,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
           imageData,
           timestamp: Date.now(),
           caption: caption.trim(),
+          category: photoCategory,
           stage: lead.stage || 'lead',
           trade: lead.trade || '',
         });
@@ -1745,6 +1694,19 @@ function JobPhotosPanel({ lead, onCountChange }) {
           value={caption}
           onChange={e => setCaption(e.target.value)}
         />
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <select
+            style={{
+              flex: 1, padding: '8px 12px', background: '#111823',
+              border: '1px solid #164e63', borderRadius: 7, color: '#22d3ee',
+              fontSize: 13, outline: 'none', fontFamily: 'inherit', fontWeight: 600,
+            }}
+            value={photoCategory}
+            onChange={e => setPhotoCategory(e.target.value)}
+          >
+            {PHOTO_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
             ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
@@ -1759,7 +1721,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
             disabled={uploading}
             style={{
               flex: 1, padding: '10px 14px', borderRadius: 8,
-              background: '#f97316', border: 'none', color: '#fff',
+              background: '#06b6d4', border: 'none', color: '#fff',
               fontSize: 13, fontWeight: 700,
               cursor: uploading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1785,6 +1747,33 @@ function JobPhotosPanel({ lead, onCountChange }) {
         </div>
       </div>
 
+      {/* Category filter */}
+      {photos.length > 0 && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+          <button
+            onClick={() => setCategoryFilter('all')}
+            style={{
+              padding: '3px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+              border: categoryFilter === 'all' ? '1px solid #06b6d4' : '1px solid #1e2535',
+              background: categoryFilter === 'all' ? 'rgba(6,182,212,0.15)' : 'transparent',
+              color: categoryFilter === 'all' ? '#06b6d4' : '#94a3b8',
+            }}
+          >All</button>
+          {PHOTO_CATEGORIES.filter(c => photos.some(p => p.category === c)).map(c => (
+            <button
+              key={c}
+              onClick={() => setCategoryFilter(categoryFilter === c ? 'all' : c)}
+              style={{
+                padding: '3px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                border: categoryFilter === c ? '1px solid #06b6d4' : '1px solid #1e2535',
+                background: categoryFilter === c ? 'rgba(6,182,212,0.15)' : 'transparent',
+                color: categoryFilter === c ? '#06b6d4' : '#94a3b8',
+              }}
+            >{c}</button>
+          ))}
+        </div>
+      )}
+
       {/* Photo grid */}
       {photos.length === 0 ? (
         <div style={{
@@ -1801,7 +1790,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8 }}>
-          {photos.map(photo => (
+          {photos.filter(p => categoryFilter === 'all' || p.category === categoryFilter).map(photo => (
             <div
               key={photo.id}
               onClick={() => setLightbox(photo)}
@@ -1816,16 +1805,15 @@ function JobPhotosPanel({ lead, onCountChange }) {
                 alt={photo.caption || 'Job photo'}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
-              {photo.caption && (
-                <div style={{
-                  position: 'absolute', bottom: 0, left: 0, right: 0,
-                  background: 'rgba(0,0,0,0.65)', padding: '4px 7px',
-                  fontSize: 10, color: '#e2e8f0',
-                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                }}>
-                  {photo.caption}
-                </div>
-              )}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'rgba(0,0,0,0.65)', padding: '4px 7px',
+                fontSize: 10, color: '#e2e8f0',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                {photo.category && <span style={{ background: 'rgba(6,182,212,0.3)', color: '#22d3ee', padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>}
+                {photo.caption || ''}
+              </div>
             </div>
           ))}
         </div>
@@ -1851,14 +1839,23 @@ function JobPhotosPanel({ lead, onCountChange }) {
             marginTop: 12, display: 'flex', gap: 10, alignItems: 'center',
             flexWrap: 'wrap', justifyContent: 'center', maxWidth: 480,
           }}>
+            {lightbox.category && (
+              <span style={{
+                fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
+                background: 'rgba(6,182,212,0.15)', color: '#06b6d4',
+                border: '1px solid rgba(6,182,212,0.3)',
+              }}>
+                {lightbox.category}
+              </span>
+            )}
             {lightbox.caption && (
               <span style={{ fontSize: 13, color: '#e2e8f0' }}>{lightbox.caption}</span>
             )}
             <span style={{ fontSize: 11, color: '#64748b' }}>{formatTs(lightbox.timestamp)}</span>
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
-              background: 'rgba(249,115,22,0.15)', color: '#f97316',
-              border: '1px solid rgba(249,115,22,0.3)',
+              background: 'rgba(59,130,246,0.15)', color: '#3b82f6',
+              border: '1px solid rgba(59,130,246,0.3)',
             }}>
               {STAGE_LABELS[lightbox.stage] || lightbox.stage}
             </span>
@@ -2526,11 +2523,17 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
 
   const KANBAN_STAGES = [
     { key: 'lead', label: 'Lead' },
-    { key: 'inspection', label: 'Inspection' },
-    { key: 'estimate', label: 'Estimate' },
-    { key: 'approved', label: 'Approved' },
+    { key: 'inspection_scheduled', label: 'Insp Scheduled' },
+    { key: 'inspection_complete', label: 'Insp Complete' },
+    { key: 'estimate_sent', label: 'Estimate Sent' },
+    { key: 'contract_signed', label: 'Contract Signed' },
+    { key: 'materials_ordered', label: 'Materials Ordered' },
+    { key: 'scheduled_for_install', label: 'Sched for Install' },
     { key: 'in_progress', label: 'In Progress' },
+    { key: 'punch_list', label: 'Punch List' },
     { key: 'completed', label: 'Completed' },
+    { key: 'invoiced', label: 'Invoiced' },
+    { key: 'paid', label: 'Paid' },
   ];
 
   const today = new Date(TODAY);
@@ -2612,7 +2615,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
       {/* Search + trade filter */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
         <input
-          placeholder="Search client, address, trade..."
+          placeholder="Search client, address, job type..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{ ...FI, flex: '1 1 200px', padding: '8px 12px', fontSize: 13 }}
@@ -2622,7 +2625,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           onChange={e => setTradeFilter(e.target.value)}
           style={{ ...FI, flex: '0 0 auto', padding: '8px 12px', fontSize: 13 }}
         >
-          <option value="all">All Trades</option>
+          <option value="all">All Job Types</option>
           {TRADE_LIST.filter(t => leads.some(l => l.trade === t)).map(t => (
             <option key={t} value={t}>{t}</option>
           ))}
@@ -3024,7 +3027,7 @@ function AnalyticsTab({ leads, tier, rolePerms }) {
 
         {/* Trade distribution */}
         <div style={S.chartCard}>
-          <div style={S.chartTitle}>Pipeline by Trade</div>
+          <div style={S.chartTitle}>Pipeline by Job Type</div>
           {(() => {
             const tradeCounts = leads.reduce((acc, l) => {
               if (!['won', 'lost'].includes(l.status)) {
@@ -3173,243 +3176,19 @@ const CP_DEF_LABOR = [
 ];
 
 const CP_TRADE_TEMPLATES = {
-  'Roofing': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
-  'Landscaping': {
-    materials: [
-      { id: 'lsc_ms1', title: 'Soil & Ground Cover', items: [
-        { id: 'lsc_ma1', item: 'Topsoil', unit: 'CY' }, { id: 'lsc_ma2', item: 'Mulch', unit: 'CY' },
-        { id: 'lsc_ma3', item: 'Gravel/Stone', unit: 'TON' }, { id: 'lsc_ma4', item: 'River Rock', unit: 'TON' },
-        { id: 'lsc_ma5', item: 'Landscape Fabric', unit: 'ROLL' }, { id: 'lsc_ma6', item: 'Sod', unit: 'SF' },
-        { id: 'lsc_ma7', item: 'Seed Mix', unit: 'LB' }, { id: 'lsc_ma8', item: 'Fertilizer', unit: 'BAG' },
-      ]},
-      { id: 'lsc_ms2', title: 'Hardscape & Structure', items: [
-        { id: 'lsc_mb1', item: 'Pavers', unit: 'SF' }, { id: 'lsc_mb2', item: 'Edging', unit: 'LF' },
-        { id: 'lsc_mb3', item: 'Retaining Wall Block', unit: 'EA' }, { id: 'lsc_mb4', item: 'Timber/Landscape Ties', unit: 'EA' },
-        { id: 'lsc_mb5', item: 'Concrete Mix', unit: 'BAG' }, { id: 'lsc_mb6', item: 'Drainage Pipe', unit: 'LF' },
-      ]},
-      { id: 'lsc_ms3', title: 'Plants & Irrigation', items: [
-        { id: 'lsc_mc1', item: 'Plants/Shrubs', unit: 'EA' }, { id: 'lsc_mc2', item: 'Trees', unit: 'EA' },
-        { id: 'lsc_mc3', item: 'Flowers/Annuals', unit: 'FLAT' }, { id: 'lsc_mc4', item: 'Irrigation Pipe', unit: 'LF' },
-        { id: 'lsc_mc5', item: 'Sprinkler Heads', unit: 'EA' }, { id: 'lsc_mc6', item: 'Drip Line', unit: 'LF' },
-        { id: 'lsc_mc7', item: 'Outdoor Lighting', unit: 'EA' },
-      ]},
-    ],
-    labor: [{ id: 'lsc_ls1', title: 'Installation Labor', isWaste: false, items: [
-      { id: 'lsc_la1', label: 'Grading/Leveling', unit: 'HR' }, { id: 'lsc_la2', label: 'Sod Installation', unit: 'SF' },
-      { id: 'lsc_la3', label: 'Mulch Spreading', unit: 'CY' }, { id: 'lsc_la4', label: 'Paver Installation', unit: 'SF' },
-      { id: 'lsc_la5', label: 'Retaining Wall Build', unit: 'LF' }, { id: 'lsc_la6', label: 'Tree Planting', unit: 'EA' },
-      { id: 'lsc_la7', label: 'Shrub Planting', unit: 'EA' }, { id: 'lsc_la8', label: 'Irrigation Install', unit: 'LF' },
-      { id: 'lsc_la9', label: 'Drainage Install', unit: 'LF' }, { id: 'lsc_la10', label: 'Demolition/Removal', unit: 'HR' },
-      { id: 'lsc_la11', label: 'Hauling/Disposal', unit: 'LOAD' }, { id: 'lsc_la12', label: 'Design Consultation', unit: 'HR' },
-    ]}],
-  },
-  'Plumbing': {
-    materials: [
-      { id: 'plm_ms1', title: 'Pipes & Fittings', items: [
-        { id: 'plm_ma1', item: 'Copper Pipe', unit: 'LF' }, { id: 'plm_ma2', item: 'PVC Pipe', unit: 'LF' },
-        { id: 'plm_ma3', item: 'PEX Tubing', unit: 'LF' }, { id: 'plm_ma4', item: 'Fittings/Connectors', unit: 'EA' },
-        { id: 'plm_ma5', item: 'Shut-off Valves', unit: 'EA' }, { id: 'plm_ma6', item: 'Drain Line', unit: 'LF' },
-        { id: 'plm_ma7', item: 'Vent Pipe', unit: 'LF' }, { id: 'plm_ma8', item: 'Pipe Hangers', unit: 'EA' },
-        { id: 'plm_ma9', item: 'Teflon Tape', unit: 'ROLL' }, { id: 'plm_ma10', item: 'Solder/Flux', unit: 'EA' },
-        { id: 'plm_ma11', item: 'Silicone Sealant', unit: 'EA' },
-      ]},
-      { id: 'plm_ms2', title: 'Fixtures & Equipment', items: [
-        { id: 'plm_mb1', item: 'Water Heater', unit: 'EA' }, { id: 'plm_mb2', item: 'Faucet', unit: 'EA' },
-        { id: 'plm_mb3', item: 'Toilet', unit: 'EA' }, { id: 'plm_mb4', item: 'Sink', unit: 'EA' },
-        { id: 'plm_mb5', item: 'Garbage Disposal', unit: 'EA' }, { id: 'plm_mb6', item: 'Sump Pump', unit: 'EA' },
-      ]},
-    ],
-    labor: [{ id: 'plm_ls1', title: 'Plumbing Labor', isWaste: false, items: [
-      { id: 'plm_la1', label: 'Rough-In', unit: 'HR' }, { id: 'plm_la2', label: 'Fixture Install', unit: 'EA' },
-      { id: 'plm_la3', label: 'Water Heater Install', unit: 'EA' }, { id: 'plm_la4', label: 'Drain Cleaning', unit: 'HR' },
-      { id: 'plm_la5', label: 'Pipe Repair', unit: 'HR' }, { id: 'plm_la6', label: 'Re-pipe', unit: 'LF' },
-      { id: 'plm_la7', label: 'Gas Line', unit: 'LF' }, { id: 'plm_la8', label: 'Sewer Line', unit: 'LF' },
-      { id: 'plm_la9', label: 'Camera Inspection', unit: 'EA' }, { id: 'plm_la10', label: 'Permit Fees', unit: 'EA' },
-    ]}],
-  },
-  'Electrical': {
-    materials: [
-      { id: 'elc_ms1', title: 'Wire & Conduit', items: [
-        { id: 'elc_ma1', item: 'Romex 14/2', unit: 'FT' }, { id: 'elc_ma2', item: 'Romex 12/2', unit: 'FT' },
-        { id: 'elc_ma3', item: 'Romex 10/3', unit: 'FT' }, { id: 'elc_ma4', item: 'Conduit', unit: 'LF' },
-        { id: 'elc_ma5', item: 'Low Voltage Wire', unit: 'FT' }, { id: 'elc_ma6', item: 'Wire Nuts', unit: 'BOX' },
-      ]},
-      { id: 'elc_ms2', title: 'Devices & Fixtures', items: [
-        { id: 'elc_mb1', item: 'Outlets/Receptacles', unit: 'EA' }, { id: 'elc_mb2', item: 'Switches', unit: 'EA' },
-        { id: 'elc_mb3', item: 'GFCI Outlets', unit: 'EA' }, { id: 'elc_mb4', item: 'Breakers', unit: 'EA' },
-        { id: 'elc_mb5', item: 'Panel Box', unit: 'EA' }, { id: 'elc_mb6', item: 'Junction Box', unit: 'EA' },
-        { id: 'elc_mb7', item: 'Light Fixtures', unit: 'EA' }, { id: 'elc_mb8', item: 'Recessed Can', unit: 'EA' },
-        { id: 'elc_mb9', item: 'Ceiling Fan', unit: 'EA' }, { id: 'elc_mb10', item: 'Smoke Detector', unit: 'EA' },
-        { id: 'elc_mb11', item: 'Outdoor Fixture', unit: 'EA' },
-      ]},
-    ],
-    labor: [{ id: 'elc_ls1', title: 'Electrical Labor', isWaste: false, items: [
-      { id: 'elc_la1', label: 'Rough-In', unit: 'HR' }, { id: 'elc_la2', label: 'Panel Upgrade', unit: 'EA' },
-      { id: 'elc_la3', label: 'Circuit Install', unit: 'EA' }, { id: 'elc_la4', label: 'Fixture Install', unit: 'EA' },
-      { id: 'elc_la5', label: 'Outlet/Switch Install', unit: 'EA' }, { id: 'elc_la6', label: 'Ceiling Fan Install', unit: 'EA' },
-      { id: 'elc_la7', label: 'Troubleshooting', unit: 'HR' }, { id: 'elc_la8', label: 'Inspection Prep', unit: 'HR' },
-      { id: 'elc_la9', label: 'Generator Install', unit: 'EA' }, { id: 'elc_la10', label: 'EV Charger Install', unit: 'EA' },
-    ]}],
-  },
-  'HVAC': {
-    materials: [
-      { id: 'hvc_ms1', title: 'Ductwork & Distribution', items: [
-        { id: 'hvc_ma1', item: 'Ductwork', unit: 'LF' }, { id: 'hvc_ma2', item: 'Flex Duct', unit: 'LF' },
-        { id: 'hvc_ma3', item: 'Registers/Grilles', unit: 'EA' }, { id: 'hvc_ma4', item: 'Dampers', unit: 'EA' },
-        { id: 'hvc_ma5', item: 'Condensate Line', unit: 'LF' }, { id: 'hvc_ma6', item: 'Insulation Wrap', unit: 'ROLL' },
-        { id: 'hvc_ma7', item: 'Duct Tape/Mastic', unit: 'EA' }, { id: 'hvc_ma8', item: 'Filter', unit: 'EA' },
-      ]},
-      { id: 'hvc_ms2', title: 'Equipment', items: [
-        { id: 'hvc_mb1', item: 'AC Unit', unit: 'EA' }, { id: 'hvc_mb2', item: 'Furnace', unit: 'EA' },
-        { id: 'hvc_mb3', item: 'Heat Pump', unit: 'EA' }, { id: 'hvc_mb4', item: 'Mini Split', unit: 'EA' },
-        { id: 'hvc_mb5', item: 'Thermostat', unit: 'EA' }, { id: 'hvc_mb6', item: 'Refrigerant', unit: 'LB' },
-      ]},
-    ],
-    labor: [{ id: 'hvc_ls1', title: 'HVAC Labor', isWaste: false, items: [
-      { id: 'hvc_la1', label: 'System Install', unit: 'EA' }, { id: 'hvc_la2', label: 'Ductwork Install', unit: 'LF' },
-      { id: 'hvc_la3', label: 'Unit Replacement', unit: 'EA' }, { id: 'hvc_la4', label: 'Repair/Service', unit: 'HR' },
-      { id: 'hvc_la5', label: 'Maintenance/Tune-up', unit: 'EA' }, { id: 'hvc_la6', label: 'Thermostat Install', unit: 'EA' },
-      { id: 'hvc_la7', label: 'Mini Split Install', unit: 'EA' }, { id: 'hvc_la8', label: 'Duct Cleaning', unit: 'EA' },
-      { id: 'hvc_la9', label: 'Refrigerant Charge', unit: 'EA' },
-    ]}],
-  },
-  'Painting': {
-    materials: [
-      { id: 'pnt_ms1', title: 'Paint & Finish', items: [
-        { id: 'pnt_ma1', item: 'Interior Paint', unit: 'GAL' }, { id: 'pnt_ma2', item: 'Exterior Paint', unit: 'GAL' },
-        { id: 'pnt_ma3', item: 'Primer', unit: 'GAL' }, { id: 'pnt_ma4', item: 'Stain', unit: 'GAL' },
-        { id: 'pnt_ma5', item: 'Paint Thinner', unit: 'GAL' }, { id: 'pnt_ma6', item: 'Patching Compound', unit: 'EA' },
-        { id: 'pnt_ma7', item: 'Caulk', unit: 'EA' },
-      ]},
-      { id: 'pnt_ms2', title: 'Supplies', items: [
-        { id: 'pnt_mb1', item: "Painter's Tape", unit: 'ROLL' }, { id: 'pnt_mb2', item: 'Drop Cloths', unit: 'EA' },
-        { id: 'pnt_mb3', item: 'Rollers/Covers', unit: 'EA' }, { id: 'pnt_mb4', item: 'Brushes', unit: 'EA' },
-        { id: 'pnt_mb5', item: 'Sandpaper', unit: 'PK' },
-      ]},
-    ],
-    labor: [{ id: 'pnt_ls1', title: 'Painting Labor', isWaste: false, items: [
-      { id: 'pnt_la1', label: 'Interior Walls', unit: 'SF' }, { id: 'pnt_la2', label: 'Interior Trim', unit: 'LF' },
-      { id: 'pnt_la3', label: 'Exterior Walls', unit: 'SF' }, { id: 'pnt_la4', label: 'Exterior Trim', unit: 'LF' },
-      { id: 'pnt_la5', label: 'Ceiling', unit: 'SF' }, { id: 'pnt_la6', label: 'Cabinet Painting', unit: 'EA' },
-      { id: 'pnt_la7', label: 'Deck/Fence Staining', unit: 'SF' }, { id: 'pnt_la8', label: 'Pressure Wash', unit: 'SF' },
-      { id: 'pnt_la9', label: 'Prep/Scraping', unit: 'HR' }, { id: 'pnt_la10', label: 'Wallpaper Removal', unit: 'SF' },
-    ]}],
-  },
-  'Siding': {
-    materials: [
-      { id: 'sid_ms1', title: 'Siding Material', items: [
-        { id: 'sid_ma1', item: 'Vinyl Siding', unit: 'SQ' }, { id: 'sid_ma2', item: 'Fiber Cement Siding', unit: 'SQ' },
-        { id: 'sid_ma3', item: 'Wood Siding', unit: 'SQ' }, { id: 'sid_ma4', item: 'Metal Siding', unit: 'SQ' },
-        { id: 'sid_ma5', item: 'House Wrap', unit: 'ROLL' }, { id: 'sid_ma6', item: 'Flashing', unit: 'LF' },
-        { id: 'sid_ma7', item: 'Nails/Fasteners', unit: 'BOX' }, { id: 'sid_ma8', item: 'Caulk', unit: 'EA' },
-        { id: 'sid_ma9', item: 'Touch-up Paint', unit: 'EA' },
-      ]},
-      { id: 'sid_ms2', title: 'Trim & Accessories', items: [
-        { id: 'sid_mb1', item: 'J-Channel', unit: 'LF' }, { id: 'sid_mb2', item: 'Corner Posts', unit: 'EA' },
-        { id: 'sid_mb3', item: 'Starter Strip', unit: 'LF' }, { id: 'sid_mb4', item: 'Soffit', unit: 'LF' },
-        { id: 'sid_mb5', item: 'Fascia', unit: 'LF' },
-      ]},
-    ],
-    labor: [{ id: 'sid_ls1', title: 'Siding Labor', isWaste: false, items: [
-      { id: 'sid_la1', label: 'Siding Install', unit: 'SQ' }, { id: 'sid_la2', label: 'Tear-off Old Siding', unit: 'SQ' },
-      { id: 'sid_la3', label: 'Soffit Install', unit: 'LF' }, { id: 'sid_la4', label: 'Fascia Install', unit: 'LF' },
-      { id: 'sid_la5', label: 'Trim Work', unit: 'LF' }, { id: 'sid_la6', label: 'Window/Door Wrap', unit: 'EA' },
-      { id: 'sid_la7', label: 'Repair/Patch', unit: 'HR' },
-    ]}],
-  },
-  'Fencing': {
-    materials: [{ id: 'fnc_ms1', title: 'Fence Materials', items: [
-      { id: 'fnc_ma1', item: 'Wood Posts', unit: 'EA' }, { id: 'fnc_ma2', item: 'Metal Posts', unit: 'EA' },
-      { id: 'fnc_ma3', item: 'Rails', unit: 'EA' }, { id: 'fnc_ma4', item: 'Pickets/Boards', unit: 'EA' },
-      { id: 'fnc_ma5', item: 'Chain Link Fabric', unit: 'LF' }, { id: 'fnc_ma6', item: 'Vinyl Panels', unit: 'EA' },
-      { id: 'fnc_ma7', item: 'Gate', unit: 'EA' }, { id: 'fnc_ma8', item: 'Hardware/Hinges', unit: 'EA' },
-      { id: 'fnc_ma9', item: 'Concrete Mix', unit: 'BAG' }, { id: 'fnc_ma10', item: 'Post Caps', unit: 'EA' },
-      { id: 'fnc_ma11', item: 'Stain/Sealer', unit: 'GAL' }, { id: 'fnc_ma12', item: 'Screws/Nails', unit: 'BOX' },
-    ]}],
-    labor: [{ id: 'fnc_ls1', title: 'Fencing Labor', isWaste: false, items: [
-      { id: 'fnc_la1', label: 'Post Setting', unit: 'EA' }, { id: 'fnc_la2', label: 'Fence Install', unit: 'LF' },
-      { id: 'fnc_la3', label: 'Gate Install', unit: 'EA' }, { id: 'fnc_la4', label: 'Tear-out Old Fence', unit: 'LF' },
-      { id: 'fnc_la5', label: 'Staining/Sealing', unit: 'LF' }, { id: 'fnc_la6', label: 'Repair', unit: 'HR' },
-    ]}],
-  },
-  'General Construction': {
-    materials: [
-      { id: 'gnc_ms1', title: 'Framing & Structure', items: [
-        { id: 'gnc_ma1', item: 'Lumber 2x4', unit: 'FT' }, { id: 'gnc_ma2', item: 'Lumber 2x6', unit: 'FT' },
-        { id: 'gnc_ma3', item: 'Plywood', unit: 'PC' }, { id: 'gnc_ma4', item: 'OSB', unit: 'PC' },
-        { id: 'gnc_ma5', item: 'Concrete', unit: 'CY' }, { id: 'gnc_ma6', item: 'Rebar', unit: 'LF' },
-        { id: 'gnc_ma7', item: 'Insulation', unit: 'ROLL' }, { id: 'gnc_ma8', item: 'Vapor Barrier', unit: 'ROLL' },
-        { id: 'gnc_ma9', item: 'Flashing', unit: 'LF' },
-      ]},
-      { id: 'gnc_ms2', title: 'Finishing', items: [
-        { id: 'gnc_mb1', item: 'Drywall', unit: 'PC' }, { id: 'gnc_mb2', item: 'Joint Compound', unit: 'EA' },
-        { id: 'gnc_mb3', item: 'Screws', unit: 'BOX' }, { id: 'gnc_mb4', item: 'Nails', unit: 'BOX' },
-        { id: 'gnc_mb5', item: 'Hardware/Misc', unit: 'EA' },
-      ]},
-    ],
-    labor: [{ id: 'gnc_ls1', title: 'Construction Labor', isWaste: false, items: [
-      { id: 'gnc_la1', label: 'Framing', unit: 'HR' }, { id: 'gnc_la2', label: 'Drywall Hang', unit: 'SF' },
-      { id: 'gnc_la3', label: 'Drywall Finish', unit: 'SF' }, { id: 'gnc_la4', label: 'Concrete Work', unit: 'HR' },
-      { id: 'gnc_la5', label: 'Demolition', unit: 'HR' }, { id: 'gnc_la6', label: 'General Labor', unit: 'HR' },
-      { id: 'gnc_la7', label: 'Supervision', unit: 'HR' }, { id: 'gnc_la8', label: 'Cleanup', unit: 'HR' },
-    ]}],
-  },
-  'Flooring': {
-    materials: [
-      { id: 'flr_ms1', title: 'Flooring Material', items: [
-        { id: 'flr_ma1', item: 'Hardwood', unit: 'SF' }, { id: 'flr_ma2', item: 'Laminate', unit: 'SF' },
-        { id: 'flr_ma3', item: 'Vinyl Plank/LVP', unit: 'SF' }, { id: 'flr_ma4', item: 'Tile', unit: 'SF' },
-        { id: 'flr_ma5', item: 'Carpet', unit: 'SY' }, { id: 'flr_ma6', item: 'Underlayment', unit: 'ROLL' },
-      ]},
-      { id: 'flr_ms2', title: 'Installation Supplies', items: [
-        { id: 'flr_mb1', item: 'Thinset/Mortar', unit: 'BAG' }, { id: 'flr_mb2', item: 'Grout', unit: 'BAG' },
-        { id: 'flr_mb3', item: 'Baseboards', unit: 'LF' }, { id: 'flr_mb4', item: 'Transition Strips', unit: 'EA' },
-        { id: 'flr_mb5', item: 'Adhesive', unit: 'GAL' }, { id: 'flr_mb6', item: 'Spacers', unit: 'PK' },
-      ]},
-    ],
-    labor: [{ id: 'flr_ls1', title: 'Flooring Labor', isWaste: false, items: [
-      { id: 'flr_la1', label: 'Floor Install', unit: 'SF' }, { id: 'flr_la2', label: 'Tile Install', unit: 'SF' },
-      { id: 'flr_la3', label: 'Carpet Install', unit: 'SY' }, { id: 'flr_la4', label: 'Floor Removal', unit: 'SF' },
-      { id: 'flr_la5', label: 'Subfloor Repair', unit: 'SF' }, { id: 'flr_la6', label: 'Baseboard Install', unit: 'LF' },
-      { id: 'flr_la7', label: 'Floor Leveling', unit: 'SF' }, { id: 'flr_la8', label: 'Staining/Finishing', unit: 'SF' },
-    ]}],
-  },
-  'Windows & Doors': {
-    materials: [
-      { id: 'wnd_ms1', title: 'Windows & Doors', items: [
-        { id: 'wnd_ma1', item: 'Window', unit: 'EA' }, { id: 'wnd_ma2', item: 'Entry Door', unit: 'EA' },
-        { id: 'wnd_ma3', item: 'Interior Door', unit: 'EA' }, { id: 'wnd_ma4', item: 'Sliding Door', unit: 'EA' },
-        { id: 'wnd_ma5', item: 'Storm Door', unit: 'EA' }, { id: 'wnd_ma6', item: 'Hardware/Locks', unit: 'EA' },
-        { id: 'wnd_ma7', item: 'Weatherstripping', unit: 'LF' },
-      ]},
-      { id: 'wnd_ms2', title: 'Installation Supplies', items: [
-        { id: 'wnd_mb1', item: 'Trim/Casing', unit: 'LF' }, { id: 'wnd_mb2', item: 'Shims', unit: 'PK' },
-        { id: 'wnd_mb3', item: 'Spray Foam', unit: 'EA' }, { id: 'wnd_mb4', item: 'Flashing Tape', unit: 'ROLL' },
-      ]},
-    ],
-    labor: [{ id: 'wnd_ls1', title: 'Installation Labor', isWaste: false, items: [
-      { id: 'wnd_la1', label: 'Window Install', unit: 'EA' }, { id: 'wnd_la2', label: 'Window Removal', unit: 'EA' },
-      { id: 'wnd_la3', label: 'Door Install', unit: 'EA' }, { id: 'wnd_la4', label: 'Door Removal', unit: 'EA' },
-      { id: 'wnd_la5', label: 'Trim Install', unit: 'LF' }, { id: 'wnd_la6', label: 'Caulking/Sealing', unit: 'EA' },
-      { id: 'wnd_la7', label: 'Custom Framing', unit: 'HR' },
-    ]}],
-  },
-  'Default': {
-    materials: [{ id: 'def_ms1', title: 'Materials', items: [
-      { id: 'def_ma1', item: 'Material Item 1', unit: 'EA' },
-      { id: 'def_ma2', item: 'Material Item 2', unit: 'EA' },
-      { id: 'def_ma3', item: 'Material Item 3', unit: 'EA' },
-    ]}],
-    labor: [{ id: 'def_ls1', title: 'Labor', isWaste: false, items: [
-      { id: 'def_la1', label: 'Labor Item 1', unit: 'HR' },
-      { id: 'def_la2', label: 'Labor Item 2', unit: 'HR' },
-      { id: 'def_la3', label: 'Labor Item 3', unit: 'HR' },
-    ]}],
-  },
+  'Full Replacement': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Repair': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Inspection': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Storm Damage': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Gutter Install': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Skylight': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Flashing Repair': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Ventilation': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
+  'Emergency Tarp': { materials: CP_DEF_MATS, labor: CP_DEF_LABOR },
 };
 
 function cpNewMakeInit(job, crewNames) {
-  const tradeName = (job.trade && CP_TRADE_TEMPLATES[job.trade]) ? job.trade : 'Default';
+  const tradeName = (job.trade && CP_TRADE_TEMPLATES[job.trade]) ? job.trade : 'Full Replacement';
   const tpl = CP_TRADE_TEMPLATES[tradeName];
   return {
     jobInfo: {
@@ -3714,17 +3493,17 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
     const secHdr = (
       <div
         className="ri-sec-hdr"
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1c2640', borderLeft: '3px solid #f97316', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1c2640', borderLeft: '3px solid #14b8a6', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
         onClick={() => toggleMatSec(sec.id)}
       >
-        <span style={{ color: '#f97316', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
+        <span style={{ color: '#14b8a6', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
         <input
           value={sec.title}
           onChange={e => { e.stopPropagation(); updMatSecTitle(sec.id, e.target.value); }}
           onClick={e => e.stopPropagation()}
           style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
-        <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#f97316' : '#334155', flexShrink: 0 }}>
+        <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#14b8a6' : '#334155', flexShrink: 0 }}>
           {secTot > 0 ? fmtC(secTot) : '—'}
         </span>
       </div>
@@ -3818,10 +3597,10 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
     const labHdr = (
       <div
         className="ri-sec-hdr"
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a2038', borderLeft: '3px solid #6366f1', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a2038', borderLeft: '3px solid #0d9488', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
         onClick={() => toggleLaborSec(sec.id)}
       >
-        <span style={{ color: '#6366f1', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
+        <span style={{ color: '#0d9488', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
         <input
           value={sec.title}
           onChange={e => { e.stopPropagation(); updLaborSecTitle(sec.id, e.target.value); }}
@@ -3829,7 +3608,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
         {!sec.isWaste && seeRates && (
-          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#6366f1' : '#334155', flexShrink: 0 }}>
+          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#0d9488' : '#334155', flexShrink: 0 }}>
             {secTot > 0 ? fmtC(secTot) : '—'}
           </span>
         )}
@@ -4001,22 +3780,29 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       )}
 
       {/* Sub-tab navigation */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 16, overflowX: 'auto' }}>
-        {SUB_TABS.map(({ key, label }) => (
+      <div style={{ display: 'flex', background: '#131a2a', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, overflowX: 'auto', padding: '4px 4px 0' }}>
+        {SUB_TABS.map(({ key, label }) => {
+          const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
+          const isActive = subTab === key;
+          return (
           <button
             key={key}
+            className={isActive ? '' : 'ri-modal-tab'}
             onClick={() => setSubTab(key)}
             style={{
-              padding: '8px 14px', background: 'transparent', border: 'none',
-              borderBottom: `2px solid ${subTab === key ? '#f97316' : 'transparent'}`,
-              color: subTab === key ? '#f97316' : '#6b7f9a',
-              cursor: 'pointer', fontSize: 13, fontWeight: subTab === key ? 700 : 500,
-              marginBottom: -1, whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent',
+              padding: '9px 14px', border: 'none',
+              borderBottom: `2px solid ${isActive ? cmColor : 'transparent'}`,
+              background: isActive ? cmColor + '18' : 'transparent',
+              borderRadius: isActive ? '6px 6px 0 0' : 0,
+              color: isActive ? cmColor : '#cbd5e1',
+              cursor: 'pointer', fontSize: 13, fontWeight: isActive ? 700 : 600,
+              marginBottom: -2, whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent',
             }}
           >
             {label}
           </button>
-        ))}
+          );
+        })}
       </div>
 
       {/* ── Materials Tab ── */}
@@ -4035,7 +3821,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           {seeRates && (
           <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Materials Total</span>
-            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#f97316' }}>{fmtC(matTotal)}</span>
+            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#14b8a6' }}>{fmtC(matTotal)}</span>
           </div>
           )}
         </div>
@@ -4062,7 +3848,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           {seeRates && (
           <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Labor Total</span>
-            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmtC(laborTotal)}</span>
+            <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#0d9488' }}>{fmtC(laborTotal)}</span>
           </div>
           )}
         </div>
@@ -4075,8 +3861,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
             {[
-              { label: 'Materials', val: matTotal, color: '#f97316' },
-              { label: 'Labor', val: laborTotal, color: '#6366f1' },
+              { label: 'Materials', val: matTotal, color: '#14b8a6' },
+              { label: 'Labor', val: laborTotal, color: '#0d9488' },
             ].map(({ label, val, color }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
@@ -4174,7 +3960,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#6366f1' }}>Total Labor Pay</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 18, fontWeight: 700, color: '#6366f1' }}>{fmtC(laborTotal)}</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 18, fontWeight: 700, color: '#0d9488' }}>{fmtC(laborTotal)}</span>
             </div>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
@@ -4254,7 +4040,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const steps = (job.taskList && job.taskList.length ? job.taskList.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
-    || TRADE_CHECKLISTS['Roofing'];
+    || TRADE_CHECKLISTS['Full Replacement'];
   const tradeColor = TRADE_COLORS[job.trade] || '#f97316';
 
   const [checks, setChecks] = useState(() => {
@@ -4361,29 +4147,36 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
         </div>
 
         {/* Modal tab bar */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 20, overflowX: 'auto' }}>
+        <div style={{ display: 'flex', background: '#161b27', borderBottom: '2px solid #253048', borderRadius: '8px 8px 0 0', marginBottom: 20, overflowX: 'auto', padding: '4px 4px 0' }}>
           {[
             { key: 'checklist', label: 'Checklist' },
             { key: 'crew', label: 'Crew' },
             { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
             { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
             ...(rolePerms?.seeCostManager !== false ? [{ key: 'crewpay', label: hasCostMgr ? 'Cost Manager ●' : 'Cost Manager' }] : []),
-          ].map(({ key, label }) => (
+          ].map(({ key, label }) => {
+            const accent = SECTION_COLORS[key] || '#f97316';
+            const isActive = modalTab === key;
+            return (
             <button
               key={key}
+              className={isActive ? '' : 'ri-modal-tab'}
               onClick={() => setModalTab(key)}
               style={{
-                padding: '8px 14px', background: 'transparent', border: 'none',
-                borderBottom: `2px solid ${modalTab === key ? '#f97316' : 'transparent'}`,
-                color: modalTab === key ? '#f97316' : '#6b7f9a',
-                cursor: 'pointer', fontSize: 13, fontWeight: modalTab === key ? 700 : 500,
-                marginBottom: -1, whiteSpace: 'nowrap', flexShrink: 0,
+                padding: '9px 14px', border: 'none',
+                borderBottom: `2px solid ${isActive ? accent : 'transparent'}`,
+                background: isActive ? accent + '18' : 'transparent',
+                borderRadius: isActive ? '6px 6px 0 0' : 0,
+                color: isActive ? accent : '#cbd5e1',
+                cursor: 'pointer', fontSize: 13, fontWeight: isActive ? 700 : 600,
+                marginBottom: -2, whiteSpace: 'nowrap', flexShrink: 0,
                 WebkitTapHighlightColor: 'transparent',
               }}
             >
               {label}
             </button>
-          ))}
+            );
+          })}
         </div>
 
         {modalTab === 'checklist' && (
@@ -4396,7 +4189,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               {job.notes}
             </div>
 
-            <div style={S.sectionLabel}>{job.trade} Checklist</div>
+            <div style={S.sectionLabel}>{job.trade} Job Checklist</div>
             <div>
               {steps.map((step) => {
                 const c = checks[step.id];
@@ -4590,7 +4383,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           style={S.tradeFilterBtn(tradeFilter === 'all', '#f97316')}
           onClick={() => setTradeFilter('all')}
         >
-          All Trades
+          All Job Types
         </button>
         {TRADE_LIST.filter(t => jobs.some(j => j.trade === t)).map(t => (
           <button
@@ -4607,7 +4400,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
         {filtered.map(job => {
           const steps = TRADE_CHECKLISTS[job.trade]
             || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
-            || TRADE_CHECKLISTS['Roofing'];
+            || TRADE_CHECKLISTS['Full Replacement'];
           const doneCount = job.completedSteps.length;
           const total = steps.length;
           const pct = Math.round(doneCount / total * 100);
@@ -5007,14 +4800,14 @@ const PLANS = [
     id: 'starter',
     name: 'Starter',
     price: '$29',
-    features: ['Up to 25 active leads', '1 trade checklist', 'Job progress tracking', 'Basic analytics', 'Email support'],
+    features: ['Up to 25 active leads', 'Job checklists', 'Job progress tracking', 'Basic analytics', 'Email support'],
   },
   {
     id: 'pro',
     name: 'Pro',
     price: '$79',
     popular: true,
-    features: ['Unlimited leads', 'All 26 trades', 'AI coaching (Claude)', 'Advanced analytics', 'Callbacks & reminders', 'Priority support'],
+    features: ['Unlimited leads', 'All 9 job types', 'AI coaching (Claude)', 'Advanced analytics', 'Callbacks & reminders', 'Priority support'],
   },
   {
     id: 'business',
@@ -5034,7 +4827,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === 'demo@ridgeos.com' && password === 'demo123') {
-      onLogin({ isDemo: true, companyName: 'RidgeOS', userName: 'Demo User', trade: 'Roofing', plan: 'pro' });
+      onLogin({ isDemo: true, companyName: 'RidgeOS', userName: 'Demo User', trade: 'Full Replacement', plan: 'pro' });
     } else if (email && password) {
       setError('Incorrect email or password. Try demo@ridgeos.com / demo123');
     } else {
@@ -5149,14 +4942,14 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setCustomTradeError(data.error || "Couldn't generate that trade — try being more specific.");
+        setCustomTradeError(data.error || "Couldn't generate that job type — try being more specific.");
       } else {
         setCustomTradeConfig(data);
         set('trade', tradeName);
         setErrors({});
       }
     } catch {
-      setCustomTradeError("Couldn't generate that trade — try being more specific.");
+      setCustomTradeError("Couldn't generate that job type — try being more specific.");
     } finally {
       setCustomTradeLoading(false);
     }
@@ -5255,11 +5048,11 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
         {/* ── Step 2: Pick Trade ── */}
         {step === 2 && (
           <>
-            <div style={A.stepTitle}>What's your trade?</div>
+            <div style={A.stepTitle}>What type of roofing work do you do?</div>
             <div style={A.stepSub}>
               {errors.trade
-                ? <span style={{ color: '#ef4444' }}>Please select your trade to continue.</span>
-                : 'Select the trade you primarily work in.'}
+                ? <span style={{ color: '#ef4444' }}>Please select a job type to continue.</span>
+                : 'Select the job type you do most often.'}
             </div>
 
             <div style={A.tradeGrid}>
@@ -5286,7 +5079,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                   fontSize: 13, cursor: 'pointer', textAlign: 'center',
                 }}
               >
-                ✨ My trade isn't listed — generate it with AI
+                ✨ My job type isn't listed — generate it with AI
               </button>
             ) : (
               <div style={{
@@ -5294,13 +5087,13 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                 borderRadius: 8, padding: '14px', marginBottom: 16,
               }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 10 }}>
-                  ✨ Custom Trade Generator
+                  ✨ Custom Job Type Generator
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                   <input
                     value={customTradeInput}
                     onChange={e => { setCustomTradeInput(e.target.value); setCustomTradeError(''); }}
-                    placeholder="e.g. Tile Setter, Irrigation, Sign Hanging"
+                    placeholder="e.g. Metal Roofing, Slate Restoration, TPO Systems"
                     style={{
                       ...A.input, flex: 1, fontSize: 13, padding: '9px 12px',
                     }}
@@ -5327,7 +5120,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                 )}
                 {customTradeConfig && (
                   <div style={{ fontSize: 11, color: '#22c55e', marginBottom: 6 }}>
-                    ✓ Trade "{form.trade}" generated — {customTradeConfig.checklist.length} checklist steps, {customTradeConfig.pipeline.length} pipeline stages
+                    ✓ Job type "{form.trade}" generated — {customTradeConfig.checklist.length} checklist steps, {customTradeConfig.pipeline.length} pipeline stages
                   </div>
                 )}
               </div>
@@ -5403,14 +5196,9 @@ function EmptyState({ icon, title, sub, btnLabel, onAction }) {
 
 // ─── Demo Page ────────────────────────────────────────────────────────────────
 const TRADE_ICONS = {
-  'Roofing': '🏠', 'Gutters': '🌧', 'Siding': '🏗', 'Windows': '🪟',
-  'Excavation': '🚜', 'General Construction': '🏢', 'HVAC': '❄️', 'Plumbing': '🔧',
-  'Welding': '⚙️', 'Electrical': '🔌', 'Masonry': '🧱', 'Painting': '🎨',
-  'Flooring': '🪵', 'Insulation': '🛡', 'Drywall': '🔨', 'Landscaping': '🌿',
-  'Concrete': '🏛', 'Fencing': '🚧', 'Carpentry': '🪚', 'Waterproofing': '💧',
-  'Solar': '☀️', 'Garage Doors': '🚪', 'Demolition': '💥', 'Septic': '⚗️',
-  'Tree Service': '🌳', 'Pressure Washing': '💦',
-  'Seal Coating': '🛣️', 'Real Estate': '🏡',
+  'Full Replacement': '🏠', 'Repair': '🔧', 'Inspection': '🔍',
+  'Storm Damage': '⛈️', 'Gutter Install': '🌧', 'Skylight': '☀️',
+  'Flashing Repair': '🛡', 'Ventilation': '💨', 'Emergency Tarp': '🚨',
 };
 
 // compact lead builder
@@ -5425,539 +5213,172 @@ const dj = (id, customer, address, trade, value, status, scheduledDate, complete
 });
 
 const TRADE_DEMO_DATA = {
-  'Roofing': {
+  'Full Replacement': {
     leads: [
-      dl(1,'Hargrove Residence','Frank Hargrove','Homeowner','active',18400,'estimate','2026-03-25',null,'GAF Timberline HDZ preferred. Wants 50yr warranty. Demo well received.','Residential',12,'Roofing'),
-      dl(2,'Westside Church of God','Pastor James Willis','Facilities Coord','stalled',34700,'approved','2026-03-23','budget_freeze','Commercial flat roof, 11,000 sq ft. Full board approval needed.','Institutional',41,'Roofing'),
-      dl(3,'Sunridge HOA Phase II','Linda Marsh','HOA President','active',52000,'inspection','2026-03-27',null,'28 townhome units. Insurance claim approved. Scheduling crew now.','HOA',8,'Roofing'),
-      dl(4,'Kowalski Residence','Brian Kowalski','Homeowner','stalled',11200,'estimate','2026-03-19','no_response','3 calls, 2 emails. Visible hail damage. Try door knock.','Residential',29,'Roofing'),
-      dl(5,'Clearbrook Office Plaza','Diane Okafor','Property Manager','active',41500,'approved','2026-03-26',null,'TPO membrane, 14,000 sq ft. Contract review underway.','Commercial',19,'Roofing'),
-      dl(6,'Torres Residence','Miguel Torres','Homeowner','stalled',9800,'estimate','2026-03-22','price_objection','Got a bid $2k lower. Need to justify value difference.','Residential',33,'Roofing'),
-      dl(7,'Lakewood Elementary','Tom Hensley','Facilities Director','cold',78000,'lead','2026-04-15','timing','Large job. School board vote in April. Stay warm.','Institutional',53,'Roofing'),
-      dl(8,'Patel Residence','Raj Patel','Homeowner','won',14600,'completed',null,null,'Closed! CertainTeed Landmark Pro. Crew starts 3/26.','Residential',24,'Roofing'),
-      dl(9,'Morrison Auto Group','Steve Morrison','Owner','stalled',27300,'approved','2026-03-24','competitor','Getting 3 bids. Push warranty + crew experience.','Commercial',37,'Roofing'),
-      dl(10,'Riverside Church','Pastor Rick Adams','Admin Director','lost',23400,'lost',null,'competitor','Lost to church-network contractor.','Institutional',61,'Roofing'),
+      dl(1,'Shumaker Residence','Dave Shumaker','Homeowner','active',14800,'estimate_sent','2026-03-25',null,'28 sq, 7/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off over plywood. Wants 50yr warranty.','Residential',12,'Full Replacement'),
+      dl(2,'Bethany Village Retirement','Carol Snyder','Facilities Dir','stalled',34700,'contract_signed','2026-03-23','budget_freeze','Flat roof, 110 sq TPO on main building. Full board approval needed. 2 HVAC curbs to reflash.','Institutional',41,'Full Replacement'),
+      dl(3,'Riverwoods HOA Phase II','Susan Yoder','HOA President','active',52000,'inspection_scheduled','2026-03-27',null,'28 townhome units, 240 sq total. Phased replacement. Architectural shingles. Ice & water at eaves.','HOA',8,'Full Replacement'),
+      dl(4,'Kowalski Residence','Brian Kowalski','Homeowner','stalled',11200,'estimate_sent','2026-03-19','no_response','22 sq, 6/12 pitch. Visible wind damage on north slope. 3 calls, 2 emails. Try door knock.','Residential',29,'Full Replacement'),
+      dl(5,'Monroe Twp Municipal Bldg','Diane Okafor','Facilities Mgr','active',41500,'contract_signed','2026-03-26',null,'TPO membrane, 140 sq. Contract under review with township solicitor.','Commercial',19,'Full Replacement'),
+      dl(6,'Deimler Residence','Scott Deimler','Homeowner','stalled',42000,'estimate_sent','2026-03-22','price_objection','48 sq standing seam metal, 10/12 pitch. Got bid $4k lower from Lancaster crew.','Residential',33,'Full Replacement'),
+      dl(7,'Milton Area School Dist','Tom Hensley','Facilities Dir','cold',78000,'lead','2026-04-15','timing','Large job — 320 sq across gym + cafeteria. School board vote in April.','Institutional',53,'Full Replacement'),
+      dl(8,'Metzger Residence','Raj Metzger','Homeowner','won',14600,'paid',null,null,'Closed! CertainTeed Landmark Pro, 26 sq. 8/12 pitch. 1 layer over OSB.','Residential',24,'Full Replacement'),
+      dl(9,'Klinger Trucking','Jim Klinger','Owner','stalled',27300,'contract_signed','2026-03-24','competitor','Standing seam metal on 3-bay shop, 34 sq. Getting 3 bids from valley roofers.','Commercial',37,'Full Replacement'),
+      dl(10,'First Baptist Sunbury','Pastor Rick Adams','Admin Dir','lost',23400,'lost',null,'competitor','Lost to contractor from Williamsport area.','Institutional',61,'Full Replacement'),
     ],
     jobs: [
-      dj(1,'Frank & Linda Hargrove','2847 Maplewood Dr, Austin TX 78745','Roofing',18400,'In Progress','2026-03-20',[1,2,3,4,5],'GAF Timberline HDZ. Tear-off done. New roof going on today.'),
-      dj(2,'Raj & Priya Patel','1108 Cedar Ridge Ln, Austin TX 78731','Roofing',14600,'Scheduled','2026-03-26',[1,2],'CertainTeed Landmark Pro. Materials on site.'),
-      dj(3,'Sunridge HOA Block A','3300 Sunridge Pkwy, San Antonio TX 78230','Roofing',24500,'Complete','2026-03-12',[1,2,3,4,5,6,7,8,9],'12 units Phase I. Signed off and paid.'),
-      dj(4,'Clearbrook Office Plaza','501 Commerce Dr, Dallas TX 75201','Roofing',41500,'In Progress','2026-03-18',[1,2,3],'TPO membrane, 14,000 sq ft. Underlayment next.'),
-      dj(5,'Morrison Auto Group','7700 Auto Row Blvd, Plano TX 75093','Roofing',27300,'Scheduled','2026-04-02',[1],'3-bay commercial metal roof. Crew set for post-Easter.'),
+      dj(1,'Dave & Lisa Shumaker','142 Chestnut St, Mifflinburg PA 17844','Full Replacement',14800,'In Progress','2026-03-20',[1,2,3,4,5,6,7,8],'GAF Timberline HDZ Charcoal. Tear-off done, shingles going on.'),
+      dj(2,'Raj & Nina Metzger','1108 Buffalo Rd, Lewisburg PA 17837','Full Replacement',14600,'Scheduled','2026-03-26',[1,2],'CertainTeed Landmark Pro. Materials at Boise Cascade Sunbury.'),
+      dj(3,'Riverwoods HOA Block A','200 Riverwoods Dr, Lewisburg PA 17837','Full Replacement',24500,'Complete','2026-03-12',[1,2,3,4,5,6,7,8,9,10,11,12,13,14],'12 units Phase I. Signed off and paid.'),
+      dj(4,'Monroe Twp Municipal','88 W Main St, Selinsgrove PA 17870','Full Replacement',41500,'In Progress','2026-03-18',[1,2,3],'TPO membrane, 140 sq. Underlayment next.'),
+      dj(5,'Klinger Trucking Shop','1100 Industrial Park Rd, Milton PA 17847','Full Replacement',27300,'Scheduled','2026-04-02',[1],'Standing seam metal, 3-bay shop. Crew set for 4/2.'),
     ],
   },
-  'Gutters': {
+  'Repair': {
     leads: [
-      dl(1,'Whitfield Residence','Carol Whitfield','Homeowner','active',3200,'estimate','2026-03-25',null,'K-style aluminum, 180 linear ft. Wants leaf guards too.','Residential',7,'Gutters'),
-      dl(2,'Maple Creek HOA','Dan Sorenson','HOA Manager','active',8400,'inspection','2026-03-27',null,'14 units, all need gutter replacement. New construction.','HOA',11,'Gutters'),
-      dl(3,'Brennan Residence','Pat Brennan','Homeowner','stalled',2600,'estimate','2026-03-20','price_objection','Competitor quoted $400 less. Explain quality difference.','Residential',22,'Gutters'),
-      dl(4,'Valley Office Park','Greg Nguyen','Property Manager','active',5800,'approved','2026-03-26',null,'48-unit commercial building. Half-round copper on historic facade.','Commercial',16,'Gutters'),
-      dl(5,'Kim Residence','Susan Kim','Homeowner','stalled',1900,'lead','2026-03-19','no_response','Called twice. Storm damage visible in photos she sent.','Residential',18,'Gutters'),
-      dl(6,'Riverside Apartments','Josh Tanner','Maintenance Dir','cold',12000,'lead','2026-04-10','timing','HOA budget not approved until April meeting.','Commercial',34,'Gutters'),
-      dl(7,'Okafor Residence','Emeka Okafor','Homeowner','won',3800,'completed',null,null,'Closed! Seamless aluminum + guards. Job next week.','Residential',14,'Gutters'),
-      dl(8,'Lakeview Church','Deacon Willis','Facilities','stalled',4400,'estimate','2026-03-22','budget_freeze','Waiting on spring maintenance budget release.','Institutional',28,'Gutters'),
-      dl(9,'Parks Residence','Tom Parks','Homeowner','lost',2200,'lost',null,'competitor','DIY job. Bought gutters at hardware store.','Residential',31,'Gutters'),
+      dl(1,'Northumberland Apts Bldg C','Rick Hess','Building Mgr','stalled',4200,'estimate_sent','2026-03-25',null,'Valley flashing failed. Active leak. 3-tab match, 6/12 pitch. Decking stained.','Commercial',41,'Repair'),
+      dl(2,'Packwood House Museum','Patricia Landis','Facilities Mgr','active',6400,'estimate_sent','2026-03-27',null,'Slate roof — 8 cracked tiles + ridge mortar. Must match PA slate. 12/12 pitch.','Commercial',20,'Repair'),
+      dl(3,'Sheetz #412','Brian Lehr','Facilities Coord','active',3800,'inspection_scheduled','2026-03-26',null,'Wind-damaged 3-tab on flat canopy + 2 pipe boots need reseal. Selinsgrove.','Commercial',12,'Repair'),
+      dl(4,'Fischer Residence','Jack Fischer','Homeowner','stalled',2400,'estimate_sent','2026-03-20','price_objection','5 missing shingles from wind on north slope. Homeowner thinks $1,800 is fair. Danville.','Residential',22,'Repair'),
+      dl(5,'Valley Fitness','Marcus Stover','Owner','active',5200,'contract_signed','2026-03-26',null,'Ponding water on flat section. TPO seam repair + drain install near HVAC curb.','Commercial',16,'Repair'),
+      dl(6,'Chen Residence','Linda Chen','Homeowner','stalled',1800,'estimate_sent','2026-03-22','budget_freeze','Ridge cap blown off in March wind. Waiting on tax return. Watsontown.','Residential',28,'Repair'),
+      dl(7,'Buffalo Valley Clubhouse','Dan Marsh','HOA Mgr','cold',3400,'lead','2026-04-10','timing','Soffit damage + fascia rot at 2 corners. Spring maintenance budget.','HOA',34,'Repair'),
+      dl(8,'Porter Residence','Amy Porter','Homeowner','won',2800,'paid',null,null,'Closed! Patched 3 sq wind damage + resealed all boots. Milton.','Residential',14,'Repair'),
+      dl(9,'Country Diner','Roy Burns','Owner','lost',4100,'lost',null,'competitor','Lost — handyman patched it for half price. Middleburg.','Commercial',35,'Repair'),
     ],
     jobs: [
-      dj(1,'Carol & Mike Whitfield','412 Pinecrest Dr, Frisco TX 75034','Gutters',3200,'In Progress','2026-03-21',[1,2,3,4],'K-style aluminum. Old gutters off, new going up today.'),
-      dj(2,'Emeka Okafor','2204 Birchwood Ct, Plano TX 75025','Gutters',3800,'Scheduled','2026-03-28',[1,2],'Seamless aluminum + leaf guards. Materials ordered.'),
-      dj(3,'Maple Creek HOA — Phase 1','800 Maple Creek Blvd, McKinney TX 75070','Gutters',8400,'In Progress','2026-03-17',[1,2,3,4,5,6],'7 of 14 units complete. Second half starting Thursday.'),
-      dj(4,'Valley Office Park','3300 Commerce Pkwy, Irving TX 75038','Gutters',5800,'Complete','2026-03-10',[1,2,3,4,5,6,7,8,9],'Half-round copper. Fully installed, sealed, and paid.'),
+      dj(1,'Packwood House Museum','15 N Water St, Lewisburg PA 17837','Repair',6400,'In Progress','2026-03-21',[1,2,3,4],'Slate tile replacement. 5 of 8 tiles done. Matching PA slate.'),
+      dj(2,'Amy Porter','610 Front St, Milton PA 17847','Repair',2800,'Complete','2026-03-19',[1,2,3,4,5,6,7,8,9,10],'3 sq wind patch + boot reseal. Done and paid.'),
+      dj(3,'Valley Fitness','1420 N Susquehanna Trail, Selinsgrove PA 17870','Repair',5200,'Scheduled','2026-04-02',[1,2],'TPO seam repair + new drain. Materials ordered.'),
+      dj(4,'Northumberland Apts Bldg C','350 Front St, Northumberland PA 17857','Repair',4200,'In Progress','2026-03-18',[1,2,3,4,5],'Valley flashing replaced. Shingle match in progress.'),
     ],
   },
-  'Siding': {
+  'Inspection': {
     leads: [
-      dl(1,'Henderson Residence','Bill Henderson','Homeowner','active',22400,'estimate','2026-03-25',null,'Hardie plank, full exterior. Storm damage on south wall.','Residential',14,'Siding'),
-      dl(2,'Northgate Condo Assoc','Rhonda Bass','HOA Director','stalled',68000,'approved','2026-03-23','budget_freeze','32-unit complex. Board vote needed. Big job.','HOA',45,'Siding'),
-      dl(3,'Garcia Residence','Maria Garcia','Homeowner','active',16800,'inspection','2026-03-27',null,'Vinyl siding replacement. Interested in insulated option.','Residential',9,'Siding'),
-      dl(4,'Crossroads Medical Bldg','Don Frazier','Facilities Dir','stalled',41200,'estimate','2026-03-20','no_response','Submitted quote 3 weeks ago. Follow up with FM.','Commercial',36,'Siding'),
-      dl(5,'Yamamoto Residence','Ken Yamamoto','Homeowner','stalled',19500,'estimate','2026-03-22','price_objection','Competitor at $3k less. Emphasize warranty & install quality.','Residential',28,'Siding'),
-      dl(6,'Westbrook Townhomes','Chad Miller','Property Manager','cold',54000,'lead','2026-04-08','timing','20 units, exterior update deferred to Q3.','Commercial',41,'Siding'),
-      dl(7,'Pham Residence','Linda Pham','Homeowner','won',14900,'completed',null,null,'Closed! Hardie plank, Arctic White. Crew 3/30.','Residential',18,'Siding'),
-      dl(8,'Sunrise Retail Strip','Art Delgado','Owner','stalled',31000,'approved','2026-03-24','competitor','3rd bid in. Our price is highest — push warranty story.','Commercial',39,'Siding'),
-      dl(9,'Cooper Residence','James Cooper','Homeowner','lost',18200,'lost',null,'competitor','Lost on price. Went with lower bid.','Residential',52,'Siding'),
+      dl(1,'Danville Heritage Villas','Dave Moyer','Board President','cold',1800,'lead','2026-04-10',null,'15-building annual roof inspection. Roofs are 18+ years. Could lead to phased replacement.','HOA',71,'Inspection'),
+      dl(2,'Milton Area School Dist','Carl Beck','Facilities Dir','active',2200,'inspection_scheduled','2026-03-27',null,'Annual condition report for 4 campus buildings. Insurance requirement.','Institutional',14,'Inspection'),
+      dl(3,'Sunbury Apartments','Donna Kwan','Property Mgr','active',3400,'estimate_sent','2026-03-25',null,'32-unit complex pre-purchase inspection for new buyer.','Commercial',9,'Inspection'),
+      dl(4,'Rossmoyne Business Park','Carl Stein','Developer','stalled',4800,'estimate_sent','2026-03-20','no_response','5-building portfolio inspection in Shamokin Dam. Due diligence for refinance.','Commercial',28,'Inspection'),
+      dl(5,'Dreisbach Church','Deacon Paul Smith','Admin','stalled',1400,'estimate_sent','2026-03-22','budget_freeze','Annual roof check on sanctuary + fellowship hall. Budget frozen.','Institutional',33,'Inspection'),
+      dl(6,'Evangelical Community Hospital','Greg Stauffer','Facilities Mgr','active',6200,'contract_signed','2026-03-26',null,'Outpatient wing warranty inspection — 1-year mark. Lewisburg.','Institutional',12,'Inspection'),
+      dl(7,'Susquehanna Industrial Park','Nick Etter','GM','won',1600,'paid',null,null,'Closed! 3-building annual inspection. Report delivered. Northumberland.','Commercial',18,'Inspection'),
+      dl(8,'Bloomsburg School Dist','Stan Wells','Facilities Dir','cold',5400,'lead','2026-04-15','timing','4 campus buildings. Budget not released until May.','Institutional',44,'Inspection'),
+      dl(9,'Comfort Inn Selinsgrove','Lisa Cole','GM','lost',2800,'lost',null,'competitor','Lost to existing maintenance contractor from Williamsport.','Commercial',52,'Inspection'),
     ],
     jobs: [
-      dj(1,'Bill & Cheryl Henderson','4418 Ridgeway Dr, Garland TX 75040','Siding',22400,'In Progress','2026-03-19',[1,2,3,4],'Hardie plank, south wall complete. Wrapping remaining 3 sides.'),
-      dj(2,'Linda Pham','918 Elmwood Ave, Dallas TX 75208','Siding',14900,'Scheduled','2026-03-30',[1,2],'Materials ordered. Arctic White Hardie plank on site.'),
-      dj(3,'Northgate Condo — Bldg A','200 Northgate Blvd, Lewisville TX 75067','Siding',68000,'In Progress','2026-03-14',[1,2,3,4,5],'8 of 32 units done. On schedule for 3-week completion.'),
-      dj(4,'Garcia Residence','3310 Sunflower Ln, Mesquite TX 75150','Siding',16800,'Scheduled','2026-04-05',[1,2,3],'Insulated vinyl. Old siding removal scheduled 4/5.'),
+      dj(1,'Susquehanna Industrial Park','825 Point Township Dr, Northumberland PA 17857','Inspection',1600,'Complete','2026-03-15',[1,2,3,4,5,6,7,8,9],'3-building inspection complete. Report delivered.'),
+      dj(2,'Milton Area School Dist','700 Mahoning St, Milton PA 17847','Inspection',2200,'Scheduled','2026-03-27',[1],'4 campus buildings. Drone + ladder access confirmed.'),
+      dj(3,'Evangelical Hospital — Warranty','1 Hospital Dr, Lewisburg PA 17837','Inspection',6200,'In Progress','2026-03-22',[1,2,3,4,5],'Outpatient wing. 60% inspected.'),
     ],
   },
-  'Windows': {
+  'Storm Damage': {
     leads: [
-      dl(1,'Martinez Residence','Rosa Martinez','Homeowner','active',18700,'inspection','2026-03-25',null,'12 windows, Anderson 400 series. Energy upgrade.','Residential',9,'Windows'),
-      dl(2,'Lakeview Office Tower','Diana Chu','Property Manager','stalled',94000,'approved','2026-03-23','budget_freeze','Floor 4-6 full replacement. Q2 budget approval needed.','Commercial',52,'Windows'),
-      dl(3,'Nelson Residence','Greg Nelson','Homeowner','active',11400,'estimate','2026-03-27',null,'8 double-hungs + 2 picture windows. Storm damage claim.','Residential',13,'Windows'),
-      dl(4,'Westside School District','Carl Jennings','Facilities Dir','stalled',128000,'estimate','2026-03-20','timing','3 school buildings. Bond measure vote in May.','Institutional',61,'Windows'),
-      dl(5,'Osei Residence','Kwame Osei','Homeowner','stalled',14200,'estimate','2026-03-22','price_objection','Wants Pella but balking at price. Show lifetime value.','Residential',24,'Windows'),
-      dl(6,'Ridgecrest Apartments','Tony Daves','Property Manager','cold',42000,'lead','2026-04-12','timing','28 units, window upgrade. Wait for lease renewals.','Commercial',38,'Windows'),
-      dl(7,'Flynn Residence','Kate Flynn','Homeowner','won',9800,'completed',null,null,'Closed! 6 casements. Crew scheduled 4/1.','Residential',17,'Windows'),
-      dl(8,'Horizon Hotel','Mark Steele','GM','stalled',76000,'approved','2026-03-24','competitor','3 bids in. Push the thermal performance data.','Commercial',44,'Windows'),
-      dl(9,'Thomas Residence','Ben Thomas','Homeowner','lost',13500,'lost',null,'competitor','Went with big box store installer.','Residential',40,'Windows'),
+      dl(1,'Bowman Family','Tina Bowman','Homeowner','active',18700,'inspection_scheduled','2026-03-23',null,'Wind damage from 3/15 storm. Erie Insurance claim filed. 24 sq, 6/12 pitch. Lewisburg.','Residential',9,'Storm Damage'),
+      dl(2,'Shamokin Creek Condos','Bob Reider','Board Treasurer','stalled',47500,'estimate_sent','2026-03-24','wrong_contact','6 buildings, wind + ice dam damage. Nationwide adjusting. Need full board.','HOA',62,'Storm Damage'),
+      dl(3,'Christ Lutheran Mifflinburg','Pastor Ed Zimmerman','Facilities Coord','won',9400,'paid',null,null,'Closed! Wind damage — ridge cap + 3 sq on sanctuary. Nationwide covered.','Institutional',55,'Storm Damage'),
+      dl(4,'Nelson Residence','Greg Nelson','Homeowner','active',11400,'estimate_sent','2026-03-27',null,'Wind lifted 6 sq architectural on south slope. Decking exposed. State Farm filed. Bloomsburg.','Residential',13,'Storm Damage'),
+      dl(5,'Sunbury Housing Authority','Chad Miller','Property Mgr','stalled',54000,'contract_signed','2026-03-23','budget_freeze','20 units, wind damage. Insurance approved but deductible dispute.','Institutional',41,'Storm Damage'),
+      dl(6,'Osei Residence','Kwame Osei','Homeowner','active',14200,'inspection_scheduled','2026-03-26',null,'Tree limb punched through roof during ice storm. Tarped. Adjuster scheduled. Williamsport.','Residential',8,'Storm Damage'),
+      dl(7,'Danville Fire Station','Chief Pat Moore','Borough Admin','cold',31000,'lead','2026-05-01','timing','Wind damage to 2 apparatus bays. Borough insurance process is slow.','Institutional',71,'Storm Damage'),
+      dl(8,'Pham Residence','Linda Pham','Homeowner','won',14900,'paid',null,null,'Closed! Full replacement after March wind. Erie Insurance paid in full. Milton.','Residential',18,'Storm Damage'),
+      dl(9,'Planet Fitness Selinsgrove','Gina Cruz','Owner','lost',22000,'lost',null,'competitor','Lost — went with storm chaser outfit from out of state.','Commercial',62,'Storm Damage'),
     ],
     jobs: [
-      dj(1,'Rosa & Carlos Martinez','91 Birchwood Ct, Dallas TX 75208','Windows',18700,'Complete','2026-03-14',[1,2,3,4,5,6,7,8,9],'Anderson 400, 12 windows. All sealed and inspected.'),
-      dj(2,'Kate & Brian Flynn','5522 Willow Ridge Rd, Coppell TX 75019','Windows',9800,'Scheduled','2026-04-01',[1,2],'6 casements. Frames prepped. Install 4/1.'),
-      dj(3,'Greg Nelson','2108 Creekside Dr, Rockwall TX 75087','Windows',11400,'In Progress','2026-03-22',[1,2,3,4],'8 double-hungs done. 2 picture windows going in today.'),
-      dj(4,'Lakeview Office Tower — Fl 4','4400 Lake Tower Dr, Irving TX 75038','Windows',94000,'In Progress','2026-03-10',[1,2,3,4,5],'Floor 4 complete, Floor 5 in progress.'),
+      dj(1,'Tina & Mark Bowman','227 Market St, Lewisburg PA 17837','Storm Damage',18700,'Complete','2026-03-14',[1,2,3,4,5,6,7,8,9,10,11],'Erie claim. 24 sq architectural replaced. Union County permit closed.'),
+      dj(2,'Christ Lutheran','130 S 5th St, Mifflinburg PA 17844','Storm Damage',9400,'Complete','2026-03-10',[1,2,3,4,5,6,7,8,9,10,11],'Wind damage repair. Ridge cap + 3 sq. Nationwide paid.'),
+      dj(3,'Linda Pham','918 Front St, Milton PA 17847','Storm Damage',14900,'Complete','2026-03-08',[1,2,3,4,5,6,7,8,9,10,11],'Full replacement after wind. CertainTeed Landmark.'),
+      dj(4,'Sunbury Housing Phase 1','400 Chestnut St, Sunbury PA 17801','Storm Damage',54000,'Scheduled','2026-04-05',[1,2,3,4,5,6],'20 units wind damage. Adjuster approved. Materials ordered.'),
     ],
   },
-  'Excavation': {
+  'Gutter Install': {
     leads: [
-      dl(1,'Riverside Development Site','Greg Patterson','Project Manager','active',78000,'inspection','2026-03-25',null,'Site clearing and grading for 14-lot subdivision.','Commercial',18,'Excavation'),
-      dl(2,'Summit Commercial Park','Lena Vasquez','Developer','stalled',142000,'approved','2026-03-23','budget_freeze','40-acre site prep. Bank financing pending.','Commercial',54,'Excavation'),
-      dl(3,'Clearwater Estates','Bob Fry','Developer','active',55000,'estimate','2026-03-27',null,'22-lot residential cut and fill. Drainage plan approved.','Commercial',12,'Excavation'),
-      dl(4,'Highway 183 Retail','Diane Moss','Site PM','stalled',89000,'estimate','2026-03-20','no_response','Sent bid 2 weeks ago. GC is unresponsive.','Commercial',41,'Excavation'),
-      dl(5,'Lakeland Church Campus','Rev. Tim Carroll','Admin','stalled',38000,'estimate','2026-03-22','price_objection','Our bid $12k over. Scope creep in their mind.','Institutional',33,'Excavation'),
-      dl(6,'Northview Business Park','Carl Stein','Developer','cold',210000,'lead','2026-05-01','timing','Large project. Permits not approved until Q3.','Commercial',62,'Excavation'),
-      dl(7,'Mesa Verde HOA','Sandra Hill','Board President','won',31000,'completed',null,null,'Closed! Retention pond excavation starts 4/7.','HOA',22,'Excavation'),
-      dl(8,'Toro Industrial Site','Ray Toro','Plant Manager','stalled',67000,'approved','2026-03-24','competitor','Two other bids in. Lowest by $8k.','Industrial',38,'Excavation'),
-      dl(9,'Sunrise School Dist','Phil Long','Facilities Dir','lost',44000,'lost',null,'competitor','Lost to in-county contractor on public bid.','Institutional',71,'Excavation'),
+      dl(1,'Market Street Commons','Tom Brubaker','Property Mgr','stalled',5800,'estimate_sent','2026-03-15',null,'220 LF seamless aluminum 5" K-style + leaf guards. 1890s building facade. Sunbury.','Commercial',49,'Gutter Install'),
+      dl(2,'RiverWoods Senior Living','Andrew Musser','Maintenance Dir','active',13200,'estimate_sent','2026-03-26',null,'480 LF 6" commercial + 12 downspouts on main building. Splash guards at walkways.','Institutional',22,'Gutter Install'),
+      dl(3,'Brennan Residence','Pat Brennan','Homeowner','stalled',2600,'estimate_sent','2026-03-20','price_objection','140 LF seamless + guards on rancher. Competitor quoted $400 less. Watsontown.','Residential',22,'Gutter Install'),
+      dl(4,'Buffalo Valley Townhomes','Karen Bender','HOA Director','active',8400,'contract_signed','2026-03-26',null,'Half-round copper on historic-style facade. 14 townhome units. Lewisburg.','HOA',16,'Gutter Install'),
+      dl(5,'Kim Residence','Susan Kim','Homeowner','active',1900,'inspection_scheduled','2026-03-27',null,'March storm tore off 60 LF of gutter. Fascia damage visible. Danville.','Residential',8,'Gutter Install'),
+      dl(6,'Northumberland Apartments','Rick Hess','Building Mgr','cold',12000,'lead','2026-04-10','timing','Full gutter replacement, 6 buildings. Budget not approved until April.','Commercial',34,'Gutter Install'),
+      dl(7,'Okafor Residence','Emeka Okafor','Homeowner','won',3800,'paid',null,null,'Closed! Seamless aluminum + leaf guards. 180 LF. Selinsgrove.','Residential',14,'Gutter Install'),
+      dl(8,'Dreisbach Church','Deacon Willis','Facilities','stalled',4400,'estimate_sent','2026-03-22','budget_freeze','Spring maintenance budget not released yet. Mifflinburg.','Institutional',28,'Gutter Install'),
+      dl(9,'Parks Residence','Tom Parks','Homeowner','lost',2200,'lost',null,'competitor','DIY. Bought sectional gutters at Lowe\'s in Selinsgrove.','Residential',31,'Gutter Install'),
     ],
     jobs: [
-      dj(1,'Clearwater Estates — Phase 1','FM 423 & Eldorado Pkwy, Frisco TX 75033','Excavation',55000,'In Progress','2026-03-15',[1,2,3,4],'22-lot cut and fill. Grade work 60% complete.'),
-      dj(2,'Mesa Verde HOA Retention Pond','900 Mesa Verde Dr, Keller TX 76248','Excavation',31000,'Scheduled','2026-04-07',[1,2],'Permits pulled. Equipment mobilizes 4/7.'),
-      dj(3,'Riverside Development — Lots 1-14','Riverside Pkwy & CR 380, Denton TX 76208','Excavation',78000,'In Progress','2026-03-08',[1,2,3,4,5],'Site cleared. Grading in progress on north half.'),
-      dj(4,'Summit Commercial Park Pad A','Industrial Blvd, Grand Prairie TX 75050','Excavation',142000,'Scheduled','2026-04-14',[1,2,3],'Permits approved. Equipment staged.'),
+      dj(1,'Market Street Commons','118 Market St, Sunbury PA 17801','Gutter Install',5800,'In Progress','2026-03-16',[1,2,3,4,5],'220 LF K-style aluminum. Old gutters off, new going up.'),
+      dj(2,'Emeka Okafor','224 Pine St, Selinsgrove PA 17870','Gutter Install',3800,'Complete','2026-03-12',[1,2,3,4,5,6,7,8,9,10,11],'Seamless aluminum + guards. Fully installed and tested.'),
+      dj(3,'Buffalo Valley Townhomes','450 Buffalo Rd, Lewisburg PA 17837','Gutter Install',8400,'Scheduled','2026-04-01',[1,2],'Half-round copper. Materials on order.'),
+      dj(4,'RiverWoods Senior Living','150 RiverWoods Dr, Lewisburg PA 17837','Gutter Install',13200,'Scheduled','2026-04-07',[1,2],'480 LF 6" commercial. Materials ordered from Boise Cascade.'),
     ],
   },
-  'General Construction': {
+  'Skylight': {
     leads: [
-      dl(1,'Westview HOA Clubhouse','Susan Park','HOA President','active',94000,'inspection','2026-03-27',null,'2,400 sq ft community center addition. Board vote 3/28.','HOA',18,'General Construction'),
-      dl(2,'Bay City Urgent Care','Dr. Amir Fahad','Owner','stalled',178000,'approved','2026-03-23','budget_freeze','3,200 sq ft medical build-out. SBA loan in process.','Commercial',55,'General Construction'),
-      dl(3,'Sunrise Senior Living Wing B','Andrew Mills','Exec Dir','active',262000,'estimate','2026-03-26',null,'40-room wing renovation. Full scope approved.','Institutional',22,'General Construction'),
-      dl(4,'Cornerstone Church Addition','Pastor Dale Ruiz','Admin','stalled',145000,'estimate','2026-03-20','timing','Sanctuary expansion. Congregation vote in April.','Institutional',48,'General Construction'),
-      dl(5,'Riverdale Shopping Center','Pam Novak','Asset Manager','stalled',88000,'estimate','2026-03-22','no_response','4-suite interior rework. Haven\'t heard back in 3 weeks.','Commercial',36,'General Construction'),
-      dl(6,'Hilltop Brewery Expansion','Chris Roth','Owner','active',52000,'approved','2026-03-25',null,'Taproom expansion + patio. Permits in hand. Near close.','Commercial',14,'General Construction'),
-      dl(7,'Lakeside Fire Station','Chief Pat Moore','City Admin','cold',310000,'lead','2026-05-15','timing','City budget item. RFP not out until May.','Institutional',71,'General Construction'),
-      dl(8,'Verde Office Conversion','Tom Lewin','Owner','won',67000,'completed',null,null,'Closed! Warehouse-to-office conversion starts 4/3.','Commercial',27,'General Construction'),
-      dl(9,'Atlas Fitness Center','Gina Cruz','Owner','lost',114000,'lost',null,'competitor','Lost on bid. GC with existing relationship won.','Commercial',62,'General Construction'),
+      dl(1,'Hartman Residence','Joe Hartman','Homeowner','stalled',4800,'contract_signed','2026-03-23','wrong_contact','2 Velux curb-mount for bathroom + kitchen. Need wife to confirm sizes. Watsontown.','Residential',46,'Skylight'),
+      dl(2,'Brenner Residence','Sandra Brenner','Homeowner','stalled',6100,'scheduled_for_install','2026-03-23',null,'3 Velux deck-mount in cathedral ceiling. Flashing kit backordered. Hughesville.','Residential',40,'Skylight'),
+      dl(3,'Rusty Rail Brewing','Chris Roth','Owner','active',3200,'estimate_sent','2026-03-25',null,'1 large commercial skylight over taproom. Want natural light. Mifflinburg.','Commercial',14,'Skylight'),
+      dl(4,'Comfort Inn Selinsgrove','Mark Steele','GM','stalled',18000,'estimate_sent','2026-03-22','budget_freeze','4 large skylights in lobby atrium. Capital project pending corporate.','Commercial',44,'Skylight'),
+      dl(5,'Buffalo Valley Clubhouse','Dan Marsh','HOA Mgr','active',5400,'inspection_scheduled','2026-03-27',null,'2 tubular skylights for interior hallway. Minimal roof penetration.','HOA',9,'Skylight'),
+      dl(6,'Garcia Residence','Maria Garcia','Homeowner','cold',2800,'lead','2026-04-08','timing','1 Velux deck-mount in master bath. Wants to wait for spring. Bloomsburg.','Residential',24,'Skylight'),
+      dl(7,'Campus Theatre','Tom Lewin','Owner','won',7600,'paid',null,null,'Closed! 2 commercial skylights + flashing. Installed and sealed. Lewisburg.','Commercial',27,'Skylight'),
+      dl(8,'SV Mall — JCPenney Wing','Janet Groff','Facilities Mgr','stalled',24000,'estimate_sent','2026-03-21','no_response','6 skylight replacements in food court. Submitted 2 weeks ago.','Commercial',58,'Skylight'),
+      dl(9,'Thomas Residence','Ben Thomas','Homeowner','lost',3500,'lost',null,'competitor','Lost — went with handyman for cheaper install. Shamokin.','Residential',40,'Skylight'),
     ],
     jobs: [
-      dj(1,'Verde Office Conversion','4400 Industrial Blvd, Dallas TX 75207','General Construction',67000,'In Progress','2026-03-18',[1,2,3,4],'Framing complete. Mechanicals rough-in underway.'),
-      dj(2,'Hilltop Brewery Taproom','2210 Commerce St, Fort Worth TX 76102','General Construction',52000,'In Progress','2026-03-11',[1,2,3,4,5],'Steel frame up. Drywall crew starting Monday.'),
-      dj(3,'Westview HOA Clubhouse','5500 Westview Commons, Irving TX 75038','General Construction',94000,'Scheduled','2026-04-07',[1,2,3],'Permits pulled. Site prep begins 4/7.'),
-      dj(4,'Sunrise Senior Living Wing B','1100 Sunrise Blvd, Garland TX 75040','General Construction',262000,'In Progress','2026-02-25',[1,2,3,4,5,6],'40 rooms. Drywall finishing underway. On schedule.'),
-      dj(5,'Bay City Urgent Care','8800 Bay City Dr, Plano TX 75024','General Construction',178000,'Scheduled','2026-04-21',[1,2],'SBA loan approved. Permits in process.'),
+      dj(1,'Joe & Barb Hartman','78 Pine Creek Rd, Watsontown PA 17777','Skylight',4800,'Complete','2026-03-11',[1,2,3,4,5,6,7,8,9,10,11],'2 Velux curb-mount installed. Sealed and trimmed.'),
+      dj(2,'Campus Theatre','413 Market St, Lewisburg PA 17837','Skylight',7600,'Complete','2026-03-14',[1,2,3,4,5,6,7,8,9,10,11],'2 commercial skylights. Installed, flashed, sealed.'),
+      dj(3,'Sandra Brenner','19 Covered Bridge Rd, Hughesville PA 17737','Skylight',6100,'Scheduled','2026-04-05',[1,2],'3 Velux deck-mount. Waiting on flashing kit delivery.'),
     ],
   },
-  'HVAC': {
+  'Flashing Repair': {
     leads: [
-      dl(1,'Greenfield Office Park','Dana Nguyen','Property Manager','stalled',23500,'approved','2026-03-24','budget_freeze','Carrier 5-ton rooftop. Q1 budget locked. Revisit April.','Commercial',38,'HVAC'),
-      dl(2,'Ridgecrest Elementary','Carl Beck','Facilities Dir','active',44000,'inspection','2026-03-27',null,'8 classroom units + 1 main office. Full replacement.','Institutional',14,'HVAC'),
-      dl(3,'Johnson Residence','Tim Johnson','Homeowner','active',8900,'estimate','2026-03-25',null,'4-ton Lennox split system. Existing unit is 18 years old.','Residential',10,'HVAC'),
-      dl(4,'Sunrise Fitness Club','Marco Lane','Owner','stalled',31200,'estimate','2026-03-20','price_objection','Commercial package unit. $4k over their budget. Trim scope.','Commercial',29,'HVAC'),
-      dl(5,'Northview Apartments','Chad Ross','Property Manager','stalled',18400,'estimate','2026-03-22','no_response','16 units need replacement. Sent proposal, no reply.','Commercial',33,'HVAC'),
-      dl(6,'Lakeside Church','Deacon Paul Smith','Admin','cold',27000,'lead','2026-04-20','timing','Sanctuary + 6 classrooms. HVAC budget next fiscal year.','Institutional',51,'HVAC'),
-      dl(7,'Porter Residence','Amy Porter','Homeowner','won',7600,'completed',null,null,'Closed! Trane 3.5-ton install. Crew 3/27.','Residential',16,'HVAC'),
-      dl(8,'Metro Data Center','IT Director Brad Lee','Facilities','stalled',86000,'approved','2026-03-24','competitor','Precision cooling for server room. 2 other bids in.','Commercial',47,'HVAC'),
-      dl(9,'Clearwater Hotel','GM Lisa Cole','Operations','lost',38000,'lost',null,'competitor','Lost — existing HVAC contractor locked in long-term.','Commercial',58,'HVAC'),
+      dl(1,'Blasius Chevrolet','Steve Blasius','Shop Owner','active',2800,'inspection_complete','2026-03-28',null,'Chimney flashing failed on service bay. Active leak into office. Selinsgrove.','Commercial',8,'Flashing Repair'),
+      dl(2,'SV Mall — JCPenney Wing','Janet Groff','Facilities Mgr','stalled',8500,'estimate_sent','2026-03-21','no_response','Parapet wall flashing failing on 3 sections. No reply from corporate.','Commercial',58,'Flashing Repair'),
+      dl(3,'Yamamoto Residence','Ken Yamamoto','Homeowner','active',1800,'estimate_sent','2026-03-25',null,'Skylight flashing leaking in master bedroom. Counter-flashing pulling away. Bloomsburg.','Residential',15,'Flashing Repair'),
+      dl(4,'Dreisbach Church','Pastor Dale Ruiz','Admin','stalled',4200,'estimate_sent','2026-03-20','budget_freeze','Chimney + 2 pipe boot failures. Waiting on maintenance budget.','Institutional',33,'Flashing Repair'),
+      dl(5,'Sunbury Apartments','Sara Owens','Property Mgr','active',6800,'contract_signed','2026-03-26',null,'Valley flashing on 4 units needs replacement. Insurance approved.','Commercial',18,'Flashing Repair'),
+      dl(6,'Susquehanna Industrial Park','Nick Etter','GM','stalled',3200,'estimate_sent','2026-03-22','price_objection','Roof-to-wall flashing at loading dock. Thinks $3k is too much.','Commercial',31,'Flashing Repair'),
+      dl(7,'Flynn Residence','Kate Flynn','Homeowner','won',2200,'paid',null,null,'Closed! Chimney reflashing + 2 pipe boots. No more leaks. New Berlin.','Residential',17,'Flashing Repair'),
+      dl(8,'Bloomsburg School Dist','Stan Wells','Facilities Dir','cold',9200,'lead','2026-04-15','timing','Gym building flashing at 6 penetrations. Budget pending.','Institutional',44,'Flashing Repair'),
+      dl(9,'Country Diner','Roy Burns','Owner','lost',1600,'lost',null,'competitor','Lost — roofer sealed it with tar for $200. Middleburg.','Commercial',35,'Flashing Repair'),
     ],
     jobs: [
-      dj(1,'Greenfield Office Park — Suite A','510 Oak Creek Blvd, Houston TX 77084','HVAC',23500,'Scheduled','2026-03-28',[1,2],'Carrier 5-ton rooftop. Unit on order. Install 3/28.'),
-      dj(2,'Amy & Kevin Porter','6610 Meadowlark Dr, Sugar Land TX 77479','HVAC',7600,'Complete','2026-03-19',[1,2,3,4,5,6,7,8,9,10],'Trane 3.5-ton. Installed, charged, tested. Paid.'),
-      dj(3,'Ridgecrest Elementary','4400 Ridgecrest Blvd, Katy TX 77450','HVAC',44000,'In Progress','2026-03-12',[1,2,3,4,5],'5 of 9 units installed. Ductwork for main office next.'),
-      dj(4,'Tim & Sarah Johnson','2812 Woodridge Ln, The Woodlands TX 77380','HVAC',8900,'Scheduled','2026-04-03',[1,2],'Lennox 4-ton. Old unit scheduled for removal 4/3.'),
+      dj(1,'Kate Flynn','45 Penns Creek Rd, New Berlin PA 17855','Flashing Repair',2200,'Complete','2026-03-15',[1,2,3,4,5,6,7,8,9],'Chimney reflashing + 2 pipe boots. Sealed and tested.'),
+      dj(2,'Sunbury Apartments','200 Market St, Sunbury PA 17801','Flashing Repair',6800,'In Progress','2026-03-19',[1,2,3,4],'Valley flashing. 2 of 4 units complete.'),
+      dj(3,'Blasius Chevrolet','400 S Market St, Selinsgrove PA 17870','Flashing Repair',2800,'Scheduled','2026-03-28',[1,2,3],'Chimney flashing on service bay. Materials staged.'),
     ],
   },
-  'Plumbing': {
+  'Ventilation': {
     leads: [
-      dl(1,'Sunridge Apartments','Todd Whitfield','Building Manager','stalled',11400,'estimate','2026-03-19','no_response','24-unit re-pipe. 3 follow-ups. No reply.','Commercial',41,'Plumbing'),
-      dl(2,'Fischer Residence','Jack Fischer','Homeowner','active',4800,'estimate','2026-03-25',null,'Full re-pipe, galvanized to PEX. Insurance approved.','Residential',12,'Plumbing'),
-      dl(3,'Clearview Restaurant','Owner Mike Holt','Owner','stalled',8700,'approved','2026-03-23','price_objection','Grease trap + kitchen rough-in. $1,800 over budget.','Commercial',27,'Plumbing'),
-      dl(4,'Meadowbrook HOA Clubhouse','Tina Marsh','HOA Mgr','active',6200,'inspection','2026-03-27',null,'Fixture replacement + water heater upgrade.','HOA',9,'Plumbing'),
-      dl(5,'Hillcrest Medical Office','Office Mgr Pat Ray','Admin','active',14300,'approved','2026-03-26',null,'New exam room rough-in + 2 bathrooms. Near close.','Commercial',16,'Plumbing'),
-      dl(6,'Chen Residence','Linda Chen','Homeowner','stalled',3200,'estimate','2026-03-22','budget_freeze','Water heater replacement delayed until tax return.','Residential',22,'Plumbing'),
-      dl(7,'Riverside School Dist','Facilities Dir Ben Cruz','Facilities','cold',28000,'lead','2026-04-15','timing','4 school buildings, fixture refresh. Budget Q4.','Institutional',44,'Plumbing'),
-      dl(8,'Park Ave Condos','Sara Owens','Property Mgr','won',9100,'completed',null,null,'Closed! Units 101-120 re-pipe. Starts 4/1.','Commercial',18,'Plumbing'),
-      dl(9,'Downtown Diner','Owner Roy Burns','Owner','lost',5400,'lost',null,'competitor','Lost on price. Licensed plumber did it for less.','Commercial',35,'Plumbing'),
+      dl(1,'Rohrer Residence','Mike Rohrer','Homeowner','active',3200,'inspection_complete','2026-03-27',null,'Attic 145°F in summer. No ridge vent, 2 box vents on 1960s ranch. OSB deck — check moisture. Bloomsburg.','Residential',17,'Ventilation'),
+      dl(2,'Northumberland Apartments','Rick Hess','Building Mgr','stalled',9400,'estimate_sent','2026-03-22','no_response','16 units — inadequate attic ventilation causing ice dams in winter.','Commercial',33,'Ventilation'),
+      dl(3,'Johnson Residence','Tim Johnson','Homeowner','active',2400,'estimate_sent','2026-03-25',null,'Convert 4 box vents to continuous ridge vent. Add 6 soffit vents. Danville.','Residential',10,'Ventilation'),
+      dl(4,'Milton Area School Annex','Carl Beck','Facilities Dir','stalled',5600,'contract_signed','2026-03-23','budget_freeze','Gym building needs 8 turbine vents replaced with powered units.','Institutional',28,'Ventilation'),
+      dl(5,'Klinger Trucking Warehouse','Jim Klinger','Owner','active',4800,'contract_signed','2026-03-26',null,'Commercial exhaust fans + ridge vent on 8,000 sq ft warehouse. Milton.','Commercial',16,'Ventilation'),
+      dl(6,'Central Machine Inc','Ray Toro','Plant Manager','cold',7200,'lead','2026-04-10','timing','Factory ventilation upgrade. Capital budget Q3. Northumberland.','Industrial',44,'Ventilation'),
+      dl(7,'Crane Residence','Bob Crane','Homeowner','won',1800,'paid',null,null,'Closed! Ridge vent + 6 soffit vents. Attic dropped 30°F. Selinsgrove.','Residential',12,'Ventilation'),
+      dl(8,'Valley Fitness','Marcus Stover','Owner','stalled',4200,'estimate_sent','2026-03-20','price_objection','4 powered attic fans. Owner wants cheaper passive option.','Commercial',22,'Ventilation'),
+      dl(9,'Hendricks Residence','Tom Hendricks','Homeowner','lost',2600,'lost',null,'competitor','Lost — went with solar-powered vent from Home Depot. Shamokin.','Residential',38,'Ventilation'),
     ],
     jobs: [
-      dj(1,'Jack & Paula Fischer','1814 Magnolia St, Pasadena TX 77502','Plumbing',4800,'In Progress','2026-03-21',[1,2,3],'Galvanized-to-PEX. Rough-in 40% done.'),
-      dj(2,'Park Ave Condos Units 101-120','2200 Park Ave, Houston TX 77004','Plumbing',9100,'Scheduled','2026-04-01',[1,2],'Re-pipe, 20 units. Materials ordered. Crew starts 4/1.'),
-      dj(3,'Hillcrest Medical Office','3300 Hillcrest Dr, Pearland TX 77581','Plumbing',14300,'In Progress','2026-03-14',[1,2,3,4],'Rough-in done. Fixtures going in this week.'),
-      dj(4,'Sunridge Apts — Bldg B','3300 Sunridge Pkwy, Webster TX 77598','Plumbing',11400,'In Progress','2026-03-18',[1,2,3,4],'Units 12-24 re-pipe. Pressure test scheduled Friday.'),
+      dj(1,'Mike & Jen Rohrer','340 Fairground Rd, Bloomsburg PA 17815','Ventilation',3200,'Scheduled','2026-04-03',[1,2,3],'Ridge vent (42 LF) + 8 soffit vents. Materials from Boise Cascade.'),
+      dj(2,'Bob Crane','2108 N Market St, Selinsgrove PA 17870','Ventilation',1800,'Complete','2026-03-17',[1,2,3,4,5,6,7,8,9,10,11],'Ridge vent + soffits installed. Airflow verified.'),
+      dj(3,'Klinger Trucking Warehouse','1100 Industrial Park Rd, Milton PA 17847','Ventilation',4800,'Scheduled','2026-04-07',[1,2],'Exhaust fans + ridge vent. Northumberland County permit pulled.'),
     ],
   },
-  'Welding': {
+  'Emergency Tarp': {
     leads: [
-      dl(1,'Iron Works Industrial','Carlos Reyes','Plant Manager','active',19800,'inspection','2026-03-27',null,'Steel platform fabrication + install. 1,200 sq ft mezzanine.','Industrial',17,'Welding'),
-      dl(2,'Harbor Shipyard LLC','Frank Delaney','Operations Mgr','stalled',44000,'approved','2026-03-23','budget_freeze','Dock gate framework. Capital budget not approved.','Industrial',48,'Welding'),
-      dl(3,'Lone Star Fabricators','Hector Ruiz','Owner','active',28500,'estimate','2026-03-25',null,'Custom machine guards, 6 units. RFQ submitted.','Industrial',13,'Welding'),
-      dl(4,'Metro Transit Authority','Stan Wells','Facilities Dir','stalled',67000,'estimate','2026-03-20','no_response','Bus depot rail and gate work. No reply in 3 weeks.','Institutional',39,'Welding'),
-      dl(5,'Clearwater Brewery','Sam Green','Owner','active',14200,'approved','2026-03-26',null,'Custom stainless brew rack system. Near close.','Commercial',19,'Welding'),
-      dl(6,'Atlas Steel Supply','Ray Burk','GM','stalled',38000,'estimate','2026-03-22','price_objection','Storage racking system. $6k over their target.','Industrial',31,'Welding'),
-      dl(7,'Northgate Fitness','Mike Castro','Owner','cold',22000,'lead','2026-04-10','timing','Rig equipment frames. Construction not started.','Commercial',44,'Welding'),
-      dl(8,'Gulf Coast Refineries','Safety Dir Tomas Rios','HSE Mgr','won',51000,'completed',null,null,'Closed! Staircase and handrail fab. Starts 4/5.','Industrial',26,'Welding'),
-      dl(9,'Ridgecrest Auto Dealer','Owner Al Nash','Owner','lost',16000,'lost',null,'competitor','Went with in-house maintenance team.','Commercial',52,'Welding'),
+      dl(1,'Flickinger Residence','Carol Flickinger','Homeowner','active',1200,'inspection_scheduled','2026-03-25',null,'Oak tree fell on roof — active water into upstairs bedroom. Tarp ASAP. Middleburg.','Residential',12,'Emergency Tarp'),
+      dl(2,'Sunbury Urgent Care','Dr. Amir Fahad','Owner','active',800,'lead','2026-03-23',null,'Wind ripped off ridge cap. Rain coming tonight. Emergency call.','Commercial',1,'Emergency Tarp'),
+      dl(3,'Comfort Inn Selinsgrove','Mark Steele','GM','active',2400,'contract_signed','2026-03-24',null,'Large section of flat roof membrane peeled back. 3 rooms flooding.','Commercial',3,'Emergency Tarp'),
+      dl(4,'Osei Residence','Kwame Osei','Homeowner','active',900,'inspection_scheduled','2026-03-26',null,'Tree limb punched through roof during ice storm. 4x6 ft hole. Williamsport.','Residential',2,'Emergency Tarp'),
+      dl(5,'Dreisbach Church','Rev. Tim Carroll','Admin','stalled',1400,'estimate_sent','2026-03-22','budget_freeze','Wind peeled shingles off north slope. Tarped but needs permanent fix.','Institutional',15,'Emergency Tarp'),
+      dl(6,'Susquehanna Industrial Bldg 3','Nick Etter','Operations Mgr','active',1800,'contract_signed','2026-03-26',null,'Roof puncture from fallen HVAC unit in storm. Tarped same day.','Commercial',5,'Emergency Tarp'),
+      dl(7,'Davis Residence','Ron Davis','Homeowner','won',650,'paid',null,null,'Closed! Emergency tarp after March storm. Full replacement sold. Watsontown.','Residential',8,'Emergency Tarp'),
+      dl(8,'Danville Heritage Villas','Dave Moyer','Board President','cold',3200,'lead','2026-04-05','timing','3 units need emergency tarps. HOA management approval slow.','HOA',18,'Emergency Tarp'),
+      dl(9,'Bloomsburg Elementary','Phil Long','Facilities Dir','lost',1100,'lost',null,'competitor','Lost — school used in-house maintenance crew for tarp.','Institutional',22,'Emergency Tarp'),
     ],
     jobs: [
-      dj(1,'Iron Works Industrial Mezzanine','2244 Industrial Blvd, Houston TX 77015','Welding',19800,'In Progress','2026-03-17',[1,2,3,4],'Steel mezzanine fab complete. On-site install underway.'),
-      dj(2,'Clearwater Brewery Rack System','1800 Warehouse Row, San Antonio TX 78207','Welding',14200,'Scheduled','2026-04-02',[1,2],'Stainless brew rack. Fab in shop, install 4/2.'),
-      dj(3,'Gulf Coast Refineries Staircase','Off-shore Rd 12, Corpus Christi TX 78401','Welding',51000,'Scheduled','2026-04-05',[1,2,3],'Staircase and handrail fab. Drawings approved.'),
-      dj(4,'Lone Star Fabricators Machine Guards','6600 Lone Star Pkwy, Beaumont TX 77701','Welding',28500,'In Progress','2026-03-12',[1,2,3,4,5],'6 guards. 4 complete, 2 in grinding/finishing.'),
-    ],
-  },
-  'Electrical': {
-    leads: [
-      dl(1,'Pinnacle Retail Center','Jeff Bloom','Facilities Dir','active',31200,'approved','2026-03-26',null,'400A panel upgrade + 6 EV charger circuits. Near close.','Commercial',27,'Electrical'),
-      dl(2,'Warehouse 14 LLC','Ron Davis','Property Owner','stalled',48000,'estimate','2026-03-20','no_response','Service upgrade + LED retrofit. No reply in 2 weeks.','Commercial',36,'Electrical'),
-      dl(3,'Hillcrest Elementary','Carl Beck','Facilities Dir','active',22000,'inspection','2026-03-27',null,'Full fire alarm replacement + panel upgrade.','Institutional',15,'Electrical'),
-      dl(4,'Morrison Office Park','Brian Morrison','Owner','stalled',39000,'approved','2026-03-23','price_objection','Generator install + transfer switch. $5k over budget.','Commercial',29,'Electrical'),
-      dl(5,'Park Ridge Apartments','Donna Kwan','Property Mgr','active',17400,'estimate','2026-03-25',null,'GFCI + panel upgrade for 32 units. Insurance requirement.','Commercial',18,'Electrical'),
-      dl(6,'Valley Church of Christ','Elder Tom Ames','Admin','stalled',28000,'estimate','2026-03-22','budget_freeze','Sanctuary lighting overhaul. Annual budget too tight.','Institutional',44,'Electrical'),
-      dl(7,'Clearview Gym','Marcus Brown','Owner','cold',14000,'lead','2026-04-15','timing','LED full retrofit. Waiting on new lease signing.','Commercial',38,'Electrical'),
-      dl(8,'Sterling Industries','Plant Mgr Ann Webb','Operations','won',54000,'completed',null,null,'Closed! 800A service upgrade. Starts 4/8.','Industrial',21,'Electrical'),
-      dl(9,'Sunset Diner','Owner Roy Burns','Owner','lost',8400,'lost',null,'competitor','Handyman did basic work. Below code — our problem later.','Commercial',47,'Electrical'),
-    ],
-    jobs: [
-      dj(1,'Pinnacle Retail Center','668 Elmwood Ave, Plano TX 75023','Electrical',31200,'Scheduled','2026-04-01',[1,2],'400A panel + 6 EV circuits. Permits pulled. Install 4/1.'),
-      dj(2,'Park Ridge Apartments','2200 Park Ridge Blvd, Garland TX 75040','Electrical',17400,'In Progress','2026-03-19',[1,2,3,4],'GFCI and panel work. 20 of 32 units done.'),
-      dj(3,'Sterling Industries','8800 Sterling Industrial Dr, Mesquite TX 75149','Electrical',54000,'Scheduled','2026-04-08',[1,2,3],'800A service upgrade. Utility coordination complete.'),
-      dj(4,'Hillcrest Elementary','4400 Hillcrest Blvd, Richardson TX 75080','Electrical',22000,'In Progress','2026-03-10',[1,2,3,4,5,6],'Fire alarm system in. Panel upgrade last step.'),
-    ],
-  },
-  'Masonry': {
-    leads: [
-      dl(1,'Downtown Brick Restoration','Tom Hendricks','Building Owner','active',45000,'estimate','2026-03-25',null,'Full brick repoint, 4-story historic building downtown.','Commercial',19,'Masonry'),
-      dl(2,'Riverside Retaining Wall','Bob Crane','Homeowner','stalled',28000,'approved','2026-03-23','price_objection','250 LF retaining wall. $4k over expectation.','Residential',33,'Masonry'),
-      dl(3,'Heritage Inn Patio','Patricia Lawson','GM','active',26400,'estimate','2026-03-26',null,'Limestone patio resurfacing + retaining wall.','Commercial',20,'Masonry'),
-      dl(4,'Northridge Church Entrance','Pastor Ed Cole','Facilities','stalled',38000,'estimate','2026-03-20','budget_freeze','New stone entrance and columns. Capital budget needed.','Institutional',47,'Masonry'),
-      dl(5,'Greenview HOA Wall','Linda Shaw','HOA President','active',18700,'inspection','2026-03-27',null,'Community entry wall + stone columns. HOA approved.','HOA',11,'Masonry'),
-      dl(6,'Atlas Industrial Complex','Ray Torres','Plant Mgr','cold',62000,'lead','2026-04-15','timing','Brick facade restoration. Budget in Q3.','Industrial',58,'Masonry'),
-      dl(7,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','won',33500,'completed',null,null,'Closed! Entry steps + facade repair. Starts 4/4.','Commercial',24,'Masonry'),
-      dl(8,'Morrison Distillery','Mike Morrison','Owner','stalled',22000,'approved','2026-03-24','competitor','Stone bar feature + fireplace. 2 other bids in.','Commercial',31,'Masonry'),
-      dl(9,'Sunset Baptist Church','Deacon Will Jones','Admin','lost',29000,'lost',null,'competitor','Member of congregation did the work for cost.','Institutional',64,'Masonry'),
-    ],
-    jobs: [
-      dj(1,'Downtown Brick Restoration','400 Main St, Fort Worth TX 76102','Masonry',45000,'In Progress','2026-03-10',[1,2,3,4,5],'South and west face repointing done. North face this week.'),
-      dj(2,'Heritage Inn Patio','312 Heritage Blvd, San Antonio TX 78205','Masonry',26400,'Scheduled','2026-04-03',[1,2,3],'Limestone on site. Forms set. Pour and lay 4/3.'),
-      dj(3,'Greenview HOA Entry Wall','800 Greenview Commons, Allen TX 75013','Masonry',18700,'In Progress','2026-03-19',[1,2,3,4],'Footings poured. Block work 50% complete.'),
-      dj(4,'Lakewood Medical Center','5500 Lakewood Dr, Plano TX 75093','Masonry',33500,'Scheduled','2026-04-04',[1,2],'Steps design approved. Materials ordered.'),
-    ],
-  },
-  'Painting': {
-    leads: [
-      dl(1,'Riverside Church Exterior','Pastor James Willis','Facilities','won',9400,'completed',null,null,'Closed! Full exterior repaint. Sherwin-Williams Duration. Starts 4/1.','Institutional',55,'Painting'),
-      dl(2,'Clearbrook Office Suite','Donna Pierce','Office Mgr','active',6800,'estimate','2026-03-25',null,'2,400 sq ft office interior. Neutral repaint.','Commercial',11,'Painting'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','stalled',8200,'approved','2026-03-23','price_objection','Full exterior + trim. $900 over competing bid.','Residential',28,'Painting'),
-      dl(4,'Hilltop Hotel Lobby','GM Ray Lutz','Operations','stalled',22000,'estimate','2026-03-20','budget_freeze','Lobby + corridors floors 1-3. Capital budget request.','Commercial',41,'Painting'),
-      dl(5,'Greenway Apartments','Property Mgr Sara Li','Mgr','active',14500,'inspection','2026-03-27',null,'24 unit interiors, turnover repaint. Staging now.','Commercial',13,'Painting'),
-      dl(6,'Sunrise Senior Center','Activities Dir Jo Wells','Admin','stalled',11000,'estimate','2026-03-22','no_response','Community room + 40 resident rooms. No reply 2 weeks.','Institutional',37,'Painting'),
-      dl(7,'Park Ave Dentistry','Dr. Ann Park','Owner','active',5400,'approved','2026-03-26',null,'Waiting room + 6 exam rooms repaint. Near close.','Commercial',16,'Painting'),
-      dl(8,'Thornton Residence','Nick Thornton','Homeowner','cold',7100,'lead','2026-04-08','timing','Interior 4 bedrooms. Waiting on new flooring first.','Residential',31,'Painting'),
-      dl(9,'Crossroads Gym','Owner Greg Nash','Owner','lost',9800,'lost',null,'competitor','Used a friend-of-a-friend painter.','Commercial',44,'Painting'),
-    ],
-    jobs: [
-      dj(1,'Riverside Church','200 Riverside Ave, Fort Worth TX 76107','Painting',9400,'Scheduled','2026-04-01',[1,2,3],'Sherwin-Williams Duration. Prep + prime complete.'),
-      dj(2,'Clearbrook Office Suite','501 Commerce Dr, Dallas TX 75201','Painting',6800,'In Progress','2026-03-22',[1,2,3,4,5],'2,400 sq ft interior. Second coat today.'),
-      dj(3,'Greenway Apartments','2200 Greenway Blvd, Arlington TX 76010','Painting',14500,'In Progress','2026-03-15',[1,2,3,4],'12 of 24 units complete. On pace.'),
-      dj(4,'Park Ave Dentistry','3300 Park Ave, Plano TX 75074','Painting',5400,'Scheduled','2026-04-05',[1,2],'Materials ordered. Prep scheduled 4/5.'),
-    ],
-  },
-  'Flooring': {
-    leads: [
-      dl(1,'Clearwater Gym','Marcus Brown','Owner','cold',17200,'lead','2026-04-05','timing','Full rubber floor replacement. Remodel deferred to summer.','Commercial',64,'Flooring'),
-      dl(2,'Morrison Residence Kitchen','Amy Morrison','Homeowner','active',8600,'estimate','2026-03-25',null,'LVP throughout kitchen + dining. Shaw Floorté preferred.','Residential',14,'Flooring'),
-      dl(3,'Lakewood Medical Center','Office Mgr Dr. Park','Admin','stalled',28000,'approved','2026-03-23','budget_freeze','VCT to LVT conversion, 8,000 sq ft. Budget not released.','Commercial',38,'Flooring'),
-      dl(4,'Sunrise Senior Living','Activities Dir','Admin','active',22400,'inspection','2026-03-27',null,'80 resident rooms LVP replacement. Insurance funded.','Institutional',12,'Flooring'),
-      dl(5,'Thornton Residence','Nick Thornton','Homeowner','stalled',11800,'estimate','2026-03-22','no_response','Hardwood refinish + 3 bedroom LVP. No response 2 weeks.','Residential',28,'Flooring'),
-      dl(6,'Metro Dance Studio','Owner Sofia Vega','Owner','active',14200,'approved','2026-03-26',null,'Sprung hardwood dance floor, 1,800 sq ft. Near close.','Commercial',18,'Flooring'),
-      dl(7,'Park Ridge Apts Turnover','Property Mgr Don Kwan','Mgr','stalled',9600,'estimate','2026-03-20','price_objection','12 unit LVP turnover. $1,200 over budget.','Commercial',31,'Flooring'),
-      dl(8,'Chen Residence','Linda Chen','Homeowner','won',7400,'completed',null,null,'Closed! Hardwood refinish + LVP hallways. Starts 4/4.','Residential',21,'Flooring'),
-      dl(9,'Ridgecrest Elementary','Carl Beck','Facilities Dir','lost',34000,'lost',null,'competitor','State contract went to lowest bidder.','Institutional',55,'Flooring'),
-    ],
-    jobs: [
-      dj(1,'Amy & Carl Morrison','4418 Ridgeway Dr, Garland TX 75040','Flooring',8600,'In Progress','2026-03-21',[1,2,3,4],'LVP kitchen + dining. Subfloor prepped, laying today.'),
-      dj(2,'Linda & James Chen','2204 Birchwood Ct, Richardson TX 75082','Flooring',7400,'Scheduled','2026-04-04',[1,2],'Hardwood refinish + LVP. Materials on site.'),
-      dj(3,'Metro Dance Studio','1200 Arts District Blvd, Dallas TX 75201','Flooring',14200,'In Progress','2026-03-16',[1,2,3,4,5],'Sprung hardwood. Subfloor level, laying 1st strips.'),
-      dj(4,'Sunrise Senior Living','1100 Sunrise Blvd, Garland TX 75040','Flooring',22400,'In Progress','2026-03-10',[1,2,3,4,5,6],'50 of 80 rooms complete. On schedule.'),
-    ],
-  },
-  'Insulation': {
-    leads: [
-      dl(1,'Northgate Mall','Janet Farley','Facilities Mgr','stalled',31500,'estimate','2026-03-21','no_response','Attic blow-in + roof deck spray foam. No feedback 2 wks.','Commercial',58,'Insulation'),
-      dl(2,'Weber Residence','Bill Weber','Homeowner','active',6200,'estimate','2026-03-25',null,'Attic blow-in + air sealing. Energy audit done.','Residential',11,'Insulation'),
-      dl(3,'Clearbrook Office Bldg','Property Mgr Donna Pierce','Mgr','stalled',18400,'approved','2026-03-23','budget_freeze','Roof deck + perimeter wall spray foam. Q2 budget.','Commercial',34,'Insulation'),
-      dl(4,'Sunrise Elementary','Carl Beck','Facilities Dir','active',28000,'inspection','2026-03-27',null,'Full attic insulation upgrade. Energy grant funding.','Institutional',14,'Insulation'),
-      dl(5,'Morrison Residence Addition','Carl Morrison','Homeowner','stalled',4800,'estimate','2026-03-22','price_objection','Room addition insulation. $600 over quote expectation.','Residential',22,'Insulation'),
-      dl(6,'Ridgecrest Warehouse','Ray Torres','Owner','cold',42000,'lead','2026-04-20','timing','Spray foam whole envelope. Starting build-out Q3.','Industrial',47,'Insulation'),
-      dl(7,'Chen Residence','Linda Chen','Homeowner','won',5600,'completed',null,null,'Closed! Attic blow-in + knee walls. Crew 3/28.','Residential',17,'Insulation'),
-      dl(8,'Park Ave Medical Bldg','Dr. Sam Park','Admin Dir','active',22000,'approved','2026-03-26',null,'Spray foam retrofit, 4,000 sq ft. Near close.','Commercial',20,'Insulation'),
-      dl(9,'Atlas Warehouse','Plant Mgr Ann Webb','Operations','lost',36000,'lost',null,'competitor','Owner-supplied spray foam contractor won it.','Industrial',61,'Insulation'),
-    ],
-    jobs: [
-      dj(1,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Insulation',6200,'Scheduled','2026-03-28',[1,2],'Blow-in + air sealing. Materials ready.'),
-      dj(2,'Linda & James Chen','2204 Birchwood Ct, Richardson TX 75082','Insulation',5600,'Complete','2026-03-21',[1,2,3,4,5,6,7,8],'Attic blow-in done. Energy audit follow-up sent.'),
-      dj(3,'Sunrise Elementary Attic','4400 Sunrise Blvd, Mesquite TX 75150','Insulation',28000,'In Progress','2026-03-14',[1,2,3,4],'R-38 blow-in 60% complete. Air sealing Friday.'),
-      dj(4,'Park Ave Medical Bldg','3300 Park Ave, Plano TX 75074','Insulation',22000,'Scheduled','2026-04-08',[1,2,3],'Spray foam retrofit. Drawings approved.'),
-    ],
-  },
-  'Drywall': {
-    leads: [
-      dl(1,'Sunrise Senior Living Wing B','Andrew Mills','Maintenance Dir','active',13200,'estimate','2026-03-26',null,'40-room renovation drywall. Full hang + finish.','Institutional',22,'Drywall'),
-      dl(2,'Morrison Office Addition','Carl Morrison','Owner','stalled',18600,'approved','2026-03-23','budget_freeze','3,200 sq ft office addition. GC has budget hold.','Commercial',36,'Drywall'),
-      dl(3,'Park Ridge Apts Unit Reno','Property Mgr Don Kwan','Mgr','active',9400,'inspection','2026-03-27',null,'16 unit reno drywall. Consistent crew work.','Commercial',13,'Drywall'),
-      dl(4,'Clearbrook Medical Suite','Dr. Ana Rivera','Owner','stalled',22000,'estimate','2026-03-20','no_response','Exam room build-out, 8 rooms. No reply after bid.','Commercial',31,'Drywall'),
-      dl(5,'Torres New Home','Miguel Torres','Homeowner','stalled',7800,'estimate','2026-03-22','price_objection','Basement finish drywall. $900 over other bid.','Residential',24,'Drywall'),
-      dl(6,'Ridgecrest Brewery','Sam Green','Owner','cold',14000,'lead','2026-04-10','timing','Taproom build-out drywall. Framing not done yet.','Commercial',38,'Drywall'),
-      dl(7,'Weber Residence Addition','Bill Weber','Homeowner','won',6200,'completed',null,null,'Closed! 2 room addition drywall. Crew starts 4/2.','Residential',16,'Drywall'),
-      dl(8,'Lakewood Hotel Reno','GM Ray Lutz','Operations','active',38000,'approved','2026-03-25',null,'24 room reno drywall. Near close, scope confirmed.','Commercial',20,'Drywall'),
-      dl(9,'Sunrise School Reno','Carl Beck','Facilities Dir','lost',28000,'lost',null,'competitor','GC used their in-house drywall crew.','Institutional',52,'Drywall'),
-    ],
-    jobs: [
-      dj(1,'Sunrise Senior Living Wing B','1100 Sunrise Blvd, Garland TX 75040','Drywall',13200,'In Progress','2026-03-14',[1,2,3,4],'40 rooms. Hang done. Tape + mud underway.'),
-      dj(2,'Park Ridge Apts 8 Units','2200 Park Ridge Blvd, Garland TX 75040','Drywall',9400,'In Progress','2026-03-18',[1,2,3,4,5],'5 units sanded + primed. 3 units in tape/mud.'),
-      dj(3,'Bill & Carol Weber Addition','4810 Meadowbrook Ln, Flower Mound TX 75028','Drywall',6200,'Scheduled','2026-04-02',[1,2,3],'Frame inspection passed. Hang crew starts 4/2.'),
-      dj(4,'Lakewood Hotel Reno','8200 Lakewood Dr, Plano TX 75093','Drywall',38000,'Scheduled','2026-04-10',[1,2],'24 rooms. Contract signed. Hang crew booked.'),
-    ],
-  },
-  'Landscaping': {
-    leads: [
-      dl(1,'Brookhaven Commons HOA','Tina Rosario','HOA Director','active',34800,'estimate','2026-03-24',null,'Common area redesign + irrigation. Board approved.','HOA',14,'Landscaping'),
-      dl(2,'Clearwater Country Club','GM Mark Peters','Operations','stalled',82000,'approved','2026-03-23','budget_freeze','Course perimeter and entrance landscaping. BOD vote.','Commercial',48,'Landscaping'),
-      dl(3,'Morrison Residence','Amy Morrison','Homeowner','active',14200,'inspection','2026-03-27',null,'Backyard hardscape + planting plan. Irrigation included.','Residential',10,'Landscaping'),
-      dl(4,'Sunrise Medical Campus','Facilities Dir Beth Lee','Admin','stalled',44000,'estimate','2026-03-20','no_response','Full campus landscape refresh. No response 3 weeks.','Commercial',36,'Landscaping'),
-      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',8800,'estimate','2026-03-22','price_objection','Front yard redesign + sod. $1,400 over expectation.','Residential',27,'Landscaping'),
-      dl(6,'Northgate Office Park','Property Mgr Greg Lee','Mgr','cold',28000,'lead','2026-04-10','timing','Parking lot islands + perimeter. Spring budget.','Commercial',41,'Landscaping'),
-      dl(7,'Chen Residence','Linda Chen','Homeowner','won',11400,'completed',null,null,'Closed! Backyard hardscape + planting. Starts 4/3.','Residential',18,'Landscaping'),
-      dl(8,'Westfield HOA Entrance','Sandra Hill','HOA President','active',18600,'approved','2026-03-26',null,'Entrance monument + plantings. Near close.','HOA',15,'Landscaping'),
-      dl(9,'Atlas Corporate Campus','Facilities VP Ted Ross','Admin','lost',56000,'lost',null,'competitor','National landscape firm won on relationships.','Commercial',67,'Landscaping'),
-    ],
-    jobs: [
-      dj(1,'Brookhaven Commons HOA','1190 Brookhaven Blvd, Frisco TX 75034','Landscaping',34800,'In Progress','2026-03-16',[1,2,3,4,5],'Hardscape done. Planting crew starts Monday.'),
-      dj(2,'Linda & James Chen','2204 Birchwood Ct, Richardson TX 75082','Landscaping',11400,'Scheduled','2026-04-03',[1,2,3],'Plants on order. Hardscape layout ready.'),
-      dj(3,'Westfield HOA Entrance','500 Westfield Commons, Allen TX 75013','Landscaping',18600,'In Progress','2026-03-20',[1,2,3,4],'Monument base complete. Plantings + irrigation next.'),
-      dj(4,'Morrison Backyard','4418 Ridgeway Dr, Garland TX 75040','Landscaping',14200,'Scheduled','2026-04-08',[1,2],'Design approved. Materials ordering now.'),
-    ],
-  },
-  'Concrete': {
-    leads: [
-      dl(1,'Morrison Trucking Depot','Bill Morrison','Owner','stalled',19600,'estimate','2026-03-22','price_objection','6,000 sq ft reinforced slab. $2,800 over expectation.','Commercial',33,'Concrete'),
-      dl(2,'Sunridge Subdivision','Developer Greg Fry','Developer','active',64000,'inspection','2026-03-27',null,'22-lot driveway and walkway package. Approved.','Commercial',14,'Concrete'),
-      dl(3,'Northgate Warehouse','Plant Mgr Ray Torres','Operations','stalled',38000,'approved','2026-03-23','budget_freeze','Forklift aisle resurfacing + new dock apron. Q2.','Industrial',44,'Concrete'),
-      dl(4,'Weber Residence','Bill Weber','Homeowner','active',9800,'estimate','2026-03-25',null,'Driveway replacement + back patio. Stamped option.','Residential',12,'Concrete'),
-      dl(5,'Clearview Church Parking','Elder Tom Ames','Admin','stalled',42000,'estimate','2026-03-20','no_response','Parking lot reseal + expansion. No reply.','Institutional',38,'Concrete'),
-      dl(6,'Metro Fire Station','Chief Pat Moore','City Admin','cold',88000,'lead','2026-05-01','timing','Apparatus bay floor + driveway. City budget Q4.','Institutional',55,'Concrete'),
-      dl(7,'Torres Backyard','Miguel Torres','Homeowner','won',7200,'completed',null,null,'Closed! Stamped patio 400 sq ft. Crew 3/30.','Residential',19,'Concrete'),
-      dl(8,'Atlas Industrial Complex','Ann Webb','Plant Mgr','active',54000,'approved','2026-03-26',null,'Loading dock expansion + apron. Near close.','Industrial',22,'Concrete'),
-      dl(9,'Ridgecrest School Walkways','Carl Beck','Facilities Dir','lost',31000,'lost',null,'competitor','Local contractor underbid by $4k.','Institutional',62,'Concrete'),
-    ],
-    jobs: [
-      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Concrete',7200,'In Progress','2026-03-24',[1,2,3,4,5,6],'400 sq ft stamped patio. Poured yesterday. Finishing today.'),
-      dj(2,'Morrison Trucking Depot','2244 Industrial Blvd, Dallas TX 75207','Concrete',19600,'Scheduled','2026-04-07',[1,2],'Reinforced slab. Forms set next week.'),
-      dj(3,'Sunridge Subdivision Lots 1-11','FM 423 & Eldorado Pkwy, Frisco TX 75033','Concrete',64000,'In Progress','2026-03-12',[1,2,3,4,5,6],'11 of 22 driveways poured. On schedule.'),
-      dj(4,'Atlas Industrial Loading Dock','8800 Industrial Dr, Mesquite TX 75149','Concrete',54000,'Scheduled','2026-04-10',[1,2,3],'Permits in. Form crew scheduled 4/10.'),
-    ],
-  },
-  'Fencing': {
-    leads: [
-      dl(1,'Sagebrush Ranch','Dale Cooper','Ranch Owner','stalled',28500,'approved','2026-03-23','wrong_contact','1,200 LF cedar privacy. Need to reach spouse for sign-off.','Residential',46,'Fencing'),
-      dl(2,'Northview Business Park','Greg Lee','Property Mgr','active',42000,'inspection','2026-03-27',null,'Perimeter chain-link + 3 access gates. Security upgrade.','Commercial',13,'Fencing'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',8400,'estimate','2026-03-25',null,'Backyard privacy fence, 300 LF cedar. HOA approved.','Residential',11,'Fencing'),
-      dl(4,'Clearview School District','Carl Beck','Facilities Dir','stalled',62000,'estimate','2026-03-20','budget_freeze','3 campuses, playground fencing. Capital budget delayed.','Institutional',44,'Fencing'),
-      dl(5,'Torres Residence','Miguel Torres','Homeowner','stalled',6800,'estimate','2026-03-22','price_objection','150 LF board-on-board. Competing bid $800 less.','Residential',28,'Fencing'),
-      dl(6,'Mesa Verde HOA','Sandra Hill','HOA President','cold',24000,'lead','2026-04-12','timing','Community fencing refresh. Board vote next month.','HOA',38,'Fencing'),
-      dl(7,'Weber Residence','Bill Weber','Homeowner','won',9200,'completed',null,null,'Closed! 400 LF cedar, 2 gates. Crew 3/31.','Residential',20,'Fencing'),
-      dl(8,'Atlas Yard Storage','Ray Torres','Plant Mgr','active',18000,'approved','2026-03-26',null,'Heavy-gauge chain link, 600 LF. Near close.','Industrial',16,'Fencing'),
-      dl(9,'Ridgecrest Apartments','Don Kwan','Property Mgr','lost',14000,'lost',null,'competitor','Handyman crew did it cheaper.','Commercial',51,'Fencing'),
-    ],
-    jobs: [
-      dj(1,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Fencing',9200,'Scheduled','2026-03-31',[1,2],'400 LF cedar privacy. Posts ordered. Install 3/31.'),
-      dj(2,'Sagebrush Ranch','8801 County Rd 312, Waco TX 76708','Fencing',28500,'Complete','2026-03-11',[1,2,3,4,5,6,7,8,9,10],'1,200 ft cedar fence. All gates hung and tested.'),
-      dj(3,'Northview Business Park','3300 Northview Commerce Dr, Irving TX 75038','Fencing',42000,'In Progress','2026-03-17',[1,2,3,4,5],'Perimeter chain-link 80% done. Gates being hung.'),
-      dj(4,'Atlas Yard Storage','8800 Industrial Dr, Mesquite TX 75149','Fencing',18000,'Scheduled','2026-04-06',[1,2,3],'Heavy chain-link layout staked. Post holes next week.'),
-    ],
-  },
-  'Carpentry': {
-    leads: [
-      dl(1,'The Craftsman Kitchen','Sandra Yee','Owner','stalled',24100,'approved','2026-03-23','technical_fit','Custom cabinet specs rework needed. Awaiting revisions.','Commercial',40,'Carpentry'),
-      dl(2,'Morrison Residence Addition','Carl Morrison','Homeowner','active',18600,'estimate','2026-03-25',null,'Trim package + built-in shelving for new addition.','Residential',14,'Carpentry'),
-      dl(3,'Lakewood Hotel Lobby','GM Ray Lutz','Operations','stalled',44000,'estimate','2026-03-20','budget_freeze','Custom millwork + wainscoting. Capital budget Q2.','Commercial',47,'Carpentry'),
-      dl(4,'Clearbrook Office Fit-Out','Donna Pierce','Office Mgr','active',28000,'inspection','2026-03-27',null,'Reception desk + custom shelving, 2,400 sq ft office.','Commercial',12,'Carpentry'),
-      dl(5,'Torres New Deck','Miguel Torres','Homeowner','stalled',14800,'estimate','2026-03-22','price_objection','Composite deck with pergola. $2,200 over expectation.','Residential',26,'Carpentry'),
-      dl(6,'Sunrise Senior Living','Andrew Mills','Maintenance Dir','cold',22000,'lead','2026-04-15','timing','Custom millwork for dining room renovation.','Institutional',39,'Carpentry'),
-      dl(7,'Weber Residence Built-Ins','Bill Weber','Homeowner','won',8400,'completed',null,null,'Closed! Home office built-ins. Starts 4/3.','Residential',17,'Carpentry'),
-      dl(8,'Park Ave Restaurant','Chef Dan Lee','Owner','active',31000,'approved','2026-03-26',null,'Custom bar + booth seating, hardwood. Near close.','Commercial',20,'Carpentry'),
-      dl(9,'Ridgecrest Church','Pastor Ed Cole','Admin','lost',19000,'lost',null,'competitor','Member of congregation is a finish carpenter.','Institutional',58,'Carpentry'),
-    ],
-    jobs: [
-      dj(1,'Bill & Carol Weber Home Office','4810 Meadowbrook Ln, Flower Mound TX 75028','Carpentry',8400,'Scheduled','2026-04-03',[1,2],'Custom built-ins. Shop fab underway.'),
-      dj(2,'Carl & Amy Morrison Addition','4418 Ridgeway Dr, Garland TX 75040','Carpentry',18600,'In Progress','2026-03-19',[1,2,3,4],'Trim complete. Built-in shelving 50% done.'),
-      dj(3,'Clearbrook Office Fit-Out','501 Commerce Dr, Dallas TX 75201','Carpentry',28000,'In Progress','2026-03-13',[1,2,3,4,5],'Reception desk installed. Shelving units in progress.'),
-      dj(4,'Park Ave Restaurant','3300 Park Ave, Plano TX 75074','Carpentry',31000,'Scheduled','2026-04-09',[1,2,3],'Bar design approved. Material order placed.'),
-    ],
-  },
-  'Waterproofing': {
-    leads: [
-      dl(1,'Harbor View Condos','Robert Chang','Board Treasurer','stalled',47500,'estimate','2026-03-24','wrong_contact','Foundation waterproofing, 32 units. Need full board.','HOA',62,'Waterproofing'),
-      dl(2,'Morrison Basement','Carl Morrison','Homeowner','active',12400,'estimate','2026-03-25',null,'Interior drainage + sump system. Active water intrusion.','Residential',13,'Waterproofing'),
-      dl(3,'Clearbrook Commercial Bldg','Donna Pierce','Property Mgr','stalled',38000,'approved','2026-03-23','budget_freeze','Below-grade parking deck membrane. Q2 capital.','Commercial',44,'Waterproofing'),
-      dl(4,'Northgate Warehouse','Ray Torres','Plant Mgr','active',22000,'inspection','2026-03-27',null,'Exterior foundation coating + drainage tile.','Industrial',11,'Waterproofing'),
-      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',9800,'estimate','2026-03-22','price_objection','Crawl space encapsulation. $1,400 over expectation.','Residential',28,'Waterproofing'),
-      dl(6,'Lakewood Medical Center','Dr. Sam Park','Admin Dir','cold',54000,'lead','2026-04-20','timing','Underground utility corridor waterproofing. Q3.','Commercial',51,'Waterproofing'),
-      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',7600,'completed',null,null,'Closed! Basement interior drain + sump. Starts 4/4.','Residential',19,'Waterproofing'),
-      dl(8,'Atlas Tilt-Wall Building','Ann Webb','Plant Mgr','active',31000,'approved','2026-03-26',null,'Exterior EIFS coating + caulk overhaul. Near close.','Industrial',21,'Waterproofing'),
-      dl(9,'Ridgecrest Church Hall','Deacon Will Jones','Admin','lost',18000,'lost',null,'competitor','Chose a cheaper partial fix instead.','Institutional',63,'Waterproofing'),
-    ],
-    jobs: [
-      dj(1,'Carl & Amy Morrison Basement','4418 Ridgeway Dr, Garland TX 75040','Waterproofing',12400,'In Progress','2026-03-20',[1,2,3,4],'Interior drainage channel cut. Sump install today.'),
-      dj(2,'Miguel & Carmen Torres Basement','4421 Sunset Ridge Rd, Austin TX 78731','Waterproofing',7600,'Scheduled','2026-04-04',[1,2],'Interior drain system. Crew scheduled 4/4.'),
-      dj(3,'Northgate Warehouse','3300 Industrial Pkwy, Grand Prairie TX 75051','Waterproofing',22000,'In Progress','2026-03-15',[1,2,3,4,5],'Exterior coating done. Drainage tile going in now.'),
-      dj(4,'Atlas Tilt-Wall Bldg','8800 Atlas Dr, Mesquite TX 75149','Waterproofing',31000,'Scheduled','2026-04-10',[1,2,3],'EIFS inspection done. Coating crew scheduled.'),
-    ],
-  },
-  'Solar': {
-    leads: [
-      dl(1,'Torres Residence','Miguel Torres','Homeowner','stalled',42000,'approved','2026-03-23','budget_freeze','18-panel system. Waiting on utility rebate approval.','Residential',74,'Solar'),
-      dl(2,'Clearbrook Office Park','Donna Pierce','Property Mgr','active',118000,'inspection','2026-03-27',null,'Commercial array, 240kW. Net metering pre-approved.','Commercial',16,'Solar'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',28400,'estimate','2026-03-25',null,'12-panel system. Roof in great shape. Permit submitted.','Residential',12,'Solar'),
-      dl(4,'Northgate Manufacturing','Ann Webb','Plant Mgr','stalled',186000,'approved','2026-03-23','price_objection','500kW industrial array. $18k over competitor.','Industrial',55,'Solar'),
-      dl(5,'Riverside Church','Pastor Rick Adams','Admin Dir','stalled',34000,'estimate','2026-03-20','no_response','30kW rooftop. Submitted bid. No reply 3 weeks.','Institutional',41,'Solar'),
-      dl(6,'Lakewood HOA Clubhouse','Linda Marsh','HOA President','cold',22000,'lead','2026-04-15','timing','Clubhouse + pool solar. Waiting on HOA vote.','HOA',38,'Solar'),
-      dl(7,'Weber Residence','Bill Weber','Homeowner','won',24600,'completed',null,null,'Closed! 10-panel system. Install 4/5.','Residential',22,'Solar'),
-      dl(8,'Atlas Industrial Roof','Ray Torres','Plant Mgr','active',94000,'approved','2026-03-26',null,'200kW flat roof array. PPA option on table.','Industrial',19,'Solar'),
-      dl(9,'Sunrise School District','Carl Beck','Facilities Dir','lost',210000,'lost',null,'competitor','State procurement went to lowest bidder.','Institutional',84,'Solar'),
-    ],
-    jobs: [
-      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Solar',42000,'In Progress','2026-03-17',[1,2,3,4],'18-panel system. Mounts installed. Panels going up today.'),
-      dj(2,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Solar',24600,'Scheduled','2026-04-05',[1,2,3],'10-panel system. Permit approved. Install 4/5.'),
-      dj(3,'Clearbrook Office Park — Bldg A','501 Commerce Dr, Dallas TX 75201','Solar',118000,'In Progress','2026-03-03',[1,2,3,4,5],'240kW array. All panels mounted. Inverter wiring underway.'),
-      dj(4,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Solar',28400,'Scheduled','2026-04-12',[1,2],'12-panel permit submitted. Utility pre-approved.'),
-    ],
-  },
-  'Garage Doors': {
-    leads: [
-      dl(1,'Lakewood Auto','Steve Kim','Shop Owner','active',7200,'inspection','2026-03-28',null,'3 commercial overhead doors. Second call scheduled.','Commercial',8,'Garage Doors'),
-      dl(2,'Morrison Residence','Carl Morrison','Homeowner','stalled',3800,'estimate','2026-03-22','price_objection','Double door + opener. $400 under our minimum.','Residential',22,'Garage Doors'),
-      dl(3,'Clearbrook Storage LLC','Owner Dan Ross','Owner','active',18400,'estimate','2026-03-26',null,'12 roll-up doors, 10x10. Storage unit facility.','Commercial',15,'Garage Doors'),
-      dl(4,'Weber Residence','Bill Weber','Homeowner','stalled',2800,'lead','2026-03-19','no_response','Single door replacement. No reply after site visit.','Residential',18,'Garage Doors'),
-      dl(5,'Northgate Auto Dealer','GM Rich Nash','Operations','active',11200,'approved','2026-03-25',null,'4 service bay doors, glass panel. Near close.','Commercial',12,'Garage Doors'),
-      dl(6,'Ridgecrest HOA','HOA Manager Tom Park','Mgr','cold',22000,'lead','2026-04-10','timing','Community storage building doors, 8 units. Q2 budget.','HOA',34,'Garage Doors'),
-      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',4400,'completed',null,null,'Closed! Double door + WiFi opener. Crew 3/29.','Residential',14,'Garage Doors'),
-      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',28000,'approved','2026-03-24','budget_freeze','8 heavy-duty roll-up doors, 14x14. Budget on hold.','Industrial',38,'Garage Doors'),
-      dl(9,'Park Ridge Condos','Don Kwan','Property Mgr','lost',14600,'lost',null,'competitor','Went with cheapest bid. Low quality expected.','Commercial',46,'Garage Doors'),
-    ],
-    jobs: [
-      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Garage Doors',4400,'Scheduled','2026-03-29',[1,2],'Double door + WiFi opener. Delivery confirmed.'),
-      dj(2,'Northgate Auto Dealer','8800 Auto Row Blvd, Plano TX 75093','Garage Doors',11200,'In Progress','2026-03-21',[1,2,3,4],'4 service bay doors. 2 complete, 2 in progress.'),
-      dj(3,'Clearbrook Storage LLC','6600 Storage Pkwy, Irving TX 75038','Garage Doors',18400,'In Progress','2026-03-14',[1,2,3,4,5],'12 roll-up doors. 8 installed, 4 remaining.'),
-      dj(4,'Lakewood Auto Shop','7700 Lakewood Blvd, Garland TX 75040','Garage Doors',7200,'Scheduled','2026-04-04',[1,2],'3 commercial doors. Measured and ordered.'),
-    ],
-  },
-  'Demolition': {
-    leads: [
-      dl(1,'City Storage LLC','Nick Ferreira','Operations Mgr','stalled',38000,'estimate','2026-03-20','budget_freeze','Old warehouse demo, 8,000 sq ft. Board approval pending.','Commercial',53,'Demolition'),
-      dl(2,'Northgate Redevelopment','Greg Patterson','Developer','active',72000,'inspection','2026-03-27',null,'3-building strip mall demo. Environmental clear.','Commercial',18,'Demolition'),
-      dl(3,'Morrison Industrial Site','Ann Webb','Plant Mgr','active',44000,'estimate','2026-03-25',null,'Concrete slab + structure demo, 12,000 sq ft.','Industrial',14,'Demolition'),
-      dl(4,'Clearview County','Facilities Dir Bill Fox','Admin','stalled',98000,'estimate','2026-03-20','no_response','Old courthouse demo. No response after site walk.','Institutional',41,'Demolition'),
-      dl(5,'Torres Commercial Site','Miguel Torres','Owner','stalled',28000,'approved','2026-03-23','price_objection','2-story building demo. $6k over competing bid.','Commercial',33,'Demolition'),
-      dl(6,'Lakeview Redevelopment','Dana Clark','Developer','cold',140000,'lead','2026-05-01','timing','12-acre site clearance. Permits 6 months out.','Commercial',62,'Demolition'),
-      dl(7,'Park Ave Auto Body','Owner Jim Lee','Owner','won',18000,'completed',null,null,'Closed! Old building shell demo. Starts 4/4.','Commercial',21,'Demolition'),
-      dl(8,'Ridgecrest School District','Carl Beck','Facilities Dir','active',56000,'approved','2026-03-26',null,'Old gymnasium demo. Asbestos clear. Near close.','Institutional',19,'Demolition'),
-      dl(9,'Clearbrook HOA','Linda Shaw','HOA President','lost',14000,'lost',null,'competitor','Hired a landscaper who also does minor demo.','HOA',55,'Demolition'),
-    ],
-    jobs: [
-      dj(1,'Northgate Strip Mall Demo','3300 Northgate Blvd, Irving TX 75038','Demolition',72000,'In Progress','2026-03-10',[1,2,3,4,5],'Bldg 1 and 2 down. Debris removal underway.'),
-      dj(2,'Park Ave Auto Body Shell','3300 Park Ave, Plano TX 75074','Demolition',18000,'Scheduled','2026-04-04',[1,2,3],'Utility disconnect done. Hazmat clear. Crew 4/4.'),
-      dj(3,'Morrison Industrial Slab','8800 Industrial Dr, Mesquite TX 75149','Demolition',44000,'In Progress','2026-03-18',[1,2,3,4],'Structure down. Slab breaking in progress.'),
-      dj(4,'Ridgecrest Gymnasium','4400 Ridgecrest Blvd, Richardson TX 75080','Demolition',56000,'Scheduled','2026-04-14',[1,2],'Contract signed. Utility disconnect scheduled.'),
-    ],
-  },
-  'Septic': {
-    leads: [
-      dl(1,'Oakwood Estates','Carol Jensen','Homeowner','active',15800,'inspection','2026-03-25',null,'Failing system. Urgent. Permits in process.','Residential',12,'Septic'),
-      dl(2,'Morrison Ranch','Dale Morrison','Ranch Owner','stalled',28000,'approved','2026-03-23','budget_freeze','New 1,500-gal system + leach field. Financing needed.','Residential',38,'Septic'),
-      dl(3,'Clearwater Estates — 4 Lots','Developer Greg Fry','Developer','active',52000,'inspection','2026-03-27',null,'4 new residential septic systems. Permits approved.','Commercial',15,'Septic'),
-      dl(4,'Northview Church Camp','Admin Dir Phil Carr','Admin','stalled',44000,'estimate','2026-03-20','no_response','Camp facility new system + pump station. No reply.','Institutional',36,'Septic'),
-      dl(5,'Weber Vacation Property','Bill Weber','Homeowner','stalled',18400,'estimate','2026-03-22','price_objection','Lake cabin new install. Remote site adds cost.','Residential',24,'Septic'),
-      dl(6,'Ridgecrest RV Park','Owner Sam Nash','Owner','cold',38000,'lead','2026-04-12','timing','RV park system upgrade. Waiting on county permits.','Commercial',44,'Septic'),
-      dl(7,'Torres Rural Property','Miguel Torres','Homeowner','won',14200,'completed',null,null,'Closed! New 1,000-gal system. Excavation 3/30.','Residential',18,'Septic'),
-      dl(8,'Park Ridge Animal Clinic','Dr. Gina Park','Owner','active',22000,'approved','2026-03-26',null,'Commercial-rated system for new vet clinic. Near close.','Commercial',16,'Septic'),
-      dl(9,'County Road Properties LLC','Owner Roy Burns','Owner','lost',34000,'lost',null,'competitor','County health dept contractor won it directly.','Commercial',61,'Septic'),
-    ],
-    jobs: [
-      dj(1,'Miguel & Carmen Torres','Rural Rt 4 Box 212, Bastrop TX 78602','Septic',14200,'In Progress','2026-03-25',[1,2,3],'Excavation done. Tank being set today.'),
-      dj(2,'Carol Jensen — Oakwood Est','4200 Oakwood Ln, Bastrop TX 78602','Septic',15800,'Scheduled','2026-03-30',[1,2],'Permit issued. Crew scheduled 3/30.'),
-      dj(3,'Clearwater Estates Lot 3','FM 969 & CR 155, Bastrop TX 78602','Septic',13000,'Complete','2026-03-14',[1,2,3,4,5,6,7,8,9,10],'1,000-gal system installed and inspected.'),
-      dj(4,'Park Ridge Animal Clinic','3300 Park Ridge Rd, Denton TX 76210','Septic',22000,'Scheduled','2026-04-10',[1,2,3],'Commercial-grade design approved. Permits in.'),
-    ],
-  },
-  'Tree Service': {
-    leads: [
-      dl(1,'Highland Park HOA','David Moore','Board President','cold',8600,'lead','2026-04-10','timing','15 trees to remove. Spring budget approval pending.','HOA',71,'Tree Service'),
-      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',4800,'estimate','2026-03-25',null,'3 oaks over roof line. Storm risk. Emergency.','Residential',9,'Tree Service'),
-      dl(3,'Clearbrook Office Park','Donna Pierce','Property Mgr','stalled',12000,'estimate','2026-03-20','no_response','10 trees removed + stump grinding. No reply.','Commercial',28,'Tree Service'),
-      dl(4,'Weber Residence','Bill Weber','Homeowner','active',3400,'inspection','2026-03-27',null,'2 dead elms + 3 stumps. HOA requirement.','Residential',11,'Tree Service'),
-      dl(5,'Northview Church','Elder Tom Ames','Admin','stalled',7200,'estimate','2026-03-22','price_objection','6 pine removals. $800 over expectation.','Institutional',24,'Tree Service'),
-      dl(6,'Atlas Industrial Site','Ray Torres','Plant Mgr','cold',22000,'lead','2026-04-20','timing','Site clearing, 40+ trees. Permits not ready.','Industrial',38,'Tree Service'),
-      dl(7,'Torres Residence','Miguel Torres','Homeowner','won',2800,'completed',null,null,'Closed! 2 trees + 3 stumps. Crew 3/27.','Residential',14,'Tree Service'),
-      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',9800,'approved','2026-03-26',null,'Annual tree maintenance + hazard removal. Near close.','Institutional',16,'Tree Service'),
-      dl(9,'Ridgecrest HOA','HOA Mgr Tom Park','Mgr','lost',6400,'lost',null,'competitor','Went with the cheapest bid. No insurance.','HOA',44,'Tree Service'),
-    ],
-    jobs: [
-      dj(1,'Miguel & Carmen Torres','4421 Sunset Ridge Rd, Austin TX 78731','Tree Service',2800,'Complete','2026-03-26',[1,2,3,4,5,6,7,8,9],'2 trees removed, 3 stumps ground. Site clean.'),
-      dj(2,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Tree Service',4800,'Scheduled','2026-03-28',[1,2],'3 oaks. Equipment arriving tomorrow.'),
-      dj(3,'Clearbrook Office Park','501 Commerce Dr, Dallas TX 75201','Tree Service',12000,'In Progress','2026-03-22',[1,2,3,4],'7 of 10 trees removed. Chipping done. 3 stumps to go.'),
-      dj(4,'Bill & Carol Weber','4810 Meadowbrook Ln, Flower Mound TX 75028','Tree Service',3400,'Scheduled','2026-04-02',[1,2],'2 elms + 3 stumps. Crew booked 4/2.'),
-    ],
-  },
-  'Seal Coating': {
-    leads: [
-      dl(1,'Westbrook Apartment Complex','Tony Vasquez','Property Mgr','active',8400,'estimate','2026-03-25',null,'Full parking lot, 60-space. Two coats required. Demo well received.','Commercial',10,'Seal Coating'),
-      dl(2,'Meadowfield HOA','Linda Barnes','HOA President','stalled',14200,'approved','2026-03-21','budget_freeze','8,000 sq ft access roads + parking. Annual board vote needed.','HOA',37,'Seal Coating'),
-      dl(3,'Morrison Residence','Carl Morrison','Homeowner','active',2800,'inspection','2026-03-27',null,'Driveway + apron, 1,200 sq ft. Ready to schedule.','Residential',7,'Seal Coating'),
-      dl(4,'Atlas Industrial Park','Ray Torres','Plant Mgr','stalled',22000,'estimate','2026-03-20','no_response','Loading dock + 3 parking areas. No reply after 2 quotes.','Industrial',31,'Seal Coating'),
-      dl(5,'Northview Church','Pastor Ellison','Admin','stalled',6400,'lead','2026-03-22','price_objection','Main lot + overflow, 4,500 sq ft. $400 over expectation.','Institutional',22,'Seal Coating'),
-      dl(6,'Weber Residence','Bill Weber','Homeowner','cold',1900,'lead','2026-04-15','timing','1-car driveway. Wants spring. No urgency.','Residential',44,'Seal Coating'),
-      dl(7,'Clearbrook Office Park','Donna Pierce','Property Mgr','won',11600,'completed',null,null,'Closed! 3 lots fully coated. Crew out 3/27.','Commercial',18,'Seal Coating'),
-      dl(8,'Lakewood School District','Carl Beck','Facilities Dir','active',17800,'approved','2026-03-26',null,'4 entrance drives + bus loop. Near contract.','Institutional',14,'Seal Coating'),
-      dl(9,'Torres Condo HOA','Miguel Torres','HOA Mgr','lost',9200,'lost',null,'competitor','Went with the lower bid — no two-coat guarantee.','HOA',42,'Seal Coating'),
-    ],
-    jobs: [
-      dj(1,'Westbrook Apt Complex','1200 Westbrook Blvd, Dallas TX 75205','Seal Coating',8400,'In Progress','2026-03-22',[1,2,3,4],'First coat done. Second coat tomorrow AM.'),
-      dj(2,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Seal Coating',2800,'Scheduled','2026-03-28',[1,2],'Driveway + apron. Surface clean. Ready to coat.'),
-      dj(3,'Clearbrook Office Park','501 Commerce Dr, Dallas TX 75201','Seal Coating',11600,'Complete','2026-03-20',[1,2,3,4,5,6,7,8],'3 lots fully sealed. Curing complete. Client signed off.'),
-      dj(4,'Lakewood School District','800 Lake Rd, Lakewood TX 75087','Seal Coating',17800,'Scheduled','2026-04-01',[1,2],'Contracts signed. Crew booked 4/1.'),
-    ],
-  },
-  'Real Estate': {
-    leads: [
-      dl(1,'The Hargrove Family','Frank Hargrove','Seller','active',14400,'Listed','2026-03-25',null,'4/3 colonial, $485k. Open house scheduled 3/29. Strong interest.','Residential',10,'Real Estate'),
-      dl(2,'Westbrook Investment LLC','Tony Vasquez','Investor','stalled',28000,'Consultation','2026-03-21','budget_freeze','Mixed-use duplex, $940k. Financing fell through on buyer side.','Commercial',33,'Real Estate'),
-      dl(3,'Morrison Residence','Carl Morrison','Seller','active',9200,'Under Contract','2026-03-27',null,'3/2 ranch, $310k. Inspection cleared. Closing 4/15.','Residential',7,'Real Estate'),
-      dl(4,'Clearbrook Retail Strip','Donna Pierce','Owner','stalled',44000,'Consultation','2026-03-20','no_response','6-unit retail strip, $1.47M. Three calls unanswered.','Commercial',26,'Real Estate'),
-      dl(5,'Weber Estate Sale','Bill Weber','Heir','stalled',18000,'Listed','2026-03-22','price_objection','Estate property, $595k. Family disputes current asking price.','Residential',20,'Real Estate'),
-      dl(6,'Torres Family','Miguel Torres','Buyer','cold',6800,'Lead','2026-04-10','timing','First-time buyer. Pre-approval pending. Not ready until May.','Residential',52,'Real Estate'),
-      dl(7,'Kowalski Property','Brian Kowalski','Seller','won',22000,'Closed',null,null,'Closed! $735k. Commission earned 3/22.','Residential',30,'Real Estate'),
-      dl(8,'Ridgecrest Partners','Tom Park','Investor','active',52000,'Closing','2026-03-26',null,'12-unit apartment building, $1.74M. Final walkthrough done.','Commercial',12,'Real Estate'),
-      dl(9,'Highland Park Condo','Sarah Chen','Seller','lost',11000,'Consultation',null,null,'Signed with another agent. Pricing disagreement.','Residential',41,'Real Estate'),
-    ],
-    jobs: [
-      dj(1,'The Hargrove Family','312 Maple Lane, Austin TX 78731','Real Estate',14400,'In Progress','2026-03-29',[1,2,3,4,5],'Open house scheduled. Photos and staging complete.'),
-      dj(2,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Real Estate',9200,'In Progress','2026-04-15',[1,2,3,4,5,6,7,8],'Under contract. Inspection cleared. Closing 4/15.'),
-      dj(3,'Brian & Nancy Kowalski','18 Westover Ct, Plano TX 75093','Real Estate',22000,'Complete','2026-03-22',[1,2,3,4,5,6,7,8,9,10],'Closed at $735k. Commission received.'),
-      dj(4,'Ridgecrest Partners','4200 Commerce Blvd, Dallas TX 75201','Real Estate',52000,'In Progress','2026-03-28',[1,2,3,4,5,6,7,8],'Final walkthrough done. Closing docs prepared.'),
-    ],
-  },
-  'Pressure Washing': {
-    leads: [
-      dl(1,'Bay Area Car Wash','Lena Torres','Owner','won',4200,'completed',null,null,'Closed! Full lot + canopy wash. 3/27.','Commercial',29,'Pressure Washing'),
-      dl(2,'Morrison Residence','Carl Morrison','Homeowner','active',1800,'estimate','2026-03-25',null,'House exterior + driveway + fence. Annual contract.','Residential',8,'Pressure Washing'),
-      dl(3,'Clearbrook Office Complex','Donna Pierce','Property Mgr','active',6400,'inspection','2026-03-27',null,'Parking deck + building exterior, 3 buildings.','Commercial',13,'Pressure Washing'),
-      dl(4,'Northgate Restaurant Row','Strip Mgr Greg Lee','Mgr','stalled',8800,'estimate','2026-03-20','no_response','10-unit strip center, pre-season wash. No reply.','Commercial',28,'Pressure Washing'),
-      dl(5,'Weber Residence','Bill Weber','Homeowner','stalled',2200,'lead','2026-03-22','price_objection','Driveway + deck. DIY pressure washer is tempting them.','Residential',18,'Pressure Washing'),
-      dl(6,'Ridgecrest HOA','Tom Park','HOA Mgr','cold',12000,'lead','2026-04-05','timing','Common area annual wash. Budget Q2.','HOA',33,'Pressure Washing'),
-      dl(7,'Torres Commercial Building','Miguel Torres','Owner','active',3600,'approved','2026-03-26',null,'4,000 sq ft brick exterior + awnings. Near close.','Commercial',12,'Pressure Washing'),
-      dl(8,'Atlas Fleet Yard','Ann Webb','Plant Mgr','stalled',5400,'estimate','2026-03-21','budget_freeze','Warehouse floor + dock areas. Maintenance budget frozen.','Industrial',24,'Pressure Washing'),
-      dl(9,'Lakewood School Campus','Carl Beck','Facilities Dir','lost',9000,'lost',null,'competitor','Custodial staff did it with district equipment.','Institutional',41,'Pressure Washing'),
-    ],
-    jobs: [
-      dj(1,'Bay Area Car Wash','6600 Bay Area Blvd, Pasadena TX 77507','Pressure Washing',4200,'Scheduled','2026-03-27',[1,2],'Full lot + canopy. Equipment loaded.'),
-      dj(2,'Clearbrook Office Complex','501 Commerce Dr, Dallas TX 75201','Pressure Washing',6400,'In Progress','2026-03-22',[1,2,3,4],'Bldg 1 & 2 done. Bldg 3 + parking deck today.'),
-      dj(3,'Carl & Amy Morrison','4418 Ridgeway Dr, Garland TX 75040','Pressure Washing',1800,'Complete','2026-03-20',[1,2,3,4,5,6,7,8,9],'Full house wash, driveway, fence. Sealed and done.'),
-      dj(4,'Torres Commercial Bldg','3300 Commercial Dr, Austin TX 78701','Pressure Washing',3600,'Scheduled','2026-03-29',[1,2],'Brick exterior + awnings. Crew booked 3/29.'),
+      dj(1,'Carol Flickinger','56 Maple Ave, Middleburg PA 17842','Emergency Tarp',1200,'Scheduled','2026-03-25',[1,2],'Tree damage. Tarp dispatch. Full replacement to follow.'),
+      dj(2,'Ron Davis','610 Main St, Watsontown PA 17777','Emergency Tarp',650,'Complete','2026-03-18',[1,2,3,4,5,6,7,8],'Tarped same day. Sold full replacement.'),
+      dj(3,'Comfort Inn Selinsgrove','1 Comfort Ln, Selinsgrove PA 17870','Emergency Tarp',2400,'In Progress','2026-03-24',[1,2,3,4],'Flat roof membrane tarped. Permanent fix scheduled.'),
     ],
   },
 };
@@ -6003,10 +5424,10 @@ function TradeSelectScreen({ onSelect }) {
             RidgeOS
           </div>
           <div style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', marginBottom: 10 }}>
-            See RidgeOS built for your trade
+            See RidgeOS in action
           </div>
           <div style={{ fontSize: 15, color: '#64748b', maxWidth: 480, margin: '0 auto' }}>
-            Pick your trade to see a live demo tailored to your industry
+            Pick a job type to see a live demo tailored to your roofing business
           </div>
         </div>
 
@@ -6063,7 +5484,7 @@ function TradeSelectScreen({ onSelect }) {
           >
             <div style={{ fontSize: 26, marginBottom: 8 }}>✨</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: showCustom ? '#818cf8' : '#64748b', lineHeight: 1.3 }}>
-              + Add your<br/>trade
+              + Add your<br/>job type
             </div>
           </div>
         </div>
@@ -6076,7 +5497,7 @@ function TradeSelectScreen({ onSelect }) {
             marginBottom: 32,
           }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>
-              ✨ Custom Trade Generator
+              ✨ Custom Job Type Generator
             </div>
             <div style={{ fontSize: 12, color: '#64748b', marginBottom: 14 }}>
               AI builds your job checklist and pipeline stages automatically.
@@ -6105,7 +5526,7 @@ function TradeSelectScreen({ onSelect }) {
               >
                 Try it (Irrigation)
               </button>
-              <DisabledTooltip active label="Sign up to generate your own trade">
+              <DisabledTooltip active label="Sign up to generate your own job type">
                 <button
                   style={{
                     padding: '9px 16px',
@@ -6176,7 +5597,7 @@ function TradeSelectScreen({ onSelect }) {
                       </div>
                     ))}
                     <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 6, fontSize: 11, color: '#94a3b8' }}>
-                      🔒 Sign up to generate your own trade with real data
+                      🔒 Sign up to generate your own job type with real data
                     </div>
                   </div>
                 </div>
@@ -6633,7 +6054,7 @@ function GlobalPhotoLog() {
 function AddJobModal({ onSave, onClose }) {
   const isMobile = useMobile();
   const [form, setForm] = useState({
-    customer: '', address: '', trade: 'Roofing', value: '', scheduledDate: '', notes: '',
+    customer: '', address: '', trade: 'Full Replacement', value: '', scheduledDate: '', notes: '',
   });
   const [errors, setErrors] = useState({});
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
@@ -6681,11 +6102,11 @@ function AddJobModal({ onSave, onClose }) {
         <input style={fi('customer')} value={form.customer} onChange={e => set('customer', e.target.value)} placeholder="Customer or company name" />
 
         <label style={FLbl}>Job Address</label>
-        <input style={fi('address')} value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Main St, City TX 78000" />
+        <input style={fi('address')} value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Main St, Mechanicsburg PA 17055" />
 
         <div style={isMobile ? {} : FRow}>
           <div>
-            <label style={FLbl}>Trade</label>
+            <label style={FLbl}>Job Type</label>
             <select style={fi('trade')} value={form.trade} onChange={e => set('trade', e.target.value)}>
               {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -6920,19 +6341,19 @@ function CrewMemberModal({ member, onSave, onClose }) {
       <div style={mobModal}>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ ...S.modalTitle, paddingRight: 48 }}>{member ? 'Edit Crew Member' : 'Add Crew Member'}</div>
-        <div style={S.modalSub}>Profile and trade specialties</div>
+        <div style={S.modalSub}>Profile and job type specialties</div>
 
         <label style={FLbl}>Name *</label>
         <input style={inp(nameErr)} value={name} onChange={e => { setName(e.target.value); setNameErr(false); }} placeholder="Full name" />
         {nameErr && <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 6 }}>Name is required</div>}
 
         <label style={FLbl}>Role / Title</label>
-        <input style={inp(false)} value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. Lead Installer, Foreman, Helper" />
+        <input style={inp(false)} value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. Foreman, Tear-off Crew, Install Crew, Estimator" />
 
         <label style={FLbl}>Phone</label>
         <input style={inp(false)} value={phone} onChange={e => setPhone(e.target.value)} placeholder="(555) 000-0000" type="tel" />
 
-        <label style={FLbl}>Trade Specialties</label>
+        <label style={FLbl}>Job Type Specialties</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
           {TRADE_LIST.map(trade => {
             const sel = specialties.includes(trade);
@@ -7428,7 +6849,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
   };
 
   const useTemplate = () => {
-    const tmpl = TRADE_CHECKLISTS[userTrade] || TRADE_CHECKLISTS['Roofing'];
+    const tmpl = TRADE_CHECKLISTS[userTrade] || TRADE_CHECKLISTS['Full Replacement'];
     pushHistory(taskList);
     setTaskList(tmpl.map(s => s.label));
     setShowChecklist(true);
@@ -7558,9 +6979,13 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
 // ─── Stage Change Modal ─────────────────────────────────────────────────────────
 function StageChangeModal({ job, onSave, onClose }) {
   const stages = [
-    { key: 'approved', label: 'Approved', color: '#10b981' },
+    { key: 'materials_ordered', label: 'Materials Ordered', color: '#8b5cf6' },
+    { key: 'scheduled_for_install', label: 'Scheduled for Install', color: '#06b6d4' },
     { key: 'in_progress', label: 'In Progress', color: '#f97316' },
+    { key: 'punch_list', label: 'Punch List', color: '#ec4899' },
     { key: 'completed', label: 'Completed', color: '#22c55e' },
+    { key: 'invoiced', label: 'Invoiced', color: '#a855f7' },
+    { key: 'paid', label: 'Paid', color: '#14b8a6' },
   ];
   return (
     <div style={S.modalOverlay} onClick={onClose}>
@@ -7922,7 +7347,7 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
 
 // ─── Day Action Modal ──────────────────────────────────────────────────────────
 function DayActionModal({ date, allJobs, assignments, crew, existingNote, onScheduleExisting, onCreateNew, onAddNote, onClose }) {
-  const [mode, setMode] = useState('menu'); // 'menu' | 'schedule' | 'create' | 'note'
+  const [mode, setMode] = useState('menu'); // 'menu' | 'schedule' | 'create' | 'note' | 'dayDetail'
   const [note, setNote] = useState(existingNote || '');
   const [description, setDescription] = useState('');
   const [customer, setCustomer] = useState('');
@@ -7949,6 +7374,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const subTitle = mode === 'menu' ? 'What would you like to do?'
     : mode === 'schedule' ? 'Tap a job to schedule or reschedule it'
     : mode === 'create' ? 'Quick-create a new job'
+    : mode === 'dayDetail' ? 'Jobs, crew, and hours at a glance'
     : 'Add a note for this day';
 
   const backBtn = (
@@ -8025,7 +7451,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const dayOverlay = dayIsMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.modalOverlay;
   const dayModalStyle = dayIsMobile
     ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '90dvh', borderRadius: '16px 16px 0 0', margin: 0, padding: '20px 16px 24px' }
-    : { ...S.modal, maxWidth: 400 };
+    : { ...S.modal, maxWidth: mode === 'dayDetail' ? 560 : 400 };
 
   return (
     <div style={dayOverlay} onClick={onClose}>
@@ -8037,6 +7463,14 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
 
         {mode === 'menu' && (
           <div>
+            {(() => {
+              const dayJobs = (allJobs || []).filter(j => jobOccupiesDate(j, date));
+              const dayCrewCount = new Set(dayJobs.flatMap(j => (assignments || {})[String(j.id)] || [])).size;
+              return actionBtn('📊', 'Day Detail',
+                dayJobs.length > 0 ? `${dayJobs.length} job${dayJobs.length !== 1 ? 's' : ''} · ${dayCrewCount} crew` : 'No jobs scheduled',
+                () => setMode('dayDetail')
+              );
+            })()}
             {actionBtn('📋', 'Schedule / Reschedule Job',
               jobs.length > 0 ? `${jobs.length} job${jobs.length !== 1 ? 's' : ''} in pipeline` : 'Pick from pipeline jobs',
               () => setMode('schedule')
@@ -8158,6 +7592,197 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
         {mode === 'note' && justScheduled && (
           <SuccessView icon="&#128221;" title="Note Saved!" sub={`Visible on ${displayDate}`} />
         )}
+
+        {mode === 'dayDetail' && (() => {
+          const dayJobs = jobs.filter(j => jobOccupiesDate(j, date));
+          const demoDay = DEMO_DAY_DETAIL[date] || {};
+          const allCrewIds = new Set();
+          const jobDetails = dayJobs.map(job => {
+            const jid = typeof job.id === 'number' ? job.id : String(job.id);
+            const assignedIds = (assignments || {})[String(job.id)] || [];
+            const demoEntries = demoDay[jid] || [];
+            const steps = TRADE_CHECKLISTS[job.trade] || TRADE_CHECKLISTS['Full Replacement'] || [];
+            const completedCount = (job.completedSteps || []).length;
+            const nextStep = steps[completedCount] || steps[steps.length - 1] || { label: 'Complete' };
+            const crewDetails = assignedIds.map(cid => {
+              allCrewIds.add(cid);
+              const member = (crew || []).find(m => m.id === cid);
+              const demoEntry = demoEntries.find(e => e.crewId === cid) || {};
+              return {
+                id: cid,
+                name: member?.name || cid,
+                role: member?.role || '',
+                clockIn: demoEntry.clockIn || '—',
+                status: demoEntry.status || 'Scheduled',
+                hoursLogged: demoEntry.hoursLogged || 0,
+                payRate: demoEntry.payRate || 0,
+              };
+            });
+            // Also include demo entries for crew not in assignments (e.g. if demo has extra data)
+            demoEntries.forEach(e => {
+              if (!assignedIds.includes(e.crewId)) {
+                allCrewIds.add(e.crewId);
+                const member = (crew || []).find(m => m.id === e.crewId);
+                crewDetails.push({
+                  id: e.crewId, name: member?.name || e.crewId, role: member?.role || '',
+                  clockIn: e.clockIn || '—', status: e.status || 'Scheduled',
+                  hoursLogged: e.hoursLogged || 0, payRate: e.payRate || 0,
+                });
+              }
+            });
+            const totalHours = crewDetails.reduce((s, c) => s + c.hoursLogged, 0);
+            const totalLabor = crewDetails.reduce((s, c) => s + c.hoursLogged * c.payRate, 0);
+            return { job, crewDetails, totalHours, totalLabor, completedCount, totalSteps: steps.length, nextStep };
+          });
+          const grandHours = jobDetails.reduce((s, d) => s + d.totalHours, 0);
+          const grandLabor = jobDetails.reduce((s, d) => s + d.totalLabor, 0);
+          const grandValue = dayJobs.reduce((s, j) => s + (j.value || 0), 0);
+          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#64748b', 'Scheduled': '#475569' }[s] || '#475569');
+          const pill = (text, bg, fg) => ({ display: 'inline-block', fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 8, background: bg, color: fg, marginLeft: 4 });
+          const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
+          const card = { background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '12px 14px', marginBottom: 8 };
+
+          return (
+            <div>
+              {backBtn}
+              {/* Day Totals */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 4 }}>
+                <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#f97316' }}>{grandHours.toFixed(1)}</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Total Hours</div>
+                </div>
+                <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#3b82f6' }}>{allCrewIds.size}</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Crews Deployed</div>
+                </div>
+                <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#22c55e' }}>${grandValue.toLocaleString()}</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Active Job Value</div>
+                </div>
+              </div>
+
+              {dayJobs.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '28px 0', color: '#475569', fontSize: 13 }}>No jobs scheduled for this date.</div>
+              )}
+
+              {/* Jobs Scheduled */}
+              {jobDetails.length > 0 && (
+                <>
+                  <div style={sectionLabel}>Jobs Scheduled ({jobDetails.length})</div>
+                  {jobDetails.map(({ job, crewDetails: jcrew, totalHours: jHours, totalLabor: jLabor, completedCount, totalSteps, nextStep }) => {
+                    const tc = TRADE_COLORS[job.trade] || '#f97316';
+                    const estMargin = job.value > 0 ? Math.round((1 - jLabor / job.value) * 100) : null;
+                    return (
+                      <div key={job.id} style={card}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                            <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>{job.address || ''}</div>
+                          </div>
+                          <span style={{ ...pill('', tc + '22', tc), marginLeft: 8 }}>{job.trade}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#94a3b8', marginBottom: 8, flexWrap: 'wrap' }}>
+                          <span>${(job.value || 0).toLocaleString()}</span>
+                          <span>{jHours.toFixed(1)} hrs today</span>
+                          <span>${jLabor.toFixed(0)} labor</span>
+                          {estMargin !== null && <span style={{ color: estMargin > 40 ? '#22c55e' : estMargin > 20 ? '#f59e0b' : '#ef4444' }}>{estMargin}% est. margin</span>}
+                        </div>
+                        <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ flex: 1, height: 4, background: '#1e2535', borderRadius: 2, overflow: 'hidden' }}>
+                            <div style={{ width: `${(completedCount / totalSteps) * 100}%`, height: '100%', background: tc, borderRadius: 2 }} />
+                          </div>
+                          <span style={{ fontSize: 10, color: '#64748b', flexShrink: 0 }}>{completedCount}/{totalSteps}</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#64748b' }}>Current: <span style={{ color: '#94a3b8' }}>{nextStep.label}</span></div>
+
+                        {/* Crew on this job */}
+                        {jcrew.length > 0 && (
+                          <div style={{ marginTop: 8, borderTop: '1px solid #1e2535', paddingTop: 8 }}>
+                            {jcrew.map(c => (
+                              <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 12 }}>
+                                <span style={{ color: '#e2e8f0', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
+                                <span style={{ color: '#475569', fontSize: 10, minWidth: 60 }}>{c.role}</span>
+                                <span style={pill(c.status, statusColor(c.status) + '22', statusColor(c.status))}>{c.status}</span>
+                                <span style={{ color: '#64748b', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {jcrew.length === 0 && (
+                          <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+
+              {/* Crew On Duty summary */}
+              {allCrewIds.size > 0 && (
+                <>
+                  <div style={sectionLabel}>Crew On Duty ({allCrewIds.size})</div>
+                  <div style={card}>
+                    {Array.from(allCrewIds).map(cid => {
+                      const member = (crew || []).find(m => m.id === cid);
+                      const memberJobs = jobDetails.filter(d => d.crewDetails.some(c => c.id === cid));
+                      const memberEntries = memberJobs.flatMap(d => d.crewDetails.filter(c => c.id === cid));
+                      const totalH = memberEntries.reduce((s, e) => s + e.hoursLogged, 0);
+                      const status = memberEntries[0]?.status || 'Scheduled';
+                      const clockIn = memberEntries[0]?.clockIn || '—';
+                      return (
+                        <div key={cid} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #1e2535', fontSize: 12 }}>
+                          <div style={{ minWidth: 110 }}>
+                            <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{member?.name || cid}</div>
+                            <div style={{ fontSize: 10, color: '#475569' }}>{member?.role || ''}</div>
+                          </div>
+                          <div style={{ flex: 1, fontSize: 11, color: '#64748b' }}>
+                            {memberJobs.map(d => d.job.customer).join(', ')}
+                          </div>
+                          <span style={pill(status, statusColor(status) + '22', statusColor(status))}>{status}</span>
+                          <div style={{ textAlign: 'right', minWidth: 60 }}>
+                            <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{totalH.toFixed(1)}h</div>
+                            <div style={{ fontSize: 9, color: '#475569' }}>in {clockIn}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+              {/* Hours Summary */}
+              {jobDetails.length > 0 && (
+                <>
+                  <div style={sectionLabel}>Hours Summary</div>
+                  <div style={card}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 12px', fontSize: 11, color: '#64748b' }}>
+                      <div style={{ fontWeight: 700, color: '#94a3b8' }}>Job</div>
+                      <div style={{ fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>Hours</div>
+                      <div style={{ fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>Labor $</div>
+                      <div style={{ fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>Margin</div>
+                      {jobDetails.map(d => {
+                        const em = d.job.value > 0 ? Math.round((1 - d.totalLabor / d.job.value) * 100) : null;
+                        return (
+                          <div key={d.job.id} style={{ display: 'contents' }}>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingTop: 4 }}>{d.job.customer}</div>
+                            <div style={{ textAlign: 'right', paddingTop: 4 }}>{d.totalHours.toFixed(1)}</div>
+                            <div style={{ textAlign: 'right', paddingTop: 4 }}>${d.totalLabor.toFixed(0)}</div>
+                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#475569' }}>{em !== null ? `${em}%` : '—'}</div>
+                          </div>
+                        );
+                      })}
+                      <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #253048', marginTop: 4 }} />
+                      <div style={{ fontWeight: 700, color: '#f1f5f9', paddingTop: 4 }}>Totals</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#f1f5f9', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#f1f5f9', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#475569', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -8179,7 +7804,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
   const [dragJobId, setDragJobId] = useState(null);
   const [dragOverDate, setDragOverDate] = useState(null);
   const isMobile = useMobile();
-  const effectiveTrade = userTrade || 'Roofing';
+  const effectiveTrade = userTrade || 'Full Replacement';
 
   const scheduledJobs = useMemo(() => jobs.filter(j => j.scheduledDate), [jobs]);
   const unscheduledJobs = useMemo(() => jobs.filter(j => (j.explicitlyScheduled === false || !j.scheduledDate) && j.status !== 'Complete'), [jobs]);
@@ -8489,7 +8114,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
   const tradeColor = TRADE_COLORS[trade] || '#6366f1';
   // For custom trades, remap Roofing sample data to the custom trade name
   const data = TRADE_DEMO_DATA[trade] || (() => {
-    const base = TRADE_DEMO_DATA['Roofing'];
+    const base = TRADE_DEMO_DATA['Full Replacement'];
     return {
       leads: base.leads.map(l => ({ ...l, trade })),
       jobs: base.jobs.map(j => ({ ...j, trade })),
@@ -8633,7 +8258,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
             WebkitTapHighlightColor: 'transparent',
           }}
         >
-          ← {isMobile ? 'Back' : 'Change trade'}
+          ← {isMobile ? 'Back' : 'Change job type'}
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
@@ -8879,7 +8504,7 @@ export default function App() {
     setUserLeads(prev => prev.map(l => String(l.id) === String(jobData.id) ? { ...l, name: jobData.customer, scheduledDate: jobData.scheduledDate, duration: jobData.duration || 1 } : l));
   };
   const handleChangeJobStage = (jobId, stage) => {
-    const statusMap = { approved: 'Scheduled', in_progress: 'In Progress', completed: 'Complete', lost: 'Lost' };
+    const statusMap = { materials_ordered: 'Scheduled', scheduled_for_install: 'Scheduled', in_progress: 'In Progress', punch_list: 'In Progress', completed: 'Complete', invoiced: 'Complete', paid: 'Complete', lost: 'Lost' };
     setUserLeads(prev => prev.map(l => String(l.id) === String(jobId) ? { ...l, stage } : l));
     setUserJobs(prev => prev.map(j => String(j.id) === String(jobId) ? { ...j, status: statusMap[stage] || stage } : j));
   };
@@ -9004,7 +8629,8 @@ export default function App() {
   const derivedIds = new Set(derivedJobs.map(j => String(j.id)));
   const standaloneJobs = userJobs.filter(j => !derivedIds.has(String(j.id)));
   const jobs = isDemo ? DEMO_JOBS : [...derivedJobs, ...standaloneJobs];
-  const userTrade = session?.trade || 'Roofing';
+  const effectiveAssignments = isDemo ? DEMO_ASSIGNMENTS : assignments;
+  const userTrade = session?.trade || 'Full Replacement';
   const companyName = session?.companyName || 'RidgeOS';
   const userCustomChecklist = session?.customTradeConfig?.checklist || null;
   const currentUser = session?.name || session?.companyName || 'You';
@@ -9061,7 +8687,7 @@ export default function App() {
         {!isMobile && (
           <div style={S.tabs}>
             {visibleTabs.map(({ key, label }) => (
-              <button key={key} className={tab === key ? '' : 'ri-nav-tab'} style={S.tab(tab === key)} onClick={() => setTab(key)}>
+              <button key={key} className={tab === key ? '' : 'ri-nav-tab'} style={S.tab(tab === key, SECTION_COLORS[key])} onClick={() => setTab(key)}>
                 {label}
               </button>
             ))}
@@ -9128,7 +8754,7 @@ export default function App() {
                 jobs={jobs}
                 customChecklist={userCustomChecklist}
                 crew={crew}
-                assignments={assignments}
+                assignments={effectiveAssignments}
                 onAssign={isDemo ? null : handleAssign}
                 onUnassign={isDemo ? null : handleUnassign}
                 onAddCrew={isDemo ? null : handleAddCrew}
@@ -9144,7 +8770,7 @@ export default function App() {
           <CalendarTab
             jobs={jobs}
             crew={crew}
-            assignments={assignments}
+            assignments={effectiveAssignments}
             onSchedule={isDemo ? null : handleScheduleJob}
             onComplete={isDemo ? null : handleCompleteJob}
             onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
@@ -9166,7 +8792,7 @@ export default function App() {
           <CrewTab
             crew={crew}
             jobs={jobs}
-            assignments={assignments}
+            assignments={effectiveAssignments}
             onAddMember={isDemo ? null : handleAddCrew}
             onEditMember={isDemo ? null : handleEditCrew}
             onDeleteMember={isDemo ? null : handleDeleteCrew}
