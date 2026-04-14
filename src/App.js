@@ -1129,7 +1129,6 @@ function getStageAiDemo(lead) {
   const name = lead.name;
   const val = fmt(lead.value);
   const contact = lead.contact;
-  const trade = lead.trade;
 
   const responses = {
     lead: `1. Call ${contact} today to schedule a site visit for the ${name} job — leads that get a same-day visit convert 3× higher than those that wait a week. Ask about insurance coverage (Erie, State Farm, Nationwide are the big three in the valley) before the call ends.\n\n2. Pull the ${name} property on Google Maps satellite view before visiting — estimate roof pitch, check for dormers or additions, and spot access issues. Many valley homes have steep pitches and tight driveways. Arriving prepared on a ${val} lead signals professionalism.\n\n3. Check the township requirements for the ${name} address — permit rules vary across Union, Snyder, and Northumberland counties. Some townships don't require permits for re-roofs, but verify before quoting.\n\n4. Create the job folder today: address, ${contact}'s contact details, satellite screenshot, and your initial scope notes. Note if this is a referral — word of mouth is everything in the Susquehanna Valley.`,
