@@ -4101,18 +4101,29 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const pct = Math.round(doneCount / total * 100);
   const statusColor = pct === 100 ? '#22c55e' : pct > 0 ? '#f97316' : '#6366f1';
 
-  const jobOverlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
-  const jobModal = isMobile
-    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '96dvh', borderRadius: '16px 16px 0 0', margin: 0, padding: '20px 14px 24px' }
-    : S.modal;
+  // Full-screen overlay + flex-column modal: header is pinned, only content scrolls
+  const jobOverlay = {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)',
+    display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center',
+    zIndex: 1000, padding: isMobile ? 0 : 20,
+  };
+  const jobModal = {
+    background: '#1a2236', border: isMobile ? 'none' : '1px solid #2e3d5c',
+    borderRadius: isMobile ? '16px 16px 0 0' : 14,
+    width: '100%', maxWidth: isMobile ? '100vw' : 600,
+    height: isMobile ? '96dvh' : '90vh',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+    position: 'relative',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
+  };
 
   return (
     <div style={jobOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div style={jobModal}>
-        <button className="ri-close-btn" style={{ ...S.closeBtn, zIndex: 12 }} onClick={onClose}>×</button>
+      <div style={jobModal} onClick={e => e.stopPropagation()}>
 
-        {/* Sticky header: job info + tab bar */}
-        <div style={{ position: 'sticky', top: isMobile ? -20 : -28, zIndex: 10, background: '#1a2236', marginLeft: isMobile ? -14 : -28, marginRight: isMobile ? -14 : -28, paddingLeft: isMobile ? 14 : 28, paddingRight: isMobile ? 14 : 28, paddingTop: isMobile ? 20 : 28, marginTop: isMobile ? -20 : -28, paddingBottom: 0 }}>
+        {/* ── Pinned header: never scrolls ── */}
+        <div style={{ flexShrink: 0, padding: isMobile ? '16px 14px 0' : '24px 28px 0', position: 'relative' }}>
+          <button className="ri-close-btn" style={{ ...S.closeBtn, zIndex: 12 }} onClick={onClose}>×</button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
             <div style={S.modalTitle}>{job.customer}</div>
             <span style={{
@@ -4180,7 +4191,10 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           })}
           </div>
         </div>
-        {/* End sticky header */}
+        {/* ── End pinned header ── */}
+
+        {/* ── Scrollable content area ── */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px 14px 24px' : '20px 28px 28px' }}>
 
         {modalTab === 'checklist' && (
           <>
@@ -4342,6 +4356,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
         {modalTab === 'crewpay' && (
           <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} rolePerms={rolePerms} />
         )}
+        </div>{/* end scrollable content */}
       </div>
     </div>
   );
