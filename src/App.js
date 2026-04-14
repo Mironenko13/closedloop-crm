@@ -3778,8 +3778,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         </div>
       )}
 
-      {/* Sub-tab navigation */}
-      <div style={{ display: 'flex', background: '#131a2a', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, overflowX: 'auto', padding: '4px 4px 0' }}>
+      {/* Sub-tab navigation — sticky */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 8, display: 'flex', background: '#131a2a', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, overflowX: 'auto', padding: '4px 4px 0' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
@@ -4109,44 +4109,46 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   return (
     <div style={jobOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div style={jobModal}>
-        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <button className="ri-close-btn" style={{ ...S.closeBtn, zIndex: 12 }} onClick={onClose}>×</button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <div style={S.modalTitle}>{job.customer}</div>
-          <span style={{
-            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-            background: statusColor + '22', color: statusColor,
-            textTransform: 'uppercase', letterSpacing: '0.5px',
-          }}>
-            {pct === 100 ? 'Complete' : pct > 0 ? 'In Progress' : 'Scheduled'}
-          </span>
-        </div>
-        <div style={S.modalSub}>
-          {job.address}{rolePerms?.seeDollars !== false ? ` · ${fmt(job.value)}` : ''}
-        </div>
-        <div style={{ marginBottom: 20 }}>
-          <span style={{
-            display: 'inline-block', fontSize: 11, fontWeight: 600,
-            padding: '3px 10px', borderRadius: 10,
-            background: tradeColor + '22', color: tradeColor,
-            letterSpacing: '0.3px',
-          }}>
-            {job.trade}
-          </span>
-        </div>
-
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ fontSize: 12, color: '#64748b' }}>Progress</span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{doneCount}/{total} steps — {pct}%</span>
+        {/* Sticky header: job info + tab bar */}
+        <div style={{ position: 'sticky', top: isMobile ? -20 : -28, zIndex: 10, background: '#1a2236', marginLeft: isMobile ? -14 : -28, marginRight: isMobile ? -14 : -28, paddingLeft: isMobile ? 14 : 28, paddingRight: isMobile ? 14 : 28, paddingTop: isMobile ? 20 : 28, marginTop: isMobile ? -20 : -28, paddingBottom: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <div style={S.modalTitle}>{job.customer}</div>
+            <span style={{
+              fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+              background: statusColor + '22', color: statusColor,
+              textTransform: 'uppercase', letterSpacing: '0.5px',
+            }}>
+              {pct === 100 ? 'Complete' : pct > 0 ? 'In Progress' : 'Scheduled'}
+            </span>
           </div>
-          <div style={S.progressTrack}>
-            <div style={S.progressFill(pct, statusColor)} />
+          <div style={S.modalSub}>
+            {job.address}{rolePerms?.seeDollars !== false ? ` · ${fmt(job.value)}` : ''}
           </div>
-        </div>
+          <div style={{ marginBottom: 12 }}>
+            <span style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 600,
+              padding: '3px 10px', borderRadius: 10,
+              background: tradeColor + '22', color: tradeColor,
+              letterSpacing: '0.3px',
+            }}>
+              {job.trade}
+            </span>
+          </div>
 
-        {/* Modal tab bar */}
-        <div style={{ display: 'flex', background: '#161b27', borderBottom: '2px solid #253048', borderRadius: '8px 8px 0 0', marginBottom: 20, overflowX: 'auto', padding: '4px 4px 0' }}>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 12, color: '#64748b' }}>Progress</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{doneCount}/{total} steps — {pct}%</span>
+            </div>
+            <div style={S.progressTrack}>
+              <div style={S.progressFill(pct, statusColor)} />
+            </div>
+          </div>
+
+          {/* Modal tab bar */}
+          <div style={{ display: 'flex', background: '#161b27', borderBottom: '2px solid #253048', borderRadius: '8px 8px 0 0', marginBottom: 0, overflowX: 'auto', padding: '4px 4px 0' }}>
           {[
             { key: 'checklist', label: 'Checklist' },
             { key: 'crew', label: 'Crew' },
@@ -4176,7 +4178,9 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             </button>
             );
           })}
+          </div>
         </div>
+        {/* End sticky header */}
 
         {modalTab === 'checklist' && (
           <>
