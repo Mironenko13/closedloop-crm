@@ -3829,9 +3829,9 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       {/* ── Labor Tab ── */}
       {subTab === 'labor' && (
         <div>
-          {/* Sub-contractor info */}
+          {/* Crew info */}
           <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Sub-Contractor Name(s)</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
             <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           </div>
           {/* Sections */}
@@ -3950,11 +3950,11 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             </div>
           )}
 
-          {/* Sub-Contractor Pay */}
+          {/* Crew Pay */}
           <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Sub-Contractor Pay</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Sub-Contractor Name(s)</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
               <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
@@ -3995,7 +3995,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                 </div>
               </div>
               {[
-                { field: 'subName', label: 'Sub-Contractor Name', type: 'text' },
+                { field: 'subName', label: 'Crew Name', type: 'text' },
                 { field: 'supervisor', label: 'Site Supervisor Name', type: 'text' },
                 { field: 'dateCompleted', label: 'Date Completed', type: 'date' },
               ].map(({ field, label, type }) => (
@@ -5242,7 +5242,7 @@ const TRADE_DEMO_DATA = {
       dl(7,'Milton Area School Dist','Tom Hensley','Facilities Dir','cold',78000,'lead','2026-04-15','timing','Large job — 320 sq across gym + cafeteria. School board vote in April.','Institutional',53,'Full Replacement'),
       dl(8,'Metzger Residence','Raj Metzger','Homeowner','won',14600,'paid',null,null,'Closed! CertainTeed Landmark Pro, 26 sq. 8/12 pitch. 1 layer over OSB.','Residential',24,'Full Replacement'),
       dl(9,'Klinger Trucking','Jim Klinger','Owner','stalled',27300,'contract_signed','2026-03-24','competitor','Standing seam metal on 3-bay shop, 34 sq. Getting 3 bids from valley roofers.','Commercial',37,'Full Replacement'),
-      dl(10,'First Baptist Sunbury','Pastor Rick Adams','Admin Dir','lost',23400,'lost',null,'competitor','Lost to contractor from Williamsport area.','Institutional',61,'Full Replacement'),
+      dl(10,'First Baptist Sunbury','Pastor Rick Adams','Admin Dir','lost',23400,'lost',null,'competitor','Lost to roofer from Williamsport area.','Institutional',61,'Full Replacement'),
     ],
     jobs: [
       dj(1,'Dave & Lisa Shumaker','142 Chestnut St, Mifflinburg PA 17844','Full Replacement',14800,'In Progress','2026-03-20',[1,2,3,4,5,6,7,8],'GAF Timberline HDZ Charcoal. Tear-off done, shingles going on.'),
@@ -5281,7 +5281,7 @@ const TRADE_DEMO_DATA = {
       dl(6,'Evangelical Community Hospital','Greg Stauffer','Facilities Mgr','active',6200,'contract_signed','2026-03-26',null,'Outpatient wing warranty inspection — 1-year mark. Lewisburg.','Institutional',12,'Inspection'),
       dl(7,'Susquehanna Industrial Park','Nick Etter','GM','won',1600,'paid',null,null,'Closed! 3-building annual inspection. Report delivered. Northumberland.','Commercial',18,'Inspection'),
       dl(8,'Bloomsburg School Dist','Stan Wells','Facilities Dir','cold',5400,'lead','2026-04-15','timing','4 campus buildings. Budget not released until May.','Institutional',44,'Inspection'),
-      dl(9,'Comfort Inn Selinsgrove','Lisa Cole','GM','lost',2800,'lost',null,'competitor','Lost to existing maintenance contractor from Williamsport.','Commercial',52,'Inspection'),
+      dl(9,'Comfort Inn Selinsgrove','Lisa Cole','GM','lost',2800,'lost',null,'competitor','Lost to existing maintenance company from Williamsport.','Commercial',52,'Inspection'),
     ],
     jobs: [
       dj(1,'Susquehanna Industrial Park','825 Point Township Dr, Northumberland PA 17857','Inspection',1600,'Complete','2026-03-15',[1,2,3,4,5,6,7,8,9],'3-building inspection complete. Report delivered.'),
@@ -5404,16 +5404,17 @@ const TRADE_DEMO_DATA = {
 // ─── Trade Select Screen ───────────────────────────────────────────────────────
 const CUSTOM_TRADE_DEMO = {
   checklist: [
-    'Site assessment and water source check',
-    'Design layout and zone mapping',
-    'Trenching and pipe installation',
-    'Head and emitter placement',
-    'Controller and valve installation',
-    'System pressure test and flush',
-    'Zone programming and timer setup',
-    'Final walkthrough with client',
+    'Site inspection & measurements',
+    'Panel layout and trim plan',
+    'Material order (panels, trim, fasteners)',
+    'Tear off existing roof',
+    'Install underlayment & ice shield',
+    'Install metal panels',
+    'Install ridge cap & trim',
+    'Seal & flash all penetrations',
+    'Final inspection & nail sweep',
   ],
-  pipeline: ['Lead', 'Site Visit', 'Design', 'Installation', 'Testing', 'Complete'],
+  pipeline: ['Lead', 'Inspection', 'Estimate', 'Contract', 'Install', 'Complete'],
 };
 
 function TradeSelectScreen({ onSelect }) {
@@ -5425,7 +5426,7 @@ function TradeSelectScreen({ onSelect }) {
   const goToSignup = () => { window.location.href = '/'; };
 
   const handleTryIt = () => {
-    setCustomResult({ name: 'Irrigation', ...CUSTOM_TRADE_DEMO });
+    setCustomResult({ name: 'Metal Roofing', ...CUSTOM_TRADE_DEMO });
     setCustomError('');
   };
 
@@ -5525,7 +5526,7 @@ function TradeSelectScreen({ onSelect }) {
               <input
                 value={customInput}
                 onChange={e => { setCustomInput(e.target.value); setCustomError(''); setCustomResult(null); }}
-                placeholder="e.g. Irrigation, Tile Setter, Sign Hanging"
+                placeholder="e.g. Metal Roofing, Slate Restoration, TPO Systems"
                 style={{
                   flex: 1, minWidth: 200, padding: '9px 12px',
                   background: '#0f1117', border: '1px solid #2d3748',
@@ -5542,7 +5543,7 @@ function TradeSelectScreen({ onSelect }) {
                   fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}
               >
-                Try it (Irrigation)
+                Try it (Metal Roofing)
               </button>
               <DisabledTooltip active label="Sign up to generate your own job type">
                 <button

@@ -2,16 +2,19 @@
 
 **The operating system for your roofing business.**
 
-RidgeOS is a CRM and job management platform built specifically for roofing contractors. Track leads through your pipeline, manage callbacks, analyze performance, and get AI-powered coaching on every deal.
+RidgeOS is a CRM and job management platform built for roofing companies. Track leads through a 12-stage roofing pipeline, manage callbacks, dispatch crews, and get AI-powered coaching on every deal — from lead to paid.
 
 ## Features
 
-- Pipeline management with roofing-specific stages
+- 12-stage roofing pipeline (Lead → Inspection → Estimate → Contract → Install → Paid)
+- 9 roofing job types: Full Replacement, Repair, Storm Damage, Gutter Install, Skylight, Flashing Repair, Ventilation, Inspection, Emergency Tarp
+- AI Coach — powered by Claude, gives roofing-specific deal advice
+- Dispatch Board with Day Detail view (crew hours, labor cost, margin tracking)
+- Photo documentation with roofing categories (Before, During Tear-off, Decking, Underlayment, Final, Damage Documentation, Drone Shots)
+- Cost Manager with materials and labor tracking
 - Callback tracking and follow-up reminders
 - Analytics dashboard with win rate and revenue reporting
-- AI Coach — powered by Claude, gives actionable deal advice
-- Team performance tracking (Business plan)
-- Works across all contractor trades via AI-generated trade configs
+- Role-based access (Owner, Sales, Foreman, Crew)
 
 ## Getting Started
 
