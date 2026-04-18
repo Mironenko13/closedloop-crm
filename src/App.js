@@ -2889,47 +2889,71 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
 }
 
 // ─── Analytics Tab ────────────────────────────────────────────────────────────
-function AnalyticsTab({ leads, tier, rolePerms }) {
+function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
   const isMobile = useMobile();
-  const active = leads.filter(l => ['active', 'stalled', 'cold'].includes(l.status));
-  const stalled = leads.filter(l => l.status === 'stalled');
-  const won = leads.filter(l => l.status === 'won');
-  const lost = leads.filter(l => l.status === 'lost');
 
-  const totalPipeline = active.reduce((s, l) => s + l.value, 0);
-  const stalledValue = stalled.reduce((s, l) => s + l.value, 0);
-  const wonValue = won.reduce((s, l) => s + l.value, 0);
+  const stats = useMemo(() => {
+    const active = leads.filter(l => ['active', 'stalled', 'cold'].includes(l.status));
+    const stalled = leads.filter(l => l.status === 'stalled');
+    const won = leads.filter(l => l.status === 'won');
+    const lost = leads.filter(l => l.status === 'lost');
 
-  const closedDeals = leads.filter(l => ['won', 'lost'].includes(l.status));
-  const winRate = closedDeals.length ? Math.round(won.length / closedDeals.length * 100) : 0;
+    // Total Pipeline Value — all jobs not in paid stage
+    const allJobs = jobs || [];
+    const pipelineJobs = allJobs.filter(j => j.status !== 'Complete' || !['paid'].includes(j.stage));
+    const totalPipeline = pipelineJobs.reduce((s, j) => s + (j.value || 0), 0)
+      + active.reduce((s, l) => s + (l.value || 0), 0);
 
-  const avgDealAge = active.length
-    ? Math.round(active.reduce((s, l) => s + l.dealAge, 0) / active.length) : 0;
+    // Revenue Closed YTD — leads in invoiced/paid stage
+    const revenueLeads = leads.filter(l => ['invoiced', 'paid'].includes(l.stage));
+    const revenueJobs = allJobs.filter(j => j.status === 'Complete');
+    const revenueClosed = revenueLeads.reduce((s, l) => s + (l.value || 0), 0)
+      + revenueJobs.reduce((s, j) => s + (j.value || 0), 0);
 
-  const avgJobValue = closedDeals.length
-    ? Math.round(closedDeals.reduce((s, l) => s + l.value, 0) / closedDeals.length) : 0;
+    // Average Job Value — across all leads + jobs
+    const allValues = [...leads.map(l => l.value || 0), ...allJobs.map(j => j.value || 0)].filter(v => v > 0);
+    const avgJobValue = allValues.length ? Math.round(allValues.reduce((s, v) => s + v, 0) / allValues.length) : 0;
 
-  const stallBreakdown = Object.entries(
-    stalled.reduce((acc, l) => {
-      if (l.stallReason) acc[l.stallReason] = (acc[l.stallReason] || 0) + 1;
-      return acc;
-    }, {})
-  ).sort((a, b) => b[1] - a[1]);
+    // Win Rate
+    const closedDeals = leads.filter(l => ['won', 'lost'].includes(l.status));
+    const winRate = closedDeals.length ? Math.round(won.length / closedDeals.length * 100) : 0;
 
-  const stageFunnel = STAGE_ORDER.map(stage => ({
-    stage,
-    count: leads.filter(l => l.stage === stage).length,
-    value: leads.filter(l => l.stage === stage).reduce((s, l) => s + l.value, 0),
-    avgAge: (() => {
-      const stageLeads = active.filter(l => l.stage === stage);
-      return stageLeads.length ? Math.round(stageLeads.reduce((s, l) => s + l.dealAge, 0) / stageLeads.length) : 0;
-    })(),
-  })).filter(s => s.count > 0);
+    // Scheduled Hours This Week
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const weekStart = new Date(now); weekStart.setDate(now.getDate() - dayOfWeek);
+    const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+    const ws = weekStart.toISOString().slice(0, 10);
+    const we = weekEnd.toISOString().slice(0, 10);
+    const weekJobs = allJobs.filter(j => j.scheduledDate && j.scheduledDate >= ws && j.scheduledDate <= we);
+    const weekHours = weekJobs.reduce((s, j) => s + (j.hours || 0), 0);
 
+    const stalledValue = stalled.reduce((s, l) => s + l.value, 0);
+    const avgDealAge = active.length ? Math.round(active.reduce((s, l) => s + (l.dealAge || 0), 0) / active.length) : 0;
+
+    // Stage funnel from leads
+    const stageFunnel = STAGE_ORDER.map(stage => ({
+      stage,
+      count: leads.filter(l => l.stage === stage).length,
+      value: leads.filter(l => l.stage === stage).reduce((s, l) => s + l.value, 0),
+      avgAge: (() => {
+        const sl = active.filter(l => l.stage === stage);
+        return sl.length ? Math.round(sl.reduce((s, l) => s + (l.dealAge || 0), 0) / sl.length) : 0;
+      })(),
+    })).filter(s => s.count > 0);
+
+    // Stall breakdown
+    const stallBreakdown = Object.entries(
+      stalled.reduce((acc, l) => { if (l.stallReason) acc[l.stallReason] = (acc[l.stallReason] || 0) + 1; return acc; }, {})
+    ).sort((a, b) => b[1] - a[1]);
+
+    return { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, closedDeals };
+  }, [leads, jobs]);
+
+  const { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown } = stats;
   const maxStageValue = Math.max(...stageFunnel.map(s => s.value), 1);
   const maxStallCount = Math.max(...stallBreakdown.map(s => s[1]), 1);
 
-  const STAGE_CHART_COLORS = { lead: '#64748b', inspection: '#3b82f6', estimate: '#f59e0b', approved: '#10b981', in_progress: '#f97316', completed: '#22c55e' };
   const STALL_COLORS = {
     price_objection: '#f97316', budget_freeze: '#6366f1', no_response: '#ef4444',
     competitor: '#f59e0b', timing: '#64748b', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
@@ -2937,14 +2961,14 @@ function AnalyticsTab({ leads, tier, rolePerms }) {
 
   const D = rolePerms?.seeDollars !== false;
   const kpis = [
-    { val: D ? fmt(totalPipeline) : '—', label: 'Active Pipeline', color: '#f97316' },
-    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
-    { val: D ? fmt(wonValue) : '—', label: 'Won This Period', color: '#22c55e' },
-    { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#f97316' : '#ef4444' },
-    { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#94a3b8' },
+    { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value', color: '#f97316' },
+    { val: D ? fmt(revenueClosed) : '—', label: 'Revenue Closed YTD', color: '#22c55e' },
     { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value', color: '#6366f1' },
-    { val: stalled.length, label: 'Stalled Deals', color: '#f59e0b' },
-    { val: `${lost.length}`, label: 'Lost Deals', color: '#475569' },
+    { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#f97316' : '#ef4444' },
+    { val: `${weekHours}h`, label: 'Scheduled Hrs This Week', color: '#7c3aed' },
+    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
+    { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#94a3b8' },
+    { val: `${stalled.length}`, label: 'Stalled Deals', color: '#f59e0b' },
   ];
 
   return (
@@ -2973,7 +2997,7 @@ function AnalyticsTab({ leads, tier, rolePerms }) {
             <div key={stage} style={S.barRow}>
               <div style={{ ...S.barLabel, width: 110 }}>{STAGE_LABELS[stage] || stage}</div>
               <div style={S.barTrack}>
-                <div style={S.barFill(value / maxStageValue * 100, STAGE_CHART_COLORS[stage] || '#f97316')} />
+                <div style={S.barFill(value / maxStageValue * 100, STAGE_COLORS[stage] || '#f97316')} />
               </div>
               <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{count}</div>
               <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
@@ -8598,7 +8622,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           <CallbacksTab leads={data.leads} onSelectLead={setSelectedLead} />
         )}
         {tab === 'analytics' && (
-          <AnalyticsTab leads={data.leads} tier={tier} />
+          <AnalyticsTab leads={data.leads} jobs={DEMO_JOBS} tier={tier} />
         )}
         {tab === 'jobs' && (
           <JobsTab jobs={DEMO_JOBS} customChecklist={customTradeConfig?.checklist} demoMessages={DEMO_MESSAGES} />
@@ -9003,7 +9027,7 @@ export default function App() {
           <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={isDemo ? null : handleUpdateLead} rolePerms={rolePerms} />
         )}
         {tab === 'analytics' && (
-          <AnalyticsTab leads={leads} rolePerms={rolePerms} />
+          <AnalyticsTab leads={leads} jobs={jobs} rolePerms={rolePerms} />
         )}
         {tab === 'jobs' && (
           jobs.length === 0
