@@ -669,12 +669,15 @@ const S = {
   },
   header: {
     background: '#161b27',
-    borderBottom: '1px solid #253048',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
     padding: '0 24px',
     display: 'flex',
     alignItems: 'center',
     gap: 16,
-    height: 56,
+    height: 52,
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
   },
   logo: { fontSize: 18, fontWeight: 700, color: '#f97316', letterSpacing: '-0.5px' },
   logoSub: { fontSize: 12, color: '#64748b', marginLeft: 4 },
@@ -1059,7 +1062,7 @@ function BottomNav({ tab, setTab, tabs }) {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: '#151d30', borderTop: '2px solid #253048',
+      background: '#151d30', borderTop: '1px solid rgba(255,255,255,0.08)',
       display: 'flex', height: 64, zIndex: 200,
       boxShadow: '0 -4px 12px rgba(0,0,0,0.35)',
       overflowX: 'auto', scrollbarWidth: 'none',
@@ -8793,7 +8796,7 @@ export default function App() {
     <div style={S.app}>
       <header style={{
         ...S.header,
-        ...(isMobile ? { padding: '0 16px', height: 52 } : {}),
+        ...(isMobile ? { padding: '0 12px', height: 44, gap: 8 } : {}),
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={S.logo}>RidgeOS</span>
@@ -8846,9 +8849,9 @@ export default function App() {
           className="ri-btn ri-btn-secondary"
           style={{
             marginLeft: 'auto', background: 'transparent', border: '1px solid #2e3d5c',
-            color: '#6b7f9a', cursor: 'pointer', fontSize: isMobile ? 13 : 12,
-            padding: isMobile ? '8px 10px' : '5px 12px', borderRadius: 6,
-            minHeight: isMobile ? 44 : 'auto',
+            color: '#6b7f9a', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
+            padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
+            minHeight: 'auto',
             WebkitTapHighlightColor: 'transparent',
           }}
         >
@@ -8858,7 +8861,7 @@ export default function App() {
 
       <main style={{
         ...S.body,
-        ...(isMobile ? { padding: '16px 12px', paddingBottom: 80 } : {}),
+        ...(isMobile ? { padding: '16px 12px', paddingBottom: 72 } : { paddingBottom: 0 }),
       }}>
         {tab === 'pipeline' && (
           leads.length === 0
