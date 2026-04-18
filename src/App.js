@@ -508,66 +508,70 @@ const DEMO_JOBS = [
   // ── Active April schedule ──
   {
     id: 201, customer: 'Christ Lutheran Church', address: '130 S 5th St, Mifflinburg PA 17844',
-    trade: 'Storm Damage', value: 9400, status: 'In Progress', hours: 9,
+    trade: 'Full Replacement', value: 80240, status: 'In Progress', hours: 9,
     scheduledDate: '2026-04-14', completedSteps: [1, 2, 3, 4, 5, 6],
-    notes: 'Wind damage — ridge cap + 3 sq on sanctuary. CertainTeed Landmark, Weathered Wood. Nationwide claim.',
+    notes: '118 sq Peach Bottom slate, steep pitch, 2 chimneys. Nationwide claim. Historic sanctuary roof.',
+    duration: 5,
   },
   {
     id: 202, customer: 'Amos Stoltzfus', address: '1240 Strickler Rd, Mifflinburg PA 17844',
-    trade: 'Full Replacement', value: 16200, status: 'Scheduled', hours: 8,
+    trade: 'Full Replacement', value: 18600, status: 'Scheduled', hours: 8,
     scheduledDate: '2026-04-17', completedSteps: [1, 2],
-    notes: '30 sq, 6/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off. Farmhouse — no Sunday work.',
-  },
-  {
-    id: 203, customer: 'Betty Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
-    trade: 'Repair', value: 3800, status: 'Scheduled', hours: 6,
-    scheduledDate: '2026-04-17', completedSteps: [1],
-    notes: 'Chimney flashing repair + 4 missing shingles on north slope. 7/12 pitch. Follow-up from full replacement.',
-  },
-  {
-    id: 204, customer: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870',
-    trade: 'Flashing Repair', value: 2200, status: 'Scheduled', hours: 4,
-    scheduledDate: '2026-04-18', completedSteps: [],
-    notes: 'Skylight flashing leak in master bedroom. Counter-flashing pulling away. Quick fix.',
-  },
-  {
-    id: 205, customer: 'Hotel Hershey Annex', address: '100 Hotel Rd, Hershey PA 17033',
-    trade: 'Repair', value: 12400, status: 'Scheduled', hours: 10,
-    scheduledDate: '2026-04-21', completedSteps: [1, 2],
-    notes: 'Slate roof — 12 cracked tiles + ridge mortar repointing. Must match Peach Bottom slate. Historic property.',
+    notes: '38 sq, 6/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off. Storm damage — Erie Insurance claim. Farmhouse — no Sunday work.',
     duration: 2,
   },
   {
+    id: 203, customer: 'Betty Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
+    trade: 'Gutter Install', value: 3980, status: 'Scheduled', hours: 6,
+    scheduledDate: '2026-04-17', completedSteps: [1],
+    notes: '180 LF 6" K-style seamless aluminum. 4 downspouts. Old gutter removal included.',
+  },
+  {
+    id: 204, customer: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870',
+    trade: 'Full Replacement', value: 14900, status: 'Scheduled', hours: 4,
+    scheduledDate: '2026-04-18', completedSteps: [],
+    notes: '34 sq, GAF Timberline HDZ. Standard pitch. Currently on punch list stage.',
+    duration: 2,
+  },
+  {
+    id: 205, customer: 'Hotel Hershey Annex', address: '100 Hotel Rd, Hershey PA 17033',
+    trade: 'Full Replacement', value: 198000, status: 'Scheduled', hours: 10,
+    scheduledDate: '2026-04-21', completedSteps: [1, 2],
+    notes: '180 sq standing seam metal. Complex roofline, historic property. 4 large chimneys. Must match existing copper details.',
+    duration: 8,
+  },
+  {
     id: 206, customer: 'Earl Yoder', address: '320 Buffalo Rd, Lewisburg PA 17837',
-    trade: 'Ventilation', value: 1800, status: 'Scheduled', hours: 3,
+    trade: 'Flashing Repair', value: 1850, status: 'Scheduled', hours: 3,
     scheduledDate: '2026-04-22', completedSteps: [],
-    notes: 'Ridge vent install (28 LF) + 4 soffit vents. Attic running hot. Quick half-day job.',
+    notes: 'Chimney valley flashing repair. Step + counter flashing replacement. Match existing architectural shingles.',
   },
   {
     id: 207, customer: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801',
-    trade: 'Gutter Install', value: 5800, status: 'Scheduled', hours: 8,
+    trade: 'Full Replacement', value: 42800, status: 'Scheduled', hours: 8,
     scheduledDate: '2026-04-23', completedSteps: [1, 2],
-    notes: '220 LF seamless aluminum 5" K-style + leaf guards. Fascia board needs replacing on south side.',
+    notes: '85 sq TPO 60-mil commercial flat roof. Insulation board + cover board. Edge metal perimeter.',
+    duration: 4,
   },
   {
     id: 208, customer: 'Ray Brubaker', address: '410 N Front St, Milton PA 17847',
-    trade: 'Full Replacement', value: 22600, status: 'Scheduled', hours: 7,
+    trade: 'Full Replacement', value: 24800, status: 'Scheduled', hours: 7,
     scheduledDate: '2026-04-28', completedSteps: [1, 2],
-    notes: '32 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. 1 layer over OSB. Harness required.',
+    notes: '52 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. Storm damage — State Farm claim. Harness required.',
     duration: 3,
   },
   // ── Unscheduled pipeline jobs ──
   {
-    id: 209, customer: 'Monroe Township Offices', address: '88 W Main St, Selinsgrove PA 17870',
-    trade: 'Full Replacement', value: 31200, status: 'Scheduled',
+    id: 209, customer: 'Messiah Village', address: '100 Mt Allen Dr, Mechanicsburg PA 17055',
+    trade: 'Full Replacement', value: 224000, status: 'Scheduled',
     completedSteps: [1, 2],
-    notes: '42 sq modified bitumen, low-slope municipal bldg. Awaiting Snyder County permit.',
+    notes: '240 sq mixed TPO + standing seam metal. Multi-building campus. Phased installation.',
   },
   {
     id: 210, customer: 'Riverwoods HOA — Phase 2', address: '200 Riverwoods Dr, Lewisburg PA 17837',
     trade: 'Full Replacement', value: 94000, status: 'Scheduled',
     completedSteps: [1],
-    notes: 'Phase 2: buildings 5-8. ~96 sq. Waiting on HOA board to approve start date.',
+    notes: 'Phase 2: buildings 5-8. ~96 sq architectural. Waiting on HOA board to approve start date.',
   },
 ];
 
@@ -3237,52 +3241,142 @@ function cpNewMakeInit(job, crewNames) {
   };
 }
 
-// Demo pre-filled Cost Manager data: jobId → { itemId: { qty, costPerUnit } }
+// Demo pre-filled Cost Manager data: jobId → { mat: {id→{qty,costPerUnit}}, lab: {id→{qty,rate}} }
 const DEMO_COST_DATA = {
-  201: { // Christ Lutheran Church — 118 sq Peach Bottom Slate (~$23,400)
-    ma3: { qty: '118', costPerUnit: '185.00' },  // Premium/Designer (Peach Bottom Slate)
-    mb1: { qty: '6', costPerUnit: '78.00' },     // Synthetic Underlayment
-    mb4: { qty: '3', costPerUnit: '95.00' },     // Ice & Water Shield
-    mc2: { qty: '220', costPerUnit: '1.85' },    // Step Flashing 220 LF
-    mc7: { qty: '2', costPerUnit: '145.00' },    // Large Chimney Flashing
-    md2: { qty: '14', costPerUnit: '38.00' },    // OSB 4x8 Sheet
+  201: { // Christ Lutheran Church — 118 sq Peach Bottom Slate, $80,240
+    mat: {
+      ma3: { qty: '118', costPerUnit: '485' },   // Peach Bottom Slate
+      mb1: { qty: '12', costPerUnit: '76' },      // Synthetic Underlayment
+      mb4: { qty: '6', costPerUnit: '98' },       // Ice & Water Shield
+      mc2: { qty: '280', costPerUnit: '2.10' },   // Step Flashing
+      mc7: { qty: '2', costPerUnit: '420' },      // Large Chimney Flashing
+      mc6: { qty: '1', costPerUnit: '285' },      // Small Chimney Flashing
+      md2: { qty: '18', costPerUnit: '42' },      // OSB 4x8 Sheet
+    },
+    lab: {
+      la4: { qty: '118', rate: '195' },           // Slate Install (Extreme pitch)
+      lb1: { qty: '118', rate: '65' },            // Tearoff & Disposal
+      la7: { qty: '118', rate: '28' },            // Steep Pitch Surcharge (Harness)
+    },
   },
-  202: { // Amos Stoltzfus — 38 sq GAF Timberline HDZ (~$4,200)
-    ma2: { qty: '38', costPerUnit: '95.00' },    // Architectural (GAF Timberline HDZ)
-    mb1: { qty: '2', costPerUnit: '78.00' },     // Synthetic Underlayment
-    mb4: { qty: '2', costPerUnit: '95.00' },     // Ice & Water Shield
-    mc2: { qty: '120', costPerUnit: '1.85' },    // Step Flashing
-    md2: { qty: '6', costPerUnit: '38.00' },     // OSB 4x8 Sheet
+  202: { // Amos Stoltzfus — 38 sq GAF Timberline HDZ, $18,600
+    mat: {
+      ma2: { qty: '38', costPerUnit: '112' },     // GAF Timberline HDZ
+      mb1: { qty: '4', costPerUnit: '76' },       // Synthetic Underlayment
+      mb4: { qty: '3', costPerUnit: '98' },       // Ice & Water Shield
+      mc2: { qty: '140', costPerUnit: '2.10' },   // Step Flashing
+      ma6: { qty: '120', costPerUnit: '1.85' },   // Ridge Cap
+      mc6: { qty: '1', costPerUnit: '285' },      // Small Chimney Flashing
+      md2: { qty: '6', costPerUnit: '42' },       // OSB 4x8 Sheet
+    },
+    lab: {
+      la1: { qty: '38', rate: '225' },            // Shingle Installation (Standard)
+      lb1: { qty: '38', rate: '65' },             // Tearoff & Disposal
+    },
   },
-  204: { // Dan Sensenig — 34 sq GAF Timberline HDZ (~$3,500)
-    ma2: { qty: '34', costPerUnit: '92.00' },    // Architectural (GAF Timberline HDZ)
-    mb1: { qty: '2', costPerUnit: '78.00' },     // Synthetic Underlayment
-    mb4: { qty: '1', costPerUnit: '95.00' },     // Ice & Water Shield
-    mc2: { qty: '95', costPerUnit: '1.85' },     // Step Flashing
+  203: { // Betty Shumaker — 180 LF Gutter, $3,980
+    mat: {
+      mf2: { qty: '180', costPerUnit: '8.40' },   // Gutter 6" (K-style aluminum)
+      mf5: { qty: '8', costPerUnit: '12' },        // End Caps & Outlets
+      mf4: { qty: '36', costPerUnit: '3.20' },     // Gutter Guard (hangers sub)
+      mf3: { qty: '4', costPerUnit: '48' },         // Downspout
+    },
+    lab: {
+      lc5: { qty: '180', rate: '6.80' },           // Gutter Installation
+      lc6: { qty: '180', rate: '1.20' },           // Old Gutter Removal
+    },
   },
-  205: { // Hotel Hershey — 180 sq Standing Seam Metal (~$78,000)
-    ma3: { qty: '180', costPerUnit: '420.00' },  // Premium/Designer (Standing Seam Metal)
-    mb1: { qty: '9', costPerUnit: '78.00' },     // Synthetic Underlayment
-    mc1: { qty: '380', costPerUnit: '4.50' },    // Drip Edge (Eave Trim)
-    ma4: { qty: '180', costPerUnit: '6.00' },    // Ridge Cap (Metal Ridge)
+  204: { // Dan Sensenig — 34 sq GAF Timberline HDZ, $14,900
+    mat: {
+      ma2: { qty: '34', costPerUnit: '112' },     // GAF Timberline HDZ
+      mb1: { qty: '4', costPerUnit: '76' },       // Synthetic Underlayment
+      mb4: { qty: '2', costPerUnit: '98' },       // Ice & Water Shield
+      mc2: { qty: '110', costPerUnit: '2.10' },   // Step Flashing
+      ma6: { qty: '95', costPerUnit: '1.85' },    // Ridge Cap
+      md2: { qty: '4', costPerUnit: '42' },       // OSB 4x8 Sheet
+    },
+    lab: {
+      la1: { qty: '34', rate: '225' },            // Shingle Installation
+      lb1: { qty: '34', rate: '65' },             // Tearoff & Disposal
+    },
   },
-  207: { // Market Street Commons — 85 sq TPO (~$20,500)
-    ma3: { qty: '85', costPerUnit: '185.00' },   // Premium/Designer (TPO Membrane 60-mil)
-    mb2: { qty: '12', costPerUnit: '45.00' },    // Felt Paper 15# (TPO Adhesive substitute)
-    mb1: { qty: '85', costPerUnit: '55.00' },    // Synthetic Underlayment (Insulation Board sub)
+  205: { // Hotel Hershey — 180 sq Standing Seam Metal, $198,000
+    mat: {
+      ma3: { qty: '180', costPerUnit: '485' },    // Standing Seam Metal Panels
+      mb1: { qty: '18', costPerUnit: '76' },      // Synthetic Underlayment
+      mb4: { qty: '8', costPerUnit: '98' },       // Ice & Water Shield
+      mc1: { qty: '420', costPerUnit: '4.80' },   // Eave Trim (Drip Edge)
+      ma4: { qty: '210', costPerUnit: '6.20' },   // Ridge Cap Metal
+      mc7: { qty: '4', costPerUnit: '420' },      // Large Chimney Flashing
+      md2: { qty: '24', costPerUnit: '42' },      // OSB 4x8 Sheet
+    },
+    lab: {
+      la3: { qty: '180', rate: '420' },           // Metal Roof Installation (Very Steep)
+      lb1: { qty: '180', rate: '65' },            // Tearoff & Disposal
+      la7: { qty: '180', rate: '45' },            // Complex Roofline Surcharge (Harness)
+    },
+  },
+  206: { // Earl Yoder — Flashing Repair, $1,850
+    mat: {
+      mc2: { qty: '40', costPerUnit: '2.10' },    // Step Flashing
+      mc4: { qty: '24', costPerUnit: '3.40' },    // Counter Flashing
+      mg3: { qty: '2', costPerUnit: '18' },       // Roofing Cement
+      ma2: { qty: '1', costPerUnit: '112' },      // Matching Shingles
+    },
+    lab: {
+      lc1: { qty: '4', rate: '95' },              // Flashing Repair Labor
+      lc9: { qty: '1', rate: '85' },              // Sealant & Cleanup (Decking Repair sub)
+    },
+  },
+  207: { // Market Street Commons — 85 sq TPO, $42,800
+    mat: {
+      ma3: { qty: '85', costPerUnit: '198' },     // TPO Membrane 60-mil (Premium sub)
+      mb2: { qty: '18', costPerUnit: '52' },      // TPO Adhesive (Felt sub)
+      mb1: { qty: '85', costPerUnit: '62' },      // Insulation Board 2" (Underlayment sub)
+      mb3: { qty: '85', costPerUnit: '38' },      // Cover Board (Felt 30# sub)
+      mc1: { qty: '380', costPerUnit: '3.20' },   // Edge Metal (Drip Edge sub)
+    },
+    lab: {
+      lc10: { qty: '85', rate: '165' },           // TPO Installation (EPDM/Flat Roof)
+      lb3: { qty: '85', rate: '72' },             // Tearoff Flat/Built-up
+    },
+  },
+  208: { // Ray Brubaker — 52 sq CertainTeed Landmark Pro, $24,800
+    mat: {
+      ma2: { qty: '52', costPerUnit: '128' },     // CertainTeed Landmark Pro
+      mb1: { qty: '6', costPerUnit: '76' },       // Synthetic Underlayment
+      mb4: { qty: '4', costPerUnit: '98' },       // Ice & Water Shield
+      mc2: { qty: '165', costPerUnit: '2.10' },   // Step Flashing
+      ma6: { qty: '140', costPerUnit: '1.85' },   // Ridge Cap
+      mc7: { qty: '1', costPerUnit: '420' },      // Large Chimney Flashing
+      md2: { qty: '8', costPerUnit: '42' },       // OSB 4x8 Sheet
+    },
+    lab: {
+      la2: { qty: '52', rate: '225' },            // Shingle Install (Steep Slope)
+      lb1: { qty: '52', rate: '65' },             // Tearoff & Disposal
+    },
   },
 };
 
 function applyDemoCostData(initData, jobId) {
   const fills = DEMO_COST_DATA[jobId];
   if (!fills) return initData;
+  const matFills = fills.mat || {};
+  const labFills = fills.lab || {};
   return {
     ...initData,
     materials: {
       ...initData.materials,
       sections: initData.materials.sections.map(sec => ({
         ...sec,
-        items: sec.items.map(item => fills[item.id] ? { ...item, qty: fills[item.id].qty, costPerUnit: fills[item.id].costPerUnit } : item),
+        items: sec.items.map(item => matFills[item.id] ? { ...item, qty: matFills[item.id].qty, costPerUnit: matFills[item.id].costPerUnit } : item),
+      })),
+    },
+    labor: {
+      ...initData.labor,
+      sections: initData.labor.sections.map(sec => ({
+        ...sec,
+        items: sec.items.map(item => labFills[item.id] ? { ...item, qty: labFills[item.id].qty, rate: labFills[item.id].rate } : item),
       })),
     },
   };
