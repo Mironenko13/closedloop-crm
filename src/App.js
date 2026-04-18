@@ -5143,15 +5143,20 @@ function LoginScreen({ onLogin, onStartSignup }) {
           <button style={A.linkBtn} onClick={onStartSignup}>Create an account</button>
         </div>
 
-        <div style={{ marginTop: 24, borderTop: '1px solid #253048', paddingTop: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0 20px' }}>
+          <div style={{ flex: 1, height: 1, background: '#253048' }} />
+          <span style={{ fontSize: 12, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or</span>
+          <div style={{ flex: 1, height: 1, background: '#253048' }} />
+        </div>
+        <div>
           <button
             onClick={() => onLogin({ isDemo: true, companyName: 'Equity Roofing', userName: 'Allen Stoltzfus', trade: 'Full Replacement', plan: 'pro' })}
-            style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 10, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
+            style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 8, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
           >
             Try Demo — No signup needed
           </button>
           <div style={{ textAlign: 'center', fontSize: 12, color: '#64748b', marginTop: 8 }}>
-            See RidgeOS with real Equity Roofing data preloaded
+            Preloaded with real Equity Roofing data
           </div>
         </div>
       </div>
