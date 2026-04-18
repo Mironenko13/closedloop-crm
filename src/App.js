@@ -488,81 +488,86 @@ const STAGE_TIPS = {
     'Archive the job folder with all photos, permits, signed contracts, and payment records — clean documentation protects you for years',
   ],
 };
-const TODAY = '2026-03-23';
+const TODAY = new Date().toISOString().slice(0, 10);
 
 // ─── Jobs Data ────────────────────────────────────────────────────────────────
 const DEMO_JOBS = [
-  {
-    id: 101, customer: 'Dave & Lisa Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
-    trade: 'Full Replacement', value: 14800, status: 'In Progress',
-    scheduledDate: '2026-03-20', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8],
-    notes: 'GAF Timberline HDZ Charcoal. 28 sq, 7/12 pitch. 1 layer tear-off over plywood. Crew of 4, day 2 of 3.',
-  },
-  {
-    id: 102, customer: 'Susquehanna Valley Mall', address: '1 Susquehanna Valley Mall Dr, Selinsgrove PA 17870',
-    trade: 'Full Replacement', value: 23500, status: 'Scheduled',
-    scheduledDate: '2026-03-28', completedSteps: [1, 2],
-    notes: 'TPO membrane, 140 sq flat roof on anchor store wing. Materials on order from Boise Cascade Sunbury. Dumpster confirmed.',
-  },
+  // ── Completed (March) ──
   {
     id: 103, customer: 'Tina & Mark Bowman', address: '227 Market St, Lewisburg PA 17837',
     trade: 'Storm Damage', value: 18700, status: 'Complete',
     scheduledDate: '2026-03-14', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    notes: 'Erie Insurance claim — wind damage. 24 sq architectural. Adjuster approved full replacement. Union County permit closed out.',
-  },
-  {
-    id: 104, customer: 'Northumberland Apartments — Bldg C', address: '350 Front St, Northumberland PA 17857',
-    trade: 'Repair', value: 4200, status: 'In Progress',
-    scheduledDate: '2026-03-21', completedSteps: [1, 2, 3, 4],
-    notes: 'Valley flashing repair + 3 sq shingle replacement. 3-tab match, 6/12 pitch. Leak stopped. Decking OK.',
-  },
-  {
-    id: 105, customer: 'Monroe Township Offices', address: '88 W Main St, Selinsgrove PA 17870',
-    trade: 'Full Replacement', value: 31200, status: 'Scheduled',
-    scheduledDate: '2026-04-01', completedSteps: [1, 2],
-    notes: '42 sq modified bitumen, low-slope municipal bldg. 2 layers tear-off. Snyder County permit pulled.',
-  },
-  {
-    id: 106, customer: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801',
-    trade: 'Gutter Install', value: 5800, status: 'In Progress',
-    scheduledDate: '2026-03-16', completedSteps: [1, 2, 3, 4, 5],
-    notes: '220 LF seamless aluminum 5" K-style + leaf guards. Fascia board replaced on south side. 1890s building.',
-  },
-  {
-    id: 107, customer: 'Scott & Beth Deimler', address: '22 Mountain Rd, New Berlin PA 17855',
-    trade: 'Full Replacement', value: 42000, status: 'In Progress',
-    scheduledDate: '2026-03-17', completedSteps: [1, 2, 3, 4, 5, 6],
-    notes: '48 sq standing seam metal Burnished Slate, 10/12 pitch. Tear-off done. Underlayment installed. Panels going up. Harness required.',
+    notes: 'Erie Insurance claim — wind damage. 24 sq architectural. Adjuster approved full replacement. Closed out.',
   },
   {
     id: 108, customer: 'Joe & Barb Hartman', address: '78 Pine Creek Rd, Watsontown PA 17777',
     trade: 'Skylight', value: 4800, status: 'Complete',
     scheduledDate: '2026-03-11', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    notes: '2 Velux curb-mount skylights installed. Flashing sealed, interior trim complete. No leaks after rain test.',
+    notes: '2 Velux curb-mount skylights installed. Flashing sealed, interior trim complete.',
+  },
+  // ── Active April schedule ──
+  {
+    id: 201, customer: 'Christ Lutheran Church', address: '130 S 5th St, Mifflinburg PA 17844',
+    trade: 'Storm Damage', value: 9400, status: 'In Progress', hours: 9,
+    scheduledDate: '2026-04-14', completedSteps: [1, 2, 3, 4, 5, 6],
+    notes: 'Wind damage — ridge cap + 3 sq on sanctuary. CertainTeed Landmark, Weathered Wood. Nationwide claim.',
   },
   {
-    id: 109, customer: 'Carol Flickinger', address: '56 Maple Ave, Middleburg PA 17842',
-    trade: 'Emergency Tarp', value: 1200, status: 'Scheduled',
-    scheduledDate: '2026-03-25', completedSteps: [1, 2],
-    notes: 'Oak tree fell on roof — active water into upstairs bedroom. Emergency tarp dispatch. Full replacement scope to follow.',
+    id: 202, customer: 'Amos Stoltzfus', address: '1240 Strickler Rd, Mifflinburg PA 17844',
+    trade: 'Full Replacement', value: 16200, status: 'Scheduled', hours: 8,
+    scheduledDate: '2026-04-17', completedSteps: [1, 2],
+    notes: '30 sq, 6/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off. Farmhouse — no Sunday work.',
   },
   {
-    id: 110, customer: 'Christ Lutheran Mifflinburg', address: '130 S 5th St, Mifflinburg PA 17844',
-    trade: 'Storm Damage', value: 9400, status: 'Complete',
-    scheduledDate: '2026-03-10', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    notes: 'Wind damage — ridge cap + 3 sq on sanctuary. CertainTeed Landmark, Weathered Wood. Nationwide paid in full.',
+    id: 203, customer: 'Betty Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
+    trade: 'Repair', value: 3800, status: 'Scheduled', hours: 6,
+    scheduledDate: '2026-04-17', completedSteps: [1],
+    notes: 'Chimney flashing repair + 4 missing shingles on north slope. 7/12 pitch. Follow-up from full replacement.',
   },
   {
-    id: 111, customer: 'Riverwoods HOA — Phase 1', address: '200 Riverwoods Dr, Lewisburg PA 17837',
-    trade: 'Full Replacement', value: 94000, status: 'In Progress',
-    scheduledDate: '2026-03-10', completedSteps: [1, 2, 3, 4, 5, 6, 7],
-    notes: 'Phase 1: 4 of 12 buildings. 96 sq done. GAF Timberline architectural, Weathered Wood. On schedule.',
+    id: 204, customer: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870',
+    trade: 'Flashing Repair', value: 2200, status: 'Scheduled', hours: 4,
+    scheduledDate: '2026-04-18', completedSteps: [],
+    notes: 'Skylight flashing leak in master bedroom. Counter-flashing pulling away. Quick fix.',
   },
   {
-    id: 112, customer: 'Mike & Jen Rohrer', address: '340 Fairground Rd, Bloomsburg PA 17815',
-    trade: 'Ventilation', value: 3200, status: 'Scheduled',
-    scheduledDate: '2026-04-03', completedSteps: [1, 2, 3],
-    notes: 'Ridge vent install (42 LF) + 8 soffit vents on 1960s ranch. OSB decking checked — no moisture damage. Materials from Boise Cascade.',
+    id: 205, customer: 'Hotel Hershey Annex', address: '100 Hotel Rd, Hershey PA 17033',
+    trade: 'Repair', value: 12400, status: 'Scheduled', hours: 10,
+    scheduledDate: '2026-04-21', completedSteps: [1, 2],
+    notes: 'Slate roof — 12 cracked tiles + ridge mortar repointing. Must match Peach Bottom slate. Historic property.',
+    duration: 2,
+  },
+  {
+    id: 206, customer: 'Earl Yoder', address: '320 Buffalo Rd, Lewisburg PA 17837',
+    trade: 'Ventilation', value: 1800, status: 'Scheduled', hours: 3,
+    scheduledDate: '2026-04-22', completedSteps: [],
+    notes: 'Ridge vent install (28 LF) + 4 soffit vents. Attic running hot. Quick half-day job.',
+  },
+  {
+    id: 207, customer: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801',
+    trade: 'Gutter Install', value: 5800, status: 'Scheduled', hours: 8,
+    scheduledDate: '2026-04-23', completedSteps: [1, 2],
+    notes: '220 LF seamless aluminum 5" K-style + leaf guards. Fascia board needs replacing on south side.',
+  },
+  {
+    id: 208, customer: 'Ray Brubaker', address: '410 N Front St, Milton PA 17847',
+    trade: 'Full Replacement', value: 22600, status: 'Scheduled', hours: 7,
+    scheduledDate: '2026-04-28', completedSteps: [1, 2],
+    notes: '32 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. 1 layer over OSB. Harness required.',
+    duration: 3,
+  },
+  // ── Unscheduled pipeline jobs ──
+  {
+    id: 209, customer: 'Monroe Township Offices', address: '88 W Main St, Selinsgrove PA 17870',
+    trade: 'Full Replacement', value: 31200, status: 'Scheduled',
+    completedSteps: [1, 2],
+    notes: '42 sq modified bitumen, low-slope municipal bldg. Awaiting Snyder County permit.',
+  },
+  {
+    id: 210, customer: 'Riverwoods HOA — Phase 2', address: '200 Riverwoods Dr, Lewisburg PA 17837',
+    trade: 'Full Replacement', value: 94000, status: 'Scheduled',
+    completedSteps: [1],
+    notes: 'Phase 2: buildings 5-8. ~96 sq. Waiting on HOA board to approve start date.',
   },
 ];
 
@@ -576,72 +581,78 @@ const DEMO_CREW = [
 ];
 
 const DEMO_MESSAGES = [
-  { id: 'dm-1', jobId: '101', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to this job', timestamp: 1742400000000, type: 'system' },
-  { id: 'dm-2', jobId: '101', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'On site at Chestnut St. Starting tear-off. Weather is clear.', timestamp: 1742410000000, type: 'user' },
-  { id: 'dm-3', jobId: '101', senderId: 'system', senderName: 'System', text: 'Tom Bricker assigned to this job', timestamp: 1742411000000, type: 'system' },
-  { id: 'dm-4', jobId: '101', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Picked up shingles from Boise Cascade Sunbury. ETA 20 mins.', timestamp: 1742420000000, type: 'user' },
-  { id: 'dm-5', jobId: '101', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Day 2 done. Underlayment installed, starting shingles tomorrow AM.', timestamp: 1742500000000, type: 'user' },
-  { id: 'dm-6', jobId: '102', senderId: 'system', senderName: 'System', text: 'Job scheduled for 2026-03-28', timestamp: 1742000000000, type: 'system' },
-  { id: 'dm-7', jobId: '102', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Confirmed with Denise at the mall. Loading dock access code is 4821.', timestamp: 1742100000000, type: 'user' },
-  { id: 'dm-8', jobId: '104', senderId: 'system', senderName: 'System', text: 'Luis Ortiz assigned to this job', timestamp: 1742200000000, type: 'system' },
-  { id: 'dm-9', jobId: '104', senderId: 'dc3', senderName: 'Luis Ortiz', text: 'Valley flashing removed. Decking looks solid. New flashing going in now.', timestamp: 1742300000000, type: 'user' },
+  { id: 'dm-1', jobId: '201', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to this job', timestamp: 1744600000000, type: 'system' },
+  { id: 'dm-2', jobId: '201', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'On site at Christ Lutheran. Ridge cap removed, starting tear-off on damaged section.', timestamp: 1744610000000, type: 'user' },
+  { id: 'dm-3', jobId: '201', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Shingles matched — CertainTeed Landmark Weathered Wood. Picked up from Boise Cascade.', timestamp: 1744620000000, type: 'user' },
+  { id: 'dm-4', jobId: '202', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to Stoltzfus job', timestamp: 1744700000000, type: 'system' },
+  { id: 'dm-5', jobId: '202', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Farmhouse — confirmed no Sunday work. Materials staged in barn. Starting 7 AM Thursday.', timestamp: 1744710000000, type: 'user' },
+  { id: 'dm-6', jobId: '205', senderId: 'system', senderName: 'System', text: 'Job scheduled for 2026-04-21', timestamp: 1744800000000, type: 'system' },
+  { id: 'dm-7', jobId: '205', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Hotel Hershey — need to match Peach Bottom slate exactly. Supplier confirmed availability.', timestamp: 1744810000000, type: 'user' },
+  { id: 'dm-8', jobId: '207', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to Market St Commons', timestamp: 1744900000000, type: 'system' },
+  { id: 'dm-9', jobId: '207', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Fascia on south side is rotted worse than expected. Adding 20 LF fascia board to materials.', timestamp: 1744910000000, type: 'user' },
 ];
 
 const DEMO_JOB_DURATIONS = {
-  101: 3, 102: 1, 103: 2, 104: 2, 105: 1, 106: 1,
-  107: 3, 108: 1, 109: 2, 110: 1, 111: 2, 112: 3,
+  103: 2, 108: 1,
+  201: 1, 202: 2, 203: 1, 204: 1, 205: 2, 206: 1, 207: 1, 208: 3,
+  209: 1, 210: 5,
 };
 
 // Demo crew assignments (jobId → [crewId, ...])
 const DEMO_ASSIGNMENTS = {
-  '101': ['dc1', 'dc2', 'dc3', 'dc4'],  // Shumaker Full Replacement
-  '102': ['dc2'],                         // SV Mall TPO
-  '104': ['dc3'],                         // Northumberland Repair
-  '106': ['dc1', 'dc2'],                  // Market St Commons Gutter
-  '107': ['dc1', 'dc2', 'dc3', 'dc4'],  // Deimler standing seam
-  '109': ['dc3', 'dc4'],                  // Flickinger Emergency Tarp
-  '110': ['dc1', 'dc2'],                  // Christ Lutheran Storm Damage
-  '111': ['dc1', 'dc2', 'dc3', 'dc4'],  // Riverwoods HOA Phase 1
-  '112': ['dc3'],                         // Rohrer Ventilation
+  '103': ['dc1', 'dc2'],                  // Bowman Storm Damage (completed)
+  '108': ['dc2'],                          // Hartman Skylight (completed)
+  '201': ['dc1', 'dc2'],                  // Christ Lutheran Church
+  '202': ['dc1'],                          // Amos Stoltzfus
+  '203': ['dc4'],                          // Betty Shumaker
+  '204': ['dc2'],                          // Dan Sensenig
+  '205': ['dc1', 'dc2', 'dc3'],          // Hotel Hershey
+  '206': ['dc4'],                          // Earl Yoder
+  '207': ['dc1'],                          // Market Street Commons
+  '208': ['dc2'],                          // Ray Brubaker
 };
 
 // Demo time-tracking data for Day Detail view (keyed by date → jobId → crewId)
 const DEMO_DAY_DETAIL = {
-  '2026-03-16': {
-    106: [
-      { crewId: 'dc1', clockIn: '7:02 AM', status: 'On Site', hoursLogged: 3.5, payRate: 38 },
-      { crewId: 'dc2', clockIn: '7:08 AM', status: 'On Site', hoursLogged: 3.4, payRate: 32 },
+  '2026-04-14': {
+    201: [
+      { crewId: 'dc1', clockIn: '6:50 AM', status: 'Clocked Out', hoursLogged: 9.0, payRate: 38 },
+      { crewId: 'dc2', clockIn: '6:55 AM', status: 'Clocked Out', hoursLogged: 9.0, payRate: 32 },
     ],
   },
-  '2026-03-17': {
-    107: [
-      { crewId: 'dc1', clockIn: '6:45 AM', status: 'On Site', hoursLogged: 4.0, payRate: 38 },
-      { crewId: 'dc2', clockIn: '6:50 AM', status: 'On Site', hoursLogged: 3.8, payRate: 32 },
-      { crewId: 'dc3', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 3.5, payRate: 26 },
-      { crewId: 'dc4', clockIn: '7:15 AM', status: 'On Site', hoursLogged: 3.2, payRate: 22 },
+  '2026-04-17': {
+    202: [
+      { crewId: 'dc1', clockIn: '6:45 AM', status: 'On Site', hoursLogged: 8.0, payRate: 38 },
+    ],
+    203: [
+      { crewId: 'dc4', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 6.0, payRate: 22 },
     ],
   },
-  '2026-03-20': {
-    101: [
-      { crewId: 'dc1', clockIn: '6:55 AM', status: 'On Site', hoursLogged: 5.5, payRate: 38 },
-      { crewId: 'dc2', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 5.5, payRate: 32 },
-      { crewId: 'dc3', clockIn: '7:10 AM', status: 'On Site', hoursLogged: 5.2, payRate: 26 },
-      { crewId: 'dc4', clockIn: '7:20 AM', status: 'Break', hoursLogged: 4.8, payRate: 22 },
+  '2026-04-18': {
+    204: [
+      { crewId: 'dc2', clockIn: '7:30 AM', status: 'On Site', hoursLogged: 4.0, payRate: 32 },
     ],
   },
-  '2026-03-21': {
-    104: [
-      { crewId: 'dc3', clockIn: '7:30 AM', status: 'On Site', hoursLogged: 2.5, payRate: 26 },
+  '2026-04-21': {
+    205: [
+      { crewId: 'dc1', clockIn: '6:30 AM', status: 'On Site', hoursLogged: 10.0, payRate: 38 },
+      { crewId: 'dc2', clockIn: '6:35 AM', status: 'On Site', hoursLogged: 10.0, payRate: 32 },
+      { crewId: 'dc3', clockIn: '6:45 AM', status: 'On Site', hoursLogged: 9.5, payRate: 26 },
     ],
   },
-  '2026-03-10': {
-    110: [
-      { crewId: 'dc1', clockIn: '7:00 AM', status: 'Clocked Out', hoursLogged: 6.0, payRate: 38 },
-      { crewId: 'dc2', clockIn: '7:05 AM', status: 'Clocked Out', hoursLogged: 5.8, payRate: 32 },
+  '2026-04-22': {
+    206: [
+      { crewId: 'dc4', clockIn: '8:00 AM', status: 'On Site', hoursLogged: 3.0, payRate: 22 },
     ],
-    111: [
-      { crewId: 'dc3', clockIn: '7:15 AM', status: 'On Site', hoursLogged: 4.5, payRate: 26 },
-      { crewId: 'dc4', clockIn: '7:20 AM', status: 'On Site', hoursLogged: 4.2, payRate: 22 },
+  },
+  '2026-04-23': {
+    207: [
+      { crewId: 'dc1', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 8.0, payRate: 38 },
+    ],
+  },
+  '2026-04-28': {
+    208: [
+      { crewId: 'dc2', clockIn: '7:00 AM', status: 'On Site', hoursLogged: 7.0, payRate: 32 },
     ],
   },
 };
@@ -7373,6 +7384,12 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const [duration, setDuration] = useState(1);
   const [search, setSearch] = useState('');
   const [justScheduled, setJustScheduled] = useState(null);
+  const [showScheduleForm, setShowScheduleForm] = useState(false);
+  const [schedJobId, setSchedJobId] = useState('');
+  const [schedCrew, setSchedCrew] = useState([]);
+  const [schedTime, setSchedTime] = useState('7:00 AM');
+  const [schedHours, setSchedHours] = useState(8);
+  const [schedNotes, setSchedNotes] = useState('');
   const noteRef = useRef(null);
   const descRef = useRef(null);
   const searchRef = useRef(null);
@@ -7649,8 +7666,9 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 });
               }
             });
-            const totalHours = crewDetails.reduce((s, c) => s + c.hoursLogged, 0);
-            const totalLabor = crewDetails.reduce((s, c) => s + c.hoursLogged * c.payRate, 0);
+            const crewHours = crewDetails.reduce((s, c) => s + c.hoursLogged, 0);
+            const totalHours = crewHours > 0 ? crewHours : (job.hours || 0);
+            const totalLabor = crewHours > 0 ? crewDetails.reduce((s, c) => s + c.hoursLogged * c.payRate, 0) : totalHours * 30;
             return { job, crewDetails, totalHours, totalLabor, completedCount, totalSteps: steps.length, nextStep };
           });
           const grandHours = jobDetails.reduce((s, d) => s + d.totalHours, 0);
@@ -7730,6 +7748,11 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                         {jcrew.length === 0 && (
                           <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
                         )}
+                        {/* Action buttons */}
+                        <div style={{ display: 'flex', gap: 6, marginTop: 8, borderTop: '1px solid #1e2535', paddingTop: 8 }}>
+                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Job</button>
+                          <button style={{ flex: 1, padding: '6px', background: '#10b98118', border: '1px solid #10b98144', borderRadius: 6, color: '#10b981', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Message Crew</button>
+                        </div>
                       </div>
                     );
                   })}
@@ -7767,6 +7790,68 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                     })}
                   </div>
                 </>
+              )}
+
+              {/* + Schedule Job */}
+              {!showScheduleForm ? (
+                <button
+                  onClick={() => setShowScheduleForm(true)}
+                  style={{ width: '100%', padding: '11px', marginTop: 12, marginBottom: 4, background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                >
+                  + Schedule Job
+                </button>
+              ) : (
+                <div style={{ ...card, marginTop: 12, border: '1px solid #7c3aed44' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#a78bfa', marginBottom: 10 }}>Schedule a Job for {displayDate}</div>
+                  <select value={schedJobId} onChange={e => setSchedJobId(e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, marginBottom: 8, outline: 'none', fontFamily: 'inherit' }}>
+                    <option value="">— Select a job —</option>
+                    {jobs.filter(j => !j.scheduledDate || j.status === 'Scheduled').map(j => (
+                      <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} (${(j.value || 0).toLocaleString()})</option>
+                    ))}
+                  </select>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Assign Crew</div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                    {(crew || []).map(m => {
+                      const sel = schedCrew.includes(m.id);
+                      return (
+                        <button key={m.id} onClick={() => setSchedCrew(prev => sel ? prev.filter(x => x !== m.id) : [...prev, m.id])} style={{ padding: '4px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, border: sel ? '1px solid #7c3aed' : '1px solid #1e2535', background: sel ? 'rgba(124,58,237,0.15)' : 'transparent', color: sel ? '#a78bfa' : '#94a3b8', cursor: 'pointer' }}>
+                          {m.name.split(' ')[0]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, color: '#64748b', marginBottom: 3 }}>Start Time</div>
+                      <select value={schedTime} onChange={e => setSchedTime(e.target.value)} style={{ width: '100%', padding: '7px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}>
+                        {['6:00 AM','6:30 AM','7:00 AM','7:30 AM','8:00 AM','8:30 AM','9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, color: '#64748b', marginBottom: 3 }}>Est. Hours</div>
+                      <input type="number" min={1} max={12} value={schedHours} onChange={e => setSchedHours(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))} style={{ width: '100%', padding: '7px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                    </div>
+                  </div>
+                  <input value={schedNotes} onChange={e => setSchedNotes(e.target.value)} placeholder="Notes (optional)" style={{ width: '100%', padding: '7px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 10 }} />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => {
+                        if (schedJobId) {
+                          onScheduleExisting(date, schedJobId);
+                          setShowScheduleForm(false);
+                          setSchedJobId(''); setSchedCrew([]); setSchedNotes('');
+                        }
+                      }}
+                      disabled={!schedJobId}
+                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : '#1e2535', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
+                    >
+                      Add to Schedule
+                    </button>
+                    <button onClick={() => setShowScheduleForm(false)} style={{ padding: '9px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               )}
 
               {/* Hours Summary */}
