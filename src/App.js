@@ -6133,199 +6133,201 @@ function PhotoLogTab({ tier }) {
 }
 
 // ─── Global Photo Log (real users) ───────────────────────────────────────────
-function GlobalPhotoLog() {
-  const [photos, setPhotos] = useState([]);
-  const [jobFilter, setJobFilter] = useState('all');
-  const [lightbox, setLightbox] = useState(null);
-  const [loading, setLoading] = useState(true);
+// Demo placeholder photo entries — colored tiles, no actual images
+const PHOTO_CATS = ['Pre-Install', 'Damage', 'In-Progress', 'Completion', 'Insurance', 'Punch List'];
+const PHOTO_CAT_COLORS = { 'Pre-Install': '#3b82f6', 'Damage': '#ef4444', 'In-Progress': '#f97316', 'Completion': '#22c55e', 'Insurance': '#8b5cf6', 'Punch List': '#f59e0b' };
+
+const DEMO_JOB_PHOTOS = [
+  { id: 'dp1', jobId: 201, category: 'Pre-Install', timestamp: 1744600000000, caption: 'North slope overview' },
+  { id: 'dp2', jobId: 201, category: 'Pre-Install', timestamp: 1744600100000, caption: 'Chimney flashing detail' },
+  { id: 'dp3', jobId: 201, category: 'In-Progress', timestamp: 1744650000000, caption: 'Tear-off day 1' },
+  { id: 'dp4', jobId: 201, category: 'In-Progress', timestamp: 1744660000000, caption: 'Underlayment installed' },
+  { id: 'dp5', jobId: 201, category: 'Damage', timestamp: 1744590000000, caption: 'Wind damage ridge cap' },
+  { id: 'dp6', jobId: 201, category: 'Completion', timestamp: 1744700000000, caption: 'Finished — south side' },
+  { id: 'dp7', jobId: 202, category: 'Damage', timestamp: 1744700000000, caption: 'Hail impact marks' },
+  { id: 'dp8', jobId: 202, category: 'Damage', timestamp: 1744700100000, caption: 'Adjuster photo — valley' },
+  { id: 'dp9', jobId: 202, category: 'Pre-Install', timestamp: 1744710000000, caption: 'Full roof from driveway' },
+  { id: 'dp10', jobId: 202, category: 'Pre-Install', timestamp: 1744710100000, caption: 'Attic decking condition' },
+  { id: 'dp11', jobId: 205, category: 'Pre-Install', timestamp: 1744720000000, caption: 'Slate condition overview' },
+  { id: 'dp12', jobId: 205, category: 'Pre-Install', timestamp: 1744720100000, caption: 'Chimney 1 detail' },
+  { id: 'dp13', jobId: 205, category: 'Pre-Install', timestamp: 1744720200000, caption: 'Copper gutter tie-in' },
+  { id: 'dp14', jobId: 204, category: 'In-Progress', timestamp: 1744730000000, caption: 'Old shingles removed' },
+  { id: 'dp15', jobId: 204, category: 'In-Progress', timestamp: 1744730100000, caption: 'New underlayment going on' },
+  { id: 'dp16', jobId: 204, category: 'Completion', timestamp: 1744740000000, caption: 'Finished — front elevation' },
+  { id: 'dp17', jobId: 204, category: 'Punch List', timestamp: 1744750000000, caption: 'Ridge cap alignment check' },
+  { id: 'dp18', jobId: 207, category: 'Pre-Install', timestamp: 1744760000000, caption: 'Existing TPO condition' },
+  { id: 'dp19', jobId: 207, category: 'Pre-Install', timestamp: 1744760100000, caption: 'Drain location mapping' },
+  { id: 'dp20', jobId: 207, category: 'In-Progress', timestamp: 1744770000000, caption: 'Insulation board laid' },
+  { id: 'dp21', jobId: 207, category: 'In-Progress', timestamp: 1744770100000, caption: 'TPO membrane welding' },
+  { id: 'dp22', jobId: 207, category: 'Completion', timestamp: 1744780000000, caption: 'Finished flat roof' },
+];
+
+function GlobalPhotoLog({ jobs }) {
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [catFilter, setCatFilter] = useState('All');
+  const [realPhotos, setRealPhotos] = useState([]);
   const isMobile = useMobile();
 
-  const loadPhotos = useCallback(() => {
-    photoDB.getAll().then(all => {
-      setPhotos(all.sort((a, b) => b.timestamp - a.timestamp));
-      setLoading(false);
-    }).catch(() => setLoading(false));
+  // Load real photos from IndexedDB
+  useEffect(() => {
+    photoDB.getAll().then(all => setRealPhotos(all.sort((a, b) => b.timestamp - a.timestamp))).catch(() => {});
   }, []);
 
-  useEffect(() => { loadPhotos(); }, [loadPhotos]);
+  const allJobs = jobs || DEMO_JOBS;
+  const allPhotos = [...DEMO_JOB_PHOTOS, ...realPhotos];
 
-  const handleDelete = async (id) => {
-    await photoDB.remove(id);
-    setPhotos(prev => prev.filter(p => p.id !== id));
-    if (lightbox && lightbox.id === id) setLightbox(null);
-  };
+  const photoCountForJob = (jobId) => allPhotos.filter(p => String(p.jobId) === String(jobId)).length;
 
-  const jobIds = [...new Set(photos.map(p => p.jobId))];
-  const filtered = jobFilter === 'all' ? photos : photos.filter(p => p.jobId === jobFilter);
+  const formatTs = (ts) => new Date(ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
-  const formatTs = (ts) => new Date(ts).toLocaleString('en-US', {
-    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
-  });
-
-  const gridCols = isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))';
-
-  if (loading) {
-    return <div style={{ padding: 40, textAlign: 'center', color: '#64748b', fontSize: 13 }}>Loading photos…</div>;
+  // ── Job Folder Grid ──
+  if (!selectedJob) {
+    const totalPhotos = allPhotos.length;
+    return (
+      <div>
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Job Photos</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+          {allJobs.map(job => {
+            const count = photoCountForJob(job.id);
+            const tc = TRADE_COLORS[job.trade] || '#f97316';
+            const stColor = job.status === 'Complete' ? '#22c55e' : job.status === 'In Progress' ? '#f97316' : '#6366f1';
+            return (
+              <div
+                key={job.id}
+                onClick={() => { setSelectedJob(job); setCatFilter('All'); }}
+                style={{
+                  background: '#161b27', border: '1px solid #253048', borderRadius: 10,
+                  padding: 14, cursor: 'pointer', transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#06b6d4'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#253048'; }}
+              >
+                {/* Thumbnail area */}
+                <div style={{
+                  background: count > 0 ? '#0d1117' : '#111823', borderRadius: 8,
+                  height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 10, border: '1px solid #1e2535', overflow: 'hidden',
+                }}>
+                  {count > 0 ? (
+                    <div style={{ display: 'flex', gap: 3, padding: 4, width: '100%', height: '100%' }}>
+                      {allPhotos.filter(p => String(p.jobId) === String(job.id)).slice(0, 3).map((p, i) => (
+                        <div key={p.id} style={{
+                          flex: 1, background: PHOTO_CAT_COLORS[p.category] || '#475569',
+                          borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          opacity: 0.7 + i * 0.1,
+                        }}>
+                          <span style={{ fontSize: 16 }}>📷</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: 28, opacity: 0.3 }}>📷</span>
+                  )}
+                </div>
+                {/* Job info */}
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                <div style={{ fontSize: 10, color: '#475569', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: tc + '22', color: tc }}>{job.trade}</span>
+                  <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: stColor + '22', color: stColor }}>{job.status}</span>
+                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#475569', fontWeight: 600, marginLeft: 'auto' }}>
+                    {count > 0 ? `${count} photos` : 'No photos'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   }
+
+  // ── Job Photo View ──
+  const jobPhotos = allPhotos.filter(p => String(p.jobId) === String(selectedJob.id));
+  const filtered = catFilter === 'All' ? jobPhotos : jobPhotos.filter(p => p.category === catFilter);
+  const usedCats = ['All', ...PHOTO_CATS.filter(c => jobPhotos.some(p => p.category === c))];
+  const tc = TRADE_COLORS[selectedJob.trade] || '#f97316';
 
   return (
     <div>
       {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-        marginBottom: 16, flexWrap: 'wrap', gap: 8,
-      }}>
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Photo Log</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
-            {photos.length > 0
-              ? `${photos.length} photo${photos.length !== 1 ? 's' : ''} · open a job card to add more`
-              : 'Job site documentation — open any job card to upload photos'}
-          </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+        <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 14, cursor: 'pointer', padding: '4px 8px' }}>← Back</button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
+          <div style={{ fontSize: 11, color: '#475569' }}>{selectedJob.address}</div>
         </div>
+        <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 6, background: tc + '22', color: tc }}>{selectedJob.trade}</span>
       </div>
 
-      {/* Job filter pills — only when multiple jobs have photos */}
-      {jobIds.length > 1 && (
-        <div style={{
-          display: 'flex', gap: 6, marginBottom: 16,
-          overflowX: 'auto', WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none', paddingBottom: 4,
-        }}>
-          <button style={S.filterBtn(jobFilter === 'all')} onClick={() => setJobFilter('all')}>
-            All ({photos.length})
-          </button>
-          {jobIds.map(jid => {
-            const name = photos.find(p => p.jobId === jid)?.jobName || jid;
-            const count = photos.filter(p => p.jobId === jid).length;
+      {/* Category filter tabs */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
+        {usedCats.map(c => {
+          const isActive = catFilter === c;
+          const color = c === 'All' ? '#06b6d4' : (PHOTO_CAT_COLORS[c] || '#64748b');
+          return (
+            <button key={c} onClick={() => setCatFilter(c)} style={{
+              padding: '5px 12px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+              border: isActive ? `1px solid ${color}` : '1px solid #1e2535',
+              background: isActive ? color + '18' : 'transparent',
+              color: isActive ? color : '#94a3b8', whiteSpace: 'nowrap',
+            }}>
+              {c} {c === 'All' ? `(${jobPhotos.length})` : `(${jobPhotos.filter(p => p.category === c).length})`}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Photo grid */}
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed #1e2535', borderRadius: 10 }}>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
+          <div style={{ fontSize: 13, color: '#64748b' }}>No photos in this category yet</div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
+          {filtered.map(photo => {
+            const catColor = PHOTO_CAT_COLORS[photo.category] || '#475569';
+            const isPlaceholder = !photo.imageData;
             return (
-              <button key={jid} style={S.filterBtn(jobFilter === jid)} onClick={() => setJobFilter(jid)}>
-                {name} ({count})
-              </button>
+              <div key={photo.id} style={{
+                position: 'relative', borderRadius: 8, overflow: 'hidden',
+                border: '1px solid #253048', aspectRatio: '4/3',
+                background: isPlaceholder ? catColor + '18' : '#0d1117',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                cursor: isPlaceholder ? 'default' : 'pointer',
+              }}>
+                {isPlaceholder ? (
+                  <>
+                    <span style={{ fontSize: 24, marginBottom: 4 }}>📷</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: catColor }}>{photo.category}</span>
+                  </>
+                ) : (
+                  <img src={photo.imageData} alt={photo.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                )}
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'rgba(0,0,0,0.7)', padding: '4px 7px',
+                }}>
+                  <span style={{ background: catColor + '44', color: catColor, padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>
+                  <span style={{ fontSize: 9, color: '#94a3b8' }}>{photo.caption || formatTs(photo.timestamp)}</span>
+                </div>
+              </div>
             );
           })}
         </div>
       )}
 
-      {/* Empty state */}
-      {photos.length === 0 ? (
-        <div style={{
-          textAlign: 'center', padding: '48px 24px',
-          border: '1px dashed #1e2535', borderRadius: 12,
-        }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>📷</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>No photos yet</div>
-          <div style={{ fontSize: 13, color: '#475569', maxWidth: 300, margin: '0 auto' }}>
-            Open any job from the Pipeline tab, then tap the Photos tab inside the job card.
-          </div>
-        </div>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 10 }}>
-            {filtered.map(photo => (
-              <div
-                key={photo.id}
-                onClick={() => setLightbox(photo)}
-                style={{
-                  position: 'relative', borderRadius: 8, overflow: 'hidden',
-                  cursor: 'pointer', border: '1px solid #253048',
-                  aspectRatio: '4/3', background: '#0d1117',
-                }}
-              >
-                <img
-                  src={photo.imageData}
-                  alt={photo.caption || 'Job photo'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                />
-                <div style={{
-                  position: 'absolute', bottom: 0, left: 0, right: 0,
-                  background: 'rgba(0,0,0,0.7)', padding: '6px 8px',
-                }}>
-                  <div style={{
-                    fontSize: 11, fontWeight: 600, color: '#e2e8f0', marginBottom: 1,
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                  }}>
-                    {photo.jobName || 'Unknown job'}
-                  </div>
-                  {photo.caption && (
-                    <div style={{
-                      fontSize: 10, color: '#94a3b8',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                    }}>
-                      {photo.caption}
-                    </div>
-                  )}
-                </div>
-                <div style={{
-                  position: 'absolute', top: 6, left: 6,
-                  fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 6,
-                  background: 'rgba(249,115,22,0.85)', color: '#fff',
-                }}>
-                  {STAGE_LABELS[photo.stage] || photo.stage}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Lightbox */}
-          {lightbox && (
-            <div
-              style={{
-                position: 'fixed', inset: 0, zIndex: 2000,
-                background: 'rgba(0,0,0,0.93)',
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', padding: 16,
-              }}
-              onClick={(e) => e.target === e.currentTarget && setLightbox(null)}
-            >
-              <img
-                src={lightbox.imageData}
-                alt={lightbox.caption || ''}
-                style={{ maxWidth: '100%', maxHeight: '72vh', objectFit: 'contain', borderRadius: 8 }}
-              />
-              <div style={{
-                marginTop: 12, display: 'flex', gap: 10, alignItems: 'center',
-                flexWrap: 'wrap', justifyContent: 'center', maxWidth: 480, textAlign: 'center',
-              }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{lightbox.jobName}</span>
-                {lightbox.caption && (
-                  <span style={{ fontSize: 13, color: '#94a3b8' }}>{lightbox.caption}</span>
-                )}
-                <span style={{ fontSize: 11, color: '#64748b' }}>{formatTs(lightbox.timestamp)}</span>
-                <span style={{
-                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
-                  background: 'rgba(249,115,22,0.15)', color: '#f97316',
-                  border: '1px solid rgba(249,115,22,0.3)',
-                }}>
-                  {STAGE_LABELS[lightbox.stage] || lightbox.stage}
-                </span>
-              </div>
-              <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-                <button
-                  onClick={() => setLightbox(null)}
-                  style={{
-                    padding: '8px 20px', borderRadius: 7,
-                    background: '#1a1f2e', border: '1px solid #2d3748',
-                    color: '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                  }}
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => handleDelete(lightbox.id)}
-                  style={{
-                    padding: '8px 20px', borderRadius: 7,
-                    background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-                    color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+      {/* + Add Photo button */}
+      <button
+        onClick={() => {/* Would open upload flow */}}
+        style={{ width: '100%', marginTop: 14, padding: '11px', background: 'linear-gradient(135deg,#06b6d4,#0891b2)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+      >
+        + Add Photo
+      </button>
     </div>
   );
 }
@@ -9156,7 +9158,7 @@ export default function App() {
           <ChatTab jobs={jobs} />
         )}
         {tab === 'photos' && (
-          <GlobalPhotoLog />
+          <GlobalPhotoLog jobs={jobs} />
         )}
       </main>
 
