@@ -3239,29 +3239,37 @@ function cpNewMakeInit(job, crewNames) {
 
 // Demo pre-filled Cost Manager data: jobId → { itemId: { qty, costPerUnit } }
 const DEMO_COST_DATA = {
-  201: { // Christ Lutheran Church — Storm Damage (~$4,800 materials)
-    ma2: { qty: '38', costPerUnit: '95.00' },    // Architectural Shingles 38 sq
-    ma5: { qty: '240', costPerUnit: '0.65' },    // Starter Strip 240 LF
-    ma6: { qty: '180', costPerUnit: '1.20' },    // Hip & Ridge 180 LF
-    mb1: { qty: '4', costPerUnit: '78.00' },     // Synthetic Underlayment 4 rolls
-    mb4: { qty: '2', costPerUnit: '95.00' },     // Ice & Water Shield 2 rolls
-    mc2: { qty: '120', costPerUnit: '1.85' },    // Step Flashing 120 LF
-    mc6: { qty: '1', costPerUnit: '85.00' },     // Small Chimney Flashing
-    mc7: { qty: '1', costPerUnit: '145.00' },    // Large Chimney Flashing
-    md2: { qty: '14', costPerUnit: '38.00' },    // OSB 4x8 Sheet 14 PC
+  201: { // Christ Lutheran Church — 118 sq Peach Bottom Slate (~$23,400)
+    ma3: { qty: '118', costPerUnit: '185.00' },  // Premium/Designer (Peach Bottom Slate)
+    mb1: { qty: '6', costPerUnit: '78.00' },     // Synthetic Underlayment
+    mb4: { qty: '3', costPerUnit: '95.00' },     // Ice & Water Shield
+    mc2: { qty: '220', costPerUnit: '1.85' },    // Step Flashing 220 LF
+    mc7: { qty: '2', costPerUnit: '145.00' },    // Large Chimney Flashing
+    md2: { qty: '14', costPerUnit: '38.00' },    // OSB 4x8 Sheet
   },
-  202: { // Amos Stoltzfus — Full Replacement 18 sq (~$2,400 materials)
-    ma2: { qty: '18', costPerUnit: '92.00' },    // Architectural Shingles 18 sq
-    mb1: { qty: '2', costPerUnit: '78.00' },     // Synthetic Underlayment 2 rolls
-    mb4: { qty: '1', costPerUnit: '95.00' },     // Ice & Water Shield 1 roll
-    ma6: { qty: '95', costPerUnit: '1.20' },     // Hip & Ridge 95 LF
-    mc2: { qty: '60', costPerUnit: '1.85' },     // Step Flashing 60 LF
+  202: { // Amos Stoltzfus — 38 sq GAF Timberline HDZ (~$4,200)
+    ma2: { qty: '38', costPerUnit: '95.00' },    // Architectural (GAF Timberline HDZ)
+    mb1: { qty: '2', costPerUnit: '78.00' },     // Synthetic Underlayment
+    mb4: { qty: '2', costPerUnit: '95.00' },     // Ice & Water Shield
+    mc2: { qty: '120', costPerUnit: '1.85' },    // Step Flashing
+    md2: { qty: '6', costPerUnit: '38.00' },     // OSB 4x8 Sheet
   },
-  204: { // Dan Sensenig — Flashing Repair (~$250 materials)
-    mc2: { qty: '12', costPerUnit: '1.85' },     // Step Flashing
-    mc8: { qty: '1', costPerUnit: '195.00' },    // Skylight Flashing
-    mg3: { qty: '2', costPerUnit: '18.00' },     // Roofing Cement/Tar
-    mg4: { qty: '3', costPerUnit: '6.50' },      // Caulk/Sealant
+  204: { // Dan Sensenig — 34 sq GAF Timberline HDZ (~$3,500)
+    ma2: { qty: '34', costPerUnit: '92.00' },    // Architectural (GAF Timberline HDZ)
+    mb1: { qty: '2', costPerUnit: '78.00' },     // Synthetic Underlayment
+    mb4: { qty: '1', costPerUnit: '95.00' },     // Ice & Water Shield
+    mc2: { qty: '95', costPerUnit: '1.85' },     // Step Flashing
+  },
+  205: { // Hotel Hershey — 180 sq Standing Seam Metal (~$78,000)
+    ma3: { qty: '180', costPerUnit: '420.00' },  // Premium/Designer (Standing Seam Metal)
+    mb1: { qty: '9', costPerUnit: '78.00' },     // Synthetic Underlayment
+    mc1: { qty: '380', costPerUnit: '4.50' },    // Drip Edge (Eave Trim)
+    ma4: { qty: '180', costPerUnit: '6.00' },    // Ridge Cap (Metal Ridge)
+  },
+  207: { // Market Street Commons — 85 sq TPO (~$20,500)
+    ma3: { qty: '85', costPerUnit: '185.00' },   // Premium/Designer (TPO Membrane 60-mil)
+    mb2: { qty: '12', costPerUnit: '45.00' },    // Felt Paper 15# (TPO Adhesive substitute)
+    mb1: { qty: '85', costPerUnit: '55.00' },    // Synthetic Underlayment (Insulation Board sub)
   },
 };
 
@@ -3836,7 +3844,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       )}
 
       {/* Sub-tab navigation — sticky within scroll container */}
-      <div style={{ position: 'sticky', top: -20, zIndex: 10, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 4, paddingBottom: 0, overflowX: 'auto' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, paddingTop: 4, paddingBottom: 0, overflowX: 'auto' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
@@ -4954,6 +4962,18 @@ function LoginScreen({ onLogin, onStartSignup }) {
         <div style={A.link}>
           New here?{' '}
           <button style={A.linkBtn} onClick={onStartSignup}>Create an account</button>
+        </div>
+
+        <div style={{ marginTop: 24, borderTop: '1px solid #253048', paddingTop: 20 }}>
+          <button
+            onClick={() => onLogin({ isDemo: true, companyName: 'Equity Roofing', userName: 'Allen Stoltzfus', trade: 'Full Replacement', plan: 'pro' })}
+            style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 10, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
+          >
+            Try Demo — No signup needed
+          </button>
+          <div style={{ textAlign: 'center', fontSize: 12, color: '#64748b', marginTop: 8 }}>
+            See RidgeOS with real Equity Roofing data preloaded
+          </div>
         </div>
       </div>
     </div>
