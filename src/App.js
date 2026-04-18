@@ -3236,37 +3236,26 @@ function cpNewMakeInit(job, crewNames) {
 
 // Demo pre-filled Cost Manager data: jobId → { itemId: { qty, costPerUnit } }
 const DEMO_COST_DATA = {
-  201: { // Christ Lutheran Church — Storm Damage
-    mc3: { qty: '8', costPerUnit: '4.50' },     // Valley Metal 8 LF
+  201: { // Christ Lutheran Church — Storm Damage (~$4,800 materials)
+    ma2: { qty: '38', costPerUnit: '95.00' },    // Architectural Shingles 38 sq
+    ma5: { qty: '240', costPerUnit: '0.65' },    // Starter Strip 240 LF
+    ma6: { qty: '180', costPerUnit: '1.20' },    // Hip & Ridge 180 LF
+    mb1: { qty: '4', costPerUnit: '78.00' },     // Synthetic Underlayment 4 rolls
+    mb4: { qty: '2', costPerUnit: '95.00' },     // Ice & Water Shield 2 rolls
+    mc2: { qty: '120', costPerUnit: '1.85' },    // Step Flashing 120 LF
     mc6: { qty: '1', costPerUnit: '85.00' },     // Small Chimney Flashing
     mc7: { qty: '1', costPerUnit: '145.00' },    // Large Chimney Flashing
-    md1: { qty: '12', costPerUnit: '52.00' },    // Plywood 4x8
-    md2: { qty: '6', costPerUnit: '38.00' },     // OSB 4x8
-    ma2: { qty: '24', costPerUnit: '38.50' },    // Architectural Shingles
-    ma4: { qty: '4', costPerUnit: '42.00' },     // Ridge Cap Shingles
-    mb1: { qty: '3', costPerUnit: '165.00' },    // Synthetic Underlayment
-    mb4: { qty: '2', costPerUnit: '89.00' },     // Ice & Water Shield
-    mc1: { qty: '60', costPerUnit: '2.80' },     // Drip Edge
-    mg1: { qty: '4', costPerUnit: '32.00' },     // Roofing Nails
-    mh1: { qty: '1', costPerUnit: '425.00' },    // Dumpster
+    md2: { qty: '14', costPerUnit: '38.00' },    // OSB 4x8 Sheet 14 PC
   },
-  202: { // Amos Stoltzfus — Full Replacement
-    ma2: { qty: '90', costPerUnit: '38.50' },    // Architectural Shingles (30 sq)
-    ma4: { qty: '8', costPerUnit: '42.00' },     // Ridge Cap
-    ma5: { qty: '180', costPerUnit: '0.85' },    // Starter Strip
-    mb1: { qty: '8', costPerUnit: '165.00' },    // Synthetic Underlayment
-    mb4: { qty: '4', costPerUnit: '89.00' },     // Ice & Water Shield
-    mc1: { qty: '200', costPerUnit: '2.80' },    // Drip Edge
-    mc2: { qty: '24', costPerUnit: '1.20' },     // Step Flashing
-    mc3: { qty: '16', costPerUnit: '4.50' },     // Valley Metal
-    me1: { qty: '42', costPerUnit: '4.25' },     // Ridge Vent
-    mg1: { qty: '8', costPerUnit: '32.00' },     // Roofing Nails
-    mg2: { qty: '4', costPerUnit: '45.00' },     // Coil Nails
-    mh1: { qty: '1', costPerUnit: '425.00' },    // Dumpster
-    mh2: { qty: '2', costPerUnit: '35.00' },     // Tarps
+  202: { // Amos Stoltzfus — Full Replacement 18 sq (~$2,400 materials)
+    ma2: { qty: '18', costPerUnit: '92.00' },    // Architectural Shingles 18 sq
+    mb1: { qty: '2', costPerUnit: '78.00' },     // Synthetic Underlayment 2 rolls
+    mb4: { qty: '1', costPerUnit: '95.00' },     // Ice & Water Shield 1 roll
+    ma6: { qty: '95', costPerUnit: '1.20' },     // Hip & Ridge 95 LF
+    mc2: { qty: '60', costPerUnit: '1.85' },     // Step Flashing 60 LF
   },
-  204: { // Dan Sensenig — Flashing Repair
-    mc2: { qty: '12', costPerUnit: '1.20' },     // Step Flashing
+  204: { // Dan Sensenig — Flashing Repair (~$250 materials)
+    mc2: { qty: '12', costPerUnit: '1.85' },     // Step Flashing
     mc8: { qty: '1', costPerUnit: '195.00' },    // Skylight Flashing
     mg3: { qty: '2', costPerUnit: '18.00' },     // Roofing Cement/Tar
     mg4: { qty: '3', costPerUnit: '6.50' },      // Caulk/Sealant
@@ -3843,8 +3832,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         </div>
       )}
 
-      {/* Sub-tab navigation */}
-      <div style={{ display: 'flex', background: '#131a2a', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, overflowX: 'auto', padding: '4px 4px 0' }}>
+      {/* Sub-tab navigation — sticky within scroll container */}
+      <div style={{ position: 'sticky', top: -20, zIndex: 10, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 4, paddingBottom: 0, overflowX: 'auto' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
