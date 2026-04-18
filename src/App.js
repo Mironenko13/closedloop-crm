@@ -4023,7 +4023,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       )}
 
       {/* Sub-tab navigation — sticky within scroll container */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, paddingTop: 4, paddingBottom: 0, overflowX: 'auto' }}>
+      <div style={{ position: 'sticky', top: -20, zIndex: 10, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 4, paddingBottom: 0, overflowX: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
