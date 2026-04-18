@@ -3234,6 +3234,60 @@ function cpNewMakeInit(job, crewNames) {
   };
 }
 
+// Demo pre-filled Cost Manager data: jobId → { itemId: { qty, costPerUnit } }
+const DEMO_COST_DATA = {
+  201: { // Christ Lutheran Church — Storm Damage
+    mc3: { qty: '8', costPerUnit: '4.50' },     // Valley Metal 8 LF
+    mc6: { qty: '1', costPerUnit: '85.00' },     // Small Chimney Flashing
+    mc7: { qty: '1', costPerUnit: '145.00' },    // Large Chimney Flashing
+    md1: { qty: '12', costPerUnit: '52.00' },    // Plywood 4x8
+    md2: { qty: '6', costPerUnit: '38.00' },     // OSB 4x8
+    ma2: { qty: '24', costPerUnit: '38.50' },    // Architectural Shingles
+    ma4: { qty: '4', costPerUnit: '42.00' },     // Ridge Cap Shingles
+    mb1: { qty: '3', costPerUnit: '165.00' },    // Synthetic Underlayment
+    mb4: { qty: '2', costPerUnit: '89.00' },     // Ice & Water Shield
+    mc1: { qty: '60', costPerUnit: '2.80' },     // Drip Edge
+    mg1: { qty: '4', costPerUnit: '32.00' },     // Roofing Nails
+    mh1: { qty: '1', costPerUnit: '425.00' },    // Dumpster
+  },
+  202: { // Amos Stoltzfus — Full Replacement
+    ma2: { qty: '90', costPerUnit: '38.50' },    // Architectural Shingles (30 sq)
+    ma4: { qty: '8', costPerUnit: '42.00' },     // Ridge Cap
+    ma5: { qty: '180', costPerUnit: '0.85' },    // Starter Strip
+    mb1: { qty: '8', costPerUnit: '165.00' },    // Synthetic Underlayment
+    mb4: { qty: '4', costPerUnit: '89.00' },     // Ice & Water Shield
+    mc1: { qty: '200', costPerUnit: '2.80' },    // Drip Edge
+    mc2: { qty: '24', costPerUnit: '1.20' },     // Step Flashing
+    mc3: { qty: '16', costPerUnit: '4.50' },     // Valley Metal
+    me1: { qty: '42', costPerUnit: '4.25' },     // Ridge Vent
+    mg1: { qty: '8', costPerUnit: '32.00' },     // Roofing Nails
+    mg2: { qty: '4', costPerUnit: '45.00' },     // Coil Nails
+    mh1: { qty: '1', costPerUnit: '425.00' },    // Dumpster
+    mh2: { qty: '2', costPerUnit: '35.00' },     // Tarps
+  },
+  204: { // Dan Sensenig — Flashing Repair
+    mc2: { qty: '12', costPerUnit: '1.20' },     // Step Flashing
+    mc8: { qty: '1', costPerUnit: '195.00' },    // Skylight Flashing
+    mg3: { qty: '2', costPerUnit: '18.00' },     // Roofing Cement/Tar
+    mg4: { qty: '3', costPerUnit: '6.50' },      // Caulk/Sealant
+  },
+};
+
+function applyDemoCostData(initData, jobId) {
+  const fills = DEMO_COST_DATA[jobId];
+  if (!fills) return initData;
+  return {
+    ...initData,
+    materials: {
+      ...initData.materials,
+      sections: initData.materials.sections.map(sec => ({
+        ...sec,
+        items: sec.items.map(item => fills[item.id] ? { ...item, qty: fills[item.id].qty, costPerUnit: fills[item.id].costPerUnit } : item),
+      })),
+    },
+  };
+}
+
 function CostManagerPanel({ job, crew, assignments, rolePerms }) {
   const cpKey = `cl_crewpay_${job.id}`;
   const assignedIds = assignments[String(job.id)] || [];
@@ -3253,7 +3307,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         ) return parsed;
       }
     } catch (e) { /* ignore */ }
-    return cpNewMakeInit(job, assignedCrew.map(m => m.name).join(', '));
+    return applyDemoCostData(cpNewMakeInit(job, assignedCrew.map(m => m.name).join(', ')), job.id);
   });
   const [jobTpls, setJobTpls] = useState(() => {
     try { const s = localStorage.getItem(CP_TPL_KEY); return s ? JSON.parse(s) : []; } catch (e) { return []; }
@@ -3789,8 +3843,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         </div>
       )}
 
-      {/* Sub-tab navigation — sticky */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 8, display: 'flex', background: '#131a2a', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, overflowX: 'auto', padding: '4px 4px 0' }}>
+      {/* Sub-tab navigation */}
+      <div style={{ display: 'flex', background: '#131a2a', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, overflowX: 'auto', padding: '4px 4px 0' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
