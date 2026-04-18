@@ -508,10 +508,13 @@ const DEMO_JOBS = [
   // ── Active April schedule ──
   {
     id: 201, customer: 'Christ Lutheran Church', address: '130 S 5th St, Mifflinburg PA 17844',
-    trade: 'Full Replacement', value: 80240, status: 'In Progress', hours: 9,
+    trade: 'Full Replacement', value: 80828, status: 'In Progress', hours: 9,
     scheduledDate: '2026-04-14', completedSteps: [1, 2, 3, 4, 5, 6],
     notes: '118 sq Peach Bottom slate, steep pitch, 2 chimneys. Nationwide claim. Historic sanctuary roof.',
     duration: 5,
+    changeOrders: [
+      { id: 'co-201-1', title: 'Additional Decking — 14 sheets OSB found rotted', description: 'North slope decking rotted through at eave line. 14 sheets OSB replacement required. Discovered during tear-off.', amount: 588, status: 'Approved', date: '2026-04-15' },
+    ],
   },
   {
     id: 202, customer: 'Amos Stoltzfus', address: '1240 Strickler Rd, Mifflinburg PA 17844',
@@ -528,10 +531,13 @@ const DEMO_JOBS = [
   },
   {
     id: 204, customer: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870',
-    trade: 'Full Replacement', value: 14900, status: 'Scheduled', hours: 4,
+    trade: 'Full Replacement', value: 15110, status: 'Scheduled', hours: 4,
     scheduledDate: '2026-04-18', completedSteps: [],
     notes: '34 sq, GAF Timberline HDZ. Standard pitch. Currently on punch list stage.',
     duration: 2,
+    changeOrders: [
+      { id: 'co-204-1', title: 'Ridge Cap Extension — west gable', description: 'West gable ridge cap 12 LF short of full coverage. Extend to match east side.', amount: 210, status: 'Approved', date: '2026-04-19' },
+    ],
   },
   {
     id: 205, customer: 'Hotel Hershey Annex', address: '100 Hotel Rd, Hershey PA 17033',
@@ -4023,7 +4029,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       )}
 
       {/* Sub-tab navigation — sticky within scroll container */}
-      <div style={{ position: 'sticky', top: -20, zIndex: 10, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', borderRadius: '8px 8px 0 0', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 4, paddingBottom: 0, overflowX: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }}>
+      <div style={{ position: 'sticky', top: -20, zIndex: 20, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 8, paddingBottom: 0, overflowX: 'auto', boxShadow: '0 6px 16px rgba(0,0,0,0.5)' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
@@ -4308,6 +4314,12 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
       try { setHasCostMgr(!!localStorage.getItem(`cl_crewpay_${job.id}`)); } catch (e) { /* ignore */ }
     }
   }, [modalTab, job.id]);
+  const [changeOrders, setChangeOrders] = useState(job.changeOrders || []);
+  const [showCOForm, setShowCOForm] = useState(false);
+  const [coTitle, setCOTitle] = useState('');
+  const [coDesc, setCODesc] = useState('');
+  const [coAmount, setCOAmount] = useState('');
+  const [coNote, setCONote] = useState('');
   const [confirmComplete, setConfirmComplete] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(false);
   const [schedDate, setSchedDate] = useState(job.scheduledDate || '');
@@ -4572,6 +4584,81 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 )}
               </div>
             )}
+
+            {/* ── Change Orders ── */}
+            <div style={{ marginTop: 24, borderTop: '1px solid #1e2535', paddingTop: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={S.sectionLabel}>Change Orders</div>
+                {!showCOForm && (
+                  <button onClick={() => setShowCOForm(true)} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                    + Add Change Order
+                  </button>
+                )}
+              </div>
+
+              {/* Existing change orders */}
+              {changeOrders.length === 0 && !showCOForm && (
+                <div style={{ fontSize: 12, color: '#475569', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
+              )}
+              {changeOrders.map(co => {
+                const stColor = co.status === 'Approved' ? '#22c55e' : co.status === 'Declined' ? '#ef4444' : '#f59e0b';
+                return (
+                  <div key={co.id} style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{co.title}</div>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: stColor + '18', color: stColor }}>{co.status}</span>
+                    </div>
+                    {co.description && <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 6 }}>{co.description}</div>}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11 }}>
+                      <span style={{ fontWeight: 700, color: '#22c55e' }}>+{fmt(co.amount)}</span>
+                      <span style={{ color: '#475569' }}>{co.date}</span>
+                      {co.status === 'Pending' && (
+                        <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+                          <button onClick={() => setChangeOrders(prev => prev.map(c => c.id === co.id ? { ...c, status: 'Approved' } : c))} style={{ padding: '3px 10px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, color: '#22c55e', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>Approve</button>
+                          <button onClick={() => setChangeOrders(prev => prev.map(c => c.id === co.id ? { ...c, status: 'Declined' } : c))} style={{ padding: '3px 10px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>Decline</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Change order total */}
+              {changeOrders.filter(c => c.status === 'Approved').length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>Change Order Total (Approved)</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#22c55e' }}>+{fmt(changeOrders.filter(c => c.status === 'Approved').reduce((s, c) => s + c.amount, 0))}</span>
+                </div>
+              )}
+
+              {/* Add change order form */}
+              {showCOForm && (
+                <div style={{ background: '#0f1117', border: '1px solid #f9731644', borderRadius: 8, padding: '12px', marginTop: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#f97316', marginBottom: 10 }}>New Change Order</div>
+                  <input value={coTitle} onChange={e => setCOTitle(e.target.value)} placeholder="Title (e.g. Additional decking repair)" style={{ ...FI, marginBottom: 8 }} />
+                  <textarea value={coDesc} onChange={e => setCODesc(e.target.value)} placeholder="Description" rows={2} style={{ ...FI, resize: 'none', marginBottom: 8 }} />
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <input value={coAmount} onChange={e => setCOAmount(e.target.value)} placeholder="Amount ($)" type="number" min="0" style={{ ...FI, flex: 1 }} />
+                    <input value={coNote} onChange={e => setCONote(e.target.value)} placeholder="Photo note (optional)" style={{ ...FI, flex: 1 }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => {
+                        if (coTitle.trim() && coAmount) {
+                          setChangeOrders(prev => [...prev, { id: `co-${Date.now()}`, title: coTitle.trim(), description: coDesc.trim(), amount: parseFloat(coAmount) || 0, status: 'Pending', date: TODAY, note: coNote.trim() }]);
+                          setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); setShowCOForm(false);
+                        }
+                      }}
+                      disabled={!coTitle.trim() || !coAmount}
+                      style={{ flex: 1, padding: '9px', background: coTitle.trim() && coAmount ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 6, color: coTitle.trim() && coAmount ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: coTitle.trim() && coAmount ? 'pointer' : 'not-allowed' }}
+                    >
+                      Submit for Approval
+                    </button>
+                    <button onClick={() => { setShowCOForm(false); setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); }} style={{ padding: '9px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </>
         )}
 
@@ -5089,7 +5176,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === 'demo@ridgeos.com' && password === 'demo123') {
-      onLogin({ isDemo: true, companyName: 'RidgeOS', userName: 'Demo User', trade: 'Full Replacement', plan: 'pro' });
+      onLogin({ isDemo: true, companyName: 'Ridge & Sons Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' });
     } else if (email && password) {
       setError('Incorrect email or password. Try demo@ridgeos.com / demo123');
     } else {
@@ -5150,13 +5237,13 @@ function LoginScreen({ onLogin, onStartSignup }) {
         </div>
         <div>
           <button
-            onClick={() => onLogin({ isDemo: true, companyName: 'Equity Roofing', userName: 'Allen Stoltzfus', trade: 'Full Replacement', plan: 'pro' })}
+            onClick={() => onLogin({ isDemo: true, companyName: 'Ridge & Sons Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' })}
             style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 8, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
           >
             Try Demo — No signup needed
           </button>
           <div style={{ textAlign: 'center', fontSize: 12, color: '#64748b', marginTop: 8 }}>
-            Preloaded with real Equity Roofing data
+            Preloaded with real roofing data
           </div>
         </div>
       </div>
