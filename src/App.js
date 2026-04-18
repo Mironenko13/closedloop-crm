@@ -2947,12 +2947,36 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
       stalled.reduce((acc, l) => { if (l.stallReason) acc[l.stallReason] = (acc[l.stallReason] || 0) + 1; return acc; }, {})
     ).sort((a, b) => b[1] - a[1]);
 
-    return { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, closedDeals };
+    // Average Margin — estimate from job values vs DEMO_COST_DATA labor totals
+    const marginJobs = allJobs.filter(j => j.value > 0 && DEMO_COST_DATA[j.id]);
+    const avgMargin = marginJobs.length ? Math.round(marginJobs.reduce((s, j) => {
+      const fills = DEMO_COST_DATA[j.id];
+      const labFills = fills?.lab || {};
+      const laborCost = Object.values(labFills).reduce((t, item) => t + (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0), 0);
+      const matFills = fills?.mat || {};
+      const matCost = Object.values(matFills).reduce((t, item) => t + (parseFloat(item.qty) || 0) * (parseFloat(item.costPerUnit) || 0), 0);
+      const totalCost = laborCost + matCost;
+      const margin = j.value > 0 ? ((j.value - totalCost) / j.value) * 100 : 0;
+      return s + margin;
+    }, 0) / marginJobs.length) : 0;
+
+    // Jobs by stage (combining leads + jobs)
+    const jobsByStage = STAGE_ORDER.map(stage => {
+      const leadCount = leads.filter(l => l.stage === stage).length;
+      const jobCount = allJobs.filter(j => {
+        if (stage === 'in_progress') return j.status === 'In Progress';
+        if (stage === 'completed' || stage === 'paid') return j.status === 'Complete';
+        return false;
+      }).length;
+      return { stage, count: leadCount + jobCount };
+    }).filter(s => s.count > 0);
+
+    return { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, avgMargin, jobsByStage };
   }, [leads, jobs]);
 
-  const { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown } = stats;
+  const { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, avgMargin, jobsByStage } = stats;
   const maxStageValue = Math.max(...stageFunnel.map(s => s.value), 1);
-  const maxStallCount = Math.max(...stallBreakdown.map(s => s[1]), 1);
+  const maxStallCount = stallBreakdown.length ? Math.max(...stallBreakdown.map(s => s[1]), 1) : 1;
 
   const STALL_COLORS = {
     price_objection: '#f97316', budget_freeze: '#6366f1', no_response: '#ef4444',
@@ -2964,11 +2988,11 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
     { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value', color: '#f97316' },
     { val: D ? fmt(revenueClosed) : '—', label: 'Revenue Closed YTD', color: '#22c55e' },
     { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value', color: '#6366f1' },
+    { val: `${avgMargin}%`, label: 'Avg Margin', color: avgMargin >= 30 ? '#22c55e' : avgMargin >= 15 ? '#f59e0b' : '#ef4444' },
     { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#f97316' : '#ef4444' },
     { val: `${weekHours}h`, label: 'Scheduled Hrs This Week', color: '#7c3aed' },
-    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
     { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#94a3b8' },
-    { val: `${stalled.length}`, label: 'Stalled Deals', color: '#f59e0b' },
+    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
   ];
 
   return (
@@ -3093,6 +3117,43 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
           })()}
         </div>
       </div>
+
+      {/* Jobs by Stage funnel */}
+      {jobsByStage.length > 0 && (
+        <div style={{ ...S.chartCard, marginTop: 20, marginBottom: 20 }}>
+          <div style={S.chartTitle}>Jobs by Stage</div>
+          {jobsByStage.map(({ stage, count }) => {
+            const maxCount = Math.max(...jobsByStage.map(s => s.count), 1);
+            return (
+              <div key={stage} style={S.barRow}>
+                <div style={{ ...S.barLabel, width: 130 }}>{STAGE_LABELS[stage] || stage}</div>
+                <div style={S.barTrack}>
+                  <div style={S.barFill(count / maxCount * 100, STAGE_COLORS[stage] || '#f97316')} />
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: STAGE_COLORS[stage] || '#94a3b8', width: 28, textAlign: 'right' }}>{count}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Margin stats */}
+      {avgMargin > 0 && D && (
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
+          <div style={S.statCard}>
+            <div style={{ ...S.statVal, color: avgMargin >= 30 ? '#22c55e' : avgMargin >= 15 ? '#f59e0b' : '#ef4444' }}>{avgMargin}%</div>
+            <div style={S.statLabel}>Avg Margin (All Jobs)</div>
+          </div>
+          <div style={S.statCard}>
+            <div style={{ ...S.statVal, color: '#14b8a6' }}>{fmt(Math.round(totalPipeline * avgMargin / 100))}</div>
+            <div style={S.statLabel}>Est. Gross Profit (Pipeline)</div>
+          </div>
+          <div style={S.statCard}>
+            <div style={{ ...S.statVal, color: '#22c55e' }}>{fmt(Math.round(revenueClosed * avgMargin / 100))}</div>
+            <div style={S.statLabel}>Est. Gross Profit (Closed YTD)</div>
+          </div>
+        </div>
+      )}
 
       {tier !== undefined && (
         <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
