@@ -20,7 +20,7 @@ function ToastProvider({ children }) {
             border: `1px solid ${t.type === 'error' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'}`,
             borderRadius: 8, padding: '10px 16px',
             color: '#111827', fontSize: 13, fontWeight: 500,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             maxWidth: 300,
           }}>
             {t.type === 'error' ? '✕ ' : '✓ '}{t.msg}
@@ -362,11 +362,11 @@ const STALL_LABELS = {
 };
 
 const STATUS_COLORS = {
-  active: '#22c55e',
-  stalled: '#E8722A',
-  cold: '#6b7280',
-  won: '#a855f7',
-  lost: '#ef4444',
+  active: '#059669',
+  stalled: '#DC2626',
+  cold: '#6B7280',
+  won: '#7C3AED',
+  lost: '#9CA3AF',
 };
 
 const STAGE_ORDER = [
@@ -671,7 +671,7 @@ const DEMO_DAY_DETAIL = {
 const S = {
   app: {
     minHeight: '100vh',
-    background: '#F8F9FA',
+    background: '#F3F4F6',
     color: '#374151',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
@@ -889,12 +889,12 @@ const S = {
 
   // Modal
   overlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.06)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
   },
   modalOverlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.06)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
   },
@@ -942,7 +942,7 @@ const S = {
     marginBottom: 16, transition: 'opacity 0.15s',
   }),
   aiResponse: {
-    background: '#F8F9FA', border: '1px solid rgba(249,115,22,0.2)',
+    background: '#F3F4F6', border: '1px solid rgba(249,115,22,0.2)',
     borderRadius: 8, padding: 16, fontSize: 13,
     lineHeight: 1.75, color: '#6B7280', whiteSpace: 'pre-wrap',
   },
@@ -1093,9 +1093,9 @@ function BottomNav({ tab, setTab, tabs }) {
             style={{
               minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
-              background: isActive ? c + '15' : 'transparent', border: 'none',
-              color: locked ? '#E5E7EB' : isActive ? c : '#6B7280',
-              fontSize: 10, fontWeight: isActive ? 700 : 600,
+              background: isActive ? c + '10' : 'transparent', border: 'none',
+              color: locked ? '#D1D5DB' : isActive ? c : '#9CA3AF',
+              fontSize: 10, fontWeight: isActive ? 700 : 500,
               cursor: locked ? 'not-allowed' : 'pointer',
               gap: 3, minHeight: 64, padding: 0,
               borderTop: isActive ? `2px solid ${c}` : '2px solid transparent',
@@ -1824,7 +1824,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
               style={{
                 position: 'relative', borderRadius: 8, overflow: 'hidden',
                 cursor: 'pointer', border: '1px solid #E5E7EB',
-                aspectRatio: '4/3', background: '#F8F9FA',
+                aspectRatio: '4/3', background: '#F3F4F6',
               }}
             >
               <img
@@ -2036,7 +2036,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                 <div style={S.sectionLabel}>Job Notes</div>
                 <div style={{
                   fontSize: 13, color: '#6B7280', marginBottom: 20,
-                  padding: '10px 12px', background: '#F8F9FA', borderRadius: 6,
+                  padding: '10px 12px', background: '#F3F4F6', borderRadius: 6,
                 }}>
                   {lead.notes}
                 </div>
@@ -2053,7 +2053,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                     padding: '5px 12px', borderRadius: 20, fontSize: 11,
                     fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
                     border: localStage === s ? 'none' : '1px solid #E5E7EB',
-                    background: localStage === s ? '#E8722A' : '#F8F9FA',
+                    background: localStage === s ? '#E8722A' : '#F3F4F6',
                     color: localStage === s ? '#fff' : '#6B7280',
                   }}
                 >
@@ -2153,7 +2153,7 @@ function DisabledTooltip({ active, label, children }) {
         <div style={{
           position: 'absolute', bottom: '110%', left: '50%',
           transform: 'translateX(-50%)',
-          background: '#F8F9FA', border: '1px solid #E5E7EB',
+          background: '#F3F4F6', border: '1px solid #E5E7EB',
           borderRadius: 6, padding: '5px 10px',
           fontSize: 11, color: '#6B7280', whiteSpace: 'nowrap',
           zIndex: 200, pointerEvents: 'none',
@@ -2196,13 +2196,13 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
       onMouseLeave={() => { setHovered(false); setConfirmDelete(false); }}
       onClick={() => !dragging && onQuickEdit && onQuickEdit(lead)}
       style={{
-        background: hovered ? '#1e2a40' : '#FFFFFF',
-        border: urgencyBorder,
-        borderRadius: 8, padding: '10px 12px',
+        background: '#FFFFFF',
+        border: hovered ? '1px solid #E8722A' : '1px solid #E5E7EB',
+        borderRadius: 10, padding: '10px 12px',
         cursor: 'pointer', position: 'relative',
         transition: 'all 0.15s',
         userSelect: 'none',
-        boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.25)',
+        boxShadow: hovered ? '0 4px 12px rgba(0,0,0,0.08)' : '0 1px 3px rgba(0,0,0,0.06)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
@@ -2246,10 +2246,10 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
         </div>
       )}
 
-      {/* Hover hint */}
+      {/* Hover actions */}
       {hovered && (
-        <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 10, color: '#E5E7EB' }}>Click to edit</span>
+        <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <span style={{ display: 'none' }}></span>
           {!demoMode && (
             <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
               {!confirmDelete ? (
@@ -2351,7 +2351,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
       onClick={onClose}
     >
       <div
-        style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}
+        style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.12)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -2473,7 +2473,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                 </button>
                 {showIssueMenu && (
                   <div
-                    style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 200, background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 10, padding: '6px 0', minWidth: 210, boxShadow: '0 12px 32px rgba(0,0,0,0.6)' }}
+                    style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 200, background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 10, padding: '6px 0', minWidth: 210, boxShadow: '0 12px 32px rgba(0,0,0,0.1)' }}
                     onClick={e => e.stopPropagation()}
                   >
                     {ISSUE_PRESETS.filter(p => !issues.includes(p)).map(p => (
@@ -2569,10 +2569,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
     return Math.round((today - new Date(lead.lastContact)) / 86400000);
   };
 
-  const urgencyBorder = (lead) => {
-    const d = staleDays(lead);
-    if (d > 14) return '2px solid #ef4444';
-    if (d > 7) return '2px solid #eab308';
+  const urgencyBorder = () => {
     return '1px solid #E5E7EB';
   };
 
@@ -2692,16 +2689,16 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               style={{
                 minWidth: isMobile ? 230 : 220,
                 flex: isMobile ? '0 0 230px' : '1 1 0',
-                background: isOver ? 'rgba(249,115,22,0.06)' : '#131a28',
+                background: isOver ? '#FFF4EE' : '#F9FAFB',
                 border: `1px solid ${isOver ? '#E8722A' : '#E5E7EB'}`,
                 borderRadius: 10,
                 transition: 'border-color 0.15s, background 0.15s',
               }}
             >
               {/* Column header */}
-              <div style={{ padding: '10px 12px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+              <div style={{ padding: '10px 12px', borderBottom: '1px solid #E5E7EB', borderLeft: `3px solid ${STAGE_COLORS[stg.key] || '#E8722A'}`, background: '#FFFFFF', borderRadius: '10px 10px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
                 <div style={{ minWidth: 0 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: STAGE_COLORS[stg.key] || '#E8722A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#111827', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
                   <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 6 }}>{cards.length}</span>
                   {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#6B7280' }}>{fmt(colValue)}</div>}
                 </div>
@@ -3766,7 +3763,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div key={sec.id} style={{ marginBottom: 4 }}>
           {secHdr}
           {!sec.collapsed && (
-            <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ background: '#F3F4F6', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
               {sec.items.map(item => {
                 const tot = matItemTot(item);
                 const filled = tot > 0;
@@ -3810,7 +3807,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       <div key={sec.id} style={{ marginBottom: 4 }}>
         {secHdr}
         {!sec.collapsed && (
-          <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+          <div style={{ background: '#F3F4F6', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #E5E7EB' }}>
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
@@ -3872,7 +3869,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div key={sec.id} style={{ marginBottom: 4 }}>
           {labHdr}
           {!sec.collapsed && (
-            <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ background: '#F3F4F6', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
               {sec.items.map(item => {
                 const tot = sec.isWaste ? 0 : laborItemTot(item);
                 const filled = !sec.isWaste && tot > 0;
@@ -3931,7 +3928,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       <div key={sec.id} style={{ marginBottom: 4 }}>
         {labHdr}
         {!sec.collapsed && (
-          <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+          <div style={{ background: '#F3F4F6', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #E5E7EB' }}>
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
@@ -4072,7 +4069,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           </button>
           {/* Materials Grand Total — sticky */}
           {seeRates && (
-          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#F8F9FA', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
+          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#F3F4F6', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.1)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Materials Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#14b8a6' }}>{fmtC(matTotal)}</span>
           </div>
@@ -4084,7 +4081,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       {subTab === 'labor' && (
         <div>
           {/* Crew info */}
-          <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
+          <div style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
             <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           </div>
@@ -4099,7 +4096,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           </button>
           {/* Labor Grand Total — sticky */}
           {seeRates && (
-          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#F8F9FA', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
+          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#F3F4F6', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.1)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Labor Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#0d9488' }}>{fmtC(laborTotal)}</span>
           </div>
@@ -4111,7 +4108,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       {subTab === 'summary' && (
         <div>
           {/* Job Cost Breakdown */}
-          <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+          <div style={{ background: '#F3F4F6', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
             {[
               { label: 'Materials', val: matTotal, color: '#14b8a6' },
@@ -4152,7 +4149,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           </div>
 
           {/* Profitability */}
-          <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+          <div style={{ background: '#F3F4F6', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
@@ -4185,7 +4182,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
           {/* Per-Square Metrics */}
           {totalSq > 0 && (
-            <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ background: '#F3F4F6', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 13, color: '#6B7280' }}>Total Squares</span>
@@ -4205,7 +4202,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           )}
 
           {/* Crew Pay */}
-          <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+          <div style={{ background: '#F3F4F6', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
@@ -4233,7 +4230,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               <div style={{ fontSize: 12, color: '#6B7280' }}>This form has been submitted and locked.</div>
             </div>
           ) : (
-            <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ background: '#F3F4F6', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
                 <div style={{ display: 'flex', gap: 10 }}>
@@ -4363,7 +4360,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
   // Full-screen overlay + flex-column modal: header is pinned, only content scrolls
   const jobOverlay = {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.06)',
     display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center',
     zIndex: 1000, padding: isMobile ? 0 : 20,
   };
@@ -4461,7 +4458,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             <div style={S.sectionLabel}>Job Notes</div>
             <div style={{
               fontSize: 13, color: '#6B7280', marginBottom: 20,
-              padding: '10px 12px', background: '#F8F9FA', borderRadius: 6,
+              padding: '10px 12px', background: '#F3F4F6', borderRadius: 6,
             }}>
               {job.notes}
             </div>
@@ -4490,7 +4487,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             </div>
 
             {/* Schedule / reschedule row */}
-            <div style={{ marginTop: 16, background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
+            <div style={{ marginTop: 16, background: '#F3F4F6', borderRadius: 7, padding: '10px 12px' }}>
               {editingSchedule ? (
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Schedule</div>
@@ -4607,7 +4604,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               {changeOrders.map(co => {
                 const stColor = co.status === 'Approved' ? '#22c55e' : co.status === 'Declined' ? '#ef4444' : '#f59e0b';
                 return (
-                  <div key={co.id} style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
+                  <div key={co.id} style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#111827' }}>{co.title}</div>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: stColor + '18', color: stColor }}>{co.status}</span>
@@ -4637,7 +4634,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Add change order form */}
               {showCOForm && (
-                <div style={{ background: '#F8F9FA', border: '1px solid #E8722A44', borderRadius: 8, padding: '12px', marginTop: 8 }}>
+                <div style={{ background: '#F3F4F6', border: '1px solid #E8722A44', borderRadius: 8, padding: '12px', marginTop: 8 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#E8722A', marginBottom: 10 }}>New Change Order</div>
                   <input value={coTitle} onChange={e => setCOTitle(e.target.value)} placeholder="Title (e.g. Additional decking repair)" style={{ ...FI, marginBottom: 8 }} />
                   <textarea value={coDesc} onChange={e => setCODesc(e.target.value)} placeholder="Description" rows={2} style={{ ...FI, resize: 'none', marginBottom: 8 }} />
@@ -4961,7 +4958,7 @@ function TeamTab() {
 const A = {
   page: {
     minHeight: '100vh',
-    background: '#F8F9FA',
+    background: '#F3F4F6',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -5097,7 +5094,7 @@ const A = {
     padding: '10px 8px',
     borderRadius: 8,
     border: `1px solid ${selected ? color : '#E5E7EB'}`,
-    background: selected ? color + '18' : '#F8F9FA',
+    background: selected ? color + '18' : '#F3F4F6',
     color: selected ? color : '#6B7280',
     cursor: 'pointer',
     fontSize: 12,
@@ -5115,7 +5112,7 @@ const A = {
     padding: '20px 16px',
     borderRadius: 10,
     border: `2px solid ${selected ? '#E8722A' : '#E5E7EB'}`,
-    background: selected ? 'rgba(249,115,22,0.06)' : '#F8F9FA',
+    background: selected ? 'rgba(249,115,22,0.06)' : '#F3F4F6',
     cursor: 'pointer',
     transition: 'all 0.12s',
     position: 'relative',
@@ -5453,7 +5450,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
               </button>
             ) : (
               <div style={{
-                background: '#F8F9FA', border: '1px solid #E5E7EB',
+                background: '#F3F4F6', border: '1px solid #E5E7EB',
                 borderRadius: 8, padding: '14px', marginBottom: 16,
               }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 10 }}>
@@ -5784,7 +5781,7 @@ function TradeSelectScreen({ onSelect }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#F8F9FA',
+      minHeight: '100vh', background: '#F3F4F6',
       color: '#6B7280', fontFamily: "'Inter', -apple-system, sans-serif",
       padding: '40px 24px 80px',
     }}>
@@ -5881,7 +5878,7 @@ function TradeSelectScreen({ onSelect }) {
                 placeholder="e.g. Metal Roofing, Slate Restoration, TPO Systems"
                 style={{
                   flex: 1, minWidth: 200, padding: '9px 12px',
-                  background: '#F8F9FA', border: '1px solid #E5E7EB',
+                  background: '#F3F4F6', border: '1px solid #E5E7EB',
                   borderRadius: 7, color: '#6B7280', fontSize: 13,
                   outline: 'none',
                 }}
@@ -5921,7 +5918,7 @@ function TradeSelectScreen({ onSelect }) {
 
             {customResult && (
               <div style={{
-                background: '#F8F9FA', border: '1px solid rgba(99,102,241,0.25)',
+                background: '#F3F4F6', border: '1px solid rgba(99,102,241,0.25)',
                 borderRadius: 8, padding: '14px 16px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
@@ -6159,7 +6156,7 @@ function PhotoLogTab({ tier }) {
               >
                 {/* Thumbnail placeholder */}
                 <div style={{
-                  height: 130, background: '#F8F9FA',
+                  height: 130, background: '#F3F4F6',
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
                   gap: 8, position: 'relative',
@@ -6465,7 +6462,7 @@ function GlobalPhotoLog({ jobs }) {
               >
                 {/* Thumbnail area */}
                 <div style={{
-                  background: count > 0 ? '#F8F9FA' : '#F3F4F6', borderRadius: 8,
+                  background: count > 0 ? '#F3F4F6' : '#F3F4F6', borderRadius: 8,
                   height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginBottom: 10, border: '1px solid #E5E7EB', overflow: 'hidden',
                 }}>
@@ -6554,7 +6551,7 @@ function GlobalPhotoLog({ jobs }) {
               <div key={photo.id} style={{
                 position: 'relative', borderRadius: 8, overflow: 'hidden',
                 border: '1px solid #E5E7EB', aspectRatio: '4/3',
-                background: isPlaceholder ? catColor + '18' : '#F8F9FA',
+                background: isPlaceholder ? catColor + '18' : '#F3F4F6',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 cursor: isPlaceholder ? 'default' : 'pointer',
               }}>
@@ -6568,7 +6565,7 @@ function GlobalPhotoLog({ jobs }) {
                 )}
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0,
-                  background: 'rgba(0,0,0,0.7)', padding: '4px 7px',
+                  background: 'rgba(0,0,0,0.12)', padding: '4px 7px',
                 }}>
                   <span style={{ background: catColor + '44', color: catColor, padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>
                   <span style={{ fontSize: 9, color: '#6B7280' }}>{photo.caption || formatTs(photo.timestamp)}</span>
@@ -6757,7 +6754,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
       </div>
 
       {showAssign && (
-        <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
+        <div style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
           {/* Text input — always visible, fastest path */}
           <div style={{ display: 'flex', gap: 8, marginBottom: unassignedCrew.length > 0 ? 10 : 4 }}>
             <input
@@ -6816,7 +6813,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
         const totalMs = memberTotalMs(member.id);
         const elapsed = open ? (now - open.clockIn) : 0;
         return (
-          <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#F8F9FA', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : '#E5E7EB'}` }}>
+          <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#F3F4F6', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : '#E5E7EB'}` }}>
             <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#6B7280' }}>
               {member.name.slice(0, 2).toUpperCase()}
             </div>
@@ -7018,11 +7015,11 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-                  <div style={{ background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
+                  <div style={{ background: '#F3F4F6', borderRadius: 7, padding: '10px 12px' }}>
                     <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>This Week</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#E8722A' }}>{fmtDuration(wMs + sessionMs)}</div>
                   </div>
-                  <div style={{ background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
+                  <div style={{ background: '#F3F4F6', borderRadius: 7, padding: '10px 12px' }}>
                     <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>All Time</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#6B7280' }}>{fmtDuration(tMs + sessionMs)}</div>
                   </div>
@@ -7119,7 +7116,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
         ) : messages.map(msg => (
           msg.type === 'system' ? (
             <div key={msg.id} style={{ textAlign: 'center', padding: '5px 0', margin: '4px 0' }}>
-              <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F8F9FA', padding: '3px 12px', borderRadius: 20, border: '1px solid #E5E7EB' }}>
+              <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', padding: '3px 12px', borderRadius: 20, border: '1px solid #E5E7EB' }}>
                 {msg.text}
               </span>
             </div>
@@ -7432,7 +7429,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) handleSave(); }}
         placeholder={`What's happening this day? (e.g. Roof replacement, final inspection, material delivery…)`}
         rows={3}
-        style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+        style={{ width: '100%', boxSizing: 'border-box', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
       />
 
       {/* Secondary fields */}
@@ -7441,14 +7438,14 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
           value={customer}
           onChange={e => setCustomer(e.target.value)}
           placeholder="Client name (optional)"
-          style={{ flex: '2 1 160px', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+          style={{ flex: '2 1 160px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: '1 1 120px' }}>
           <span style={{ fontSize: 12, color: '#6B7280', whiteSpace: 'nowrap' }}>Duration:</span>
           <input
             type="number" min={1} max={365} value={duration}
             onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
-            style={{ width: 54, background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
+            style={{ width: 54, background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
           />
           <span style={{ fontSize: 12, color: '#9CA3AF' }}>day{duration !== 1 ? 's' : ''}</span>
         </div>
@@ -7465,7 +7462,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 8 }}>{taskList.length} items</span>}
 
         {showChecklist && (
-          <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px 12px' }}>
+          <div style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px 12px' }}>
             {/* Input row */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
               <input
@@ -7561,7 +7558,7 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
             {crew.map(m => {
               const assigned = assignedIds.includes(m.id);
               return (
-                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F8F9FA', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, borderRadius: 8 }}>
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F3F4F6', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, borderRadius: 8 }}>
                   <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#6B7280', flexShrink: 0 }}>
                     {m.name.slice(0, 2).toUpperCase()}
                   </div>
@@ -7608,7 +7605,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
             const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
-              <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
+              <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F3F4F6', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
                   <div style={{ fontSize: 11, color: '#6B7280' }}>{job.trade} · {jobDuration(job)}d</div>
@@ -7638,7 +7635,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
               const busy = memberJobs.length > 0;
               const hasConflict = memberJobs.some(j => conflicts.has(`${member.id}-${String(j.id)}`));
               return (
-                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#F3F4F6', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#6B7280' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
@@ -7671,7 +7668,7 @@ function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, on
     { label: 'Delete Job', action: onDelete, icon: '🗑', color: '#ef4444' },
   ].filter(Boolean);
   return (
-    <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', minWidth: 200, overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.1)', minWidth: 200, overflow: 'hidden' }}>
       <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#6B7280', borderBottom: '1px solid #D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
       {items.map(item => (
         <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#6B7280', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
@@ -7719,7 +7716,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
               <div
                 key={job.id}
                 onClick={() => onJobClick && onJobClick(job)}
-                style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
+                style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#F3F4F6', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#111827' }}>{job.customer}</div>
@@ -7752,7 +7749,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
               const memberJobs = dayJobs.filter(j => (assignments[String(j.id)] || []).includes(member.id));
               const busy = memberJobs.length > 0;
               return (
-                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 7, background: '#F8F9FA', border: `1px solid ${busy ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 7, background: '#F3F4F6', border: `1px solid ${busy ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#6B7280' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
@@ -7965,7 +7962,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     return (
       <button
         onClick={alreadyHere ? undefined : () => { onScheduleExisting(date, job.id); setJustScheduled(job); }}
-        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#F8F9FA' : '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#F3F4F6' : '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
         onMouseEnter={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#E8722A'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; })}
         onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#FFFFFF'; })}
       >
@@ -8038,7 +8035,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by job or client name&#8230;"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
             />
             {filtered.length === 0 ? (
               <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
@@ -8073,13 +8070,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Job description (required)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <input
               value={customer}
               onChange={e => setCustomer(e.target.value)}
               placeholder="Client name (optional)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <label style={{ fontSize: 12, color: '#6B7280', flexShrink: 0 }}>Duration (days):</label>
@@ -8089,7 +8086,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 max={30}
                 value={duration}
                 onChange={e => setDuration(Math.max(1, Math.min(30, parseInt(e.target.value) || 1)))}
-                style={{ width: 60, background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
+                style={{ width: 60, background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
               />
             </div>
             <button
@@ -8121,7 +8118,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } } }}
               placeholder="e.g. Office closed, rain day, equipment delivery&#8230;"
               rows={3}
-              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
             />
             <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 10 }}>Ctrl+Enter to save</div>
             <button
@@ -8759,7 +8756,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#F8F9FA',
+      minHeight: '100vh', background: '#F3F4F6',
       color: '#6B7280', fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
       {/* Top demo banner */}
@@ -8789,7 +8786,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
 
       {/* Tier selector bar */}
       <div style={{
-        background: '#F8F9FA', borderBottom: '1px solid #E5E7EB',
+        background: '#F3F4F6', borderBottom: '1px solid #E5E7EB',
         padding: isMobile ? '8px 12px' : '10px 24px',
         display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap',
         overflowX: isMobile ? 'auto' : 'visible',
@@ -8844,7 +8841,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
             onClick={goToSignup}
             style={{
               padding: isMobile ? '8px 14px' : '4px 14px', background: '#eab308', border: 'none',
-              borderRadius: 6, color: '#F8F9FA', fontWeight: 700,
+              borderRadius: 6, color: '#F3F4F6', fontWeight: 700,
               fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
               minHeight: isMobile ? 36 : 'auto',
             }}
@@ -8979,7 +8976,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           padding: '13px 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           gap: 20, zIndex: 100,
-          boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+          boxShadow: '0 -4px 24px rgba(0,0,0,0.06)',
         }}>
           <span style={{ fontSize: 14, color: '#6B7280' }}>
             Like what you see?{' '}
@@ -9282,7 +9279,7 @@ export default function App() {
                   background: '#FFFFFF', border: '1px solid #D1D5DB', borderRadius: 6,
                   color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 700,
                   padding: '4px 8px', cursor: 'pointer', outline: 'none',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
                 }}
               >
                 {Object.entries(DEMO_ROLES).map(([key, r]) => (
