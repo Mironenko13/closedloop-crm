@@ -392,7 +392,7 @@ const STAGE_LABELS = {
 };
 
 const STAGE_COLORS = {
-  lead:                  '#64748b',
+  lead:                  '#6B7280',
   inspection_scheduled:  '#3b82f6',
   inspection_complete:   '#60a5fa',
   estimate_sent:         '#f59e0b',
@@ -679,7 +679,7 @@ const S = {
   },
   header: {
     background: '#FFFFFF',
-    borderBottom: '1px solid #E5E7EB',
+    borderBottom: '1px solid #D1D5DB',
     padding: '0 24px',
     display: 'flex',
     alignItems: 'center',
@@ -690,24 +690,21 @@ const S = {
     zIndex: 100,
   },
   logo: { fontSize: 18, fontWeight: 700, color: '#E8722A', letterSpacing: '-0.5px' },
-  logoSub: { fontSize: 12, color: '#6B7280', marginLeft: 4 },
+  logoSub: { fontSize: 13, color: '#374151', fontWeight: 500, marginLeft: 4 },
   tabs: { display: 'flex', gap: 2, marginLeft: 'auto' },
-  tab: (active, accent) => {
-    const c = accent || '#E8722A';
-    return {
-      padding: '8px 16px',
-      borderRadius: 0,
-      border: 'none',
-      borderBottom: active ? `2px solid ${c}` : '2px solid transparent',
-      cursor: 'pointer',
-      fontSize: 14,
-      fontWeight: active ? 600 : 500,
-      background: 'transparent',
-      color: active ? c : '#6B7280',
-      transition: 'all 0.15s',
-      boxShadow: 'none',
-    };
-  },
+  tab: (active) => ({
+    padding: '8px 16px',
+    borderRadius: 0,
+    border: 'none',
+    borderBottom: active ? '3px solid #E8722A' : '3px solid transparent',
+    cursor: 'pointer',
+    fontSize: 14,
+    fontWeight: active ? 600 : 500,
+    background: 'transparent',
+    color: active ? '#E8722A' : '#6B7280',
+    transition: 'all 0.15s',
+    boxShadow: 'none',
+  }),
   body: { padding: 24, maxWidth: 1400, margin: '0 auto' },
 
   filterRow: { display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' },
@@ -719,8 +716,8 @@ const S = {
     padding: '8px 14px',
     borderRadius: 20,
     border: `1px solid ${active ? '#E8722A' : '#D1D5DB'}`,
-    background: active ? 'rgba(249,115,22,0.12)' : 'transparent',
-    color: active ? '#E8722A' : '#8899b8',
+    background: active ? '#FFF4EE' : 'transparent',
+    color: active ? '#E8722A' : '#6B7280',
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 500,
@@ -734,7 +731,7 @@ const S = {
     borderRadius: 20,
     border: `1px solid ${active ? color : '#E5E7EB'}`,
     background: active ? color + '22' : 'transparent',
-    color: active ? color : '#64748b',
+    color: active ? color : '#6B7280',
     cursor: 'pointer',
     fontSize: 11,
     fontWeight: 500,
@@ -757,15 +754,15 @@ const S = {
   }),
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
   cardName: { fontSize: 15, fontWeight: 600, color: '#111827' },
-  cardContact: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  cardContact: { fontSize: 12, color: '#6B7280', marginTop: 2 },
   statusBadge: (status) => ({
     fontSize: 10,
     fontWeight: 700,
     padding: '3px 9px',
     borderRadius: 10,
-    background: STATUS_COLORS[status] + '33',
-    color: STATUS_COLORS[status],
-    border: `1px solid ${STATUS_COLORS[status]}55`,
+    background: STATUS_COLORS[status],
+    color: '#FFFFFF',
+    border: 'none',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     whiteSpace: 'nowrap',
@@ -776,9 +773,9 @@ const S = {
     fontWeight: 600,
     padding: '2px 8px',
     borderRadius: 10,
-    background: (TRADE_COLORS[trade] || '#64748b') + '2e',
-    color: TRADE_COLORS[trade] || '#64748b',
-    border: `1px solid ${(TRADE_COLORS[trade] || '#64748b')}44`,
+    background: (TRADE_COLORS[trade] || '#6B7280') + '2e',
+    color: TRADE_COLORS[trade] || '#6B7280',
+    border: `1px solid ${(TRADE_COLORS[trade] || '#6B7280')}44`,
     letterSpacing: '0.3px',
     whiteSpace: 'nowrap',
     marginTop: 6,
@@ -789,9 +786,9 @@ const S = {
     fontWeight: 700,
     padding: '3px 10px',
     borderRadius: 10,
-    background: (STAGE_COLORS[stage] || '#64748b') + '28',
-    color: STAGE_COLORS[stage] || '#64748b',
-    border: `1px solid ${(STAGE_COLORS[stage] || '#64748b')}44`,
+    background: (STAGE_COLORS[stage] || '#6B7280') + '28',
+    color: STAGE_COLORS[stage] || '#6B7280',
+    border: `1px solid ${(STAGE_COLORS[stage] || '#6B7280')}44`,
     letterSpacing: '0.2px',
     whiteSpace: 'nowrap',
   }),
@@ -831,7 +828,7 @@ const S = {
     color: overdue ? '#ef4444' : '#E8722A', minWidth: 90,
   }),
   cbName: { fontSize: 14, fontWeight: 600, color: '#111827', flex: 1 },
-  cbContact: { fontSize: 12, color: '#64748b' },
+  cbContact: { fontSize: 12, color: '#6B7280' },
   cbValue: { fontSize: 13, fontWeight: 600, color: '#22c55e' },
 
   // Analytics
@@ -845,8 +842,8 @@ const S = {
     borderRadius: 10, padding: 20, textAlign: 'center',
     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
   },
-  statVal: { fontSize: 28, fontWeight: 700, color: '#111827' },
-  statLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
+  statVal: { fontSize: 24, fontWeight: 700, color: '#111827' },
+  statLabel: { fontSize: 12, color: '#6B7280', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' },
   chartSection: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 },
   chartCard: {
     background: '#FFFFFF', border: '1px solid #E5E7EB',
@@ -861,7 +858,7 @@ const S = {
     height: '100%', width: `${pct}%`, background: color,
     borderRadius: 4, transition: 'width 0.5s ease',
   }),
-  barCount: { fontSize: 12, color: '#64748b', width: 28, textAlign: 'right' },
+  barCount: { fontSize: 12, color: '#6B7280', width: 28, textAlign: 'right' },
 
   // Jobs
   progressTrack: { height: 6, background: '#E5E7EB', borderRadius: 3, overflow: 'hidden', marginTop: 10 },
@@ -885,7 +882,7 @@ const S = {
     boxShadow: done ? '0 0 6px rgba(249,115,22,0.35)' : 'none',
   }),
   checkLabel: (done) => ({
-    fontSize: 13, color: done ? '#64748b' : '#6B7280',
+    fontSize: 13, color: done ? '#6B7280' : '#6B7280',
     textDecoration: done ? 'line-through' : 'none', flex: 1,
   }),
   checkTs: { fontSize: 11, color: '#6B7280', whiteSpace: 'nowrap' },
@@ -908,7 +905,7 @@ const S = {
     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
   },
   modalTitle: { fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 4 },
-  modalSub: { fontSize: 13, color: '#64748b', marginBottom: 20 },
+  modalSub: { fontSize: 13, color: '#6B7280', marginBottom: 20 },
   closeBtn: {
     position: 'absolute', top: 12, right: 12,
     background: '#F3F4F6', border: '1px solid #E5E7EB',
@@ -920,8 +917,8 @@ const S = {
     transition: 'color 0.15s, background 0.15s',
   },
   sectionLabel: {
-    fontSize: 11, fontWeight: 600, color: '#E8722A',
-    textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10,
+    fontSize: 11, fontWeight: 600, color: '#6B7280',
+    textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10,
   },
   playbookList: { listStyle: 'none', padding: 0, margin: '0 0 20px 0' },
   playbookItem: {
@@ -939,7 +936,7 @@ const S = {
     width: '100%', padding: '10px 16px',
     background: loading ? '#E5E7EB' : 'linear-gradient(135deg, #E8722A, #ea580c)',
     border: 'none', borderRadius: 8,
-    color: loading ? '#64748b' : '#fff',
+    color: loading ? '#6B7280' : '#fff',
     fontWeight: 600, fontSize: 14,
     cursor: loading ? 'not-allowed' : 'pointer',
     marginBottom: 16, transition: 'opacity 0.15s',
@@ -1026,7 +1023,7 @@ const DEMO_ROLES = {
     seeChangeOrders: false, seeTeamMgmt: false,
   },
   crew: {
-    label: 'Crew/Installer', color: '#64748b',
+    label: 'Crew/Installer', color: '#6B7280',
     tabs: ['jobs','chat','photos'],
     seeDollars: false, seeRates: false, seeProfitability: false,
     seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: false,
@@ -1199,7 +1196,7 @@ const LEAD_STAGES = [
 ];
 
 const FI = { // form input base
-  width: '100%', padding: '9px 12px', background: '#F9FAFB',
+  width: '100%', padding: '9px 12px', background: '#FFFFFF',
   border: '1px solid #D1D5DB', borderRadius: 7, color: '#111827',
   fontSize: 13, outline: 'none', boxSizing: 'border-box',
   fontFamily: "'Inter', -apple-system, sans-serif",
@@ -1811,7 +1808,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
           border: '1px dashed #E5E7EB', borderRadius: 10,
         }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#64748b', marginBottom: 4 }}>No photos yet</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280', marginBottom: 4 }}>No photos yet</div>
           <div style={{ fontSize: 12, color: '#9CA3AF' }}>
             {isMobile
               ? 'Tap Camera to shoot or Upload to pick from library.'
@@ -1881,7 +1878,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
             {lightbox.caption && (
               <span style={{ fontSize: 13, color: '#6B7280' }}>{lightbox.caption}</span>
             )}
-            <span style={{ fontSize: 11, color: '#64748b' }}>{formatTs(lightbox.timestamp)}</span>
+            <span style={{ fontSize: 11, color: '#6B7280' }}>{formatTs(lightbox.timestamp)}</span>
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
               background: 'rgba(59,130,246,0.15)', color: '#3b82f6',
@@ -2021,7 +2018,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
               style={{
                 padding: '8px 16px', background: 'transparent', border: 'none',
                 borderBottom: activeTab === key ? '2px solid #E8722A' : '2px solid transparent',
-                color: activeTab === key ? '#E8722A' : '#64748b',
+                color: activeTab === key ? '#E8722A' : '#6B7280',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 marginBottom: -1, transition: 'color 0.15s', fontFamily: 'inherit',
               }}
@@ -2057,7 +2054,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                     fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
                     border: localStage === s ? 'none' : '1px solid #E5E7EB',
                     background: localStage === s ? '#E8722A' : '#F8F9FA',
-                    color: localStage === s ? '#fff' : '#64748b',
+                    color: localStage === s ? '#fff' : '#6B7280',
                   }}
                 >
                   {STAGE_LABELS[s]}
@@ -2211,7 +2208,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
-          <div style={{ fontSize: 11, color: '#64748b', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
+          <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
       </div>
@@ -2237,7 +2234,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
           {lead.issues.slice(0, 2).map(issue => (
             <span key={issue} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>{issue}</span>
           ))}
-          {lead.issues.length > 2 && <span style={{ fontSize: 9, color: '#64748b' }}>+{lead.issues.length - 2}</span>}
+          {lead.issues.length > 2 && <span style={{ fontSize: 9, color: '#6B7280' }}>+{lead.issues.length - 2}</span>}
         </div>
       )}
 
@@ -2257,7 +2254,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
             <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
               {!confirmDelete ? (
                 <button
-                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 4, color: '#64748b', cursor: 'pointer' }}
+                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 4, color: '#6B7280', cursor: 'pointer' }}
                   onClick={() => setConfirmDelete(true)}
                 >
                   🗑
@@ -2265,7 +2262,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
               ) : (
                 <>
                   <button style={{ padding: '2px 6px', fontSize: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Del</button>
-                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 4, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
+                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 4, color: '#6B7280', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
                 </>
               )}
             </div>
@@ -2361,7 +2358,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
-            <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
               {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
             </div>
           </div>
@@ -2515,7 +2512,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                   <div key={i} style={{ display: 'flex', gap: 8, fontSize: 11 }}>
                     <span style={{ color: '#6B7280', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
                     <div style={{ minWidth: 0 }}>
-                      <span style={{ color: '#64748b' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
+                      <span style={{ color: '#6B7280' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
                       <span style={{ color: '#9CA3AF' }}>{entry.message}</span>
                     </div>
                   </div>
@@ -2632,13 +2629,13 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
         {stageStats.map((s, i) => (
           <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #E5E7EB' : 'none', textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#E8722A' }}>{s.count}</div>
-            <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+            <div style={{ fontSize: 9, color: '#6B7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
             {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
         ))}
         <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', background: 'rgba(249,115,22,0.04)' }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
-          <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
+          <div style={{ fontSize: 9, color: '#6B7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
         </div>
       </div>
 
@@ -2993,7 +2990,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
 
   const STALL_COLORS = {
     price_objection: '#E8722A', budget_freeze: '#6366f1', no_response: '#ef4444',
-    competitor: '#f59e0b', timing: '#64748b', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
+    competitor: '#f59e0b', timing: '#6B7280', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
   };
 
   const D = rolePerms?.seeDollars !== false;
@@ -3036,13 +3033,13 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
               <div style={S.barTrack}>
                 <div style={S.barFill(value / maxStageValue * 100, STAGE_COLORS[stage] || '#E8722A')} />
               </div>
-              <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{count}</div>
+              <div style={{ fontSize: 11, color: '#6B7280', width: 24, textAlign: 'right' }}>{count}</div>
               <div style={{ fontSize: 11, color: '#9CA3AF', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
               {avgAge > 0 && <div style={{ fontSize: 10, color: '#6B7280', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
             </div>
           ))}
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}>
-            <div style={{ fontSize: 11, color: '#64748b' }}>Total pipeline value</div>
+            <div style={{ fontSize: 11, color: '#6B7280' }}>Total pipeline value</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: '#E8722A', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
           </div>
         </div>
@@ -3066,7 +3063,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
             </div>
           ))}
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E5E7EB' }}>
-            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 6 }}>Total value at risk</div>
+            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6 }}>Total value at risk</div>
             <div style={{ fontSize: 24, fontWeight: 700, color: '#E8722A' }}>{fmt(stalledValue)}</div>
           </div>
         </div>
@@ -3075,7 +3072,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Win / Loss Analysis</div>
           {[
-            { label: 'Total Leads', count: leads.length, color: '#64748b' },
+            { label: 'Total Leads', count: leads.length, color: '#6B7280' },
             { label: 'Active', count: active.length, color: '#3b82f6' },
             { label: 'Won', count: won.length, color: '#22c55e' },
             { label: 'Lost', count: lost.length, color: '#ef4444' },
@@ -3092,11 +3089,11 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}>
             <div style={{ display: 'flex', gap: 16 }}>
               <div>
-                <div style={{ fontSize: 11, color: '#64748b' }}>Win Rate</div>
+                <div style={{ fontSize: 11, color: '#6B7280' }}>Win Rate</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: winRate >= 60 ? '#22c55e' : '#E8722A' }}>{winRate}%</div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: '#64748b' }}>Avg Job Value</div>
+                <div style={{ fontSize: 11, color: '#6B7280' }}>Avg Job Value</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmt(avgJobValue)}</div>
               </div>
             </div>
@@ -3123,7 +3120,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 <div style={S.barTrack}>
                   <div style={S.barFill(data.value / maxVal * 100, TRADE_COLORS[trade] || '#E8722A')} />
                 </div>
-                <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{data.count}</div>
+                <div style={{ fontSize: 11, color: '#6B7280', width: 24, textAlign: 'right' }}>{data.count}</div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
               </div>
             ));
@@ -3802,7 +3799,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               })}
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
                 <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
+                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#6B7280', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
               </div>
             </div>
           )}
@@ -3838,7 +3835,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             })}
             <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
               <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
+              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#6B7280', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
             </div>
           </div>
         )}
@@ -3916,13 +3913,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               {!sec.isWaste && (
                 <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
                   <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                  {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
+                  {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#6B7280', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
                 </div>
               )}
               {sec.isWaste && (
                 <div style={{ padding: '8px 10px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 13, color: '#64748b' }}>Net Waste</span>
-                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
+                  <span style={{ fontSize: 13, color: '#6B7280' }}>Net Waste</span>
+                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#6B7280' }}>{netWaste.toFixed(1)} BDL</span>
                 </div>
               )}
             </div>
@@ -3967,13 +3964,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             {!sec.isWaste && (
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
                 <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
+                {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#6B7280', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
               </div>
             )}
             {sec.isWaste && (
               <div style={{ padding: '6px 8px 8px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Net Waste</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
+                <span style={{ fontSize: 12, color: '#6B7280' }}>Net Waste</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#6B7280' }}>{netWaste.toFixed(1)} BDL</span>
               </div>
             )}
           </div>
@@ -4031,7 +4028,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 7, padding: '9px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, color: '#fca5a5', flex: 1 }}>Replace all line items with the <strong>{pendingTpl}</strong> template?</span>
           <button onClick={() => applyTpl(pendingTpl)} style={{ padding: '5px 12px', background: '#ef4444', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Yes, Replace</button>
-          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
+          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
         </div>
       )}
 
@@ -4069,7 +4066,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           <button
             onClick={addMatSec}
             className="ri-add-item"
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #D1D5DB', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #D1D5DB', borderRadius: 7, color: '#6B7280', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
@@ -4088,7 +4085,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div>
           {/* Crew info */}
           <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
             <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           </div>
           {/* Sections */}
@@ -4096,7 +4093,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           <button
             onClick={addLaborSec}
             className="ri-add-item"
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #D1D5DB', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #D1D5DB', borderRadius: 7, color: '#6B7280', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
@@ -4115,7 +4112,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div>
           {/* Job Cost Breakdown */}
           <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
             {[
               { label: 'Materials', val: matTotal, color: '#14b8a6' },
               { label: 'Labor', val: laborTotal, color: '#0d9488' },
@@ -4145,7 +4142,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   style={{ width: 60, padding: '6px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
                 <span style={{ fontSize: 11, color: '#9CA3AF', width: 14 }}>%</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#64748b', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#6B7280', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', marginTop: 8, background: '#FFFFFF', borderRadius: 8 }}>
@@ -4156,11 +4153,11 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
           {/* Profitability */}
           <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 15 }}>$</span>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#6B7280', fontSize: 15 }}>$</span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -4189,7 +4186,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           {/* Per-Square Metrics */}
           {totalSq > 0 && (
             <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 13, color: '#6B7280' }}>Total Squares</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#6B7280', fontWeight: 700 }}>{totalSq.toFixed(1)} SQ</span>
@@ -4209,9 +4206,9 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
           {/* Crew Pay */}
           <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
               <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
@@ -4219,7 +4216,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               <span style={{ fontFamily: "'Courier New', monospace", fontSize: 18, fontWeight: 700, color: '#0d9488' }}>{fmtC(laborTotal)}</span>
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
               <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
           </div>
@@ -4233,18 +4230,18 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 10, padding: '24px 18px', textAlign: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#22c55e', marginBottom: 4 }}>Submitted & Locked</div>
-              <div style={{ fontSize: 12, color: '#64748b' }}>This form has been submitted and locked.</div>
+              <div style={{ fontSize: 12, color: '#6B7280' }}>This form has been submitted and locked.</div>
             </div>
           ) : (
             <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
                 <div style={{ display: 'flex', gap: 10 }}>
                   {['yes', 'no'].map(v => (
                     <button
                       key={v}
                       onClick={() => updSignOff('inspectionPass', v)}
-                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#E5E7EB'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#64748b', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#E5E7EB'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#6B7280', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                     >
                       {v === 'yes' ? 'Yes ✓' : 'No ✗'}
                     </button>
@@ -4257,12 +4254,12 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                 { field: 'dateCompleted', label: 'Date Completed', type: 'date' },
               ].map(({ field, label, type }) => (
                 <div key={field} style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
                   <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
                 </div>
               ))}
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
                 <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
               </div>
             </div>
@@ -4413,7 +4410,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
           <div style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: '#64748b' }}>Progress</span>
+              <span style={{ fontSize: 12, color: '#6B7280' }}>Progress</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{doneCount}/{total} steps — {pct}%</span>
             </div>
             <div style={S.progressTrack}>
@@ -4496,7 +4493,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             <div style={{ marginTop: 16, background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
               {editingSchedule ? (
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Schedule</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Schedule</div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     <input
                       type="date"
@@ -4505,7 +4502,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                       style={{ ...FI, fontSize: 13, padding: '7px 10px', flex: 1, minWidth: 130 }}
                     />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                      <span style={{ fontSize: 12, color: '#64748b' }}>Duration</span>
+                      <span style={{ fontSize: 12, color: '#6B7280' }}>Duration</span>
                       <input
                         type="number"
                         min="1"
@@ -4514,7 +4511,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                         onChange={e => setSchedDur(Math.max(1, parseInt(e.target.value) || 1))}
                         style={{ ...FI, fontSize: 13, padding: '7px 8px', width: 56 }}
                       />
-                      <span style={{ fontSize: 12, color: '#64748b' }}>days</span>
+                      <span style={{ fontSize: 12, color: '#6B7280' }}>days</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
@@ -4538,13 +4535,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 </div>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 11, color: '#64748b' }}>📅</span>
+                  <span style={{ fontSize: 11, color: '#6B7280' }}>📅</span>
                   <div style={{ flex: 1 }}>
                     <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 500 }}>
                       {job.scheduledDate || 'Not scheduled'}
                     </span>
                     {job.scheduledDate && (
-                      <span style={{ fontSize: 11, color: '#64748b', marginLeft: 8 }}>
+                      <span style={{ fontSize: 11, color: '#6B7280', marginLeft: 8 }}>
                         → {jobEndDate(job)} · {jobDuration(job)}d
                       </span>
                     )}
@@ -4633,7 +4630,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               {/* Change order total */}
               {changeOrders.filter(c => c.status === 'Approved').length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>Change Order Total (Approved)</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#6B7280' }}>Change Order Total (Approved)</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#22c55e' }}>+{fmt(changeOrders.filter(c => c.status === 'Approved').reduce((s, c) => s + c.amount, 0))}</span>
                 </div>
               )}
@@ -4715,7 +4712,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
     return result;
   }, [jobs, filter, tradeFilter]);
 
-  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#64748b');
+  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#6B7280');
 
   return (
     <div>
@@ -4761,7 +4758,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           const total = steps.length;
           const pct = Math.round(doneCount / total * 100);
           const color = statusColor(job.status);
-          const tradeColor = TRADE_COLORS[job.trade] || '#64748b';
+          const tradeColor = TRADE_COLORS[job.trade] || '#6B7280';
 
           return (
             <div
@@ -4800,7 +4797,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
 
               <div style={{ marginTop: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 11, color: '#64748b' }}>
+                  <span style={{ fontSize: 11, color: '#6B7280' }}>
                     {steps[doneCount < total ? doneCount : total - 1]?.label || 'Complete'}
                   </span>
                   <span style={{ fontSize: 11, fontWeight: 600, color }}>
@@ -4892,7 +4889,7 @@ function TeamTab() {
             background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10,
             padding: '14px 16px',
           }}>
-            <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+            <div style={{ fontSize: 11, color: '#6B7280', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color }}>{value}</div>
           </div>
         ))}
@@ -4937,7 +4934,7 @@ function TeamTab() {
                   {rep.status === 'active' ? 'Active' : 'Away'}
                 </span>
               </div>
-              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{rep.role}</div>
+              <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{rep.role}</div>
             </div>
 
             {/* Stats */}
@@ -5101,7 +5098,7 @@ const A = {
     borderRadius: 8,
     border: `1px solid ${selected ? color : '#E5E7EB'}`,
     background: selected ? color + '18' : '#F8F9FA',
-    color: selected ? color : '#64748b',
+    color: selected ? color : '#6B7280',
     cursor: 'pointer',
     fontSize: 12,
     fontWeight: selected ? 600 : 400,
@@ -5128,7 +5125,7 @@ const A = {
   planPriceSub: { fontSize: 11, color: '#9CA3AF', fontWeight: 400 },
   planFeature: {
     fontSize: 11,
-    color: '#64748b',
+    color: '#6B7280',
     marginBottom: 5,
     display: 'flex',
     alignItems: 'flex-start',
@@ -5249,7 +5246,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
           >
             Try Demo — No signup needed
           </button>
-          <div style={{ textAlign: 'center', fontSize: 12, color: '#64748b', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: '#6B7280', marginTop: 8 }}>
             Preloaded with real roofing data
           </div>
         </div>
@@ -5448,7 +5445,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                   width: '100%', marginBottom: 16, padding: '9px 12px',
                   background: 'transparent',
                   border: '1px dashed #E5E7EB',
-                  borderRadius: 8, color: '#64748b',
+                  borderRadius: 8, color: '#6B7280',
                   fontSize: 13, cursor: 'pointer', textAlign: 'center',
                 }}
               >
@@ -5479,7 +5476,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                       padding: '9px 16px',
                       background: customTradeLoading ? '#E5E7EB' : 'linear-gradient(135deg, #6366f1, #4f46e5)',
                       border: 'none', borderRadius: 7,
-                      color: customTradeLoading ? '#64748b' : '#fff',
+                      color: customTradeLoading ? '#6B7280' : '#fff',
                       fontWeight: 700, fontSize: 13,
                       cursor: customTradeLoading || !customTradeInput.trim() ? 'not-allowed' : 'pointer',
                       whiteSpace: 'nowrap',
@@ -5800,7 +5797,7 @@ function TradeSelectScreen({ onSelect }) {
           <div style={{ fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 10 }}>
             See RidgeOS in action
           </div>
-          <div style={{ fontSize: 15, color: '#64748b', maxWidth: 480, margin: '0 auto' }}>
+          <div style={{ fontSize: 15, color: '#6B7280', maxWidth: 480, margin: '0 auto' }}>
             Pick a job type to see a live demo tailored to your roofing business
           </div>
         </div>
@@ -5857,7 +5854,7 @@ function TradeSelectScreen({ onSelect }) {
             onClick={() => { setShowCustom(true); setCustomResult(null); setCustomError(''); }}
           >
             <div style={{ fontSize: 26, marginBottom: 8 }}>✨</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: showCustom ? '#818cf8' : '#64748b', lineHeight: 1.3 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: showCustom ? '#818cf8' : '#6B7280', lineHeight: 1.3 }}>
               + Add your<br/>job type
             </div>
           </div>
@@ -5873,7 +5870,7 @@ function TradeSelectScreen({ onSelect }) {
             <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>
               ✨ Custom Job Type Generator
             </div>
-            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 14 }}>
+            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 14 }}>
               AI builds your job checklist and pipeline stages automatically.
             </div>
 
@@ -6043,7 +6040,7 @@ function PhotoLogTab({ tier }) {
       }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Photo Log</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
             Job site documentation &amp; client report photos
           </div>
         </div>
@@ -6076,7 +6073,7 @@ function PhotoLogTab({ tier }) {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 6 : 16 }}>
             {[
-              { tier: 'Starter', color: '#64748b', desc: 'Photo upload + captions' },
+              { tier: 'Starter', color: '#6B7280', desc: 'Photo upload + captions' },
               { tier: 'Pro',     color: '#E8722A', desc: 'Client-facing toggle + PDF export' },
               { tier: 'Business',color: '#6366f1', desc: 'Crew attribution + bulk download' },
             ].map(({ tier: t, color, desc }) => (
@@ -6202,7 +6199,7 @@ function PhotoLogTab({ tier }) {
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280', marginBottom: 4 }}>
                     {photo.caption}
                   </div>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>
+                  <div style={{ fontSize: 11, color: '#6B7280' }}>
                     📷 {photo.takenBy}
                   </div>
                 </div>
@@ -6276,8 +6273,9 @@ function TeamManagementTab() {
   const isMobile = useMobile();
   const fileRef = useRef(null);
 
-  const roleColor = (r) => ({ Owner: '#22c55e', Foreman: '#E8722A', Installer: '#64748b', Sales: '#6366f1', Estimator: '#8b5cf6' }[r] || '#9CA3AF');
-  const statusColor = (s) => ({ Active: '#22c55e', 'Invite Pending': '#f59e0b', Inactive: '#64748b' }[s] || '#9CA3AF');
+  const roleColor = (r) => ({ Owner: '#7C3AED', Foreman: '#E8722A', Installer: '#2563EB', Sales: '#DB2777', Estimator: '#059669' }[r] || '#6B7280');
+  const statusBg = (s) => ({ Active: '#D1FAE5', 'Invite Pending': '#FEF3C7', Inactive: '#F3F4F6' }[s] || '#F3F4F6');
+  const statusFg = (s) => ({ Active: '#065F46', 'Invite Pending': '#92400E', Inactive: '#6B7280' }[s] || '#6B7280');
 
   const parseCSV = (text) => {
     const lines = text.trim().split('\n').filter(l => l.trim());
@@ -6325,7 +6323,7 @@ function TeamManagementTab() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Team Management</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{roster.length} team members</div>
+          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{roster.length} team members</div>
         </div>
         <button onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
           + Import Team
@@ -6344,8 +6342,8 @@ function TeamManagementTab() {
               <div style={{ fontSize: 11, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-              <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: roleColor(member.role) + '18', color: roleColor(member.role) }}>{member.role}</span>
-              <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: statusColor(member.status) + '18', color: statusColor(member.status) }}>{member.status}</span>
+              <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: roleColor(member.role), color: '#FFFFFF' }}>{member.role}</span>
+              <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: statusBg(member.status), color: statusFg(member.status) }}>{member.status}</span>
             </div>
             {member.status === 'Invite Pending' && (
               <button onClick={() => setRoster(prev => prev.map(m => m.id === member.id ? { ...m, status: 'Active' } : m))} style={{ padding: '4px 10px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, color: '#22c55e', fontSize: 10, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
@@ -6400,12 +6398,12 @@ function TeamManagementTab() {
             {/* Preview table */}
             {parsedPreview.length > 0 && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8 }}>Preview ({parsedPreview.length} employees)</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', marginBottom: 8 }}>Preview ({parsedPreview.length} employees)</div>
                 <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid #E5E7EB', borderRadius: 6 }}>
                   {parsedPreview.map((p, i) => (
                     <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 10px', borderBottom: '1px solid #E5E7EB', fontSize: 12 }}>
                       <span style={{ flex: 1, color: '#111827', fontWeight: 600 }}>{p.name}</span>
-                      <span style={{ color: '#64748b' }}>{p.email}</span>
+                      <span style={{ color: '#6B7280' }}>{p.email}</span>
                       <span style={{ color: '#9CA3AF', fontSize: 10 }}>{p.role}</span>
                     </div>
                   ))}
@@ -6447,7 +6445,7 @@ function GlobalPhotoLog({ jobs }) {
       <div>
         <div style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Job Photos</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
+          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
           {allJobs.map(job => {
@@ -6527,7 +6525,7 @@ function GlobalPhotoLog({ jobs }) {
       <div style={{ display: 'flex', gap: 6, marginBottom: 14, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
         {usedCats.map(c => {
           const isActive = catFilter === c;
-          const color = c === 'All' ? '#06b6d4' : (PHOTO_CAT_COLORS[c] || '#64748b');
+          const color = c === 'All' ? '#06b6d4' : (PHOTO_CAT_COLORS[c] || '#6B7280');
           return (
             <button key={c} onClick={() => setCatFilter(c)} style={{
               padding: '5px 12px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
@@ -6545,7 +6543,7 @@ function GlobalPhotoLog({ jobs }) {
       {filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed #E5E7EB', borderRadius: 10 }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>No photos in this category yet</div>
+          <div style={{ fontSize: 13, color: '#6B7280' }}>No photos in this category yet</div>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
@@ -6784,7 +6782,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
               <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 6 }}>Or pick from your crew:</div>
               {unassignedCrew.map(member => (
                 <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#64748b' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#6B7280' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -6819,12 +6817,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
         const elapsed = open ? (now - open.clockIn) : 0;
         return (
           <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#F8F9FA', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : '#E5E7EB'}` }}>
-            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#64748b' }}>
+            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#6B7280' }}>
               {member.name.slice(0, 2).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280', marginBottom: 2 }}>{member.name}</div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>
+              <div style={{ fontSize: 11, color: '#6B7280' }}>
                 {open
                   ? <span style={{ color: '#22c55e' }}>● Clocked in · {fmtDuration(elapsed)}</span>
                   : `Total: ${fmtDuration(totalMs)}`}
@@ -6899,9 +6897,9 @@ function CrewMemberModal({ member, onSave, onClose }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
           {TRADE_LIST.map(trade => {
             const sel = specialties.includes(trade);
-            const color = TRADE_COLORS[trade] || '#64748b';
+            const color = TRADE_COLORS[trade] || '#6B7280';
             return (
-              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : '#E5E7EB'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
+              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : '#E5E7EB'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#6B7280', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
                 {trade}
               </button>
             );
@@ -6965,7 +6963,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Crew</div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>
+          <div style={{ fontSize: 13, color: '#6B7280' }}>
             {crew.length} member{crew.length !== 1 ? 's' : ''} · Weekly hours overview
           </div>
         </div>
@@ -6980,7 +6978,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
       {crew.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 60 }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>👷</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>No crew members yet</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#6B7280', marginBottom: 6 }}>No crew members yet</div>
           <div style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
           <button style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #E8722A, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={() => setCrewModal('add')}>
             Add First Member
@@ -6998,12 +6996,12 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
             return (
               <div key={member.id} style={{ background: '#FFFFFF', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : '#E5E7EB'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
+                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#6B7280', transition: 'all 0.2s' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 15, fontWeight: 600, color: '#111827' }}>{member.name}</div>
-                    {member.role && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{member.role}</div>}
+                    {member.role && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{member.role}</div>}
                     {member.phone && <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 1 }}>{member.phone}</div>}
                   </div>
                   <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
@@ -7014,18 +7012,18 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
 
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : '#E5E7EB'}` }}>
                   <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#9CA3AF', display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#64748b' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#6B7280' }}>
                     {status.clockedIn ? `On job · ${status.jobName}` : 'Off duty'}
                   </span>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                   <div style={{ background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
-                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>This Week</div>
+                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>This Week</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#E8722A' }}>{fmtDuration(wMs + sessionMs)}</div>
                   </div>
                   <div style={{ background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
-                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>All Time</div>
+                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>All Time</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#6B7280' }}>{fmtDuration(tMs + sessionMs)}</div>
                   </div>
                 </div>
@@ -7033,7 +7031,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                 {member.specialties && member.specialties.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                     {member.specialties.slice(0, 3).map(t => (
-                      <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: (TRADE_COLORS[t] || '#64748b') + '22', color: TRADE_COLORS[t] || '#64748b' }}>{t}</span>
+                      <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: (TRADE_COLORS[t] || '#6B7280') + '22', color: TRADE_COLORS[t] || '#6B7280' }}>{t}</span>
                     ))}
                     {member.specialties.length > 3 && (
                       <span style={{ fontSize: 10, color: '#9CA3AF', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
@@ -7115,7 +7113,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
         {messages.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9CA3AF' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#64748b' }}>No messages yet</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#6B7280' }}>No messages yet</div>
             <div style={{ fontSize: 12, marginTop: 4, color: '#6B7280' }}>Start the conversation below</div>
           </div>
         ) : messages.map(msg => (
@@ -7210,7 +7208,7 @@ function ChatTab({ jobs }) {
     <div>
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Job Chat</div>
-        <div style={{ fontSize: 13, color: '#64748b' }}>Recent messages across all jobs</div>
+        <div style={{ fontSize: 13, color: '#6B7280' }}>Recent messages across all jobs</div>
       </div>
 
       <div style={S.filterRow}>
@@ -7227,7 +7225,7 @@ function ChatTab({ jobs }) {
       {filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 60, color: '#9CA3AF' }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>No messages yet</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#6B7280', marginBottom: 6 }}>No messages yet</div>
           <div style={{ fontSize: 13 }}>Open a job and start chatting with your crew.</div>
         </div>
       ) : (
@@ -7420,10 +7418,10 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{ flex: 1 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#E8722A' }}>{isEdit ? 'Edit Entry' : '+ Schedule'}</span>
-          {displayDate && <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>{displayDate}</span>}
+          {displayDate && <span style={{ fontSize: 12, color: '#6B7280', marginLeft: 8 }}>{displayDate}</span>}
           <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 8 }}>{userTrade}</span>
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
       </div>
 
       {/* Main textarea */}
@@ -7446,7 +7444,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
           style={{ flex: '2 1 160px', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: '1 1 120px' }}>
-          <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>Duration:</span>
+          <span style={{ fontSize: 12, color: '#6B7280', whiteSpace: 'nowrap' }}>Duration:</span>
           <input
             type="number" min={1} max={365} value={duration}
             onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
@@ -7460,7 +7458,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
       <div style={{ marginBottom: showChecklist ? 10 : 0 }}>
         <button
           onClick={() => setShowChecklist(v => !v)}
-          style={{ background: 'none', border: 'none', color: showChecklist ? '#E8722A' : '#64748b', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
+          style={{ background: 'none', border: 'none', color: showChecklist ? '#E8722A' : '#6B7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
         >
           {showChecklist ? '▾ Checklist' : '▸ Add Checklist'}
         </button>
@@ -7533,7 +7531,7 @@ function StageChangeModal({ job, onSave, onClose }) {
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 300 }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
+        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {stages.map(s => (
@@ -7554,7 +7552,7 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
+        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {crew.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
@@ -7564,12 +7562,12 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
               const assigned = assignedIds.includes(m.id);
               return (
                 <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F8F9FA', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, borderRadius: 8 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#64748b', flexShrink: 0 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#6B7280', flexShrink: 0 }}>
                     {m.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280' }}>{m.name}</div>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>{m.role}</div>
+                    <div style={{ fontSize: 11, color: '#6B7280' }}>{m.role}</div>
                   </div>
                   <button onClick={() => assigned ? onUnassign(job.id, m.id) : onAssign(job.id, m.id)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer', background: assigned ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: assigned ? '#ef4444' : '#E8722A' }}>
                     {assigned ? 'Remove' : '+ Add'}
@@ -7594,9 +7592,9 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#E8722A' }}>Today's Dispatch</div>
-          <div style={{ fontSize: 12, color: '#64748b' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+          <div style={{ fontSize: 12, color: '#6B7280' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
         </div>
-        <div style={{ fontSize: 12, color: '#64748b', textAlign: 'right' }}>
+        <div style={{ fontSize: 12, color: '#6B7280', textAlign: 'right' }}>
           <span style={{ color: '#111827', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
           <span style={{ color: unassignedToday.length ? '#E8722A' : '#22c55e', fontWeight: 700 }}>{unassignedToday.length}</span> unassigned
         </div>
@@ -7606,14 +7604,14 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: crew.length > 0 ? 16 : 0 }}>
           {todayJobs.map(job => {
-            const tc = TRADE_COLORS[job.trade] || '#64748b';
+            const tc = TRADE_COLORS[job.trade] || '#6B7280';
             const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
               <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {jobDuration(job)}d</div>
+                  <div style={{ fontSize: 11, color: '#6B7280' }}>{job.trade} · {jobDuration(job)}d</div>
                 </div>
                 {assignedCrew.length > 0 ? (
                   <div style={{ display: 'flex', gap: 3 }}>
@@ -7641,7 +7639,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
               const hasConflict = memberJobs.some(j => conflicts.has(`${member.id}-${String(j.id)}`));
               return (
                 <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#6B7280' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ minWidth: 0 }}>
@@ -7662,7 +7660,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
 
 // ─── Calendar: Context Menu ─────────────────────────────────────────────────────
 function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, onChangeStage, onRemove, onComplete, onDelete }) {
-  const tc = TRADE_COLORS[job.trade] || '#64748b';
+  const tc = TRADE_COLORS[job.trade] || '#6B7280';
   const items = [
     { label: 'View Details', action: onView, icon: '📋' },
     { label: 'Reschedule', action: onReschedule, icon: '📅' },
@@ -7674,7 +7672,7 @@ function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, on
   ].filter(Boolean);
   return (
     <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', minWidth: 200, overflow: 'hidden' }}>
-      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#64748b', borderBottom: '1px solid #D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
+      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#6B7280', borderBottom: '1px solid #D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
       {items.map(item => (
         <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#6B7280', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
@@ -7699,7 +7697,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
           <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>
             {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
-          <div style={{ fontSize: 12, color: '#64748b' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
+          <div style={{ fontSize: 12, color: '#6B7280' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
         </div>
         {onCreateForDate && (
           <button onClick={onCreateForDate} style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
@@ -7714,7 +7712,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
       ) : (
         <div style={{ marginBottom: 16 }}>
           {dayJobs.map(job => {
-            const tc = TRADE_COLORS[job.trade] || '#64748b';
+            const tc = TRADE_COLORS[job.trade] || '#6B7280';
             const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
@@ -7727,7 +7725,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
                   <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#111827' }}>{job.customer}</div>
                   <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: tc + '22', color: tc }}>{job.status}</span>
                 </div>
-                <div style={{ fontSize: 11, color: '#64748b', marginBottom: assignedCrew.length ? 6 : 0 }}>
+                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: assignedCrew.length ? 6 : 0 }}>
                   {job.trade} · {job.scheduledDate} → {jobEndDate(job)} · {jobDuration(job)}d
                 </div>
                 {assignedCrew.length > 0 && (
@@ -7755,7 +7753,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
               const busy = memberJobs.length > 0;
               return (
                 <div key={member.id} style={{ padding: '8px 10px', borderRadius: 7, background: '#F8F9FA', border: `1px solid ${busy ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#6B7280' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ minWidth: 0 }}>
@@ -7779,7 +7777,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-        {DAY_NAMES.map((d, i) => <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748b', padding: '4px 0' }}>{d}</div>)}
+        {DAY_NAMES.map((d, i) => <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#6B7280', padding: '4px 0' }}>{d}</div>)}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
         {days.map(dateStr => {
@@ -7797,16 +7795,15 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
               onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
               onDragLeave={() => { if (onDragOver) onDragOver(null); }}
-              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(249,115,22,0.15)' : isSelected ? 'rgba(249,115,22,0.1)' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? 'rgba(249,115,22,0.5)' : '#E5E7EB'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? '#FFF4EE' : isSelected ? '#FFF4EE' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#FAFAFA' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E5E7EB'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
                 {isToday
-                  ? <span style={{ background: '#E8722A', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
-                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#6B7280' }}>{parseInt(dateStr.slice(8))}</span>
+                  ? <span style={{ background: '#E8722A', color: '#fff', borderRadius: '50%', width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
+                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#374151', fontWeight: 500 }}>{parseInt(dateStr.slice(8))}</span>
                 }
               </div>
               {dayJobs.slice(0, maxVis).map(job => {
-                const tc = TRADE_COLORS[job.trade] || '#64748b';
                 const isDragging = dragJobId === String(job.id);
                 return (
                   <div
@@ -7816,7 +7813,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
                     onDragEnd={() => { if (onDragEnd) onDragEnd(); }}
                     onClick={e => { e.stopPropagation(); onJobClick && onJobClick(job); }}
                     onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onJobContextMenu && onJobContextMenu(job, e); }}
-                    style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, background: tc + '22', color: tc, borderLeft: `2px solid ${tc}`, padding: isMobile ? '1px 3px' : '2px 5px', borderRadius: '0 3px 3px 0', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'grab', opacity: isDragging ? 0.4 : 1 }}
+                    style={{ fontSize: isMobile ? 9 : 11, fontWeight: 500, background: '#E8722A', color: '#FFFFFF', padding: isMobile ? '1px 4px' : '2px 6px', borderRadius: 4, marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'grab', opacity: isDragging ? 0.4 : 1 }}
                   >
                     {isMobile ? (job.description || job.customer).slice(0, 6) : (job.description || job.customer).split(' ').slice(0, 3).join(' ')}
                   </div>
@@ -7853,13 +7850,13 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
             style={{ background: isDragOver ? 'rgba(249,115,22,0.12)' : isSelected ? 'rgba(249,115,22,0.08)' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? 'rgba(249,115,22,0.5)' : '#E5E7EB'}`, borderRadius: 8, padding: isMobile ? '6px 4px' : '10px 8px', cursor: 'pointer', minHeight: 100 }}
           >
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
-              <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+              <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
               <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#111827', background: isToday ? '#E8722A' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
                 {d.getDate()}
               </div>
             </div>
             {dayJobs.map(job => {
-              const tc = TRADE_COLORS[job.trade] || '#64748b';
+              const tc = TRADE_COLORS[job.trade] || '#6B7280';
               const isDragging = dragJobId === String(job.id);
               return (
                 <div
@@ -7944,7 +7941,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
       <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
       <div>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#6B7280' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{sub}</div>}
+        {sub && <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{sub}</div>}
       </div>
     </button>
   );
@@ -7973,11 +7970,11 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
         onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#FFFFFF'; })}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748b' : '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#6B7280' : '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
           <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>
             {job.customer && job.description ? `${job.customer} · ` : ''}{job.status || ''}{fmtDate ? ` · ${fmtDate}` : ''}
           </div>
-          {crewNames && <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>&#128100; {crewNames}</div>}
+          {crewNames && <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>&#128100; {crewNames}</div>}
         </div>
         {alreadyHere
           ? <span style={{ fontSize: 10, color: '#9CA3AF', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
@@ -7991,7 +7988,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     <div style={{ textAlign: 'center', padding: '28px 0' }}>
       <div style={{ fontSize: 36, marginBottom: 12 }}>{icon}</div>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#4ade80', marginBottom: 6 }}>{title}</div>
-      <div style={{ fontSize: 12, color: '#64748b' }}>{sub}</div>
+      <div style={{ fontSize: 12, color: '#6B7280' }}>{sub}</div>
     </div>
   );
 
@@ -8007,7 +8004,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{displayDate}</div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20 }}>{subTitle}</div>
+        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 20 }}>{subTitle}</div>
 
         {mode === 'menu' && (
           <div>
@@ -8049,13 +8046,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {unscheduledSection.length > 0 && (
                   <>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Unscheduled</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Unscheduled</div>
                     {unscheduledSection.map(job => <JobRow key={job.id} job={job} />)}
                   </>
                 )}
                 {scheduledSection.length > 0 && (
                   <>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: unscheduledSection.length > 0 ? 10 : 0, marginBottom: 3 }}>Reschedule</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: unscheduledSection.length > 0 ? 10 : 0, marginBottom: 3 }}>Reschedule</div>
                     {scheduledSection.map(job => <JobRow key={job.id} job={job} />)}
                   </>
                 )}
@@ -8085,7 +8082,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-              <label style={{ fontSize: 12, color: '#64748b', flexShrink: 0 }}>Duration (days):</label>
+              <label style={{ fontSize: 12, color: '#6B7280', flexShrink: 0 }}>Duration (days):</label>
               <input
                 type="number"
                 min={1}
@@ -8186,9 +8183,9 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
           const grandHours = jobDetails.reduce((s, d) => s + d.totalHours, 0);
           const grandLabor = jobDetails.reduce((s, d) => s + d.totalLabor, 0);
           const grandValue = dayJobs.reduce((s, j) => s + (j.value || 0), 0);
-          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#64748b', 'Scheduled': '#9CA3AF' }[s] || '#9CA3AF');
+          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#6B7280', 'Scheduled': '#9CA3AF' }[s] || '#9CA3AF');
           const pill = (text, bg, fg) => ({ display: 'inline-block', fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 8, background: bg, color: fg, marginLeft: 4 });
-          const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
+          const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
           const card = { background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '12px 14px', marginBottom: 8 };
 
           return (
@@ -8198,15 +8195,15 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 4 }}>
                 <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#E8722A' }}>{grandHours.toFixed(1)}</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Total Hours</div>
+                  <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600 }}>Total Hours</div>
                 </div>
                 <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#3b82f6' }}>{allCrewIds.size}</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Crews Deployed</div>
+                  <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600 }}>Crews Deployed</div>
                 </div>
                 <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#22c55e' }}>${grandValue.toLocaleString()}</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Active Job Value</div>
+                  <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600 }}>Active Job Value</div>
                 </div>
               </div>
 
@@ -8240,9 +8237,9 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                           <div style={{ flex: 1, height: 4, background: '#E5E7EB', borderRadius: 2, overflow: 'hidden' }}>
                             <div style={{ width: `${(completedCount / totalSteps) * 100}%`, height: '100%', background: tc, borderRadius: 2 }} />
                           </div>
-                          <span style={{ fontSize: 10, color: '#64748b', flexShrink: 0 }}>{completedCount}/{totalSteps}</span>
+                          <span style={{ fontSize: 10, color: '#6B7280', flexShrink: 0 }}>{completedCount}/{totalSteps}</span>
                         </div>
-                        <div style={{ fontSize: 11, color: '#64748b' }}>Current: <span style={{ color: '#6B7280' }}>{nextStep.label}</span></div>
+                        <div style={{ fontSize: 11, color: '#6B7280' }}>Current: <span style={{ color: '#6B7280' }}>{nextStep.label}</span></div>
 
                         {/* Crew on this job */}
                         {jcrew.length > 0 && (
@@ -8252,7 +8249,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                                 <span style={{ color: '#6B7280', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
                                 <span style={{ color: '#9CA3AF', fontSize: 10, minWidth: 60 }}>{c.role}</span>
                                 <span style={pill(c.status, statusColor(c.status) + '22', statusColor(c.status))}>{c.status}</span>
-                                <span style={{ color: '#64748b', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
+                                <span style={{ color: '#6B7280', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
                               </div>
                             ))}
                           </div>
@@ -8289,7 +8286,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                             <div style={{ fontWeight: 600, color: '#6B7280' }}>{member?.name || cid}</div>
                             <div style={{ fontSize: 10, color: '#9CA3AF' }}>{member?.role || ''}</div>
                           </div>
-                          <div style={{ flex: 1, fontSize: 11, color: '#64748b' }}>
+                          <div style={{ flex: 1, fontSize: 11, color: '#6B7280' }}>
                             {memberJobs.map(d => d.job.customer).join(', ')}
                           </div>
                           <span style={pill(status, statusColor(status) + '22', statusColor(status))}>{status}</span>
@@ -8321,7 +8318,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                       <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} (${(j.value || 0).toLocaleString()})</option>
                     ))}
                   </select>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Assign Crew</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6 }}>Assign Crew</div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
                     {(crew || []).map(m => {
                       const sel = schedCrew.includes(m.id);
@@ -8334,13 +8331,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 10, color: '#64748b', marginBottom: 3 }}>Start Time</div>
+                      <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 3 }}>Start Time</div>
                       <select value={schedTime} onChange={e => setSchedTime(e.target.value)} style={{ width: '100%', padding: '7px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}>
                         {['6:00 AM','6:30 AM','7:00 AM','7:30 AM','8:00 AM','8:30 AM','9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 10, color: '#64748b', marginBottom: 3 }}>Est. Hours</div>
+                      <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 3 }}>Est. Hours</div>
                       <input type="number" min={1} max={12} value={schedHours} onChange={e => setSchedHours(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))} style={{ width: '100%', padding: '7px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
                     </div>
                   </div>
@@ -8371,7 +8368,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 <>
                   <div style={sectionLabel}>Hours Summary</div>
                   <div style={card}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 12px', fontSize: 11, color: '#64748b' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 12px', fontSize: 11, color: '#6B7280' }}>
                       <div style={{ fontWeight: 700, color: '#6B7280' }}>Job</div>
                       <div style={{ fontWeight: 700, color: '#6B7280', textAlign: 'right' }}>Hours</div>
                       <div style={{ fontWeight: 700, color: '#6B7280', textAlign: 'right' }}>Labor $</div>
@@ -8506,7 +8503,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 160 }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Dispatch Board</div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
+          <div style={{ fontSize: 13, color: '#6B7280' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
         {!isDemo && onCreate && (
           <button onClick={() => setQuickBar({ date: TODAY, job: null })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
@@ -8520,7 +8517,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         )}
         <div style={{ display: 'flex', gap: 4 }}>
           {['month', 'week', 'day'].map(v => (
-            <button key={v} style={{ ...S.filterBtn(view === v), padding: '6px 12px', minHeight: 32, fontSize: 12 }} onClick={() => { setView(v); setSelectedDate(null); }}>
+            <button key={v} style={{ padding: '6px 12px', minHeight: 32, fontSize: 12, borderRadius: 6, border: view === v ? 'none' : '1px solid #D1D5DB', background: view === v ? '#E8722A' : '#FFFFFF', color: view === v ? '#FFFFFF' : '#6B7280', fontWeight: view === v ? 600 : 500, cursor: 'pointer' }} onClick={() => { setView(v); setSelectedDate(null); }}>
               {v.charAt(0).toUpperCase() + v.slice(1)}
             </button>
           ))}
@@ -8552,8 +8549,8 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
 
       {/* ── Unscheduled banner ── */}
       {unscheduledJobs.length > 0 && (
-        <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 8, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 13, color: '#E8722A', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
+        <div style={{ background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: 8, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, color: '#92400E', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
             {unscheduledJobs.slice(0, 5).map(j => (
               <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 11, color: '#6B7280', background: '#E5E7EB', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: 'pointer' }}>
@@ -8589,12 +8586,12 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <div style={S.sectionLabel}>Unscheduled Jobs</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {unscheduledJobs.map(job => {
-              const tc = TRADE_COLORS[job.trade] || '#64748b';
+              const tc = TRADE_COLORS[job.trade] || '#6B7280';
               return (
                 <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#FFFFFF', border: '1px solid #E5E7EB', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
+                    <div style={{ fontSize: 11, color: '#6B7280' }}>{job.trade} · {job.status}</div>
                   </div>
                   {!isDemo && onSchedule && (
                     <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
@@ -8716,7 +8713,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
 
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
-  starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
+  starter: { label: 'Starter', color: '#6B7280', desc: 'Basic pipeline management' },
   pro:     { label: 'Pro',     color: '#E8722A', desc: 'AI coaching + full analytics' },
   business:{ label: 'Business',color: '#6366f1', desc: 'Team management + export' },
 };
@@ -8809,7 +8806,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
               padding: isMobile ? '7px 14px' : '5px 16px', borderRadius: 20, border: 'none',
               fontWeight: 600, fontSize: isMobile ? 13 : 12, cursor: 'pointer',
               background: tier === key ? meta.color : '#FFFFFF',
-              color: tier === key ? '#fff' : '#64748b',
+              color: tier === key ? '#fff' : '#6B7280',
               transition: 'all 0.15s', flexShrink: 0,
               outline: tier === key ? `2px solid ${meta.color}44` : 'none', outlineOffset: 1,
               minHeight: isMobile ? 36 : 'auto',
