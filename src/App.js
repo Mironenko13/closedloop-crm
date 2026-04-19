@@ -1,5 +1,72 @@
 import { useState, useMemo, useEffect, useRef, useCallback, useContext, createContext } from 'react';
 
+// ─── Theme System ────────────────────────────────────────────────────────────
+const THEMES = {
+  light: {
+    bgPage: '#F1F5F9', bgCard: '#FFFFFF', bgInput: '#FFFFFF', bgColumn: '#F8FAFC', bgHover: '#F1F5F9',
+    border: '#E2E8F0', borderStrong: '#CBD5E1',
+    text: '#0F172A', textSec: '#64748B', textMuted: '#94A3B8',
+    accent: '#E8722A', accentHover: '#C4611E',
+    shadow: '0 1px 3px rgba(0,0,0,0.1)', shadowHover: '0 4px 16px rgba(232,114,42,0.15)',
+    shadowHeavy: '0 20px 60px rgba(0,0,0,0.2)', overlay: 'rgba(0,0,0,0.4)',
+    navInactive: '#475569', scrollThumb: '#CBD5E1',
+  },
+  dark: {
+    bgPage: '#111318', bgCard: '#1A1D24', bgInput: '#111318', bgColumn: '#161820', bgHover: '#22252E',
+    border: 'rgba(255,255,255,0.1)', borderStrong: 'rgba(255,255,255,0.15)',
+    text: '#FFFFFF', textSec: '#94A3B8', textMuted: '#64748B',
+    accent: '#E8722A', accentHover: '#F59E0B',
+    shadow: '0 1px 3px rgba(0,0,0,0.3)', shadowHover: '0 4px 16px rgba(0,0,0,0.4)',
+    shadowHeavy: '0 20px 60px rgba(0,0,0,0.6)', overlay: 'rgba(0,0,0,0.6)',
+    navInactive: '#94A3B8', scrollThumb: 'rgba(255,255,255,0.15)',
+  },
+};
+
+const ThemeCtx = createContext({ theme: THEMES.light, mode: 'light', toggle: () => {} });
+function useTheme() { return useContext(ThemeCtx); }
+
+function ThemeProvider({ children }) {
+  const [mode, setMode] = useState(() => {
+    try { return localStorage.getItem('ridgeos-theme') || 'light'; } catch { return 'light'; }
+  });
+  const theme = THEMES[mode] || THEMES.light;
+  const toggle = useCallback(() => {
+    setMode(prev => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem('ridgeos-theme', next); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+  // Inject CSS variables on document root
+  useEffect(() => {
+    const t = theme;
+    const r = document.documentElement.style;
+    r.setProperty('--bg-page', t.bgPage);
+    r.setProperty('--bg-card', t.bgCard);
+    r.setProperty('--bg-input', t.bgInput);
+    r.setProperty('--bg-column', t.bgColumn);
+    r.setProperty('--bg-hover', t.bgHover);
+    r.setProperty('--border', t.border);
+    r.setProperty('--border-strong', t.borderStrong);
+    r.setProperty('--text', t.text);
+    r.setProperty('--text-sec', t.textSec);
+    r.setProperty('--text-muted', t.textMuted);
+    r.setProperty('--accent', t.accent);
+    r.setProperty('--nav-inactive', t.navInactive);
+    r.setProperty('--shadow', t.shadow);
+    r.setProperty('--shadow-hover', t.shadowHover);
+    r.setProperty('--overlay', t.overlay);
+    r.setProperty('--scroll-thumb', t.scrollThumb);
+    document.body.style.background = t.bgPage;
+    document.body.style.color = t.text;
+  }, [theme]);
+  return (
+    <ThemeCtx.Provider value={{ theme, mode, toggle }}>
+      {children}
+    </ThemeCtx.Provider>
+  );
+}
+
 // ─── Toast System ─────────────────────────────────────────────────────────────
 const ToastCtx = createContext(null);
 function useToast() { return useContext(ToastCtx) || (() => {}); }
@@ -9038,6 +9105,11 @@ function DemoPage() {
 export { DemoPage };
 
 export default function App() {
+  return <ThemeProvider><AppInner /></ThemeProvider>;
+}
+
+function AppInner() {
+  const { theme: T, mode: themeMode, toggle: themeToggle } = useTheme();
   const [screen, setScreen] = useState('login'); // 'login' | 'onboarding' | 'app'
   const [session, setSession] = useState(null);
   const [tab, setTab] = useState('pipeline');
@@ -9253,13 +9325,13 @@ export default function App() {
   return (
     <ToastProvider>
     <GlobalStyles />
-    <div style={S.app}>
+    <div style={{ ...S.app, background: T.bgPage, color: T.text }}>
       <header style={{
-        ...S.header,
+        ...S.header, background: T.bgCard, borderBottom: `2px solid ${T.accent}`,
         ...(isMobile ? { padding: '0 12px', height: 44, gap: 8 } : {}),
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={S.logo}>RidgeOS</span>
+          <span style={{ ...S.logo, color: T.text }}>RidgeOS</span>
           {isDemo && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
@@ -9304,12 +9376,27 @@ export default function App() {
           </div>
         )}
 
+        {/* Theme toggle */}
+        <button
+          onClick={themeToggle}
+          title={themeMode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          style={{
+            width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: themeMode === 'light' ? '#F1F5F9' : '#22252E',
+            border: `1px solid ${themeMode === 'light' ? '#E2E8F0' : 'rgba(255,255,255,0.1)'}`,
+            color: themeMode === 'light' ? '#64748B' : '#F59E0B',
+            cursor: 'pointer', fontSize: 16, flexShrink: 0, transition: 'all 0.2s',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          {themeMode === 'light' ? '🌙' : '☀️'}
+        </button>
         <button
           onClick={() => { setScreen('login'); setSession(null); }}
           className="ri-btn ri-btn-secondary"
           style={{
-            marginLeft: 'auto', background: 'transparent', border: '1px solid #CBD5E1',
-            color: '#6b7f9a', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
+            background: 'transparent', border: `1px solid ${T.border}`,
+            color: T.textSec, cursor: 'pointer', fontSize: isMobile ? 11 : 12,
             padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
             minHeight: 'auto',
             WebkitTapHighlightColor: 'transparent',
