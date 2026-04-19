@@ -1,72 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback, useContext, createContext } from 'react';
 
-// ─── Theme System ────────────────────────────────────────────────────────────
-const THEMES = {
-  light: {
-    bgPage: '#F1F5F9', bgCard: '#FFFFFF', bgInput: '#FFFFFF', bgColumn: '#F8FAFC', bgHover: '#F1F5F9',
-    border: '#E2E8F0', borderStrong: '#CBD5E1',
-    text: '#0F172A', textSec: '#64748B', textMuted: '#94A3B8',
-    accent: '#E8722A', accentHover: '#C4611E',
-    shadow: '0 1px 3px rgba(0,0,0,0.1)', shadowHover: '0 4px 16px rgba(232,114,42,0.15)',
-    shadowHeavy: '0 20px 60px rgba(0,0,0,0.2)', overlay: 'rgba(0,0,0,0.4)',
-    navInactive: '#475569', scrollThumb: '#CBD5E1',
-  },
-  dark: {
-    bgPage: '#111318', bgCard: '#1A1D24', bgInput: '#111318', bgColumn: '#161820', bgHover: '#22252E',
-    border: 'rgba(255,255,255,0.1)', borderStrong: 'rgba(255,255,255,0.15)',
-    text: '#FFFFFF', textSec: '#94A3B8', textMuted: '#64748B',
-    accent: '#E8722A', accentHover: '#F59E0B',
-    shadow: '0 1px 3px rgba(0,0,0,0.3)', shadowHover: '0 4px 16px rgba(0,0,0,0.4)',
-    shadowHeavy: '0 20px 60px rgba(0,0,0,0.6)', overlay: 'rgba(0,0,0,0.6)',
-    navInactive: '#94A3B8', scrollThumb: 'rgba(255,255,255,0.15)',
-  },
-};
-
-const ThemeCtx = createContext({ theme: THEMES.light, mode: 'light', toggle: () => {} });
-function useTheme() { return useContext(ThemeCtx); }
-
-function ThemeProvider({ children }) {
-  const [mode, setMode] = useState(() => {
-    try { return localStorage.getItem('ridgeos-theme') || 'light'; } catch { return 'light'; }
-  });
-  const theme = THEMES[mode] || THEMES.light;
-  const toggle = useCallback(() => {
-    setMode(prev => {
-      const next = prev === 'light' ? 'dark' : 'light';
-      try { localStorage.setItem('ridgeos-theme', next); } catch { /* ignore */ }
-      return next;
-    });
-  }, []);
-  // Inject CSS variables on document root
-  useEffect(() => {
-    const t = theme;
-    const r = document.documentElement.style;
-    r.setProperty('--bg-page', t.bgPage);
-    r.setProperty('--bg-card', t.bgCard);
-    r.setProperty('--bg-input', t.bgInput);
-    r.setProperty('--bg-column', t.bgColumn);
-    r.setProperty('--bg-hover', t.bgHover);
-    r.setProperty('--border', t.border);
-    r.setProperty('--border-strong', t.borderStrong);
-    r.setProperty('--text', t.text);
-    r.setProperty('--text-sec', t.textSec);
-    r.setProperty('--text-muted', t.textMuted);
-    r.setProperty('--accent', t.accent);
-    r.setProperty('--nav-inactive', t.navInactive);
-    r.setProperty('--shadow', t.shadow);
-    r.setProperty('--shadow-hover', t.shadowHover);
-    r.setProperty('--overlay', t.overlay);
-    r.setProperty('--scroll-thumb', t.scrollThumb);
-    document.body.style.background = t.bgPage;
-    document.body.style.color = t.text;
-  }, [theme]);
-  return (
-    <ThemeCtx.Provider value={{ theme, mode, toggle }}>
-      {children}
-    </ThemeCtx.Provider>
-  );
-}
-
 // ─── Toast System ─────────────────────────────────────────────────────────────
 const ToastCtx = createContext(null);
 function useToast() { return useContext(ToastCtx) || (() => {}); }
@@ -86,7 +19,7 @@ function ToastProvider({ children }) {
             background: t.type === 'error' ? '#450a0a' : '#052e16',
             border: `1px solid ${t.type === 'error' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'}`,
             borderRadius: 8, padding: '10px 16px',
-            color: '#0A0A0A', fontSize: 13, fontWeight: 500,
+            color: '#1E2329', fontSize: 13, fontWeight: 500,
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             maxWidth: 300,
           }}>
@@ -431,9 +364,9 @@ const STALL_LABELS = {
 const STATUS_COLORS = {
   active: '#16A34A',
   stalled: '#DC2626',
-  cold: '#475569',
+  cold: '#64748B',
   won: '#16A34A',
-  lost: '#475569',
+  lost: '#64748B',
 };
 
 const STAGE_ORDER = [
@@ -738,15 +671,15 @@ const DEMO_DAY_DETAIL = {
 const S = {
   app: {
     minHeight: '100vh',
-    background: '#FFFFFF',
-    color: '#0A0A0A',
+    background: '#F0F2F5',
+    color: '#1E2329',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
     overflowX: 'hidden',
   },
   header: {
-    background: '#FFFFFF',
-    borderBottom: '2px solid #E8722A',
+    background: '#1E2329',
+    borderBottom: 'none',
     padding: '0 24px',
     display: 'flex',
     alignItems: 'center',
@@ -756,19 +689,19 @@ const S = {
     top: 0,
     zIndex: 100,
   },
-  logo: { fontSize: 22, fontWeight: 800, color: '#0A0A0A', letterSpacing: '-0.5px' },
-  logoSub: { fontSize: 13, color: '#475569', fontWeight: 500, marginLeft: 4 },
+  logo: { fontSize: 22, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.5px' },
+  logoSub: { fontSize: 13, color: '#94A3B8', fontWeight: 500, marginLeft: 4 },
   tabs: { display: 'flex', gap: 2, marginLeft: 'auto' },
   tab: (active) => ({
     padding: '8px 16px',
     borderRadius: 0,
     border: 'none',
-    borderBottom: active ? '3px solid #E8722A' : '3px solid transparent',
+    borderBottom: active ? '2px solid #E8722A' : '2px solid transparent',
     cursor: 'pointer',
     fontSize: 14,
-    fontWeight: active ? 700 : 600,
+    fontWeight: active ? 600 : 500,
     background: 'transparent',
-    color: active ? '#E8722A' : '#475569',
+    color: active ? '#E8722A' : '#94A3B8',
     transition: 'all 0.15s',
     boxShadow: 'none',
   }),
@@ -784,7 +717,7 @@ const S = {
     borderRadius: 20,
     border: `1px solid ${active ? '#E8722A' : '#CBD5E1'}`,
     background: active ? 'rgba(232,114,42,0.12)' : 'transparent',
-    color: active ? '#E8722A' : '#475569',
+    color: active ? '#E8722A' : '#64748B',
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 500,
@@ -820,7 +753,7 @@ const S = {
     boxShadow: hovered ? '0 4px 16px rgba(232,114,42,0.15)' : '0 1px 3px rgba(0,0,0,0.1)',
   }),
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  cardName: { fontSize: 15, fontWeight: 600, color: '#0A0A0A' },
+  cardName: { fontSize: 15, fontWeight: 600, color: '#1E2329' },
   cardContact: { fontSize: 12, color: '#64748B', marginTop: 2 },
   statusBadge: (status) => ({
     fontSize: 10,
@@ -894,7 +827,7 @@ const S = {
     fontSize: 13, fontWeight: 600,
     color: overdue ? '#ef4444' : '#E8722A', minWidth: 90,
   }),
-  cbName: { fontSize: 14, fontWeight: 600, color: '#0A0A0A', flex: 1 },
+  cbName: { fontSize: 14, fontWeight: 600, color: '#1E2329', flex: 1 },
   cbContact: { fontSize: 12, color: '#64748B' },
   cbValue: { fontSize: 13, fontWeight: 600, color: '#22c55e' },
 
@@ -909,7 +842,7 @@ const S = {
     borderRadius: 12, padding: 20, textAlign: 'center',
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
   },
-  statVal: { fontSize: 28, fontWeight: 800, color: '#0A0A0A' },
+  statVal: { fontSize: 28, fontWeight: 800, color: '#1E2329' },
   statLabel: { fontSize: 12, color: '#64748B', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' },
   chartSection: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 },
   chartCard: {
@@ -971,7 +904,7 @@ const S = {
     maxHeight: '85vh', overflow: 'auto', padding: 28, position: 'relative',
     boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
   },
-  modalTitle: { fontSize: 18, fontWeight: 700, color: '#0A0A0A', marginBottom: 4 },
+  modalTitle: { fontSize: 18, fontWeight: 700, color: '#1E2329', marginBottom: 4 },
   modalSub: { fontSize: 13, color: '#64748B', marginBottom: 20 },
   closeBtn: {
     position: 'absolute', top: 12, right: 12,
@@ -1106,26 +1039,26 @@ function GlobalStyles() {
       .ri-btn-primary:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 4px 18px rgba(249,115,22,0.5) !important; }
       .ri-btn-primary:active:not(:disabled) { transform:translateY(0); filter:brightness(0.96); }
       .ri-btn-secondary { background:transparent !important; border:1px solid #CBD5E1 !important; color:#64748B !important; }
-      .ri-btn-secondary:hover:not(:disabled) { border-color:#E8722A !important; color:#0A0A0A !important; background:rgba(249,115,22,0.07) !important; }
+      .ri-btn-secondary:hover:not(:disabled) { border-color:#E8722A !important; color:#1E2329 !important; background:rgba(249,115,22,0.07) !important; }
       .ri-btn-danger { background:rgba(239,68,68,0.12) !important; border:1px solid rgba(239,68,68,0.4) !important; color:#f87171 !important; }
       .ri-btn-danger:hover:not(:disabled) { background:rgba(239,68,68,0.24) !important; border-color:rgba(239,68,68,0.7) !important; }
       .ri-del { transition:color 0.12s, background 0.12s; cursor:pointer; }
       .ri-del:hover { color:#ef4444 !important; }
       input:focus, select:focus, textarea:focus { border-color:#E8722A !important; box-shadow:0 0 0 3px rgba(249,115,22,0.14) !important; outline:none !important; }
       .ri-nav-tab { transition:color 0.15s, background 0.15s; }
-      .ri-nav-tab:hover { color:#0A0A0A !important; background:#F1F5F9 !important; border-radius:6px; }
+      .ri-nav-tab:hover { color:#FFFFFF !important; background:rgba(255,255,255,0.08) !important; border-radius:6px; }
       .ri-modal-tab { transition:all 0.15s; }
-      .ri-modal-tab:hover { background:#F1F5F9 !important; border-radius:6px 6px 0 0; }
+      .ri-modal-tab:hover { background:#F0F2F5 !important; border-radius:6px 6px 0 0; }
       .ri-bnav-btn { transition:color 0.15s, background 0.15s; }
-      .ri-bnav-btn:hover { background:#F1F5F9 !important; }
+      .ri-bnav-btn:hover { background:#F0F2F5 !important; }
       .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
-      .ri-cb-row:hover { background:#F1F5F9 !important; border-color:#CBD5E1 !important; }
+      .ri-cb-row:hover { background:#F0F2F5 !important; border-color:#CBD5E1 !important; }
       .ri-sec-hdr { transition:background 0.12s; }
-      .ri-sec-hdr:hover { background:#F1F5F9 !important; }
+      .ri-sec-hdr:hover { background:#F0F2F5 !important; }
       .ri-sub-tab { transition:color 0.15s, border-color 0.15s; cursor:pointer; }
-      .ri-sub-tab:hover { color:#0A0A0A !important; }
-      .ri-card-btn:hover { color:#0A0A0A !important; background:rgba(249,115,22,0.1) !important; }
-      .ri-close-btn:hover { color:#0A0A0A !important; background:#E2E8F0 !important; }
+      .ri-sub-tab:hover { color:#1E2329 !important; }
+      .ri-card-btn:hover { color:#1E2329 !important; background:rgba(249,115,22,0.1) !important; }
+      .ri-close-btn:hover { color:#1E2329 !important; background:#E2E8F0 !important; }
       .ri-add-item:hover { color:#64748B !important; border-color:#CBD5E1 !important; }
       ::-webkit-scrollbar { width:5px; height:5px; }
       ::-webkit-scrollbar-track { background:transparent; }
@@ -1143,9 +1076,9 @@ function BottomNav({ tab, setTab, tabs }) {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: '#FFFFFF', borderTop: '2px solid #E8722A',
+      background: '#FFFFFF', borderTop: '1px solid #E2E8F0',
       display: 'flex', height: 64, zIndex: 200,
-      boxShadow: '0 -4px 12px rgba(0,0,0,0.08)',
+      boxShadow: '0 -2px 8px rgba(0,0,0,0.06)',
       overflowX: 'auto', scrollbarWidth: 'none',
       WebkitOverflowScrolling: 'touch',
     }}>
@@ -1264,7 +1197,7 @@ const LEAD_STAGES = [
 
 const FI = { // form input base
   width: '100%', padding: '10px 12px', background: '#FFFFFF',
-  border: '1.5px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A',
+  border: '1.5px solid #CBD5E1', borderRadius: 8, color: '#1E2329',
   fontSize: 13, outline: 'none', boxSizing: 'border-box',
   fontFamily: "'Inter', -apple-system, sans-serif",
   transition: 'border-color 0.15s',
@@ -1830,7 +1763,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
             style={{
               flex: 1, padding: '10px 14px', borderRadius: 8,
               background: '#FFFFFF', border: '1px solid #E2E8F0',
-              color: uploading ? '#475569' : '#64748B',
+              color: uploading ? '#64748B' : '#64748B',
               fontSize: 13, fontWeight: 600,
               cursor: uploading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1876,7 +1809,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
         }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#64748B', marginBottom: 4 }}>No photos yet</div>
-          <div style={{ fontSize: 12, color: '#475569' }}>
+          <div style={{ fontSize: 12, color: '#64748B' }}>
             {isMobile
               ? 'Tap Camera to shoot or Upload to pick from library.'
               : 'Use Take Photo or Upload to start documenting this job.'}
@@ -2146,7 +2079,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                   style={{
                     width: '100%', padding: '11px 16px', borderRadius: 8,
                     background: '#FFFFFF', border: '1px solid #E2E8F0',
-                    color: '#475569', fontSize: 13, fontWeight: 600,
+                    color: '#64748B', fontSize: 13, fontWeight: 600,
                     cursor: 'not-allowed', textAlign: 'left',
                     display: 'flex', alignItems: 'center', gap: 8,
                   }}
@@ -2274,7 +2207,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
           <div style={{ fontSize: 11, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
@@ -2307,7 +2240,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
 
       {/* Last update preview */}
       {lead.lastUpdate && (
-        <div style={{ fontSize: 10, color: '#475569', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 10, color: '#64748B', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
           <span style={{ color: '#64748B' }}>↳ </span>
           {lead.lastUpdate.length > 60 ? lead.lastUpdate.slice(0, 60) + '…' : lead.lastUpdate}
         </div>
@@ -2424,7 +2357,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
             <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
               {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
             </div>
@@ -2439,7 +2372,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                 AI Coach ↗
               </button>
             )}
-            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#64748B', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
           </div>
         </div>
 
@@ -2458,7 +2391,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               style={{
                 width: '100%', boxSizing: 'border-box',
                 background: '#060a12', border: '1px solid #E2E8F0', borderRadius: 8,
-                color: '#0A0A0A', fontSize: 13, padding: '10px 12px',
+                color: '#1E2329', fontSize: 13, padding: '10px 12px',
                 resize: 'vertical', outline: 'none', fontFamily: 'inherit', lineHeight: 1.6,
               }}
             />
@@ -2534,7 +2467,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               <div style={{ position: 'relative' }}>
                 <button
                   onClick={() => setShowIssueMenu(v => !v)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed #E2E8F0', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#475569', cursor: 'pointer' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed #E2E8F0', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#64748B', cursor: 'pointer' }}
                 >
                   + Add Issue
                 </button>
@@ -2561,7 +2494,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                         onKeyDown={e => { if (e.key === 'Enter' && customIssue.trim()) addIssue(customIssue); }}
                         placeholder="Custom issue... (Enter)"
                         autoFocus
-                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#0A0A0A', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#1E2329', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                       />
                     </div>
                   </div>
@@ -2580,7 +2513,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                     <span style={{ color: '#64748B', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
                     <div style={{ minWidth: 0 }}>
                       <span style={{ color: '#64748B' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
-                      <span style={{ color: '#475569' }}>{entry.message}</span>
+                      <span style={{ color: '#64748B' }}>{entry.message}</span>
                     </div>
                   </div>
                 ))}
@@ -2694,7 +2627,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #E2E8F0' : 'none', textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#E8722A' }}>{s.count}</div>
             <div style={{ fontSize: 9, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>{fmt(s.value)}</div>}
+            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#64748B', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
         ))}
         <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', background: 'rgba(249,115,22,0.04)' }}>
@@ -2756,7 +2689,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               style={{
                 minWidth: isMobile ? 230 : 220,
                 flex: isMobile ? '0 0 230px' : '1 1 0',
-                background: isOver ? 'rgba(232,114,42,0.1)' : '#F8FAFC',
+                background: isOver ? 'rgba(232,114,42,0.1)' : '#F0F2F5',
                 border: `1px solid ${isOver ? '#E8722A' : '#E2E8F0'}`,
                 borderRadius: 10,
                 transition: 'border-color 0.15s, background 0.15s',
@@ -2765,8 +2698,8 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               {/* Column header */}
               <div style={{ padding: '10px 12px', borderBottom: '1px solid #E2E8F0', borderLeft: `4px solid ${STAGE_COLORS[stg.key] || '#E8722A'}`, background: '#FFFFFF', borderRadius: '10px 10px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
                 <div style={{ minWidth: 0 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
-                  <span style={{ fontSize: 11, color: '#475569', marginLeft: 6 }}>{cards.length}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
+                  <span style={{ fontSize: 11, color: '#64748B', marginLeft: 6 }}>{cards.length}</span>
                   {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#64748B' }}>{fmt(colValue)}</div>}
                 </div>
                 {stg.key === 'lead' && (onAddLead || demoMode) && (
@@ -2938,7 +2871,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
         <div style={{ textAlign: 'center', padding: '80px 24px' }}>
           <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>📞</div>
           <div style={{ fontSize: 18, fontWeight: 600, color: '#64748B', marginBottom: 8 }}>No callbacks scheduled</div>
-          <div style={{ fontSize: 13, color: '#475569', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
+          <div style={{ fontSize: 13, color: '#64748B', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
         </div>
       )}
 
@@ -3090,7 +3023,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Revenue by Stage</div>
           {stageFunnel.length === 0 ? (
-            <div style={{ color: '#475569', fontSize: 13 }}>No active leads</div>
+            <div style={{ color: '#64748B', fontSize: 13 }}>No active leads</div>
           ) : stageFunnel.map(({ stage, count, value, avgAge }) => (
             <div key={stage} style={S.barRow}>
               <div style={{ ...S.barLabel, width: 110 }}>{STAGE_LABELS[stage] || stage}</div>
@@ -3098,7 +3031,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 <div style={S.barFill(value / maxStageValue * 100, STAGE_COLORS[stage] || '#E8722A')} />
               </div>
               <div style={{ fontSize: 11, color: '#64748B', width: 24, textAlign: 'right' }}>{count}</div>
-              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
+              <div style={{ fontSize: 11, color: '#64748B', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
               {avgAge > 0 && <div style={{ fontSize: 10, color: '#64748B', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
             </div>
           ))}
@@ -3112,7 +3045,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Stall Reason Breakdown</div>
           {stallBreakdown.length === 0 && (
-            <div style={{ color: '#475569', fontSize: 13 }}>No stalled deals</div>
+            <div style={{ color: '#64748B', fontSize: 13 }}>No stalled deals</div>
           )}
           {stallBreakdown.map(([reason, count]) => (
             <div key={reason} style={S.barRow}>
@@ -3121,7 +3054,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 <div style={S.barFill(count / maxStallCount * 100, STALL_COLORS[reason] || '#E8722A')} />
               </div>
               <div style={S.barCount}>{count}</div>
-              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>
+              <div style={{ fontSize: 11, color: '#64748B', width: 72, textAlign: 'right' }}>
                 {fmt(stalled.filter(l => l.stallReason === reason).reduce((s, l) => s + l.value, 0))}
               </div>
             </div>
@@ -3185,7 +3118,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                   <div style={S.barFill(data.value / maxVal * 100, TRADE_COLORS[trade] || '#E8722A')} />
                 </div>
                 <div style={{ fontSize: 11, color: '#64748B', width: 24, textAlign: 'right' }}>{data.count}</div>
-                <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
+                <div style={{ fontSize: 11, color: '#64748B', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
               </div>
             ));
           })()}
@@ -3238,7 +3171,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 padding: '8px 20px',
                 background: tier === 'business' ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#FFFFFF',
                 border: tier === 'business' ? 'none' : '1px solid #E2E8F0',
-                borderRadius: 7, color: tier === 'business' ? '#fff' : '#475569',
+                borderRadius: 7, color: tier === 'business' ? '#fff' : '#64748B',
                 fontWeight: 600, fontSize: 13, cursor: tier === 'business' ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', gap: 7,
               }}
@@ -3790,7 +3723,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
   // ── shared cell styles ───────────────────────────────────────────────────────
   const NINP = { background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 4, color: '#64748B', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s' };
   const UINP = { background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 4, color: '#64748B', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' };
-  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' };
+  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' };
   const seeRates = rolePerms?.seeRates !== false;
   const MAT_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
   const LAB_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
@@ -3862,7 +3795,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                 );
               })}
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E2E8F0' }}>
-                <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
                 {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748B', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
               </div>
             </div>
@@ -3875,7 +3808,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         {secHdr}
         {!sec.collapsed && (
           <div style={{ background: '#FFFFFF', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, padding: '4px 8px', background: '#0A0A0A', borderBottom: '1px solid #E2E8F0' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, padding: '4px 8px', background: '#1E2329', borderBottom: '1px solid #E2E8F0' }}>
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
               <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
@@ -3892,13 +3825,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {seeRates && <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />}
-                  {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#0A0A0A' : '#CBD5E1' }}>{filled ? fmtC(tot) : '—'}</div>}
+                  {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#1E2329' : '#CBD5E1' }}>{filled ? fmtC(tot) : '—'}</div>}
                   <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
             <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E2E8F0' }}>
-              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
               {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748B', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
             </div>
           </div>
@@ -3945,7 +3878,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: sec.isWaste ? 7 : 7 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ color: '#64748B', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
-                        {item.note && <div style={{ fontSize: 10, color: '#475569', fontStyle: 'italic' }}>{item.note}</div>}
+                        {item.note && <div style={{ fontSize: 10, color: '#64748B', fontStyle: 'italic' }}>{item.note}</div>}
                       </div>
                       <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
@@ -3976,7 +3909,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               })}
               {!sec.isWaste && (
                 <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E2E8F0' }}>
-                  <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                  <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
                   {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748B', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
                 </div>
               )}
@@ -3996,7 +3929,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         {labHdr}
         {!sec.collapsed && (
           <div style={{ background: '#FFFFFF', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, padding: '4px 8px', background: '#0A0A0A', borderBottom: '1px solid #E2E8F0' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, padding: '4px 8px', background: '#1E2329', borderBottom: '1px solid #E2E8F0' }}>
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
               <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
@@ -4018,7 +3951,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   {!sec.isWaste && seeRates && (
                     <>
                       <input type="text" inputMode="decimal" value={item.rate} onChange={e => updLabor(sec.id, item.id, 'rate', e.target.value)} placeholder="0.00" style={{ ...NINP }} />
-                      <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#0A0A0A' : '#CBD5E1' }}>{filled ? fmtC(tot) : '—'}</div>
+                      <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#1E2329' : '#CBD5E1' }}>{filled ? fmtC(tot) : '—'}</div>
                     </>
                   )}
                   <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
@@ -4027,7 +3960,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             })}
             {!sec.isWaste && (
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E2E8F0' }}>
-                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
                 {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748B', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
               </div>
             )}
@@ -4051,7 +3984,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
       {/* ── Template bar ── */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
         <select
           value={data.jobInfo.templateName || ''}
           onChange={e => {
@@ -4188,7 +4121,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #E2E8F0', marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#64748B' }}>Subtotal</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#0A0A0A' }}>{fmtC(subtotal)}</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#1E2329' }}>{fmtC(subtotal)}</span>
             </div>
             {/* Overhead & Tax */}
             {[
@@ -4205,13 +4138,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   placeholder="0"
                   style={{ width: 60, padding: '6px 8px', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 6, color: '#64748B', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
-                <span style={{ fontSize: 11, color: '#475569', width: 14 }}>%</span>
+                <span style={{ fontSize: 11, color: '#64748B', width: 14 }}>%</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#64748B', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', marginTop: 8, background: '#FFFFFF', borderRadius: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#0A0A0A' }}>Total Job Cost</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#0A0A0A' }}>{fmtC(totalJobCost)}</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#1E2329' }}>Total Job Cost</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#1E2329' }}>{fmtC(totalJobCost)}</span>
             </div>
           </div>
 
@@ -4544,7 +4477,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                       )}
                     </div>
                     <span style={S.checkLabel(c.done)}>
-                      <span style={{ color: '#475569', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
+                      <span style={{ color: '#64748B', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
                       {step.label}
                     </span>
                     {c.ts && <span style={S.checkTs}>{c.ts}</span>}
@@ -4666,20 +4599,20 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Existing change orders */}
               {changeOrders.length === 0 && !showCOForm && (
-                <div style={{ fontSize: 12, color: '#475569', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
+                <div style={{ fontSize: 12, color: '#64748B', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
               )}
               {changeOrders.map(co => {
                 const stColor = co.status === 'Approved' ? '#22c55e' : co.status === 'Declined' ? '#ef4444' : '#f59e0b';
                 return (
                   <div key={co.id} style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#0A0A0A' }}>{co.title}</div>
+                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#1E2329' }}>{co.title}</div>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: stColor + '18', color: stColor }}>{co.status}</span>
                     </div>
                     {co.description && <div style={{ fontSize: 11, color: '#64748B', marginBottom: 6 }}>{co.description}</div>}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11 }}>
                       <span style={{ fontWeight: 700, color: '#22c55e' }}>+{fmt(co.amount)}</span>
-                      <span style={{ color: '#475569' }}>{co.date}</span>
+                      <span style={{ color: '#64748B' }}>{co.date}</span>
                       {co.status === 'Pending' && (
                         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
                           <button onClick={() => setChangeOrders(prev => prev.map(c => c.id === co.id ? { ...c, status: 'Approved' } : c))} style={{ padding: '3px 10px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, color: '#22c55e', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>Approve</button>
@@ -4718,7 +4651,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                         }
                       }}
                       disabled={!coTitle.trim() || !coAmount}
-                      style={{ flex: 1, padding: '9px', background: coTitle.trim() && coAmount ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 6, color: coTitle.trim() && coAmount ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: coTitle.trim() && coAmount ? 'pointer' : 'not-allowed' }}
+                      style={{ flex: 1, padding: '9px', background: coTitle.trim() && coAmount ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 6, color: coTitle.trim() && coAmount ? '#fff' : '#64748B', fontWeight: 700, fontSize: 12, cursor: coTitle.trim() && coAmount ? 'pointer' : 'not-allowed' }}
                     >
                       Submit for Approval
                     </button>
@@ -4873,7 +4806,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
                 </div>
               </div>
 
-              <div style={{ marginTop: 10, fontSize: 11, color: '#475569' }}>
+              <div style={{ marginTop: 10, fontSize: 11, color: '#64748B' }}>
                 📅 Scheduled: {job.scheduledDate}
               </div>
             </div>
@@ -5011,7 +4944,7 @@ function TeamTab() {
             ].map(({ label, value, color }) => (
               <div key={label} style={{ textAlign: 'center', minWidth: 80 }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color }}>{value}</div>
-                <div style={{ fontSize: 10, color: '#475569', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+                <div style={{ fontSize: 10, color: '#64748B', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -5064,10 +4997,10 @@ const A = {
   input: {
     width: '100%',
     padding: '10px 14px',
-    background: '#F8FAFC',
+    background: '#F0F2F5',
     border: '1px solid #CBD5E1',
     borderRadius: 8,
-    color: '#0A0A0A',
+    color: '#1E2329',
     fontSize: 14,
     outline: 'none',
     boxSizing: 'border-box',
@@ -5104,7 +5037,7 @@ const A = {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 13,
-    color: '#475569',
+    color: '#64748B',
   },
   linkBtn: {
     background: 'none',
@@ -5140,12 +5073,12 @@ const A = {
   stepTitle: {
     fontSize: 20,
     fontWeight: 700,
-    color: '#0A0A0A',
+    color: '#1E2329',
     marginBottom: 4,
   },
   stepSub: {
     fontSize: 13,
-    color: '#475569',
+    color: '#64748B',
     marginBottom: 24,
   },
   tradeGrid: {
@@ -5184,9 +5117,9 @@ const A = {
     transition: 'all 0.12s',
     position: 'relative',
   }),
-  planName: { fontSize: 14, fontWeight: 700, color: '#0A0A0A', marginBottom: 4 },
+  planName: { fontSize: 14, fontWeight: 700, color: '#1E2329', marginBottom: 4 },
   planPrice: { fontSize: 22, fontWeight: 800, color: '#E8722A', marginBottom: 12 },
-  planPriceSub: { fontSize: 11, color: '#475569', fontWeight: 400 },
+  planPriceSub: { fontSize: 11, color: '#64748B', fontWeight: 400 },
   planFeature: {
     fontSize: 11,
     color: '#64748B',
@@ -5300,7 +5233,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0 20px' }}>
           <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
-          <span style={{ fontSize: 12, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or</span>
+          <span style={{ fontSize: 12, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or</span>
           <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
         </div>
         <div>
@@ -5612,7 +5545,7 @@ function EmptyState({ icon, title, sub, btnLabel, onAction }) {
     }}>
       <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>{icon}</div>
       <div style={{ fontSize: 18, fontWeight: 600, color: '#64748B', marginBottom: 8 }}>{title}</div>
-      <div style={{ fontSize: 13, color: '#475569', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
+      <div style={{ fontSize: 13, color: '#64748B', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
       <button
         style={{
           padding: '10px 24px',
@@ -5858,7 +5791,7 @@ function TradeSelectScreen({ onSelect }) {
           <div style={{ fontSize: 28, fontWeight: 800, color: '#E8722A', letterSpacing: '-1px', marginBottom: 16 }}>
             RidgeOS
           </div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: '#0A0A0A', marginBottom: 10 }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#1E2329', marginBottom: 10 }}>
             See RidgeOS in action
           </div>
           <div style={{ fontSize: 15, color: '#64748B', maxWidth: 480, margin: '0 auto' }}>
@@ -5931,7 +5864,7 @@ function TradeSelectScreen({ onSelect }) {
             borderRadius: 12, padding: '20px 20px',
             marginBottom: 32,
           }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0A0A', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329', marginBottom: 4 }}>
               ✨ Custom Job Type Generator
             </div>
             <div style={{ fontSize: 12, color: '#64748B', marginBottom: 14 }}>
@@ -5990,7 +5923,7 @@ function TradeSelectScreen({ onSelect }) {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                   <div>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#0A0A0A' }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#1E2329' }}>
                       ✨ {customResult.name}
                     </span>
                     <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: 'rgba(99,102,241,0.2)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)' }}>
@@ -6011,18 +5944,18 @@ function TradeSelectScreen({ onSelect }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
                       Job Checklist ({customResult.checklist.length} steps)
                     </div>
                     {customResult.checklist.map((step, i) => (
                       <div key={i} style={{ fontSize: 12, color: '#64748B', padding: '3px 0', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 10, color: '#475569', minWidth: 16 }}>{i + 1}.</span>
+                        <span style={{ fontSize: 10, color: '#64748B', minWidth: 16 }}>{i + 1}.</span>
                         {step}
                       </div>
                     ))}
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
                       Pipeline Stages
                     </div>
                     {customResult.pipeline.map((stage, i) => (
@@ -6043,7 +5976,7 @@ function TradeSelectScreen({ onSelect }) {
 
         {/* Bottom CTA */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+          <div style={{ fontSize: 13, color: '#64748B', marginBottom: 12 }}>
             Already have an account?
           </div>
           <button
@@ -6103,7 +6036,7 @@ function PhotoLogTab({ tier }) {
         marginBottom: 16, flexWrap: 'wrap', gap: 8,
       }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0A0A0A' }}>Photo Log</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1E2329' }}>Photo Log</div>
           <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
             Job site documentation &amp; client report photos
           </div>
@@ -6113,7 +6046,7 @@ function PhotoLogTab({ tier }) {
             style={{
               padding: '7px 14px', borderRadius: 7,
               background: '#FFFFFF', border: '1px solid #E2E8F0',
-              color: '#475569', fontSize: 12, fontWeight: 600,
+              color: '#64748B', fontSize: 12, fontWeight: 600,
               cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: 6,
             }}
             disabled
@@ -6386,7 +6319,7 @@ function TeamManagementTab() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0A0A0A' }}>Team Management</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1E2329' }}>Team Management</div>
           <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{roster.length} team members</div>
         </div>
         <button onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
@@ -6402,8 +6335,8 @@ function TeamManagementTab() {
               {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
-              <div style={{ fontSize: 11, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+              <div style={{ fontSize: 11, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: roleColor(member.role), color: '#FFFFFF' }}>{member.role}</span>
@@ -6443,7 +6376,7 @@ function TeamManagementTab() {
                 <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFileRead(e.target.files[0]); }} />
                 <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#64748B' }}>Drop a .csv file here or click to browse</div>
-                <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
+                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
               </div>
             )}
 
@@ -6466,9 +6399,9 @@ function TeamManagementTab() {
                 <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 6 }}>
                   {parsedPreview.map((p, i) => (
                     <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 10px', borderBottom: '1px solid #E2E8F0', fontSize: 12 }}>
-                      <span style={{ flex: 1, color: '#0A0A0A', fontWeight: 600 }}>{p.name}</span>
+                      <span style={{ flex: 1, color: '#1E2329', fontWeight: 600 }}>{p.name}</span>
                       <span style={{ color: '#64748B' }}>{p.email}</span>
-                      <span style={{ color: '#475569', fontSize: 10 }}>{p.role}</span>
+                      <span style={{ color: '#64748B', fontSize: 10 }}>{p.role}</span>
                     </div>
                   ))}
                 </div>
@@ -6508,7 +6441,7 @@ function GlobalPhotoLog({ jobs }) {
     return (
       <div>
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0A0A0A' }}>Job Photos</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1E2329' }}>Job Photos</div>
           <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
@@ -6537,7 +6470,7 @@ function GlobalPhotoLog({ jobs }) {
                     <div style={{ display: 'flex', gap: 3, padding: 4, width: '100%', height: '100%' }}>
                       {allPhotos.filter(p => String(p.jobId) === String(job.id)).slice(0, 3).map((p, i) => (
                         <div key={p.id} style={{
-                          flex: 1, background: PHOTO_CAT_COLORS[p.category] || '#475569',
+                          flex: 1, background: PHOTO_CAT_COLORS[p.category] || '#64748B',
                           borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
                           opacity: 0.7 + i * 0.1,
                         }}>
@@ -6550,12 +6483,12 @@ function GlobalPhotoLog({ jobs }) {
                   )}
                 </div>
                 {/* Job info */}
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0A0A', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                <div style={{ fontSize: 10, color: '#475569', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1E2329', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                <div style={{ fontSize: 10, color: '#64748B', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: tc + '22', color: tc }}>{job.trade}</span>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: stColor + '22', color: stColor }}>{job.status}</span>
-                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#475569', fontWeight: 600, marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#64748B', fontWeight: 600, marginLeft: 'auto' }}>
                     {count > 0 ? `${count} photos` : 'No photos'}
                   </span>
                 </div>
@@ -6579,8 +6512,8 @@ function GlobalPhotoLog({ jobs }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', color: '#64748B', fontSize: 14, cursor: 'pointer', padding: '4px 8px' }}>← Back</button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
-          <div style={{ fontSize: 11, color: '#475569' }}>{selectedJob.address}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
+          <div style={{ fontSize: 11, color: '#64748B' }}>{selectedJob.address}</div>
         </div>
         <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 6, background: tc + '22', color: tc }}>{selectedJob.trade}</span>
       </div>
@@ -6612,7 +6545,7 @@ function GlobalPhotoLog({ jobs }) {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
           {filtered.map(photo => {
-            const catColor = PHOTO_CAT_COLORS[photo.category] || '#475569';
+            const catColor = PHOTO_CAT_COLORS[photo.category] || '#64748B';
             const isPlaceholder = !photo.imageData;
             return (
               <div key={photo.id} style={{
@@ -6830,12 +6763,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
               onChange={e => setNewName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCreateAndAssign(); } }}
               placeholder="Type crew member name…"
-              style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 7, color: '#0A0A0A', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+              style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 7, color: '#1E2329', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
             />
             <button
               onClick={handleCreateAndAssign}
               disabled={!newName.trim()}
-              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#64748B', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
             >
               Add
             </button>
@@ -6843,7 +6776,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
           {/* Existing unassigned crew */}
           {unassignedCrew.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, color: '#475569', marginBottom: 6 }}>Or pick from your crew:</div>
+              <div style={{ fontSize: 11, color: '#64748B', marginBottom: 6 }}>Or pick from your crew:</div>
               {unassignedCrew.map(member => (
                 <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#FFFFFF', border: '1px solid #E2E8F0' }}>
                   <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#64748B' }}>
@@ -6851,7 +6784,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#64748B' }}>{member.name}</div>
-                    {member.role && <div style={{ fontSize: 11, color: '#475569' }}>{member.role}</div>}
+                    {member.role && <div style={{ fontSize: 11, color: '#64748B' }}>{member.role}</div>}
                   </div>
                   <button
                     onClick={() => doAssign(member.id)}
@@ -6864,14 +6797,14 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             </div>
           )}
           {unassignedCrew.length === 0 && !newName && (
-            <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>All crew members are assigned.</div>
+            <div style={{ fontSize: 11, color: '#64748B', fontStyle: 'italic' }}>All crew members are assigned.</div>
           )}
         </div>
       )}
 
       {/* Assigned crew */}
       {assignedCrew.length === 0 && !showAssign && (
-        <div style={{ fontSize: 12, color: '#475569', padding: '4px 0 8px' }}>
+        <div style={{ fontSize: 12, color: '#64748B', padding: '4px 0 8px' }}>
           No crew assigned yet. Click <span style={{ color: '#E8722A' }}>+ Assign Crew</span> above.
         </div>
       )}
@@ -6894,7 +6827,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             </div>
             <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
               <button
-                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid #E2E8F0', background: 'transparent', color: '#475569', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid #E2E8F0', background: 'transparent', color: '#64748B', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => doUnassign(member.id)}
               >
                 Remove
@@ -7026,7 +6959,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#0A0A0A' }}>Crew</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#1E2329' }}>Crew</div>
           <div style={{ fontSize: 13, color: '#64748B' }}>
             {crew.length} member{crew.length !== 1 ? 's' : ''} · Weekly hours overview
           </div>
@@ -7043,7 +6976,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
         <div style={{ textAlign: 'center', padding: 60 }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>👷</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#64748B', marginBottom: 6 }}>No crew members yet</div>
-          <div style={{ fontSize: 13, color: '#475569', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
+          <div style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
           <button style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #E8722A, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={() => setCrewModal('add')}>
             Add First Member
           </button>
@@ -7064,9 +6997,9 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#0A0A0A' }}>{member.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#1E2329' }}>{member.name}</div>
                     {member.role && <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{member.role}</div>}
-                    {member.phone && <div style={{ fontSize: 12, color: '#475569', marginTop: 1 }}>{member.phone}</div>}
+                    {member.phone && <div style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>{member.phone}</div>}
                   </div>
                   <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
                     <button className="ri-btn ri-btn-secondary" style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #CBD5E1', borderRadius: 6, color: '#64748B', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
@@ -7075,7 +7008,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                 </div>
 
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : '#E2E8F0'}` }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#475569', display: 'inline-block' }} />
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#64748B', display: 'inline-block' }} />
                   <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#64748B' }}>
                     {status.clockedIn ? `On job · ${status.jobName}` : 'Off duty'}
                   </span>
@@ -7098,7 +7031,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                       <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: (TRADE_COLORS[t] || '#64748B') + '22', color: TRADE_COLORS[t] || '#64748B' }}>{t}</span>
                     ))}
                     {member.specialties.length > 3 && (
-                      <span style={{ fontSize: 10, color: '#475569', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
+                      <span style={{ fontSize: 10, color: '#64748B', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
                     )}
                   </div>
                 )}
@@ -7175,7 +7108,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 320 }}>
       <div style={{ flex: 1, overflow: 'auto', maxHeight: 380, paddingBottom: 8 }}>
         {messages.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#475569' }}>
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748B' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#64748B' }}>No messages yet</div>
             <div style={{ fontSize: 12, marginTop: 4, color: '#64748B' }}>Start the conversation below</div>
@@ -7183,7 +7116,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
         ) : messages.map(msg => (
           msg.type === 'system' ? (
             <div key={msg.id} style={{ textAlign: 'center', padding: '5px 0', margin: '4px 0' }}>
-              <span style={{ fontSize: 11, color: '#475569', background: '#FFFFFF', padding: '3px 12px', borderRadius: 20, border: '1px solid #E2E8F0' }}>
+              <span style={{ fontSize: 11, color: '#64748B', background: '#FFFFFF', padding: '3px 12px', borderRadius: 20, border: '1px solid #E2E8F0' }}>
                 {msg.text}
               </span>
             </div>
@@ -7223,7 +7156,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
             style={{
               padding: '8px 14px', border: 'none', borderRadius: 7,
               background: text.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#FFFFFF',
-              color: text.trim() ? '#fff' : '#475569',
+              color: text.trim() ? '#fff' : '#64748B',
               cursor: text.trim() ? 'pointer' : 'default',
               fontWeight: 600, fontSize: 13, flexShrink: 0,
               minWidth: 60, WebkitTapHighlightColor: 'transparent',
@@ -7271,7 +7204,7 @@ function ChatTab({ jobs }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#0A0A0A' }}>Job Chat</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#1E2329' }}>Job Chat</div>
         <div style={{ fontSize: 13, color: '#64748B' }}>Recent messages across all jobs</div>
       </div>
 
@@ -7287,7 +7220,7 @@ function ChatTab({ jobs }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: '#475569' }}>
+        <div style={{ textAlign: 'center', padding: 60, color: '#64748B' }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#64748B', marginBottom: 6 }}>No messages yet</div>
           <div style={{ fontSize: 13 }}>Open a job and start chatting with your crew.</div>
@@ -7297,7 +7230,7 @@ function ChatTab({ jobs }) {
           {filtered.map(msg => (
             msg.type === 'system' ? (
               <div key={msg.id} style={{ textAlign: 'center', padding: '4px 0', marginBottom: 4 }}>
-                <span style={{ fontSize: 11, color: '#475569' }}>
+                <span style={{ fontSize: 11, color: '#64748B' }}>
                   {jobName(msg.jobId)} · {msg.text}
                 </span>
               </div>
@@ -7346,7 +7279,7 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#0A0A0A', marginBottom: 18, paddingRight: 40 }}>{title}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#1E2329', marginBottom: 18, paddingRight: 40 }}>{title}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {!targetJob && (
           <>
@@ -7363,7 +7296,7 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
         <input type="number" min={1} max={365} style={{ ...FI, marginBottom: 20 }} value={duration} onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))} />
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button style={{ ...btnBase, background: '#E2E8F0', color: '#64748B' }} onClick={onClose}>Cancel</button>
-          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', color: jobId && date ? '#fff' : '#475569' }} onClick={handleSave} disabled={!jobId || !date}>
+          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', color: jobId && date ? '#fff' : '#64748B' }} onClick={handleSave} disabled={!jobId || !date}>
             {isReschedule ? 'Reschedule' : 'Schedule'}
           </button>
         </div>
@@ -7483,7 +7416,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         <div style={{ flex: 1 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#E8722A' }}>{isEdit ? 'Edit Entry' : '+ Schedule'}</span>
           {displayDate && <span style={{ fontSize: 12, color: '#64748B', marginLeft: 8 }}>{displayDate}</span>}
-          <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{userTrade}</span>
+          <span style={{ fontSize: 11, color: '#64748B', marginLeft: 8 }}>{userTrade}</span>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748B', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
       </div>
@@ -7496,7 +7429,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) handleSave(); }}
         placeholder={`What's happening this day? (e.g. Roof replacement, final inspection, material delivery…)`}
         rows={3}
-        style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+        style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
       />
 
       {/* Secondary fields */}
@@ -7505,16 +7438,16 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
           value={customer}
           onChange={e => setCustomer(e.target.value)}
           placeholder="Client name (optional)"
-          style={{ flex: '2 1 160px', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+          style={{ flex: '2 1 160px', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: '1 1 120px' }}>
           <span style={{ fontSize: 12, color: '#64748B', whiteSpace: 'nowrap' }}>Duration:</span>
           <input
             type="number" min={1} max={365} value={duration}
             onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
-            style={{ width: 54, background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
+            style={{ width: 54, background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
           />
-          <span style={{ fontSize: 12, color: '#475569' }}>day{duration !== 1 ? 's' : ''}</span>
+          <span style={{ fontSize: 12, color: '#64748B' }}>day{duration !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
@@ -7526,7 +7459,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         >
           {showChecklist ? '▾ Checklist' : '▸ Add Checklist'}
         </button>
-        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{taskList.length} items</span>}
+        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#64748B', marginLeft: 8 }}>{taskList.length} items</span>}
 
         {showChecklist && (
           <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 12px' }}>
@@ -7537,7 +7470,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
                 onChange={e => setTaskInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTask(); } }}
                 placeholder='Step name, or "3. Step" to insert at position 3…'
-                style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, color: '#0A0A0A', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
+                style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, color: '#1E2329', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
               />
               <button onClick={useTemplate} style={{ padding: '6px 10px', background: '#E2E8F0', border: '1px solid #E2E8F0', borderRadius: 6, color: '#64748B', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Use {userTrade} template
@@ -7552,12 +7485,12 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
               </div>
             )}
             {/* Steps list */}
-            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
+            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#64748B', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
             {taskList.map((t, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < taskList.length - 1 ? '1px solid #E2E8F0' : 'none' }}>
-                <span style={{ fontSize: 11, color: '#475569', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
+                <span style={{ fontSize: 11, color: '#64748B', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
                 <span style={{ flex: 1, fontSize: 12, color: '#64748B' }}>{t}</span>
-                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
               </div>
             ))}
           </div>
@@ -7571,7 +7504,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         <button
           onClick={handleSave}
           disabled={!canSave}
-          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#475569', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
+          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#64748B', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
         >
           {isEdit ? 'Update' : 'Schedule'}
         </button>
@@ -7594,7 +7527,7 @@ function StageChangeModal({ job, onSave, onClose }) {
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 300 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#0A0A0A', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#1E2329', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
         <div style={{ fontSize: 12, color: '#64748B', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -7615,11 +7548,11 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#0A0A0A', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#1E2329', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
         <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {crew.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
+          <div style={{ textAlign: 'center', color: '#64748B', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {crew.map(m => {
@@ -7659,12 +7592,12 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
           <div style={{ fontSize: 12, color: '#64748B' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
         </div>
         <div style={{ fontSize: 12, color: '#64748B', textAlign: 'right' }}>
-          <span style={{ color: '#0A0A0A', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
+          <span style={{ color: '#1E2329', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
           <span style={{ color: unassignedToday.length ? '#E8722A' : '#22c55e', fontWeight: 700 }}>{unassignedToday.length}</span> unassigned
         </div>
       </div>
       {todayJobs.length === 0 ? (
-        <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
+        <div style={{ textAlign: 'center', color: '#64748B', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: crew.length > 0 ? 16 : 0 }}>
           {todayJobs.map(job => {
@@ -7674,7 +7607,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
             return (
               <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#FFFFFF', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#E2E8F0'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
                   <div style={{ fontSize: 11, color: '#64748B' }}>{job.trade} · {jobDuration(job)}d</div>
                 </div>
                 {assignedCrew.length > 0 ? (
@@ -7758,7 +7691,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
     <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 10, padding: 16, marginTop: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14, gap: 8 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0A0A' }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#1E2329' }}>
             {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
           <div style={{ fontSize: 12, color: '#64748B' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
@@ -7772,7 +7705,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
       </div>
 
       {dayJobs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '20px 0', color: '#475569', fontSize: 13 }}>No jobs scheduled this day</div>
+        <div style={{ textAlign: 'center', padding: '20px 0', color: '#64748B', fontSize: 13 }}>No jobs scheduled this day</div>
       ) : (
         <div style={{ marginBottom: 16 }}>
           {dayJobs.map(job => {
@@ -7786,7 +7719,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
                 style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#FFFFFF', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#E2E8F0'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#0A0A0A' }}>{job.customer}</div>
+                  <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#1E2329' }}>{job.customer}</div>
                   <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: tc + '22', color: tc }}>{job.status}</span>
                 </div>
                 <div style={{ fontSize: 11, color: '#64748B', marginBottom: assignedCrew.length ? 6 : 0 }}>
@@ -7859,12 +7792,12 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
               onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
               onDragLeave={() => { if (onDragOver) onDragOver(null); }}
-              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(232,114,42,0.1)' : isSelected ? 'rgba(232,114,42,0.1)' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#F8FAFC' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E2E8F0'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(232,114,42,0.1)' : isSelected ? 'rgba(232,114,42,0.1)' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#F0F2F5' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E2E8F0'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
                 {isToday
                   ? <span style={{ background: '#E8722A', color: '#fff', borderRadius: '50%', width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
-                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#475569', fontWeight: 500 }}>{parseInt(dateStr.slice(8))}</span>
+                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#64748B', fontWeight: 500 }}>{parseInt(dateStr.slice(8))}</span>
                 }
               </div>
               {dayJobs.slice(0, maxVis).map(job => {
@@ -7883,7 +7816,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
                   </div>
                 );
               })}
-              {overflow > 0 && <div style={{ fontSize: 9, color: '#475569', padding: '1px 2px' }}>+{overflow}</div>}
+              {overflow > 0 && <div style={{ fontSize: 9, color: '#64748B', padding: '1px 2px' }}>+{overflow}</div>}
               {dayNotes && dayNotes[dateStr] && <div style={{ fontSize: 8, color: '#818cf8', lineHeight: 1, paddingTop: 1 }}>&#128221;</div>}
             </div>
           );
@@ -7915,7 +7848,7 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
           >
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
               <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-              <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#0A0A0A', background: isToday ? '#E8722A' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
+              <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#1E2329', background: isToday ? '#E8722A' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
                 {d.getDate()}
               </div>
             </div>
@@ -8034,14 +7967,14 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
         onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#FFFFFF'; })}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748B' : '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
-          <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748B' : '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
+          <div style={{ fontSize: 11, color: '#64748B', marginTop: 1 }}>
             {job.customer && job.description ? `${job.customer} · ` : ''}{job.status || ''}{fmtDate ? ` · ${fmtDate}` : ''}
           </div>
           {crewNames && <div style={{ fontSize: 10, color: '#64748B', marginTop: 1 }}>&#128100; {crewNames}</div>}
         </div>
         {alreadyHere
-          ? <span style={{ fontSize: 10, color: '#475569', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
+          ? <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
           : <span style={{ fontSize: 11, color: '#E8722A', fontWeight: 700, flexShrink: 0 }}>&#8594;</span>
         }
       </button>
@@ -8067,7 +8000,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
       <div style={dayModalStyle} onClick={e => e.stopPropagation()}>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#0A0A0A', marginBottom: 2 }}>{displayDate}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#1E2329', marginBottom: 2 }}>{displayDate}</div>
         <div style={{ fontSize: 12, color: '#64748B', marginBottom: 20 }}>{subTitle}</div>
 
         {mode === 'menu' && (
@@ -8102,10 +8035,10 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by job or client name&#8230;"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
             />
             {filtered.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
+              <div style={{ textAlign: 'center', color: '#64748B', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
             ) : (
               <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {unscheduledSection.length > 0 && (
@@ -8137,13 +8070,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Job description (required)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <input
               value={customer}
               onChange={e => setCustomer(e.target.value)}
               placeholder="Client name (optional)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <label style={{ fontSize: 12, color: '#64748B', flexShrink: 0 }}>Duration (days):</label>
@@ -8153,7 +8086,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 max={30}
                 value={duration}
                 onChange={e => setDuration(Math.max(1, Math.min(30, parseInt(e.target.value) || 1)))}
-                style={{ width: 60, background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
+                style={{ width: 60, background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
               />
             </div>
             <button
@@ -8164,7 +8097,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 }
               }}
               disabled={!description.trim()}
-              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#64748B', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
             >
               Create &amp; Schedule
             </button>
@@ -8185,13 +8118,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } } }}
               placeholder="e.g. Office closed, rain day, equipment delivery&#8230;"
               rows={3}
-              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#0A0A0A', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 8, color: '#1E2329', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
             />
             <div style={{ fontSize: 11, color: '#CBD5E1', marginBottom: 10 }}>Ctrl+Enter to save</div>
             <button
               onClick={() => { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } }}
               disabled={!note.trim()}
-              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E2E8F0', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#64748B', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
             >
               Save Note
             </button>
@@ -8247,7 +8180,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
           const grandHours = jobDetails.reduce((s, d) => s + d.totalHours, 0);
           const grandLabor = jobDetails.reduce((s, d) => s + d.totalLabor, 0);
           const grandValue = dayJobs.reduce((s, j) => s + (j.value || 0), 0);
-          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#64748B', 'Scheduled': '#475569' }[s] || '#475569');
+          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#64748B', 'Scheduled': '#64748B' }[s] || '#64748B');
           const pill = (text, bg, fg) => ({ display: 'inline-block', fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 8, background: bg, color: fg, marginLeft: 4 });
           const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
           const card = { background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', marginBottom: 8 };
@@ -8272,7 +8205,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               </div>
 
               {dayJobs.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '28px 0', color: '#475569', fontSize: 13 }}>No jobs scheduled for this date.</div>
+                <div style={{ textAlign: 'center', padding: '28px 0', color: '#64748B', fontSize: 13 }}>No jobs scheduled for this date.</div>
               )}
 
               {/* Jobs Scheduled */}
@@ -8286,8 +8219,8 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                       <div key={job.id} style={card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                            <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>{job.address || ''}</div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                            <div style={{ fontSize: 11, color: '#64748B', marginTop: 1 }}>{job.address || ''}</div>
                           </div>
                           <span style={{ ...pill('', tc + '22', tc), marginLeft: 8 }}>{job.trade}</span>
                         </div>
@@ -8311,7 +8244,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                             {jcrew.map(c => (
                               <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 12 }}>
                                 <span style={{ color: '#64748B', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
-                                <span style={{ color: '#475569', fontSize: 10, minWidth: 60 }}>{c.role}</span>
+                                <span style={{ color: '#64748B', fontSize: 10, minWidth: 60 }}>{c.role}</span>
                                 <span style={pill(c.status, statusColor(c.status) + '22', statusColor(c.status))}>{c.status}</span>
                                 <span style={{ color: '#64748B', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
                               </div>
@@ -8319,7 +8252,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                           </div>
                         )}
                         {jcrew.length === 0 && (
-                          <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
+                          <div style={{ fontSize: 11, color: '#64748B', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
                         )}
                         {/* Action buttons */}
                         <div style={{ display: 'flex', gap: 6, marginTop: 8, borderTop: '1px solid #E2E8F0', paddingTop: 8 }}>
@@ -8348,7 +8281,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                         <div key={cid} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #E2E8F0', fontSize: 12 }}>
                           <div style={{ minWidth: 110 }}>
                             <div style={{ fontWeight: 600, color: '#64748B' }}>{member?.name || cid}</div>
-                            <div style={{ fontSize: 10, color: '#475569' }}>{member?.role || ''}</div>
+                            <div style={{ fontSize: 10, color: '#64748B' }}>{member?.role || ''}</div>
                           </div>
                           <div style={{ flex: 1, fontSize: 11, color: '#64748B' }}>
                             {memberJobs.map(d => d.job.customer).join(', ')}
@@ -8356,7 +8289,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                           <span style={pill(status, statusColor(status) + '22', statusColor(status))}>{status}</span>
                           <div style={{ textAlign: 'right', minWidth: 60 }}>
                             <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>{totalH.toFixed(1)}h</div>
-                            <div style={{ fontSize: 9, color: '#475569' }}>in {clockIn}</div>
+                            <div style={{ fontSize: 9, color: '#64748B' }}>in {clockIn}</div>
                           </div>
                         </div>
                       );
@@ -8416,7 +8349,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                         }
                       }}
                       disabled={!schedJobId}
-                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : '#E2E8F0', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
+                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : '#E2E8F0', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#64748B', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
                     >
                       Add to Schedule
                     </button>
@@ -8444,15 +8377,15 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                             <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingTop: 4 }}>{d.job.customer}</div>
                             <div style={{ textAlign: 'right', paddingTop: 4 }}>{d.totalHours.toFixed(1)}</div>
                             <div style={{ textAlign: 'right', paddingTop: 4 }}>${d.totalLabor.toFixed(0)}</div>
-                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#475569' }}>{em !== null ? `${em}%` : '—'}</div>
+                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#64748B' }}>{em !== null ? `${em}%` : '—'}</div>
                           </div>
                         );
                       })}
                       <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #E2E8F0', marginTop: 4 }} />
-                      <div style={{ fontWeight: 700, color: '#0A0A0A', paddingTop: 4 }}>Totals</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#0A0A0A', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#0A0A0A', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#475569', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
+                      <div style={{ fontWeight: 700, color: '#1E2329', paddingTop: 4 }}>Totals</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#1E2329', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#1E2329', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#64748B', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
                     </div>
                   </div>
                 </>
@@ -8566,7 +8499,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#0A0A0A' }}>Dispatch Board</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#1E2329' }}>Dispatch Board</div>
           <div style={{ fontSize: 13, color: '#64748B' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
         {!isDemo && onCreate && (
@@ -8593,7 +8526,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <button style={navBtn} onClick={prev}>‹</button>
         <button style={{ ...navBtn, fontSize: 12, padding: '6px 12px' }} onClick={() => { setCurrent(new Date(TODAY + 'T12:00:00')); setSelectedDate(null); }}>Today</button>
         <button style={navBtn} onClick={next}>›</button>
-        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#0A0A0A' }}>{headerLabel}</div>
+        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#1E2329' }}>{headerLabel}</div>
         {dragJobId && <span style={{ fontSize: 12, color: '#E8722A', fontWeight: 600 }}>Drop to reschedule</span>}
       </div>
 
@@ -8621,7 +8554,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
                 {j.customer}
               </button>
             ))}
-            {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#475569' }}>+{unscheduledJobs.length - 5} more</span>}
+            {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#64748B' }}>+{unscheduledJobs.length - 5} more</span>}
           </div>
         </div>
       )}
@@ -8654,7 +8587,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
               return (
                 <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#0A0A0A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
                     <div style={{ fontSize: 11, color: '#64748B' }}>{job.trade} · {job.status}</div>
                   </div>
                   {!isDemo && onSchedule && (
@@ -8674,7 +8607,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8, padding: '10px 14px', marginTop: 8 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>📝</span>
           <div style={{ flex: 1, fontSize: 13, color: '#c7d2fe' }}>{dayNotes[dispatchDate]}</div>
-          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#475569', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
+          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#64748B', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
         </div>
       )}
 
@@ -8859,7 +8792,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         overflowX: isMobile ? 'auto' : 'visible',
         scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
       }}>
-        <span style={{ fontSize: 10, color: '#475569', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+        <span style={{ fontSize: 10, color: '#64748B', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
           Tier:
         </span>
         {Object.entries(TIER_META).map(([key, meta]) => (
@@ -8881,7 +8814,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           </button>
         ))}
         {!isMobile && (
-          <span style={{ marginLeft: 8, fontSize: 12, color: '#475569' }}>
+          <span style={{ marginLeft: 8, fontSize: 12, color: '#64748B' }}>
             — {TIER_META[tier].desc}
           </span>
         )}
@@ -9105,11 +9038,6 @@ function DemoPage() {
 export { DemoPage };
 
 export default function App() {
-  return <ThemeProvider><AppInner /></ThemeProvider>;
-}
-
-function AppInner() {
-  const { theme: T, mode: themeMode, toggle: themeToggle } = useTheme();
   const [screen, setScreen] = useState('login'); // 'login' | 'onboarding' | 'app'
   const [session, setSession] = useState(null);
   const [tab, setTab] = useState('pipeline');
@@ -9325,18 +9253,18 @@ function AppInner() {
   return (
     <ToastProvider>
     <GlobalStyles />
-    <div style={{ ...S.app, background: T.bgPage, color: T.text }}>
+    <div style={S.app}>
       <header style={{
-        ...S.header, background: T.bgCard, borderBottom: `2px solid ${T.accent}`,
+        ...S.header,
         ...(isMobile ? { padding: '0 12px', height: 44, gap: 8 } : {}),
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ ...S.logo, color: T.text }}>RidgeOS</span>
+          <span style={S.logo}>RidgeOS</span>
           {isDemo && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-              background: 'rgba(249,115,22,0.12)', color: '#E8722A',
-              border: '1px solid rgba(249,115,22,0.2)', letterSpacing: '0.5px',
+              background: 'rgba(232,114,42,0.2)', color: '#E8722A',
+              border: '1px solid rgba(232,114,42,0.3)', letterSpacing: '0.5px',
             }}>
               DEMO
             </span>
@@ -9348,10 +9276,10 @@ function AppInner() {
                 value={demoRole}
                 onChange={e => setDemoRole(e.target.value)}
                 style={{
-                  background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: 6,
+                  background: '#2A2E36', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6,
                   color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 700,
                   padding: '4px 8px', cursor: 'pointer', outline: 'none',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
                 }}
               >
                 {Object.entries(DEMO_ROLES).map(([key, r]) => (
@@ -9376,27 +9304,12 @@ function AppInner() {
           </div>
         )}
 
-        {/* Theme toggle */}
-        <button
-          onClick={themeToggle}
-          title={themeMode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          style={{
-            width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: themeMode === 'light' ? '#F1F5F9' : '#22252E',
-            border: `1px solid ${themeMode === 'light' ? '#E2E8F0' : 'rgba(255,255,255,0.1)'}`,
-            color: themeMode === 'light' ? '#64748B' : '#F59E0B',
-            cursor: 'pointer', fontSize: 16, flexShrink: 0, transition: 'all 0.2s',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          {themeMode === 'light' ? '🌙' : '☀️'}
-        </button>
         <button
           onClick={() => { setScreen('login'); setSession(null); }}
           className="ri-btn ri-btn-secondary"
           style={{
-            background: 'transparent', border: `1px solid ${T.border}`,
-            color: T.textSec, cursor: 'pointer', fontSize: isMobile ? 11 : 12,
+            background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
+            color: '#94A3B8', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
             padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
             minHeight: 'auto',
             WebkitTapHighlightColor: 'transparent',
@@ -9507,7 +9420,7 @@ function AppInner() {
             : <div style={{ textAlign: 'center', padding: '48px 24px' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>🔒</div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#64748B' }}>Access Restricted</div>
-                <div style={{ fontSize: 13, color: '#475569', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
+                <div style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
               </div>
         )}
       </main>
