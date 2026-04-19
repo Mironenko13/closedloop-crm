@@ -19,7 +19,7 @@ function ToastProvider({ children }) {
             background: t.type === 'error' ? '#450a0a' : '#052e16',
             border: `1px solid ${t.type === 'error' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'}`,
             borderRadius: 8, padding: '10px 16px',
-            color: '#f1f5f9', fontSize: 13, fontWeight: 500,
+            color: '#111827', fontSize: 13, fontWeight: 500,
             boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
             maxWidth: 300,
           }}>
@@ -39,7 +39,7 @@ const TRADE_LIST = [
 ];
 
 const TRADE_COLORS = {
-  'Full Replacement': '#f97316',
+  'Full Replacement': '#E8722A',
   'Repair':           '#3b82f6',
   'Inspection':       '#8b5cf6',
   'Storm Damage':     '#ef4444',
@@ -363,7 +363,7 @@ const STALL_LABELS = {
 
 const STATUS_COLORS = {
   active: '#22c55e',
-  stalled: '#f97316',
+  stalled: '#E8722A',
   cold: '#6b7280',
   won: '#a855f7',
   lost: '#ef4444',
@@ -399,7 +399,7 @@ const STAGE_COLORS = {
   contract_signed:       '#10b981',
   materials_ordered:     '#8b5cf6',
   scheduled_for_install: '#06b6d4',
-  in_progress:           '#f97316',
+  in_progress:           '#E8722A',
   punch_list:            '#ec4899',
   completed:             '#22c55e',
   invoiced:              '#a855f7',
@@ -671,40 +671,41 @@ const DEMO_DAY_DETAIL = {
 const S = {
   app: {
     minHeight: '100vh',
-    background: '#0f1117',
-    color: '#e2e8f0',
+    background: '#F8F9FA',
+    color: '#374151',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
     overflowX: 'hidden',
   },
   header: {
-    background: '#161b27',
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    background: '#FFFFFF',
+    borderBottom: '1px solid #E5E7EB',
     padding: '0 24px',
     display: 'flex',
     alignItems: 'center',
     gap: 16,
-    height: 52,
+    height: 56,
     position: 'sticky',
     top: 0,
     zIndex: 100,
   },
-  logo: { fontSize: 18, fontWeight: 700, color: '#f97316', letterSpacing: '-0.5px' },
-  logoSub: { fontSize: 12, color: '#64748b', marginLeft: 4 },
-  tabs: { display: 'flex', gap: 4, marginLeft: 'auto', background: '#161b27', padding: '4px 6px', borderRadius: 8, border: '1px solid #253048' },
+  logo: { fontSize: 18, fontWeight: 700, color: '#E8722A', letterSpacing: '-0.5px' },
+  logoSub: { fontSize: 12, color: '#6B7280', marginLeft: 4 },
+  tabs: { display: 'flex', gap: 2, marginLeft: 'auto' },
   tab: (active, accent) => {
-    const c = accent || '#f97316';
+    const c = accent || '#E8722A';
     return {
-      padding: '7px 16px',
-      borderRadius: 6,
-      border: active ? 'none' : '1px solid transparent',
+      padding: '8px 16px',
+      borderRadius: 0,
+      border: 'none',
+      borderBottom: active ? `2px solid ${c}` : '2px solid transparent',
       cursor: 'pointer',
-      fontSize: 13,
-      fontWeight: active ? 700 : 600,
-      background: active ? `linear-gradient(135deg,${c},${c}dd)` : 'transparent',
-      color: active ? '#fff' : '#d1d5db',
+      fontSize: 14,
+      fontWeight: active ? 600 : 500,
+      background: 'transparent',
+      color: active ? c : '#6B7280',
       transition: 'all 0.15s',
-      boxShadow: active ? `0 2px 10px ${c}59` : 'none',
+      boxShadow: 'none',
     };
   },
   body: { padding: 24, maxWidth: 1400, margin: '0 auto' },
@@ -712,14 +713,14 @@ const S = {
   filterRow: { display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' },
   tradeFilterRow: {
     display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center',
-    paddingBottom: 12, borderBottom: '1px solid #253048',
+    paddingBottom: 12, borderBottom: '1px solid #E5E7EB',
   },
   filterBtn: (active) => ({
     padding: '8px 14px',
     borderRadius: 20,
-    border: `1px solid ${active ? '#f97316' : '#2e3d5c'}`,
+    border: `1px solid ${active ? '#E8722A' : '#D1D5DB'}`,
     background: active ? 'rgba(249,115,22,0.12)' : 'transparent',
-    color: active ? '#f97316' : '#8899b8',
+    color: active ? '#E8722A' : '#8899b8',
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 500,
@@ -731,7 +732,7 @@ const S = {
   tradeFilterBtn: (active, color) => ({
     padding: '4px 12px',
     borderRadius: 20,
-    border: `1px solid ${active ? color : '#1e2535'}`,
+    border: `1px solid ${active ? color : '#E5E7EB'}`,
     background: active ? color + '22' : 'transparent',
     color: active ? color : '#64748b',
     cursor: 'pointer',
@@ -745,17 +746,17 @@ const S = {
     gap: 16,
   },
   card: (hovered) => ({
-    background: hovered ? '#1e2a40' : '#1a2236',
-    border: `1px solid ${hovered ? '#3a4d6b' : '#253048'}`,
-    borderRadius: 10,
+    background: '#FFFFFF',
+    border: `1px solid ${hovered ? '#E8722A' : '#E5E7EB'}`,
+    borderRadius: 12,
     padding: 16,
     cursor: 'pointer',
     transition: 'all 0.15s',
     transform: hovered ? 'translateY(-2px)' : 'none',
-    boxShadow: hovered ? '0 8px 28px rgba(0,0,0,0.55)' : '0 1px 4px rgba(0,0,0,0.3)',
+    boxShadow: hovered ? '0 4px 12px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.08)',
   }),
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  cardName: { fontSize: 15, fontWeight: 600, color: '#f1f5f9' },
+  cardName: { fontSize: 15, fontWeight: 600, color: '#111827' },
   cardContact: { fontSize: 12, color: '#64748b', marginTop: 2 },
   statusBadge: (status) => ({
     fontSize: 10,
@@ -795,8 +796,8 @@ const S = {
     whiteSpace: 'nowrap',
   }),
   cardMeta: { display: 'flex', gap: 12, marginTop: 12, flexWrap: 'wrap' },
-  metaItem: { fontSize: 12, color: '#94a3b8' },
-  metaValue: { color: '#e2e8f0', fontWeight: 500 },
+  metaItem: { fontSize: 12, color: '#6B7280' },
+  metaValue: { color: '#6B7280', fontWeight: 500 },
   stallTag: {
     marginTop: 10,
     display: 'inline-block',
@@ -804,7 +805,7 @@ const S = {
     padding: '2px 8px',
     borderRadius: 4,
     background: 'rgba(249,115,22,0.1)',
-    color: '#f97316',
+    color: '#E8722A',
     border: '1px solid rgba(249,115,22,0.2)',
   },
 
@@ -819,17 +820,17 @@ const S = {
     background: color + '22', color, padding: '1px 8px', borderRadius: 10, fontSize: 11,
   }),
   cbRow: (hovered) => ({
-    background: hovered ? '#1c2840' : '#1a2236',
-    border: `1px solid ${hovered ? '#3a4d6b' : '#253048'}`, borderRadius: 8,
+    background: hovered ? '#F3F4F6' : '#FFFFFF',
+    border: `1px solid ${hovered ? '#D1D5DB' : '#E5E7EB'}`, borderRadius: 8,
     padding: '12px 16px', marginBottom: 8,
     display: 'flex', alignItems: 'center', gap: 16,
     cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s',
   }),
   cbDate: (overdue) => ({
     fontSize: 13, fontWeight: 600,
-    color: overdue ? '#ef4444' : '#f97316', minWidth: 90,
+    color: overdue ? '#ef4444' : '#E8722A', minWidth: 90,
   }),
-  cbName: { fontSize: 14, fontWeight: 600, color: '#f1f5f9', flex: 1 },
+  cbName: { fontSize: 14, fontWeight: 600, color: '#111827', flex: 1 },
   cbContact: { fontSize: 12, color: '#64748b' },
   cbValue: { fontSize: 13, fontWeight: 600, color: '#22c55e' },
 
@@ -840,22 +841,22 @@ const S = {
     gap: 16, marginBottom: 28,
   },
   statCard: {
-    background: '#1a2236', border: '1px solid #253048',
+    background: '#FFFFFF', border: '1px solid #E5E7EB',
     borderRadius: 10, padding: 20, textAlign: 'center',
-    boxShadow: '0 1px 6px rgba(0,0,0,0.3)',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
   },
-  statVal: { fontSize: 28, fontWeight: 700, color: '#f97316' },
+  statVal: { fontSize: 28, fontWeight: 700, color: '#111827' },
   statLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
   chartSection: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 },
   chartCard: {
-    background: '#1a2236', border: '1px solid #253048',
+    background: '#FFFFFF', border: '1px solid #E5E7EB',
     borderRadius: 10, padding: 20,
-    boxShadow: '0 1px 6px rgba(0,0,0,0.3)',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
   },
-  chartTitle: { fontSize: 14, fontWeight: 600, color: '#94a3b8', marginBottom: 16 },
+  chartTitle: { fontSize: 14, fontWeight: 600, color: '#6B7280', marginBottom: 16 },
   barRow: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 },
-  barLabel: { fontSize: 12, color: '#94a3b8', width: 120, flexShrink: 0 },
-  barTrack: { flex: 1, height: 8, background: '#253048', borderRadius: 4, overflow: 'hidden' },
+  barLabel: { fontSize: 12, color: '#6B7280', width: 120, flexShrink: 0 },
+  barTrack: { flex: 1, height: 8, background: '#E5E7EB', borderRadius: 4, overflow: 'hidden' },
   barFill: (pct, color) => ({
     height: '100%', width: `${pct}%`, background: color,
     borderRadius: 4, transition: 'width 0.5s ease',
@@ -863,7 +864,7 @@ const S = {
   barCount: { fontSize: 12, color: '#64748b', width: 28, textAlign: 'right' },
 
   // Jobs
-  progressTrack: { height: 6, background: '#253048', borderRadius: 3, overflow: 'hidden', marginTop: 10 },
+  progressTrack: { height: 6, background: '#E5E7EB', borderRadius: 3, overflow: 'hidden', marginTop: 10 },
   progressFill: (pct, color) => ({
     height: '100%', width: `${pct}%`, background: color,
     borderRadius: 3, transition: 'width 0.4s ease',
@@ -872,71 +873,71 @@ const S = {
   // Checklist modal
   checklistItem: () => ({
     display: 'flex', alignItems: 'center', gap: 12,
-    padding: '10px 4px', borderBottom: '1px solid #1f2d42', cursor: 'pointer',
+    padding: '10px 4px', borderBottom: '1px solid #E5E7EB', cursor: 'pointer',
     borderRadius: 4, transition: 'background 0.1s',
   }),
   checkbox: (done) => ({
     width: 20, height: 20, borderRadius: 4, flexShrink: 0,
-    border: `2px solid ${done ? '#f97316' : '#3a4d6b'}`,
-    background: done ? '#f97316' : 'transparent',
+    border: `2px solid ${done ? '#E8722A' : '#D1D5DB'}`,
+    background: done ? '#E8722A' : 'transparent',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     transition: 'all 0.15s',
     boxShadow: done ? '0 0 6px rgba(249,115,22,0.35)' : 'none',
   }),
   checkLabel: (done) => ({
-    fontSize: 13, color: done ? '#64748b' : '#cbd5e1',
+    fontSize: 13, color: done ? '#64748b' : '#6B7280',
     textDecoration: done ? 'line-through' : 'none', flex: 1,
   }),
-  checkTs: { fontSize: 11, color: '#374151', whiteSpace: 'nowrap' },
+  checkTs: { fontSize: 11, color: '#6B7280', whiteSpace: 'nowrap' },
 
   // Modal
   overlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
   },
   modalOverlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
   },
   modal: {
-    background: '#1a2236', border: '1px solid #2e3d5c',
+    background: '#FFFFFF', border: '1px solid #E5E7EB',
     borderRadius: 14, width: '100%', maxWidth: 560,
     maxHeight: '85vh', overflow: 'auto', padding: 28, position: 'relative',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
   },
-  modalTitle: { fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 },
+  modalTitle: { fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 4 },
   modalSub: { fontSize: 13, color: '#64748b', marginBottom: 20 },
   closeBtn: {
     position: 'absolute', top: 12, right: 12,
-    background: 'rgba(255,255,255,0.07)', border: '1px solid #2e3d5c',
+    background: '#F3F4F6', border: '1px solid #E5E7EB',
     borderRadius: 8,
-    color: '#94a3b8', cursor: 'pointer', fontSize: 20, lineHeight: 1,
+    color: '#6B7280', cursor: 'pointer', fontSize: 20, lineHeight: 1,
     width: 40, height: 40,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     WebkitTapHighlightColor: 'transparent',
     transition: 'color 0.15s, background 0.15s',
   },
   sectionLabel: {
-    fontSize: 11, fontWeight: 600, color: '#f97316',
+    fontSize: 11, fontWeight: 600, color: '#E8722A',
     textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10,
   },
   playbookList: { listStyle: 'none', padding: 0, margin: '0 0 20px 0' },
   playbookItem: {
     display: 'flex', gap: 10, padding: '8px 0',
-    borderBottom: '1px solid #1e2535', fontSize: 13, color: '#cbd5e1',
+    borderBottom: '1px solid #E5E7EB', fontSize: 13, color: '#6B7280',
     alignItems: 'flex-start',
   },
   playbookNum: {
-    background: 'rgba(249,115,22,0.15)', color: '#f97316',
+    background: 'rgba(249,115,22,0.15)', color: '#E8722A',
     borderRadius: 4, width: 22, height: 22, display: 'flex',
     alignItems: 'center', justifyContent: 'center',
     fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
   },
   aiBtn: (loading) => ({
     width: '100%', padding: '10px 16px',
-    background: loading ? '#1e2535' : 'linear-gradient(135deg, #f97316, #ea580c)',
+    background: loading ? '#E5E7EB' : 'linear-gradient(135deg, #E8722A, #ea580c)',
     border: 'none', borderRadius: 8,
     color: loading ? '#64748b' : '#fff',
     fontWeight: 600, fontSize: 14,
@@ -944,11 +945,11 @@ const S = {
     marginBottom: 16, transition: 'opacity 0.15s',
   }),
   aiResponse: {
-    background: '#0f1117', border: '1px solid rgba(249,115,22,0.2)',
+    background: '#F8F9FA', border: '1px solid rgba(249,115,22,0.2)',
     borderRadius: 8, padding: 16, fontSize: 13,
-    lineHeight: 1.75, color: '#cbd5e1', whiteSpace: 'pre-wrap',
+    lineHeight: 1.75, color: '#6B7280', whiteSpace: 'pre-wrap',
   },
-  apiKeyNote: { fontSize: 11, color: '#374151', marginTop: 10, textAlign: 'center' },
+  apiKeyNote: { fontSize: 11, color: '#6B7280', marginTop: 10, textAlign: 'center' },
 };
 
 // ─── Mobile Hook ─────────────────────────────────────────────────────────────
@@ -979,7 +980,7 @@ const NAV_TABS = [
 // Central color constants for tab accents — easy to tweak in one place.
 const SECTION_COLORS = {
   // Main nav tabs
-  pipeline:  '#f97316',  // orange
+  pipeline:  '#E8722A',  // orange
   callbacks: '#ef4444',  // red
   analytics: '#8b5cf6',  // purple
   jobs:      '#3b82f6',  // blue
@@ -989,7 +990,7 @@ const SECTION_COLORS = {
   photos:    '#06b6d4',  // cyan
   team:      '#22c55e',  // green
   // Job detail modal tabs
-  checklist: '#f97316',  // orange
+  checklist: '#E8722A',  // orange
   crewpay:   '#14b8a6',  // teal (Cost Manager)
 };
 
@@ -1018,7 +1019,7 @@ const DEMO_ROLES = {
     seeChangeOrders: false, seeTeamMgmt: false,
   },
   foreman: {
-    label: 'Foreman', color: '#f97316',
+    label: 'Foreman', color: '#E8722A',
     tabs: ['jobs','calendar','crew','chat','photos'],
     seeDollars: false, seeRates: false, seeProfitability: false,
     seeCostManager: true, seeCrewPay: false, seeAnalyticsRevenue: false,
@@ -1037,34 +1038,34 @@ function GlobalStyles() {
   return (
     <style>{`
       .ri-btn { transition: filter 0.15s, transform 0.12s, box-shadow 0.15s; cursor: pointer; }
-      .ri-btn-primary { background: linear-gradient(135deg,#f97316,#e8640c) !important; color:#fff !important; border:none !important; font-weight:700 !important; box-shadow:0 2px 10px rgba(249,115,22,0.3); }
+      .ri-btn-primary { background: linear-gradient(135deg,#E8722A,#e8640c) !important; color:#fff !important; border:none !important; font-weight:700 !important; box-shadow:0 2px 10px rgba(249,115,22,0.3); }
       .ri-btn-primary:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 4px 18px rgba(249,115,22,0.5) !important; }
       .ri-btn-primary:active:not(:disabled) { transform:translateY(0); filter:brightness(0.96); }
-      .ri-btn-secondary { background:transparent !important; border:1px solid #3a4d6b !important; color:#94a3b8 !important; }
-      .ri-btn-secondary:hover:not(:disabled) { border-color:#f97316 !important; color:#f1f5f9 !important; background:rgba(249,115,22,0.07) !important; }
+      .ri-btn-secondary { background:transparent !important; border:1px solid #D1D5DB !important; color:#6B7280 !important; }
+      .ri-btn-secondary:hover:not(:disabled) { border-color:#E8722A !important; color:#111827 !important; background:rgba(249,115,22,0.07) !important; }
       .ri-btn-danger { background:rgba(239,68,68,0.12) !important; border:1px solid rgba(239,68,68,0.4) !important; color:#f87171 !important; }
       .ri-btn-danger:hover:not(:disabled) { background:rgba(239,68,68,0.24) !important; border-color:rgba(239,68,68,0.7) !important; }
       .ri-del { transition:color 0.12s, background 0.12s; cursor:pointer; }
       .ri-del:hover { color:#ef4444 !important; }
-      input:focus, select:focus, textarea:focus { border-color:#f97316 !important; box-shadow:0 0 0 3px rgba(249,115,22,0.14) !important; outline:none !important; }
+      input:focus, select:focus, textarea:focus { border-color:#E8722A !important; box-shadow:0 0 0 3px rgba(249,115,22,0.14) !important; outline:none !important; }
       .ri-nav-tab { transition:color 0.15s, background 0.15s; }
-      .ri-nav-tab:hover { color:#f1f5f9 !important; background:rgba(255,255,255,0.06) !important; border-radius:6px; }
+      .ri-nav-tab:hover { color:#111827 !important; background:#F3F4F6 !important; border-radius:6px; }
       .ri-modal-tab { transition:all 0.15s; }
-      .ri-modal-tab:hover { background:rgba(255,255,255,0.06) !important; border-radius:6px 6px 0 0; }
+      .ri-modal-tab:hover { background:#F3F4F6 !important; border-radius:6px 6px 0 0; }
       .ri-bnav-btn { transition:color 0.15s, background 0.15s; }
-      .ri-bnav-btn:hover { background:rgba(255,255,255,0.05) !important; }
+      .ri-bnav-btn:hover { background:#F3F4F6 !important; }
       .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
-      .ri-cb-row:hover { background:#1c2840 !important; border-color:#3a4d6b !important; }
+      .ri-cb-row:hover { background:#F3F4F6 !important; border-color:#D1D5DB !important; }
       .ri-sec-hdr { transition:background 0.12s; }
-      .ri-sec-hdr:hover { background:#1e2a42 !important; }
+      .ri-sec-hdr:hover { background:#F3F4F6 !important; }
       .ri-sub-tab { transition:color 0.15s, border-color 0.15s; cursor:pointer; }
-      .ri-sub-tab:hover { color:#f1f5f9 !important; }
-      .ri-card-btn:hover { color:#f1f5f9 !important; background:rgba(249,115,22,0.1) !important; }
-      .ri-close-btn:hover { color:#f1f5f9 !important; background:rgba(255,255,255,0.12) !important; }
-      .ri-add-item:hover { color:#94a3b8 !important; border-color:#3a4d6b !important; }
+      .ri-sub-tab:hover { color:#111827 !important; }
+      .ri-card-btn:hover { color:#111827 !important; background:rgba(249,115,22,0.1) !important; }
+      .ri-close-btn:hover { color:#111827 !important; background:#E5E7EB !important; }
+      .ri-add-item:hover { color:#6B7280 !important; border-color:#D1D5DB !important; }
       ::-webkit-scrollbar { width:5px; height:5px; }
       ::-webkit-scrollbar-track { background:transparent; }
-      ::-webkit-scrollbar-thumb { background:#2d3748; border-radius:3px; }
+      ::-webkit-scrollbar-thumb { background:#E5E7EB; border-radius:3px; }
       @media (max-width:768px) {
         .ri-btn { min-height:48px; }
         .ri-btn-primary { font-size:15px !important; }
@@ -1078,14 +1079,14 @@ function BottomNav({ tab, setTab, tabs }) {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: '#151d30', borderTop: '1px solid rgba(255,255,255,0.08)',
+      background: '#FFFFFF', borderTop: '1px solid #E5E7EB',
       display: 'flex', height: 64, zIndex: 200,
-      boxShadow: '0 -4px 12px rgba(0,0,0,0.35)',
+      boxShadow: '0 -2px 8px rgba(0,0,0,0.06)',
       overflowX: 'auto', scrollbarWidth: 'none',
       WebkitOverflowScrolling: 'touch',
     }}>
       {(tabs || NAV_TABS).map(({ key, label, icon, locked }) => {
-        const c = SECTION_COLORS[key] || '#f97316';
+        const c = SECTION_COLORS[key] || '#E8722A';
         const isActive = tab === key && !locked;
         return (
           <button
@@ -1096,7 +1097,7 @@ function BottomNav({ tab, setTab, tabs }) {
               minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               background: isActive ? c + '15' : 'transparent', border: 'none',
-              color: locked ? '#2d3748' : isActive ? c : '#cbd5e1',
+              color: locked ? '#E5E7EB' : isActive ? c : '#6B7280',
               fontSize: 10, fontWeight: isActive ? 700 : 600,
               cursor: locked ? 'not-allowed' : 'pointer',
               gap: 3, minHeight: 64, padding: 0,
@@ -1198,14 +1199,14 @@ const LEAD_STAGES = [
 ];
 
 const FI = { // form input base
-  width: '100%', padding: '9px 12px', background: '#111823',
-  border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0',
+  width: '100%', padding: '9px 12px', background: '#F9FAFB',
+  border: '1px solid #D1D5DB', borderRadius: 7, color: '#111827',
   fontSize: 13, outline: 'none', boxSizing: 'border-box',
   fontFamily: "'Inter', -apple-system, sans-serif",
   transition: 'border-color 0.15s',
 };
 const FLbl = {
-  display: 'block', fontSize: 11, fontWeight: 600, color: '#7a8faa',
+  display: 'block', fontSize: 11, fontWeight: 600, color: '#6B7280',
   marginBottom: 5, marginTop: 14, textTransform: 'uppercase', letterSpacing: '0.4px',
 };
 const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
@@ -1234,8 +1235,8 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
   const fi = (field) => ({
     ...FI,
     border: errors[field] ? '1px solid #ef4444'
-      : focused === field ? '1px solid #f97316'
-      : '1px solid #1e2535',
+      : focused === field ? '1px solid #E8722A'
+      : '1px solid #E5E7EB',
   });
 
   const validate = () => {
@@ -1395,7 +1396,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
             className="ri-btn ri-btn-primary"
             style={{
               flex: 1, padding: isMobile ? '14px 16px' : '10px 16px',
-              background: 'linear-gradient(135deg, #f97316, #e8640c)',
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
               border: 'none', borderRadius: 8, color: '#fff',
               fontWeight: 700, fontSize: 15, cursor: 'pointer',
               minHeight: 48, WebkitTapHighlightColor: 'transparent',
@@ -1410,8 +1411,8 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
             style={{
               padding: isMobile ? '14px 20px' : '10px 20px',
               background: 'transparent',
-              border: '1px solid #3a4d6b', borderRadius: 8,
-              color: '#94a3b8', cursor: 'pointer', fontSize: 14,
+              border: '1px solid #D1D5DB', borderRadius: 8,
+              color: '#6B7280', cursor: 'pointer', fontSize: 14,
               minHeight: 48, WebkitTapHighlightColor: 'transparent',
             }}
             onClick={onClose}
@@ -1714,8 +1715,8 @@ function JobPhotosPanel({ lead, onCountChange }) {
       <div style={{ marginBottom: 14 }}>
         <input
           style={{
-            width: '100%', padding: '8px 12px', background: '#111823',
-            border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0',
+            width: '100%', padding: '8px 12px', background: '#F3F4F6',
+            border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280',
             fontSize: 13, outline: 'none', boxSizing: 'border-box',
             fontFamily: 'inherit', marginBottom: 8,
           }}
@@ -1726,7 +1727,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
           <select
             style={{
-              flex: 1, padding: '8px 12px', background: '#111823',
+              flex: 1, padding: '8px 12px', background: '#F3F4F6',
               border: '1px solid #164e63', borderRadius: 7, color: '#22d3ee',
               fontSize: 13, outline: 'none', fontFamily: 'inherit', fontWeight: 600,
             }}
@@ -1764,8 +1765,8 @@ function JobPhotosPanel({ lead, onCountChange }) {
             disabled={uploading}
             style={{
               flex: 1, padding: '10px 14px', borderRadius: 8,
-              background: '#1a1f2e', border: '1px solid #2d3748',
-              color: uploading ? '#475569' : '#94a3b8',
+              background: '#FFFFFF', border: '1px solid #E5E7EB',
+              color: uploading ? '#9CA3AF' : '#6B7280',
               fontSize: 13, fontWeight: 600,
               cursor: uploading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1783,9 +1784,9 @@ function JobPhotosPanel({ lead, onCountChange }) {
             onClick={() => setCategoryFilter('all')}
             style={{
               padding: '3px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-              border: categoryFilter === 'all' ? '1px solid #06b6d4' : '1px solid #1e2535',
+              border: categoryFilter === 'all' ? '1px solid #06b6d4' : '1px solid #E5E7EB',
               background: categoryFilter === 'all' ? 'rgba(6,182,212,0.15)' : 'transparent',
-              color: categoryFilter === 'all' ? '#06b6d4' : '#94a3b8',
+              color: categoryFilter === 'all' ? '#06b6d4' : '#6B7280',
             }}
           >All</button>
           {PHOTO_CATEGORIES.filter(c => photos.some(p => p.category === c)).map(c => (
@@ -1794,9 +1795,9 @@ function JobPhotosPanel({ lead, onCountChange }) {
               onClick={() => setCategoryFilter(categoryFilter === c ? 'all' : c)}
               style={{
                 padding: '3px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                border: categoryFilter === c ? '1px solid #06b6d4' : '1px solid #1e2535',
+                border: categoryFilter === c ? '1px solid #06b6d4' : '1px solid #E5E7EB',
                 background: categoryFilter === c ? 'rgba(6,182,212,0.15)' : 'transparent',
-                color: categoryFilter === c ? '#06b6d4' : '#94a3b8',
+                color: categoryFilter === c ? '#06b6d4' : '#6B7280',
               }}
             >{c}</button>
           ))}
@@ -1807,11 +1808,11 @@ function JobPhotosPanel({ lead, onCountChange }) {
       {photos.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '28px 16px',
-          border: '1px dashed #1e2535', borderRadius: 10,
+          border: '1px dashed #E5E7EB', borderRadius: 10,
         }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#64748b', marginBottom: 4 }}>No photos yet</div>
-          <div style={{ fontSize: 12, color: '#475569' }}>
+          <div style={{ fontSize: 12, color: '#9CA3AF' }}>
             {isMobile
               ? 'Tap Camera to shoot or Upload to pick from library.'
               : 'Use Take Photo or Upload to start documenting this job.'}
@@ -1825,8 +1826,8 @@ function JobPhotosPanel({ lead, onCountChange }) {
               onClick={() => setLightbox(photo)}
               style={{
                 position: 'relative', borderRadius: 8, overflow: 'hidden',
-                cursor: 'pointer', border: '1px solid #253048',
-                aspectRatio: '4/3', background: '#0d1117',
+                cursor: 'pointer', border: '1px solid #E5E7EB',
+                aspectRatio: '4/3', background: '#F8F9FA',
               }}
             >
               <img
@@ -1837,7 +1838,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 background: 'rgba(0,0,0,0.65)', padding: '4px 7px',
-                fontSize: 10, color: '#e2e8f0',
+                fontSize: 10, color: '#6B7280',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {photo.category && <span style={{ background: 'rgba(6,182,212,0.3)', color: '#22d3ee', padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>}
@@ -1878,7 +1879,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
               </span>
             )}
             {lightbox.caption && (
-              <span style={{ fontSize: 13, color: '#e2e8f0' }}>{lightbox.caption}</span>
+              <span style={{ fontSize: 13, color: '#6B7280' }}>{lightbox.caption}</span>
             )}
             <span style={{ fontSize: 11, color: '#64748b' }}>{formatTs(lightbox.timestamp)}</span>
             <span style={{
@@ -1894,8 +1895,8 @@ function JobPhotosPanel({ lead, onCountChange }) {
               onClick={() => setLightbox(null)}
               style={{
                 padding: '8px 20px', borderRadius: 7,
-                background: '#1a1f2e', border: '1px solid #2d3748',
-                color: '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                background: '#FFFFFF', border: '1px solid #E5E7EB',
+                color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}
             >
               Close
@@ -2009,7 +2010,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
         </div>
 
         {/* Tab switcher */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #1e2535', marginBottom: 20 }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid #E5E7EB', marginBottom: 20 }}>
           {[
             { key: 'info', label: 'Details' },
             { key: 'photos', label: photoCount > 0 ? `Photos (${photoCount})` : 'Photos' },
@@ -2019,8 +2020,8 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
               onClick={() => setActiveTab(key)}
               style={{
                 padding: '8px 16px', background: 'transparent', border: 'none',
-                borderBottom: activeTab === key ? '2px solid #f97316' : '2px solid transparent',
-                color: activeTab === key ? '#f97316' : '#64748b',
+                borderBottom: activeTab === key ? '2px solid #E8722A' : '2px solid transparent',
+                color: activeTab === key ? '#E8722A' : '#64748b',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 marginBottom: -1, transition: 'color 0.15s', fontFamily: 'inherit',
               }}
@@ -2037,8 +2038,8 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
               <>
                 <div style={S.sectionLabel}>Job Notes</div>
                 <div style={{
-                  fontSize: 13, color: '#94a3b8', marginBottom: 20,
-                  padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+                  fontSize: 13, color: '#6B7280', marginBottom: 20,
+                  padding: '10px 12px', background: '#F8F9FA', borderRadius: 6,
                 }}>
                   {lead.notes}
                 </div>
@@ -2054,8 +2055,8 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                   style={{
                     padding: '5px 12px', borderRadius: 20, fontSize: 11,
                     fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
-                    border: localStage === s ? 'none' : '1px solid #1e2535',
-                    background: localStage === s ? '#f97316' : '#0f1117',
+                    border: localStage === s ? 'none' : '1px solid #E5E7EB',
+                    background: localStage === s ? '#E8722A' : '#F8F9FA',
                     color: localStage === s ? '#fff' : '#64748b',
                   }}
                 >
@@ -2080,8 +2081,8 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                 <button
                   style={{
                     width: '100%', padding: '11px 16px', borderRadius: 8,
-                    background: '#1a1f2e', border: '1px solid #2d3748',
-                    color: '#475569', fontSize: 13, fontWeight: 600,
+                    background: '#FFFFFF', border: '1px solid #E5E7EB',
+                    color: '#9CA3AF', fontSize: 13, fontWeight: 600,
                     cursor: 'not-allowed', textAlign: 'left',
                     display: 'flex', alignItems: 'center', gap: 8,
                   }}
@@ -2093,14 +2094,14 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                 <div style={{
                   marginTop: 10, padding: '10px 14px',
                   background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)',
-                  borderRadius: 7, fontSize: 12, color: '#94a3b8',
+                  borderRadius: 7, fontSize: 12, color: '#6B7280',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
                 }}>
                   <span>AI job advice with stage-specific next steps is available on Pro and Business plans.</span>
                   <button
                     onClick={goToSignup}
                     style={{
-                      padding: '5px 14px', background: '#f97316', border: 'none',
+                      padding: '5px 14px', background: '#E8722A', border: 'none',
                       borderRadius: 6, color: '#fff', fontWeight: 700,
                       fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
                     }}
@@ -2155,9 +2156,9 @@ function DisabledTooltip({ active, label, children }) {
         <div style={{
           position: 'absolute', bottom: '110%', left: '50%',
           transform: 'translateX(-50%)',
-          background: '#0f1117', border: '1px solid #2d3748',
+          background: '#F8F9FA', border: '1px solid #E5E7EB',
           borderRadius: 6, padding: '5px 10px',
-          fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap',
+          fontSize: 11, color: '#6B7280', whiteSpace: 'nowrap',
           zIndex: 200, pointerEvents: 'none',
         }}>
           {label}
@@ -2165,7 +2166,7 @@ function DisabledTooltip({ active, label, children }) {
             position: 'absolute', top: '100%', left: '50%',
             transform: 'translateX(-50%)',
             borderLeft: '5px solid transparent', borderRight: '5px solid transparent',
-            borderTop: '5px solid #2d3748',
+            borderTop: '5px solid #E5E7EB',
           }} />
         </div>
       )}
@@ -2198,7 +2199,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
       onMouseLeave={() => { setHovered(false); setConfirmDelete(false); }}
       onClick={() => !dragging && onQuickEdit && onQuickEdit(lead)}
       style={{
-        background: hovered ? '#1e2a40' : '#1a2236',
+        background: hovered ? '#1e2a40' : '#FFFFFF',
         border: urgencyBorder,
         borderRadius: 8, padding: '10px 12px',
         cursor: 'pointer', position: 'relative',
@@ -2209,7 +2210,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
           <div style={{ fontSize: 11, color: '#64748b', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
@@ -2227,7 +2228,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
       )}
 
       {lead.stallReason && (
-        <div style={{ fontSize: 10, color: '#f97316', marginTop: 2 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
+        <div style={{ fontSize: 10, color: '#E8722A', marginTop: 2 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
       )}
 
       {/* Issues badges */}
@@ -2242,21 +2243,21 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
 
       {/* Last update preview */}
       {lead.lastUpdate && (
-        <div style={{ fontSize: 10, color: '#475569', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
-          <span style={{ color: '#374151' }}>↳ </span>
+        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
+          <span style={{ color: '#6B7280' }}>↳ </span>
           {lead.lastUpdate.length > 60 ? lead.lastUpdate.slice(0, 60) + '…' : lead.lastUpdate}
         </div>
       )}
 
       {/* Hover hint */}
       {hovered && (
-        <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 10, color: '#2d3748' }}>Click to edit</span>
+        <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 10, color: '#E5E7EB' }}>Click to edit</span>
           {!demoMode && (
             <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
               {!confirmDelete ? (
                 <button
-                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #2e3d5c', borderRadius: 4, color: '#64748b', cursor: 'pointer' }}
+                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 4, color: '#64748b', cursor: 'pointer' }}
                   onClick={() => setConfirmDelete(true)}
                 >
                   🗑
@@ -2264,7 +2265,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
               ) : (
                 <>
                   <button style={{ padding: '2px 6px', fontSize: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Del</button>
-                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #2e3d5c', borderRadius: 4, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
+                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 4, color: '#64748b', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
                 </>
               )}
             </div>
@@ -2353,13 +2354,13 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
       onClick={onClose}
     >
       <div
-        style={{ background: '#0d1117', border: '1px solid #253048', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}
+        style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
             <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
               {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
             </div>
@@ -2369,12 +2370,12 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               <button
                 onClick={onOpenDetail}
                 className="ri-btn ri-btn-secondary"
-                style={{ background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                style={{ background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 AI Coach ↗
               </button>
             )}
-            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#9CA3AF', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
           </div>
         </div>
 
@@ -2382,7 +2383,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
 
           {/* ── Post Update (most prominent) ── */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.6px' }}>✎ Post Update</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#E8722A', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.6px' }}>✎ Post Update</div>
             <textarea
               ref={textareaRef}
               value={updateText}
@@ -2392,8 +2393,8 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               rows={4}
               style={{
                 width: '100%', boxSizing: 'border-box',
-                background: '#060a12', border: '1px solid #2d3748', borderRadius: 8,
-                color: '#f1f5f9', fontSize: 13, padding: '10px 12px',
+                background: '#060a12', border: '1px solid #E5E7EB', borderRadius: 8,
+                color: '#111827', fontSize: 13, padding: '10px 12px',
                 resize: 'vertical', outline: 'none', fontFamily: 'inherit', lineHeight: 1.6,
               }}
             />
@@ -2402,8 +2403,8 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               disabled={!updateText.trim()}
               style={{
                 marginTop: 8, width: '100%', padding: '10px 0',
-                background: updateText.trim() ? 'linear-gradient(135deg, #f97316, #e8640c)' : '#111823',
-                border: updateText.trim() ? 'none' : '1px solid #2e3d5c',
+                background: updateText.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#F3F4F6',
+                border: updateText.trim() ? 'none' : '1px solid #D1D5DB',
                 borderRadius: 8, color: updateText.trim() ? '#fff' : '#3d4f63',
                 fontWeight: 700, fontSize: 14, cursor: updateText.trim() ? 'pointer' : 'not-allowed',
                 transition: 'background 0.15s',
@@ -2417,7 +2418,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
           {/* ── Stage + Status ── */}
           <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stage</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stage</div>
               <select
                 value={stage}
                 onChange={e => setStage(e.target.value)}
@@ -2429,7 +2430,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</div>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
@@ -2458,7 +2459,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
 
           {/* ── Issues ── */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Issues</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Issues</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
               {issues.map(issue => (
                 <span key={issue} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#fca5a5' }}>
@@ -2469,34 +2470,34 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               <div style={{ position: 'relative' }}>
                 <button
                   onClick={() => setShowIssueMenu(v => !v)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed #2d3748', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#475569', cursor: 'pointer' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed #E5E7EB', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#9CA3AF', cursor: 'pointer' }}
                 >
                   + Add Issue
                 </button>
                 {showIssueMenu && (
                   <div
-                    style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 200, background: '#0d1117', border: '1px solid #2d3748', borderRadius: 10, padding: '6px 0', minWidth: 210, boxShadow: '0 12px 32px rgba(0,0,0,0.6)' }}
+                    style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 200, background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 10, padding: '6px 0', minWidth: 210, boxShadow: '0 12px 32px rgba(0,0,0,0.6)' }}
                     onClick={e => e.stopPropagation()}
                   >
                     {ISSUE_PRESETS.filter(p => !issues.includes(p)).map(p => (
                       <div
                         key={p}
                         onClick={() => addIssue(p)}
-                        style={{ padding: '7px 14px', fontSize: 12, color: '#94a3b8', cursor: 'pointer' }}
+                        style={{ padding: '7px 14px', fontSize: 12, color: '#6B7280', cursor: 'pointer' }}
                         onMouseEnter={e => e.currentTarget.style.background = '#1a2035'}
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                       >
                         {p}
                       </div>
                     ))}
-                    <div style={{ borderTop: '1px solid #1e2535', margin: '4px 0', padding: '4px 8px' }}>
+                    <div style={{ borderTop: '1px solid #E5E7EB', margin: '4px 0', padding: '4px 8px' }}>
                       <input
                         value={customIssue}
                         onChange={e => setCustomIssue(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter' && customIssue.trim()) addIssue(customIssue); }}
                         placeholder="Custom issue... (Enter)"
                         autoFocus
-                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#111827', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                       />
                     </div>
                   </div>
@@ -2508,14 +2509,14 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
           {/* ── Recent Activity ── */}
           {recentActivity.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Recent Activity</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Recent Activity</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {recentActivity.map((entry, i) => (
                   <div key={i} style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                    <span style={{ color: '#374151', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
+                    <span style={{ color: '#6B7280', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
                     <div style={{ minWidth: 0 }}>
                       <span style={{ color: '#64748b' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
-                      <span style={{ color: '#475569' }}>{entry.message}</span>
+                      <span style={{ color: '#9CA3AF' }}>{entry.message}</span>
                     </div>
                   </div>
                 ))}
@@ -2575,7 +2576,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
     const d = staleDays(lead);
     if (d > 14) return '2px solid #ef4444';
     if (d > 7) return '2px solid #eab308';
-    return '1px solid #253048';
+    return '1px solid #E5E7EB';
   };
 
   const filteredLeads = useMemo(() => {
@@ -2627,16 +2628,16 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   return (
     <div>
       {/* Summary bar */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#161b27', border: '1px solid #253048', borderRadius: 10, overflow: 'hidden', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10, overflow: 'hidden', overflowX: 'auto' }}>
         {stageStats.map((s, i) => (
-          <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #1e2535' : 'none', textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#f97316' }}>{s.count}</div>
+          <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #E5E7EB' : 'none', textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#E8722A' }}>{s.count}</div>
             <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>{fmt(s.value)}</div>}
+            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
         ))}
         <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', background: 'rgba(249,115,22,0.04)' }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
           <div style={{ fontSize: 9, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
         </div>
       </div>
@@ -2664,8 +2665,8 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             <button
               style={{
                 padding: '8px 16px',
-                background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #e8640c)',
-                border: demoMode ? '1px solid #2e3d5c' : 'none', borderRadius: 7,
+                background: demoMode ? 'transparent' : 'linear-gradient(135deg, #E8722A, #e8640c)',
+                border: demoMode ? '1px solid #D1D5DB' : 'none', borderRadius: 7,
                 color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 13,
                 cursor: demoMode ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
                 boxShadow: demoMode ? 'none' : '0 2px 10px rgba(249,115,22,0.3)',
@@ -2695,25 +2696,25 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                 minWidth: isMobile ? 230 : 220,
                 flex: isMobile ? '0 0 230px' : '1 1 0',
                 background: isOver ? 'rgba(249,115,22,0.06)' : '#131a28',
-                border: `1px solid ${isOver ? '#f97316' : '#253048'}`,
+                border: `1px solid ${isOver ? '#E8722A' : '#E5E7EB'}`,
                 borderRadius: 10,
                 transition: 'border-color 0.15s, background 0.15s',
               }}
             >
               {/* Column header */}
-              <div style={{ padding: '10px 12px', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+              <div style={{ padding: '10px 12px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
                 <div style={{ minWidth: 0 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: STAGE_COLORS[stg.key] || '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
-                  <span style={{ fontSize: 11, color: '#475569', marginLeft: 6 }}>{cards.length}</span>
-                  {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#374151' }}>{fmt(colValue)}</div>}
+                  <span style={{ fontSize: 11, fontWeight: 700, color: STAGE_COLORS[stg.key] || '#E8722A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
+                  <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 6 }}>{cards.length}</span>
+                  {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#6B7280' }}>{fmt(colValue)}</div>}
                 </div>
                 {stg.key === 'lead' && (onAddLead || demoMode) && (
                   <DisabledTooltip active={demoMode} label="Sign up to add leads">
                     <button
                       style={{
                         padding: '3px 8px',
-                        background: demoMode ? 'transparent' : 'linear-gradient(135deg, #f97316, #e8640c)',
-                        border: demoMode ? '1px solid #2e3d5c' : 'none', borderRadius: 5,
+                        background: demoMode ? 'transparent' : 'linear-gradient(135deg, #E8722A, #e8640c)',
+                        border: demoMode ? '1px solid #D1D5DB' : 'none', borderRadius: 5,
                         color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 10,
                         cursor: demoMode ? 'not-allowed' : 'pointer', flexShrink: 0,
                       }}
@@ -2728,7 +2729,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               {/* Cards */}
               <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 120 }}>
                 {cards.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '20px 8px', color: '#2d3748', fontSize: 11 }}>
+                  <div style={{ textAlign: 'center', padding: '20px 8px', color: '#E5E7EB', fontSize: 11 }}>
                     Drop here
                   </div>
                 ) : cards.map(lead => (
@@ -2822,7 +2823,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
           return (
             <div
               key={lead.id}
-              style={{ ...S.cbRow(hovered === lead.id), border: isOverdue ? '1px solid rgba(239,68,68,0.25)' : '1px solid #1e2535' }}
+              style={{ ...S.cbRow(hovered === lead.id), border: isOverdue ? '1px solid rgba(239,68,68,0.25)' : '1px solid #E5E7EB' }}
               onMouseEnter={() => setHovered(lead.id)}
               onMouseLeave={() => setHovered(null)}
               onClick={() => onSelectLead(lead)}
@@ -2834,15 +2835,15 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
                 <div style={S.cbName}>{lead.name}</div>
                 <div style={S.cbContact}>
                   {lead.contact} · {STAGE_LABELS[lead.stage] || lead.stage}
-                  {lead.phone && <span style={{ marginLeft: 8, color: '#94a3b8' }}>{lead.phone}</span>}
+                  {lead.phone && <span style={{ marginLeft: 8, color: '#6B7280' }}>{lead.phone}</span>}
                 </div>
                 {lead.stallReason && (
-                  <div style={{ fontSize: 11, color: '#f97316', marginTop: 3 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
+                  <div style={{ fontSize: 11, color: '#E8722A', marginTop: 3 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
                 )}
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={S.cbValue}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</div>
-                <div style={{ fontSize: 11, color: '#374151', marginBottom: 6 }}>{lead.callbackDate}</div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 6 }}>{lead.callbackDate}</div>
                 {onUpdateLead && (
                   <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
                     <button
@@ -2870,13 +2871,13 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
   return (
     <div>
       <CbSection title="🔴  Overdue" items={overdue} color="#ef4444" />
-      <CbSection title="🟡  Due Today" items={today} color="#f97316" />
+      <CbSection title="🟡  Due Today" items={today} color="#E8722A" />
       <CbSection title="🟢  Upcoming" items={upcoming} color="#22c55e" />
       {!overdue.length && !today.length && !upcoming.length && (
         <div style={{ textAlign: 'center', padding: '80px 24px' }}>
           <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>📞</div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 8 }}>No callbacks scheduled</div>
-          <div style={{ fontSize: 13, color: '#475569', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: '#6B7280', marginBottom: 8 }}>No callbacks scheduled</div>
+          <div style={{ fontSize: 13, color: '#9CA3AF', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
         </div>
       )}
 
@@ -2890,7 +2891,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
             <label style={FLbl}>New Callback Date</label>
             <input type="date" style={{ ...FI, marginBottom: 20 }} value={snoozeDate} onChange={e => setSnoozeDate(e.target.value)} />
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 7, color: '#94a3b8', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
+              <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
               <button style={{ flex: 2, padding: '8px', background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer' }} onClick={confirmSnooze}>Set Snooze Date</button>
             </div>
           </div>
@@ -2991,19 +2992,19 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
   const maxStallCount = stallBreakdown.length ? Math.max(...stallBreakdown.map(s => s[1]), 1) : 1;
 
   const STALL_COLORS = {
-    price_objection: '#f97316', budget_freeze: '#6366f1', no_response: '#ef4444',
+    price_objection: '#E8722A', budget_freeze: '#6366f1', no_response: '#ef4444',
     competitor: '#f59e0b', timing: '#64748b', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
   };
 
   const D = rolePerms?.seeDollars !== false;
   const kpis = [
-    { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value', color: '#f97316' },
+    { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value', color: '#E8722A' },
     { val: D ? fmt(revenueClosed) : '—', label: 'Revenue Closed YTD', color: '#22c55e' },
     { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value', color: '#6366f1' },
     { val: `${avgMargin}%`, label: 'Avg Margin', color: avgMargin >= 30 ? '#22c55e' : avgMargin >= 15 ? '#f59e0b' : '#ef4444' },
-    { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#f97316' : '#ef4444' },
+    { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#E8722A' : '#ef4444' },
     { val: `${weekHours}h`, label: 'Scheduled Hrs This Week', color: '#7c3aed' },
-    { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#94a3b8' },
+    { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#6B7280' },
     { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
   ];
 
@@ -3028,21 +3029,21 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Revenue by Stage</div>
           {stageFunnel.length === 0 ? (
-            <div style={{ color: '#475569', fontSize: 13 }}>No active leads</div>
+            <div style={{ color: '#9CA3AF', fontSize: 13 }}>No active leads</div>
           ) : stageFunnel.map(({ stage, count, value, avgAge }) => (
             <div key={stage} style={S.barRow}>
               <div style={{ ...S.barLabel, width: 110 }}>{STAGE_LABELS[stage] || stage}</div>
               <div style={S.barTrack}>
-                <div style={S.barFill(value / maxStageValue * 100, STAGE_COLORS[stage] || '#f97316')} />
+                <div style={S.barFill(value / maxStageValue * 100, STAGE_COLORS[stage] || '#E8722A')} />
               </div>
               <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{count}</div>
-              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
-              {avgAge > 0 && <div style={{ fontSize: 10, color: '#374151', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
+              <div style={{ fontSize: 11, color: '#9CA3AF', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
+              {avgAge > 0 && <div style={{ fontSize: 10, color: '#6B7280', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
             </div>
           ))}
-          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #1e2535' }}>
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}>
             <div style={{ fontSize: 11, color: '#64748b' }}>Total pipeline value</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#f97316', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#E8722A', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
           </div>
         </div>
 
@@ -3050,23 +3051,23 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Stall Reason Breakdown</div>
           {stallBreakdown.length === 0 && (
-            <div style={{ color: '#475569', fontSize: 13 }}>No stalled deals</div>
+            <div style={{ color: '#9CA3AF', fontSize: 13 }}>No stalled deals</div>
           )}
           {stallBreakdown.map(([reason, count]) => (
             <div key={reason} style={S.barRow}>
               <div style={S.barLabel}>{STALL_LABELS[reason]}</div>
               <div style={S.barTrack}>
-                <div style={S.barFill(count / maxStallCount * 100, STALL_COLORS[reason] || '#f97316')} />
+                <div style={S.barFill(count / maxStallCount * 100, STALL_COLORS[reason] || '#E8722A')} />
               </div>
               <div style={S.barCount}>{count}</div>
-              <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>
+              <div style={{ fontSize: 11, color: '#9CA3AF', width: 72, textAlign: 'right' }}>
                 {fmt(stalled.filter(l => l.stallReason === reason).reduce((s, l) => s + l.value, 0))}
               </div>
             </div>
           ))}
-          <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #1e2535' }}>
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E5E7EB' }}>
             <div style={{ fontSize: 12, color: '#64748b', marginBottom: 6 }}>Total value at risk</div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: '#f97316' }}>{fmt(stalledValue)}</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: '#E8722A' }}>{fmt(stalledValue)}</div>
           </div>
         </div>
 
@@ -3088,11 +3089,11 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
               <div style={{ fontSize: 13, fontWeight: 700, color, width: 28, textAlign: 'right' }}>{count}</div>
             </div>
           ))}
-          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #1e2535' }}>
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}>
             <div style={{ display: 'flex', gap: 16 }}>
               <div>
                 <div style={{ fontSize: 11, color: '#64748b' }}>Win Rate</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: winRate >= 60 ? '#22c55e' : '#f97316' }}>{winRate}%</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: winRate >= 60 ? '#22c55e' : '#E8722A' }}>{winRate}%</div>
               </div>
               <div>
                 <div style={{ fontSize: 11, color: '#64748b' }}>Avg Job Value</div>
@@ -3120,10 +3121,10 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
               <div key={trade} style={S.barRow}>
                 <div style={{ ...S.barLabel, width: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{trade}</div>
                 <div style={S.barTrack}>
-                  <div style={S.barFill(data.value / maxVal * 100, TRADE_COLORS[trade] || '#f97316')} />
+                  <div style={S.barFill(data.value / maxVal * 100, TRADE_COLORS[trade] || '#E8722A')} />
                 </div>
                 <div style={{ fontSize: 11, color: '#64748b', width: 24, textAlign: 'right' }}>{data.count}</div>
-                <div style={{ fontSize: 11, color: '#475569', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
               </div>
             ));
           })()}
@@ -3140,9 +3141,9 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
               <div key={stage} style={S.barRow}>
                 <div style={{ ...S.barLabel, width: 130 }}>{STAGE_LABELS[stage] || stage}</div>
                 <div style={S.barTrack}>
-                  <div style={S.barFill(count / maxCount * 100, STAGE_COLORS[stage] || '#f97316')} />
+                  <div style={S.barFill(count / maxCount * 100, STAGE_COLORS[stage] || '#E8722A')} />
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: STAGE_COLORS[stage] || '#94a3b8', width: 28, textAlign: 'right' }}>{count}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: STAGE_COLORS[stage] || '#6B7280', width: 28, textAlign: 'right' }}>{count}</div>
               </div>
             );
           })}
@@ -3174,9 +3175,9 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
               onClick={() => tier === 'business' && void 0}
               style={{
                 padding: '8px 20px',
-                background: tier === 'business' ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#1a1f2e',
-                border: tier === 'business' ? 'none' : '1px solid #2d3748',
-                borderRadius: 7, color: tier === 'business' ? '#fff' : '#475569',
+                background: tier === 'business' ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#FFFFFF',
+                border: tier === 'business' ? 'none' : '1px solid #E5E7EB',
+                borderRadius: 7, color: tier === 'business' ? '#fff' : '#9CA3AF',
                 fontWeight: 600, fontSize: 13, cursor: tier === 'business' ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', gap: 7,
               }}
@@ -3726,9 +3727,9 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
   const isMobile = useMobile();
 
   // ── shared cell styles ───────────────────────────────────────────────────────
-  const NINP = { background: '#111823', border: '1px solid #2e3d5c', borderRadius: 4, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s' };
-  const UINP = { background: '#111823', border: '1px solid #2e3d5c', borderRadius: 4, color: '#94a3b8', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' };
-  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' };
+  const NINP = { background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 4, color: '#6B7280', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s' };
+  const UINP = { background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 4, color: '#6B7280', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' };
+  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px' };
   const seeRates = rolePerms?.seeRates !== false;
   const MAT_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
   const LAB_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
@@ -3748,7 +3749,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
     const secHdr = (
       <div
         className="ri-sec-hdr"
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1c2640', borderLeft: '3px solid #14b8a6', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F3F4F6', borderLeft: '3px solid #14b8a6', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
         onClick={() => toggleMatSec(sec.id)}
       >
         <span style={{ color: '#14b8a6', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
@@ -3756,9 +3757,9 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           value={sec.title}
           onChange={e => { e.stopPropagation(); updMatSecTitle(sec.id, e.target.value); }}
           onClick={e => e.stopPropagation()}
-          style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
+          style={{ flex: 1, background: 'transparent', border: 'none', color: '#6B7280', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
-        <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#14b8a6' : '#334155', flexShrink: 0 }}>
+        <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#14b8a6' : '#D1D5DB', flexShrink: 0 }}>
           {secTot > 0 ? fmtC(secTot) : '—'}
         </span>
       </div>
@@ -3768,14 +3769,14 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div key={sec.id} style={{ marginBottom: 4 }}>
           {secHdr}
           {!sec.collapsed && (
-            <div style={{ background: '#0c1020', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
               {sec.items.map(item => {
                 const tot = matItemTot(item);
                 const filled = tot > 0;
                 return (
                   <div key={item.id} style={{ padding: '8px 10px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.04)' : 'transparent', borderLeft: filled ? '3px solid rgba(249,115,22,0.4)' : '3px solid transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7 }}>
-                      <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
+                      <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#6B7280', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
                       <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr', gap: 8, alignItems: 'end' }}>
@@ -3793,15 +3794,15 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                       </div>}
                       {seeRates && <div>
                         <div style={{ ...CHEAD, marginBottom: 4 }}>Total</div>
-                        <div style={{ minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: filled ? '#f97316' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
+                        <div style={{ minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: filled ? '#E8722A' : '#D1D5DB' }}>{filled ? fmtC(tot) : '—'}</div>
                       </div>}
                     </div>
                   </div>
                 );
               })}
-              <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
-                <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#f97316' }}>{fmtC(secTot)}</strong></div>}
+              <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
+                <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
               </div>
             </div>
           )}
@@ -3812,8 +3813,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       <div key={sec.id} style={{ marginBottom: 4 }}>
         {secHdr}
         {!sec.collapsed && (
-          <div style={{ background: '#0c1020', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #1e2535' }}>
+          <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #E5E7EB' }}>
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
               <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
@@ -3826,18 +3827,18 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               const filled = tot > 0;
               return (
                 <div key={item.id} style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, alignItems: 'center', padding: '3px 8px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.03)' : 'transparent', borderLeft: filled ? '2px solid rgba(249,115,22,0.35)' : '2px solid transparent' }}>
-                  <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: 13, fontWeight: 500, outline: 'none', width: '100%', fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0' }} />
+                  <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ background: 'transparent', border: 'none', color: '#6B7280', fontSize: 13, fontWeight: 500, outline: 'none', width: '100%', fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0' }} />
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {seeRates && <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />}
-                  {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>}
+                  {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#111827' : '#D1D5DB' }}>{filled ? fmtC(tot) : '—'}</div>}
                   <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
-            <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
-              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#f97316' }}>{fmtC(secTot)}</strong></div>}
+            <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
+              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
             </div>
           </div>
         )}
@@ -3852,7 +3853,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
     const labHdr = (
       <div
         className="ri-sec-hdr"
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a2038', borderLeft: '3px solid #0d9488', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFFFFF', borderLeft: '3px solid #0d9488', borderRadius: sec.collapsed ? 6 : '6px 6px 0 0', padding: '9px 10px', cursor: 'pointer', minHeight: 44 }}
         onClick={() => toggleLaborSec(sec.id)}
       >
         <span style={{ color: '#0d9488', fontSize: 10, flexShrink: 0 }}>{sec.collapsed ? '▶' : '▼'}</span>
@@ -3860,10 +3861,10 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           value={sec.title}
           onChange={e => { e.stopPropagation(); updLaborSecTitle(sec.id, e.target.value); }}
           onClick={e => e.stopPropagation()}
-          style={{ flex: 1, background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
+          style={{ flex: 1, background: 'transparent', border: 'none', color: '#6B7280', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
         {!sec.isWaste && seeRates && (
-          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#0d9488' : '#334155', flexShrink: 0 }}>
+          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#0d9488' : '#D1D5DB', flexShrink: 0 }}>
             {secTot > 0 ? fmtC(secTot) : '—'}
           </span>
         )}
@@ -3874,7 +3875,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <div key={sec.id} style={{ marginBottom: 4 }}>
           {labHdr}
           {!sec.collapsed && (
-            <div style={{ background: '#0c1020', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
               {sec.items.map(item => {
                 const tot = sec.isWaste ? 0 : laborItemTot(item);
                 const filled = !sec.isWaste && tot > 0;
@@ -3882,8 +3883,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   <div key={item.id} style={{ padding: '8px 10px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(99,102,241,0.04)' : 'transparent', borderLeft: filled ? '3px solid rgba(99,102,241,0.4)' : '3px solid transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: sec.isWaste ? 7 : 7 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
-                        {item.note && <div style={{ fontSize: 10, color: '#475569', fontStyle: 'italic' }}>{item.note}</div>}
+                        <div style={{ color: '#6B7280', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
+                        {item.note && <div style={{ fontSize: 10, color: '#9CA3AF', fontStyle: 'italic' }}>{item.note}</div>}
                       </div>
                       <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
@@ -3904,7 +3905,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                           </div>
                           <div>
                             <div style={{ ...CHEAD, marginBottom: 4 }}>Total</div>
-                            <div style={{ minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: filled ? '#6366f1' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
+                            <div style={{ minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: filled ? '#6366f1' : '#D1D5DB' }}>{filled ? fmtC(tot) : '—'}</div>
                           </div>
                         </>
                       )}
@@ -3913,13 +3914,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                 );
               })}
               {!sec.isWaste && (
-                <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
-                  <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
+                  <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
                   {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
                 </div>
               )}
               {sec.isWaste && (
-                <div style={{ padding: '8px 10px', borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '8px 10px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 13, color: '#64748b' }}>Net Waste</span>
                   <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
                 </div>
@@ -3933,8 +3934,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       <div key={sec.id} style={{ marginBottom: 4 }}>
         {labHdr}
         {!sec.collapsed && (
-          <div style={{ background: '#0c1020', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #1e2535' }}>
+          <div style={{ background: '#F8F9FA', border: '1px solid #1a2035', borderTop: 'none', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, padding: '4px 8px', background: '#111827', borderBottom: '1px solid #E5E7EB' }}>
               <div style={{ ...CHEAD }}>Item</div>
               <div style={{ ...CHEAD, textAlign: 'center' }}>Unit</div>
               <div style={{ ...CHEAD, textAlign: 'right' }}>Qty</div>
@@ -3948,15 +3949,15 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               return (
                 <div key={item.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, alignItems: 'center', padding: '3px 8px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(99,102,241,0.04)' : 'transparent', borderLeft: filled ? '2px solid rgba(99,102,241,0.35)' : '2px solid transparent' }}>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label || <span style={{ color: '#334155' }}>—</span>}</div>
-                    {item.note && <div style={{ fontSize: 10, color: '#334155', fontStyle: 'italic' }}>{item.note}</div>}
+                    <div style={{ color: '#6B7280', fontSize: 13, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label || <span style={{ color: '#D1D5DB' }}>—</span>}</div>
+                    {item.note && <div style={{ fontSize: 10, color: '#D1D5DB', fontStyle: 'italic' }}>{item.note}</div>}
                   </div>
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {!sec.isWaste && seeRates && (
                     <>
                       <input type="text" inputMode="decimal" value={item.rate} onChange={e => updLabor(sec.id, item.id, 'rate', e.target.value)} placeholder="0.00" style={{ ...NINP }} />
-                      <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#f1f5f9' : '#334155' }}>{filled ? fmtC(tot) : '—'}</div>
+                      <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#111827' : '#D1D5DB' }}>{filled ? fmtC(tot) : '—'}</div>
                     </>
                   )}
                   <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
@@ -3964,13 +3965,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               );
             })}
             {!sec.isWaste && (
-              <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #1e2535' }}>
-                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+              <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed #E5E7EB' }}>
+                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
                 {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#64748b', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
               </div>
             )}
             {sec.isWaste && (
-              <div style={{ padding: '6px 8px 8px', borderTop: '1px solid #1e2535', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ padding: '6px 8px 8px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 12, color: '#64748b' }}>Net Waste</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#64748b' }}>{netWaste.toFixed(1)} BDL</span>
               </div>
@@ -3989,7 +3990,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
       {/* ── Template bar ── */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
         <select
           value={data.jobInfo.templateName || ''}
           onChange={e => {
@@ -3998,7 +3999,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             const hasData = data.materials.sections.some(sec => sec.items.some(item => item.qty || item.costPerUnit));
             if (hasData) { setPendingTpl(name); } else { applyTpl(name); }
           }}
-          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', transition: 'border-color 0.15s' }}
+          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, outline: 'none', transition: 'border-color 0.15s' }}
         >
           <option value="">Select template…</option>
           <optgroup label="Built-in">
@@ -4015,27 +4016,27 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
         <button
           onClick={() => setShowTplSave(s => !s)}
           className="ri-btn ri-btn-secondary"
-          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
         >
           Save as Template
         </button>
       </div>
       {showTplSave && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
-          <button onClick={saveJobTpl} style={{ padding: '7px 14px', background: '#f97316', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
+          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+          <button onClick={saveJobTpl} style={{ padding: '7px 14px', background: '#E8722A', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
         </div>
       )}
       {pendingTpl && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 7, padding: '9px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, color: '#fca5a5', flex: 1 }}>Replace all line items with the <strong>{pendingTpl}</strong> template?</span>
           <button onClick={() => applyTpl(pendingTpl)} style={{ padding: '5px 12px', background: '#ef4444', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Yes, Replace</button>
-          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #334155', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
+          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#64748b', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
         </div>
       )}
 
       {/* Sub-tab navigation — sticky within scroll container */}
-      <div style={{ position: 'sticky', top: -20, zIndex: 20, display: 'flex', background: '#1a2236', borderBottom: '2px solid #1e2d44', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 8, paddingBottom: 0, overflowX: 'auto', boxShadow: '0 6px 16px rgba(0,0,0,0.5)' }}>
+      <div style={{ position: 'sticky', top: -20, zIndex: 20, display: 'flex', background: '#FFFFFF', borderBottom: '1px solid #E5E7EB', marginBottom: 16, marginLeft: -28, marginRight: -28, paddingLeft: 28, paddingRight: 28, paddingTop: 8, paddingBottom: 0, overflowX: 'auto', boxShadow: '0 2px 4px rgba(0,0,0,0.06)' }}>
         {SUB_TABS.map(({ key, label }) => {
           const cmColor = CM_SUB_COLORS[key] || '#14b8a6';
           const isActive = subTab === key;
@@ -4049,7 +4050,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               borderBottom: `2px solid ${isActive ? cmColor : 'transparent'}`,
               background: isActive ? cmColor + '18' : 'transparent',
               borderRadius: isActive ? '6px 6px 0 0' : 0,
-              color: isActive ? cmColor : '#cbd5e1',
+              color: isActive ? cmColor : '#6B7280',
               cursor: 'pointer', fontSize: 13, fontWeight: isActive ? 700 : 600,
               marginBottom: -2, whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent',
             }}
@@ -4068,14 +4069,14 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
           <button
             onClick={addMatSec}
             className="ri-add-item"
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #2e3d5c', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #D1D5DB', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
           {/* Materials Grand Total — sticky */}
           {seeRates && (
-          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Materials Total</span>
+          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#F8F9FA', borderTop: '2px solid rgba(249,115,22,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Materials Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#14b8a6' }}>{fmtC(matTotal)}</span>
           </div>
           )}
@@ -4086,22 +4087,22 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       {subTab === 'labor' && (
         <div>
           {/* Crew info */}
-          <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
+          <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
-            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           </div>
           {/* Sections */}
           {data.labor.sections.map(sec => renderLaborSection(sec))}
           <button
             onClick={addLaborSec}
             className="ri-add-item"
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #2e3d5c', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed #D1D5DB', borderRadius: 7, color: '#64748b', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
           {/* Labor Grand Total — sticky */}
           {seeRates && (
-          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#0f1117', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
+          <div style={{ position: 'sticky', bottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', marginTop: 8, background: '#F8F9FA', borderTop: '2px solid rgba(99,102,241,0.4)', boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Labor Total</span>
             <span style={{ fontFamily: "'Courier New', monospace", fontSize: 22, fontWeight: 700, color: '#0d9488' }}>{fmtC(laborTotal)}</span>
           </div>
@@ -4113,20 +4114,20 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
       {subTab === 'summary' && (
         <div>
           {/* Job Cost Breakdown */}
-          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+          <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
             {[
               { label: 'Materials', val: matTotal, color: '#14b8a6' },
               { label: 'Labor', val: laborTotal, color: '#0d9488' },
             ].map(({ label, val, color }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
+                <span style={{ fontSize: 13, color: '#6B7280' }}>{label}</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color }}>{fmtC(val)}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #1e2535', marginBottom: 10 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>Subtotal</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{fmtC(subtotal)}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #E5E7EB', marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#6B7280' }}>Subtotal</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#111827' }}>{fmtC(subtotal)}</span>
             </div>
             {/* Overhead & Tax */}
             {[
@@ -4134,27 +4135,27 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               { label: 'Tax (%)', field: 'tax', pct: taxPct, amt: taxAmt },
             ].map(({ label, field, pct, amt }) => (
               <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#94a3b8', flex: 1 }}>{label}</span>
+                <span style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>{label}</span>
                 <input
                   type="text"
                   inputMode="decimal"
                   value={data.jobInfo[field]}
                   onChange={e => updInfo(field, e.target.value)}
                   placeholder="0"
-                  style={{ width: 60, padding: '6px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                  style={{ width: 60, padding: '6px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
-                <span style={{ fontSize: 11, color: '#475569', width: 14 }}>%</span>
+                <span style={{ fontSize: 11, color: '#9CA3AF', width: 14 }}>%</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#64748b', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', marginTop: 8, background: '#161b27', borderRadius: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>Total Job Cost</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>{fmtC(totalJobCost)}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', marginTop: 8, background: '#FFFFFF', borderRadius: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Total Job Cost</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#111827' }}>{fmtC(totalJobCost)}</span>
             </div>
           </div>
 
           {/* Profitability */}
-          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+          <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
@@ -4166,16 +4167,16 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                   value={data.jobInfo.contractPrice}
                   onChange={e => updInfo('contractPrice', e.target.value)}
                   placeholder="0.00"
-                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
               </div>
             </div>
             {[
-              { label: 'Total Cost', val: totalJobCost, color: '#e2e8f0' },
+              { label: 'Total Cost', val: totalJobCost, color: '#6B7280' },
               { label: 'Gross Profit', val: grossProfit, color: profitColor },
             ].map(({ label, val, color }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
+                <span style={{ fontSize: 13, color: '#6B7280' }}>{label}</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color }}>{fmtC(val)}</span>
               </div>
             ))}
@@ -4187,11 +4188,11 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
           {/* Per-Square Metrics */}
           {totalSq > 0 && (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, color: '#94a3b8' }}>Total Squares</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#e2e8f0', fontWeight: 700 }}>{totalSq.toFixed(1)} SQ</span>
+                <span style={{ fontSize: 13, color: '#6B7280' }}>Total Squares</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#6B7280', fontWeight: 700 }}>{totalSq.toFixed(1)} SQ</span>
               </div>
               {[
                 { label: 'Cost / SQ', val: costPerSq },
@@ -4199,19 +4200,19 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                 { label: 'Profit / SQ', val: profitPerSq },
               ].map(({ label, val }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
-                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#e2e8f0' }}>{fmtC(val)}</span>
+                  <span style={{ fontSize: 13, color: '#6B7280' }}>{label}</span>
+                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#6B7280' }}>{fmtC(val)}</span>
                 </div>
               ))}
             </div>
           )}
 
           {/* Crew Pay */}
-          <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+          <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
-              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#6366f1' }}>Total Labor Pay</span>
@@ -4219,7 +4220,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             </div>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
-              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
           </div>
         </div>
@@ -4235,7 +4236,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               <div style={{ fontSize: 12, color: '#64748b' }}>This form has been submitted and locked.</div>
             </div>
           ) : (
-            <div style={{ background: '#0f1117', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+            <div style={{ background: '#F8F9FA', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
                 <div style={{ display: 'flex', gap: 10 }}>
@@ -4243,7 +4244,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
                     <button
                       key={v}
                       onClick={() => updSignOff('inspectionPass', v)}
-                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#1e2535'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#64748b', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#E5E7EB'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#64748b', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                     >
                       {v === 'yes' ? 'Yes ✓' : 'No ✗'}
                     </button>
@@ -4257,12 +4258,12 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
               ].map(({ field, label, type }) => (
                 <div key={field} style={{ marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
-                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
                 </div>
               ))}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
-                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7, color: '#e2e8f0', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
               </div>
             </div>
           )}
@@ -4278,7 +4279,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
             <button
               onClick={() => window.print()}
               className="ri-btn ri-btn-secondary"
-              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 10, color: '#94a3b8', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 10, color: '#6B7280', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
             >
               Print
             </button>
@@ -4296,7 +4297,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
     || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Full Replacement'];
-  const tradeColor = TRADE_COLORS[job.trade] || '#f97316';
+  const tradeColor = TRADE_COLORS[job.trade] || '#E8722A';
 
   const [checks, setChecks] = useState(() => {
     const init = {};
@@ -4361,22 +4362,22 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const doneCount = Object.values(checks).filter(c => c.done).length;
   const total = steps.length;
   const pct = Math.round(doneCount / total * 100);
-  const statusColor = pct === 100 ? '#22c55e' : pct > 0 ? '#f97316' : '#6366f1';
+  const statusColor = pct === 100 ? '#22c55e' : pct > 0 ? '#E8722A' : '#6366f1';
 
   // Full-screen overlay + flex-column modal: header is pinned, only content scrolls
   const jobOverlay = {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)',
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
     display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center',
     zIndex: 1000, padding: isMobile ? 0 : 20,
   };
   const jobModal = {
-    background: '#1a2236', border: isMobile ? 'none' : '1px solid #2e3d5c',
+    background: '#FFFFFF', border: isMobile ? 'none' : '1px solid #E5E7EB',
     borderRadius: isMobile ? '16px 16px 0 0' : 14,
     width: '100%', maxWidth: isMobile ? '100vw' : 600,
     height: isMobile ? '96dvh' : '90vh',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     position: 'relative',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
   };
 
   return (
@@ -4421,7 +4422,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           </div>
 
           {/* Modal tab bar */}
-          <div style={{ display: 'flex', background: '#161b27', borderBottom: '2px solid #253048', borderRadius: '8px 8px 0 0', marginBottom: 0, overflowX: 'auto', padding: '4px 4px 0' }}>
+          <div style={{ display: 'flex', background: '#FFFFFF', borderBottom: '2px solid #E5E7EB', borderRadius: '8px 8px 0 0', marginBottom: 0, overflowX: 'auto', padding: '4px 4px 0' }}>
           {[
             { key: 'checklist', label: 'Checklist' },
             { key: 'crew', label: 'Crew' },
@@ -4429,7 +4430,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             { key: 'chat', label: msgCount > 0 ? `Chat (${msgCount})` : 'Chat' },
             ...(rolePerms?.seeCostManager !== false ? [{ key: 'crewpay', label: hasCostMgr ? 'Cost Manager ●' : 'Cost Manager' }] : []),
           ].map(({ key, label }) => {
-            const accent = SECTION_COLORS[key] || '#f97316';
+            const accent = SECTION_COLORS[key] || '#E8722A';
             const isActive = modalTab === key;
             return (
             <button
@@ -4441,7 +4442,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 borderBottom: `2px solid ${isActive ? accent : 'transparent'}`,
                 background: isActive ? accent + '18' : 'transparent',
                 borderRadius: isActive ? '6px 6px 0 0' : 0,
-                color: isActive ? accent : '#cbd5e1',
+                color: isActive ? accent : '#6B7280',
                 cursor: 'pointer', fontSize: 13, fontWeight: isActive ? 700 : 600,
                 marginBottom: -2, whiteSpace: 'nowrap', flexShrink: 0,
                 WebkitTapHighlightColor: 'transparent',
@@ -4462,8 +4463,8 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           <>
             <div style={S.sectionLabel}>Job Notes</div>
             <div style={{
-              fontSize: 13, color: '#94a3b8', marginBottom: 20,
-              padding: '10px 12px', background: '#0f1117', borderRadius: 6,
+              fontSize: 13, color: '#6B7280', marginBottom: 20,
+              padding: '10px 12px', background: '#F8F9FA', borderRadius: 6,
             }}>
               {job.notes}
             </div>
@@ -4482,7 +4483,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                       )}
                     </div>
                     <span style={S.checkLabel(c.done)}>
-                      <span style={{ color: '#475569', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
+                      <span style={{ color: '#9CA3AF', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
                       {step.label}
                     </span>
                     {c.ts && <span style={S.checkTs}>{c.ts}</span>}
@@ -4492,7 +4493,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             </div>
 
             {/* Schedule / reschedule row */}
-            <div style={{ marginTop: 16, background: '#0f1117', borderRadius: 7, padding: '10px 12px' }}>
+            <div style={{ marginTop: 16, background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
               {editingSchedule ? (
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Schedule</div>
@@ -4519,13 +4520,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                     <button
                       className="ri-btn ri-btn-secondary"
-                      style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 12 }}
+                      style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', cursor: 'pointer', fontSize: 12 }}
                       onClick={() => setEditingSchedule(false)}
                     >
                       Cancel
                     </button>
                     <button
-                      style={{ flex: 2, padding: '8px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                      style={{ flex: 2, padding: '8px', background: 'linear-gradient(135deg, #E8722A, #ea580c)', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
                       onClick={() => {
                         if (onUpdateSchedule) onUpdateSchedule(job.id, schedDate, schedDur);
                         setEditingSchedule(false);
@@ -4539,7 +4540,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontSize: 11, color: '#64748b' }}>📅</span>
                   <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 500 }}>
+                    <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 500 }}>
                       {job.scheduledDate || 'Not scheduled'}
                     </span>
                     {job.scheduledDate && (
@@ -4551,7 +4552,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   {onUpdateSchedule && (
                     <button
                       className="ri-btn ri-btn-secondary"
-                      style={{ padding: '4px 10px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
+                      style={{ padding: '4px 10px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
                       onClick={() => setEditingSchedule(true)}
                     >
                       {job.scheduledDate ? 'Reschedule' : 'Schedule'}
@@ -4573,16 +4574,16 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   </button>
                 ) : confirmComplete ? (
                   <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8, padding: '12px 14px' }}>
-                    <div style={{ fontSize: 13, color: '#f97316', marginBottom: 10 }}>Not all checklist items are done. Complete anyway?</div>
+                    <div style={{ fontSize: 13, color: '#E8722A', marginBottom: 10 }}>Not all checklist items are done. Complete anyway?</div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 7, color: '#94a3b8', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
+                      <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 7, color: '#6B7280', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
                       <button style={{ flex: 2, padding: '8px', background: '#22c55e', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }} onClick={() => onComplete(job.id)}>Complete Anyway</button>
                     </div>
                   </div>
                 ) : (
                   <button
                     className="ri-btn ri-btn-secondary"
-                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 8, color: '#94a3b8', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 8, color: '#6B7280', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                     onClick={() => setConfirmComplete(true)}
                   >
                     Mark as Complete
@@ -4592,11 +4593,11 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             )}
 
             {/* ── Change Orders ── */}
-            <div style={{ marginTop: 24, borderTop: '1px solid #1e2535', paddingTop: 16 }}>
+            <div style={{ marginTop: 24, borderTop: '1px solid #E5E7EB', paddingTop: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <div style={S.sectionLabel}>Change Orders</div>
                 {!showCOForm && (
-                  <button onClick={() => setShowCOForm(true)} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                  <button onClick={() => setShowCOForm(true)} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
                     + Add Change Order
                   </button>
                 )}
@@ -4604,20 +4605,20 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Existing change orders */}
               {changeOrders.length === 0 && !showCOForm && (
-                <div style={{ fontSize: 12, color: '#475569', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
+                <div style={{ fontSize: 12, color: '#9CA3AF', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
               )}
               {changeOrders.map(co => {
                 const stColor = co.status === 'Approved' ? '#22c55e' : co.status === 'Declined' ? '#ef4444' : '#f59e0b';
                 return (
-                  <div key={co.id} style={{ background: '#0f1117', border: '1px solid #1e2535', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
+                  <div key={co.id} style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{co.title}</div>
+                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#111827' }}>{co.title}</div>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: stColor + '18', color: stColor }}>{co.status}</span>
                     </div>
-                    {co.description && <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 6 }}>{co.description}</div>}
+                    {co.description && <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 6 }}>{co.description}</div>}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11 }}>
                       <span style={{ fontWeight: 700, color: '#22c55e' }}>+{fmt(co.amount)}</span>
-                      <span style={{ color: '#475569' }}>{co.date}</span>
+                      <span style={{ color: '#9CA3AF' }}>{co.date}</span>
                       {co.status === 'Pending' && (
                         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
                           <button onClick={() => setChangeOrders(prev => prev.map(c => c.id === co.id ? { ...c, status: 'Approved' } : c))} style={{ padding: '3px 10px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, color: '#22c55e', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>Approve</button>
@@ -4639,8 +4640,8 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Add change order form */}
               {showCOForm && (
-                <div style={{ background: '#0f1117', border: '1px solid #f9731644', borderRadius: 8, padding: '12px', marginTop: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#f97316', marginBottom: 10 }}>New Change Order</div>
+                <div style={{ background: '#F8F9FA', border: '1px solid #E8722A44', borderRadius: 8, padding: '12px', marginTop: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#E8722A', marginBottom: 10 }}>New Change Order</div>
                   <input value={coTitle} onChange={e => setCOTitle(e.target.value)} placeholder="Title (e.g. Additional decking repair)" style={{ ...FI, marginBottom: 8 }} />
                   <textarea value={coDesc} onChange={e => setCODesc(e.target.value)} placeholder="Description" rows={2} style={{ ...FI, resize: 'none', marginBottom: 8 }} />
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -4656,11 +4657,11 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                         }
                       }}
                       disabled={!coTitle.trim() || !coAmount}
-                      style={{ flex: 1, padding: '9px', background: coTitle.trim() && coAmount ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 6, color: coTitle.trim() && coAmount ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: coTitle.trim() && coAmount ? 'pointer' : 'not-allowed' }}
+                      style={{ flex: 1, padding: '9px', background: coTitle.trim() && coAmount ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E5E7EB', border: 'none', borderRadius: 6, color: coTitle.trim() && coAmount ? '#fff' : '#9CA3AF', fontWeight: 700, fontSize: 12, cursor: coTitle.trim() && coAmount ? 'pointer' : 'not-allowed' }}
                     >
                       Submit for Approval
                     </button>
-                    <button onClick={() => { setShowCOForm(false); setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); }} style={{ padding: '9px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
+                    <button onClick={() => { setShowCOForm(false); setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); }} style={{ padding: '9px 14px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 6, color: '#6B7280', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
                   </div>
                 </div>
               )}
@@ -4714,7 +4715,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
     return result;
   }, [jobs, filter, tradeFilter]);
 
-  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#f97316', Complete: '#22c55e' }[s] || '#64748b');
+  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#64748b');
 
   return (
     <div>
@@ -4726,8 +4727,8 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
               : `${s} (${jobs.filter(j => j.status === s).length})`}
           </button>
         ))}
-        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#94a3b8' }}>
-          Total: <span style={{ color: '#f97316', fontWeight: 700, marginLeft: 4 }}>
+        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#6B7280' }}>
+          Total: <span style={{ color: '#E8722A', fontWeight: 700, marginLeft: 4 }}>
             {rolePerms?.seeDollars !== false ? fmt(filtered.reduce((s, j) => s + j.value, 0)) : '—'}
           </span>
         </div>
@@ -4735,7 +4736,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
 
       <div style={S.tradeFilterRow}>
         <button
-          style={S.tradeFilterBtn(tradeFilter === 'all', '#f97316')}
+          style={S.tradeFilterBtn(tradeFilter === 'all', '#E8722A')}
           onClick={() => setTradeFilter('all')}
         >
           All Job Types
@@ -4811,7 +4812,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
                 </div>
               </div>
 
-              <div style={{ marginTop: 10, fontSize: 11, color: '#475569' }}>
+              <div style={{ marginTop: 10, fontSize: 11, color: '#9CA3AF' }}>
                 📅 Scheduled: {job.scheduledDate}
               </div>
             </div>
@@ -4859,7 +4860,7 @@ const DEMO_TEAM = [
   },
   {
     id: 't3', name: 'Dale Russo', initials: 'DR',
-    color: '#f97316', role: 'Sales Rep', status: 'away',
+    color: '#E8722A', role: 'Sales Rep', status: 'away',
     leads: 11, won: 3, lost: 4, winRate: 43,
     pipelineValue: 94200, revenue: 67800,
     callbacksDue: 8, avgDealAge: 41,
@@ -4883,12 +4884,12 @@ function TeamTab() {
       }}>
         {[
           { label: 'Total Leads', value: totals.leads, color: '#6366f1' },
-          { label: 'Pipeline Value', value: fmt(totals.pipeline), color: '#f97316' },
+          { label: 'Pipeline Value', value: fmt(totals.pipeline), color: '#E8722A' },
           { label: 'Revenue Closed', value: fmt(totals.revenue), color: '#22c55e' },
           { label: 'Callbacks Due', value: totals.callbacks, color: '#ef4444' },
         ].map(({ label, value, color }) => (
           <div key={label} style={{
-            background: '#161b27', border: '1px solid #253048', borderRadius: 10,
+            background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10,
             padding: '14px 16px',
           }}>
             <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
@@ -4903,8 +4904,8 @@ function TeamTab() {
           <div
             key={rep.id}
             style={{
-              background: hovered === rep.id ? '#1a2035' : '#161b27',
-              border: `1px solid ${hovered === rep.id ? rep.color + '44' : '#1e2535'}`,
+              background: hovered === rep.id ? '#1a2035' : '#FFFFFF',
+              border: `1px solid ${hovered === rep.id ? rep.color + '44' : '#E5E7EB'}`,
               borderRadius: 12, padding: '16px 20px',
               display: 'grid', gridTemplateColumns: 'auto 1fr repeat(5, auto)',
               gap: 16, alignItems: 'center',
@@ -4925,7 +4926,7 @@ function TeamTab() {
 
             {/* Name + role */}
             <div>
-              <div style={{ fontWeight: 600, fontSize: 14, color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 8 }}>
                 {rep.name}
                 <span style={{
                   fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 10,
@@ -4941,15 +4942,15 @@ function TeamTab() {
 
             {/* Stats */}
             {[
-              { label: 'Leads', value: rep.leads, color: '#94a3b8' },
-              { label: 'Win Rate', value: `${rep.winRate}%`, color: rep.winRate >= 70 ? '#22c55e' : rep.winRate >= 50 ? '#f97316' : '#ef4444' },
-              { label: 'Pipeline', value: fmt(rep.pipelineValue), color: '#f97316' },
+              { label: 'Leads', value: rep.leads, color: '#6B7280' },
+              { label: 'Win Rate', value: `${rep.winRate}%`, color: rep.winRate >= 70 ? '#22c55e' : rep.winRate >= 50 ? '#E8722A' : '#ef4444' },
+              { label: 'Pipeline', value: fmt(rep.pipelineValue), color: '#E8722A' },
               { label: 'Closed Revenue', value: fmt(rep.revenue), color: '#22c55e' },
-              { label: 'Callbacks Due', value: rep.callbacksDue, color: rep.callbacksDue > 5 ? '#ef4444' : '#94a3b8' },
+              { label: 'Callbacks Due', value: rep.callbacksDue, color: rep.callbacksDue > 5 ? '#ef4444' : '#6B7280' },
             ].map(({ label, value, color }) => (
               <div key={label} style={{ textAlign: 'center', minWidth: 80 }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color }}>{value}</div>
-                <div style={{ fontSize: 10, color: '#475569', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -4963,15 +4964,15 @@ function TeamTab() {
 const A = {
   page: {
     minHeight: '100vh',
-    background: '#0f1117',
+    background: '#F8F9FA',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   card: {
-    background: '#161b27',
-    border: '1px solid #253048',
+    background: '#FFFFFF',
+    border: '1px solid #E5E7EB',
     borderRadius: 16,
     padding: '40px 40px',
     width: '100%',
@@ -4980,14 +4981,14 @@ const A = {
   logo: {
     fontSize: 28,
     fontWeight: 800,
-    color: '#f97316',
+    color: '#E8722A',
     letterSpacing: '-1px',
     textAlign: 'center',
     marginBottom: 8,
   },
   tagline: {
     fontSize: 13,
-    color: '#475569',
+    color: '#6B7280',
     textAlign: 'center',
     marginBottom: 36,
   },
@@ -4995,29 +4996,29 @@ const A = {
     display: 'block',
     fontSize: 12,
     fontWeight: 600,
-    color: '#94a3b8',
+    color: '#6B7280',
     marginBottom: 6,
     marginTop: 18,
   },
   input: {
     width: '100%',
     padding: '10px 14px',
-    background: '#111823',
-    border: '1px solid #2e3d5c',
+    background: '#F9FAFB',
+    border: '1px solid #D1D5DB',
     borderRadius: 8,
-    color: '#e2e8f0',
+    color: '#111827',
     fontSize: 14,
     outline: 'none',
     boxSizing: 'border-box',
   },
   inputFocus: {
-    border: '1px solid #f97316',
+    border: '1px solid #E8722A',
   },
   btn: {
     width: '100%',
     padding: '11px 16px',
     marginTop: 24,
-    background: 'linear-gradient(135deg, #f97316, #ea580c)',
+    background: 'linear-gradient(135deg, #E8722A, #ea580c)',
     border: 'none',
     borderRadius: 8,
     color: '#fff',
@@ -5031,9 +5032,9 @@ const A = {
     padding: '11px 16px',
     marginTop: 10,
     background: 'transparent',
-    border: '1px solid #3a4d6b',
+    border: '1px solid #D1D5DB',
     borderRadius: 8,
-    color: '#94a3b8',
+    color: '#6B7280',
     fontSize: 14,
     fontWeight: 500,
     cursor: 'pointer',
@@ -5042,12 +5043,12 @@ const A = {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 13,
-    color: '#475569',
+    color: '#9CA3AF',
   },
   linkBtn: {
     background: 'none',
     border: 'none',
-    color: '#f97316',
+    color: '#E8722A',
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 600,
@@ -5072,18 +5073,18 @@ const A = {
     width: active ? 24 : 8,
     height: 8,
     borderRadius: 4,
-    background: done ? '#f97316' : active ? '#f97316' : '#1e2535',
+    background: done ? '#E8722A' : active ? '#E8722A' : '#E5E7EB',
     transition: 'all 0.2s',
   }),
   stepTitle: {
     fontSize: 20,
     fontWeight: 700,
-    color: '#f1f5f9',
+    color: '#111827',
     marginBottom: 4,
   },
   stepSub: {
     fontSize: 13,
-    color: '#475569',
+    color: '#9CA3AF',
     marginBottom: 24,
   },
   tradeGrid: {
@@ -5098,8 +5099,8 @@ const A = {
   tradeCard: (selected, color) => ({
     padding: '10px 8px',
     borderRadius: 8,
-    border: `1px solid ${selected ? color : '#1e2535'}`,
-    background: selected ? color + '18' : '#0f1117',
+    border: `1px solid ${selected ? color : '#E5E7EB'}`,
+    background: selected ? color + '18' : '#F8F9FA',
     color: selected ? color : '#64748b',
     cursor: 'pointer',
     fontSize: 12,
@@ -5116,15 +5117,15 @@ const A = {
   planCard: (selected) => ({
     padding: '20px 16px',
     borderRadius: 10,
-    border: `2px solid ${selected ? '#f97316' : '#1e2535'}`,
-    background: selected ? 'rgba(249,115,22,0.06)' : '#0f1117',
+    border: `2px solid ${selected ? '#E8722A' : '#E5E7EB'}`,
+    background: selected ? 'rgba(249,115,22,0.06)' : '#F8F9FA',
     cursor: 'pointer',
     transition: 'all 0.12s',
     position: 'relative',
   }),
-  planName: { fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 },
-  planPrice: { fontSize: 22, fontWeight: 800, color: '#f97316', marginBottom: 12 },
-  planPriceSub: { fontSize: 11, color: '#475569', fontWeight: 400 },
+  planName: { fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 },
+  planPrice: { fontSize: 22, fontWeight: 800, color: '#E8722A', marginBottom: 12 },
+  planPriceSub: { fontSize: 11, color: '#9CA3AF', fontWeight: 400 },
   planFeature: {
     fontSize: 11,
     color: '#64748b',
@@ -5139,7 +5140,7 @@ const A = {
     top: -10,
     left: '50%',
     transform: 'translateX(-50%)',
-    background: '#f97316',
+    background: '#E8722A',
     color: '#fff',
     fontSize: 9,
     fontWeight: 700,
@@ -5237,9 +5238,9 @@ function LoginScreen({ onLogin, onStartSignup }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0 20px' }}>
-          <div style={{ flex: 1, height: 1, background: '#253048' }} />
-          <span style={{ fontSize: 12, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or</span>
-          <div style={{ flex: 1, height: 1, background: '#253048' }} />
+          <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+          <span style={{ fontSize: 12, color: '#9CA3AF', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or</span>
+          <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
         </div>
         <div>
           <button
@@ -5446,7 +5447,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                 style={{
                   width: '100%', marginBottom: 16, padding: '9px 12px',
                   background: 'transparent',
-                  border: '1px dashed #2d3748',
+                  border: '1px dashed #E5E7EB',
                   borderRadius: 8, color: '#64748b',
                   fontSize: 13, cursor: 'pointer', textAlign: 'center',
                 }}
@@ -5455,10 +5456,10 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
               </button>
             ) : (
               <div style={{
-                background: '#0f1117', border: '1px solid #253048',
+                background: '#F8F9FA', border: '1px solid #E5E7EB',
                 borderRadius: 8, padding: '14px', marginBottom: 16,
               }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 10 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 10 }}>
                   ✨ Custom Job Type Generator
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -5476,7 +5477,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                     disabled={customTradeLoading || !customTradeInput.trim()}
                     style={{
                       padding: '9px 16px',
-                      background: customTradeLoading ? '#1e2535' : 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                      background: customTradeLoading ? '#E5E7EB' : 'linear-gradient(135deg, #6366f1, #4f46e5)',
                       border: 'none', borderRadius: 7,
                       color: customTradeLoading ? '#64748b' : '#fff',
                       fontWeight: 700, fontSize: 13,
@@ -5549,12 +5550,12 @@ function EmptyState({ icon, title, sub, btnLabel, onAction }) {
       justifyContent: 'center', padding: '80px 24px', textAlign: 'center',
     }}>
       <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>{icon}</div>
-      <div style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 8 }}>{title}</div>
-      <div style={{ fontSize: 13, color: '#475569', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, color: '#6B7280', marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
       <button
         style={{
           padding: '10px 24px',
-          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          background: 'linear-gradient(135deg, #E8722A, #ea580c)',
           border: 'none', borderRadius: 8,
           color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
         }}
@@ -5786,17 +5787,17 @@ function TradeSelectScreen({ onSelect }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0f1117',
-      color: '#e2e8f0', fontFamily: "'Inter', -apple-system, sans-serif",
+      minHeight: '100vh', background: '#F8F9FA',
+      color: '#6B7280', fontFamily: "'Inter', -apple-system, sans-serif",
       padding: '40px 24px 80px',
     }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#f97316', letterSpacing: '-1px', marginBottom: 16 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#E8722A', letterSpacing: '-1px', marginBottom: 16 }}>
             RidgeOS
           </div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', marginBottom: 10 }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 10 }}>
             See RidgeOS in action
           </div>
           <div style={{ fontSize: 15, color: '#64748b', maxWidth: 480, margin: '0 auto' }}>
@@ -5818,8 +5819,8 @@ function TradeSelectScreen({ onSelect }) {
               <div
                 key={trade}
                 style={{
-                  background: isHovered ? color + '18' : '#161b27',
-                  border: `1px solid ${isHovered ? color : '#1e2535'}`,
+                  background: isHovered ? color + '18' : '#FFFFFF',
+                  border: `1px solid ${isHovered ? color : '#E5E7EB'}`,
                   borderRadius: 10, padding: '16px 10px',
                   cursor: 'pointer', textAlign: 'center',
                   transition: 'all 0.15s',
@@ -5835,7 +5836,7 @@ function TradeSelectScreen({ onSelect }) {
                 </div>
                 <div style={{
                   fontSize: 12, fontWeight: 600,
-                  color: isHovered ? color : '#94a3b8',
+                  color: isHovered ? color : '#6B7280',
                   lineHeight: 1.3,
                 }}>
                   {trade}
@@ -5847,8 +5848,8 @@ function TradeSelectScreen({ onSelect }) {
           {/* Custom trade tile */}
           <div
             style={{
-              background: showCustom ? 'rgba(99,102,241,0.1)' : '#161b27',
-              border: `1px dashed ${showCustom ? '#6366f1' : '#2d3748'}`,
+              background: showCustom ? 'rgba(99,102,241,0.1)' : '#FFFFFF',
+              border: `1px dashed ${showCustom ? '#6366f1' : '#E5E7EB'}`,
               borderRadius: 10, padding: '16px 10px',
               cursor: 'pointer', textAlign: 'center',
               transition: 'all 0.15s',
@@ -5865,11 +5866,11 @@ function TradeSelectScreen({ onSelect }) {
         {/* Custom trade panel */}
         {showCustom && (
           <div style={{
-            background: '#161b27', border: '1px solid #253048',
+            background: '#FFFFFF', border: '1px solid #E5E7EB',
             borderRadius: 12, padding: '20px 20px',
             marginBottom: 32,
           }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>
               ✨ Custom Job Type Generator
             </div>
             <div style={{ fontSize: 12, color: '#64748b', marginBottom: 14 }}>
@@ -5883,8 +5884,8 @@ function TradeSelectScreen({ onSelect }) {
                 placeholder="e.g. Metal Roofing, Slate Restoration, TPO Systems"
                 style={{
                   flex: 1, minWidth: 200, padding: '9px 12px',
-                  background: '#0f1117', border: '1px solid #2d3748',
-                  borderRadius: 7, color: '#e2e8f0', fontSize: 13,
+                  background: '#F8F9FA', border: '1px solid #E5E7EB',
+                  borderRadius: 7, color: '#6B7280', fontSize: 13,
                   outline: 'none',
                 }}
               />
@@ -5903,7 +5904,7 @@ function TradeSelectScreen({ onSelect }) {
                 <button
                   style={{
                     padding: '9px 16px',
-                    background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                    background: 'linear-gradient(135deg, #E8722A, #ea580c)',
                     border: 'none', borderRadius: 7,
                     color: '#fff', fontWeight: 700, fontSize: 13,
                     cursor: 'not-allowed', opacity: 0.5, whiteSpace: 'nowrap',
@@ -5923,12 +5924,12 @@ function TradeSelectScreen({ onSelect }) {
 
             {customResult && (
               <div style={{
-                background: '#0f1117', border: '1px solid rgba(99,102,241,0.25)',
+                background: '#F8F9FA', border: '1px solid rgba(99,102,241,0.25)',
                 borderRadius: 8, padding: '14px 16px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                   <div>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>
                       ✨ {customResult.name}
                     </span>
                     <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: 'rgba(99,102,241,0.2)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)' }}>
@@ -5949,27 +5950,27 @@ function TradeSelectScreen({ onSelect }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
                       Job Checklist ({customResult.checklist.length} steps)
                     </div>
                     {customResult.checklist.map((step, i) => (
-                      <div key={i} style={{ fontSize: 12, color: '#94a3b8', padding: '3px 0', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 10, color: '#475569', minWidth: 16 }}>{i + 1}.</span>
+                      <div key={i} style={{ fontSize: 12, color: '#6B7280', padding: '3px 0', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 10, color: '#9CA3AF', minWidth: 16 }}>{i + 1}.</span>
                         {step}
                       </div>
                     ))}
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
                       Pipeline Stages
                     </div>
                     {customResult.pipeline.map((stage, i) => (
-                      <div key={i} style={{ fontSize: 12, color: '#94a3b8', padding: '3px 0', borderBottom: '1px solid #1e2535', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div key={i} style={{ fontSize: 12, color: '#6B7280', padding: '3px 0', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontSize: 10, background: '#6366f120', color: '#818cf8', borderRadius: 4, padding: '1px 5px', minWidth: 18, textAlign: 'center' }}>{i + 1}</span>
                         {stage}
                       </div>
                     ))}
-                    <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 6, fontSize: 11, color: '#94a3b8' }}>
+                    <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 6, fontSize: 11, color: '#6B7280' }}>
                       🔒 Sign up to generate your own job type with real data
                     </div>
                   </div>
@@ -5981,14 +5982,14 @@ function TradeSelectScreen({ onSelect }) {
 
         {/* Bottom CTA */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+          <div style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 12 }}>
             Already have an account?
           </div>
           <button
             onClick={goToSignup}
             style={{
               padding: '10px 28px',
-              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              background: 'linear-gradient(135deg, #E8722A, #ea580c)',
               border: 'none', borderRadius: 8,
               color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
             }}
@@ -6041,7 +6042,7 @@ function PhotoLogTab({ tier }) {
         marginBottom: 16, flexWrap: 'wrap', gap: 8,
       }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Photo Log</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Photo Log</div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
             Job site documentation &amp; client report photos
           </div>
@@ -6050,8 +6051,8 @@ function PhotoLogTab({ tier }) {
           <button
             style={{
               padding: '7px 14px', borderRadius: 7,
-              background: '#1a1f2e', border: '1px solid #2d3748',
-              color: '#475569', fontSize: 12, fontWeight: 600,
+              background: '#FFFFFF', border: '1px solid #E5E7EB',
+              color: '#9CA3AF', fontSize: 12, fontWeight: 600,
               cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: 6,
             }}
             disabled
@@ -6070,16 +6071,16 @@ function PhotoLogTab({ tier }) {
       }}>
         <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>📸</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#f97316', marginBottom: 4 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#E8722A', marginBottom: 4 }}>
             Photo Log — tier features
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 6 : 16 }}>
             {[
               { tier: 'Starter', color: '#64748b', desc: 'Photo upload + captions' },
-              { tier: 'Pro',     color: '#f97316', desc: 'Client-facing toggle + PDF export' },
+              { tier: 'Pro',     color: '#E8722A', desc: 'Client-facing toggle + PDF export' },
               { tier: 'Business',color: '#6366f1', desc: 'Crew attribution + bulk download' },
             ].map(({ tier: t, color, desc }) => (
-              <span key={t} style={{ fontSize: 12, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span key={t} style={{ fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10, background: color + '22', color, border: `1px solid ${color}33` }}>{t}</span>
                 {desc}
               </span>
@@ -6100,15 +6101,15 @@ function PhotoLogTab({ tier }) {
             gap: 10,
           }}>
             <span style={{ fontSize: 32 }}>🔒</span>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0' }}>Photo Log — Pro feature</div>
-            <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', maxWidth: 260 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#6B7280' }}>Photo Log — Pro feature</div>
+            <div style={{ fontSize: 12, color: '#6B7280', textAlign: 'center', maxWidth: 260 }}>
               Upgrade to Pro or Business to access the photo log.
             </div>
             <button
               onClick={() => { window.location.href = '/'; }}
               style={{
                 marginTop: 4, padding: '7px 20px',
-                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                background: 'linear-gradient(135deg, #E8722A, #ea580c)',
                 border: 'none', borderRadius: 7,
                 color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
               }}
@@ -6155,17 +6156,17 @@ function PhotoLogTab({ tier }) {
               <div
                 key={photo.id}
                 style={{
-                  background: '#161b27', border: '1px solid #253048',
+                  background: '#FFFFFF', border: '1px solid #E5E7EB',
                   borderRadius: 10, overflow: 'hidden',
                 }}
               >
                 {/* Thumbnail placeholder */}
                 <div style={{
-                  height: 130, background: '#0d1117',
+                  height: 130, background: '#F8F9FA',
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
                   gap: 8, position: 'relative',
-                  borderBottom: '1px solid #1e2535',
+                  borderBottom: '1px solid #E5E7EB',
                 }}>
                   {/* Phase badge on thumbnail */}
                   <span style={{
@@ -6189,16 +6190,16 @@ function PhotoLogTab({ tier }) {
                     </span>
                   )}
                   {/* Camera icon SVG */}
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2d3748" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                     <circle cx="12" cy="13" r="4"/>
                   </svg>
-                  <span style={{ fontSize: 11, color: '#374151' }}>{photo.time}</span>
+                  <span style={{ fontSize: 11, color: '#6B7280' }}>{photo.time}</span>
                 </div>
 
                 {/* Card body */}
                 <div style={{ padding: '10px 12px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', marginBottom: 4 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280', marginBottom: 4 }}>
                     {photo.caption}
                   </div>
                   <div style={{ fontSize: 11, color: '#64748b' }}>
@@ -6214,7 +6215,7 @@ function PhotoLogTab({ tier }) {
         <div style={{
           marginTop: 16, padding: '9px 14px',
           background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.18)',
-          borderRadius: 7, fontSize: 12, color: '#94a3b8',
+          borderRadius: 7, fontSize: 12, color: '#6B7280',
           display: 'flex', alignItems: 'center', gap: 6,
         }}>
           <span style={{ color: '#818cf8', fontWeight: 600 }}>{clientCount}</span>
@@ -6228,7 +6229,7 @@ function PhotoLogTab({ tier }) {
 // ─── Global Photo Log (real users) ───────────────────────────────────────────
 // Demo placeholder photo entries — colored tiles, no actual images
 const PHOTO_CATS = ['Pre-Install', 'Damage', 'In-Progress', 'Completion', 'Insurance', 'Punch List'];
-const PHOTO_CAT_COLORS = { 'Pre-Install': '#3b82f6', 'Damage': '#ef4444', 'In-Progress': '#f97316', 'Completion': '#22c55e', 'Insurance': '#8b5cf6', 'Punch List': '#f59e0b' };
+const PHOTO_CAT_COLORS = { 'Pre-Install': '#3b82f6', 'Damage': '#ef4444', 'In-Progress': '#E8722A', 'Completion': '#22c55e', 'Insurance': '#8b5cf6', 'Punch List': '#f59e0b' };
 
 const DEMO_JOB_PHOTOS = [
   { id: 'dp1', jobId: 201, category: 'Pre-Install', timestamp: 1744600000000, caption: 'North slope overview' },
@@ -6275,8 +6276,8 @@ function TeamManagementTab() {
   const isMobile = useMobile();
   const fileRef = useRef(null);
 
-  const roleColor = (r) => ({ Owner: '#22c55e', Foreman: '#f97316', Installer: '#64748b', Sales: '#6366f1', Estimator: '#8b5cf6' }[r] || '#475569');
-  const statusColor = (s) => ({ Active: '#22c55e', 'Invite Pending': '#f59e0b', Inactive: '#64748b' }[s] || '#475569');
+  const roleColor = (r) => ({ Owner: '#22c55e', Foreman: '#E8722A', Installer: '#64748b', Sales: '#6366f1', Estimator: '#8b5cf6' }[r] || '#9CA3AF');
+  const statusColor = (s) => ({ Active: '#22c55e', 'Invite Pending': '#f59e0b', Inactive: '#64748b' }[s] || '#9CA3AF');
 
   const parseCSV = (text) => {
     const lines = text.trim().split('\n').filter(l => l.trim());
@@ -6323,7 +6324,7 @@ function TeamManagementTab() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Team Management</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Team Management</div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{roster.length} team members</div>
         </div>
         <button onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
@@ -6334,13 +6335,13 @@ function TeamManagementTab() {
       {/* Team roster */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
         {roster.map(member => (
-          <div key={member.id} style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div key={member.id} style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 36, height: 36, borderRadius: '50%', background: roleColor(member.role) + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: roleColor(member.role), flexShrink: 0 }}>
               {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
-              <div style={{ fontSize: 11, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+              <div style={{ fontSize: 11, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: roleColor(member.role) + '18', color: roleColor(member.role) }}>{member.role}</span>
@@ -6365,8 +6366,8 @@ function TeamManagementTab() {
 
             {/* Mode toggle */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-              <button onClick={() => { setImportMode('csv'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'csv' ? '1px solid #22c55e' : '1px solid #253048', background: importMode === 'csv' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'csv' ? '#22c55e' : '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>CSV Upload</button>
-              <button onClick={() => { setImportMode('paste'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'paste' ? '1px solid #22c55e' : '1px solid #253048', background: importMode === 'paste' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'paste' ? '#22c55e' : '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Paste List</button>
+              <button onClick={() => { setImportMode('csv'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'csv' ? '1px solid #22c55e' : '1px solid #E5E7EB', background: importMode === 'csv' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'csv' ? '#22c55e' : '#6B7280', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>CSV Upload</button>
+              <button onClick={() => { setImportMode('paste'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'paste' ? '1px solid #22c55e' : '1px solid #E5E7EB', background: importMode === 'paste' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'paste' ? '#22c55e' : '#6B7280', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Paste List</button>
             </div>
 
             {importMode === 'csv' && (
@@ -6375,12 +6376,12 @@ function TeamManagementTab() {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 onClick={() => fileRef.current?.click()}
-                style={{ border: `2px dashed ${dragOver ? '#22c55e' : '#253048'}`, borderRadius: 10, padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: dragOver ? 'rgba(34,197,94,0.05)' : 'transparent', marginBottom: 16 }}
+                style={{ border: `2px dashed ${dragOver ? '#22c55e' : '#E5E7EB'}`, borderRadius: 10, padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: dragOver ? 'rgba(34,197,94,0.05)' : 'transparent', marginBottom: 16 }}
               >
                 <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFileRead(e.target.files[0]); }} />
                 <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Drop a .csv file here or click to browse</div>
-                <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280' }}>Drop a .csv file here or click to browse</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
               </div>
             )}
 
@@ -6400,12 +6401,12 @@ function TeamManagementTab() {
             {parsedPreview.length > 0 && (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8 }}>Preview ({parsedPreview.length} employees)</div>
-                <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid #1e2535', borderRadius: 6 }}>
+                <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid #E5E7EB', borderRadius: 6 }}>
                   {parsedPreview.map((p, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 10px', borderBottom: '1px solid #1e2535', fontSize: 12 }}>
-                      <span style={{ flex: 1, color: '#f1f5f9', fontWeight: 600 }}>{p.name}</span>
+                    <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 10px', borderBottom: '1px solid #E5E7EB', fontSize: 12 }}>
+                      <span style={{ flex: 1, color: '#111827', fontWeight: 600 }}>{p.name}</span>
                       <span style={{ color: '#64748b' }}>{p.email}</span>
-                      <span style={{ color: '#475569', fontSize: 10 }}>{p.role}</span>
+                      <span style={{ color: '#9CA3AF', fontSize: 10 }}>{p.role}</span>
                     </div>
                   ))}
                 </div>
@@ -6445,36 +6446,36 @@ function GlobalPhotoLog({ jobs }) {
     return (
       <div>
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Job Photos</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>Job Photos</div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
           {allJobs.map(job => {
             const count = photoCountForJob(job.id);
-            const tc = TRADE_COLORS[job.trade] || '#f97316';
-            const stColor = job.status === 'Complete' ? '#22c55e' : job.status === 'In Progress' ? '#f97316' : '#6366f1';
+            const tc = TRADE_COLORS[job.trade] || '#E8722A';
+            const stColor = job.status === 'Complete' ? '#22c55e' : job.status === 'In Progress' ? '#E8722A' : '#6366f1';
             return (
               <div
                 key={job.id}
                 onClick={() => { setSelectedJob(job); setCatFilter('All'); }}
                 style={{
-                  background: '#161b27', border: '1px solid #253048', borderRadius: 10,
+                  background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10,
                   padding: 14, cursor: 'pointer', transition: 'border-color 0.15s',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#06b6d4'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#253048'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; }}
               >
                 {/* Thumbnail area */}
                 <div style={{
-                  background: count > 0 ? '#0d1117' : '#111823', borderRadius: 8,
+                  background: count > 0 ? '#F8F9FA' : '#F3F4F6', borderRadius: 8,
                   height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 10, border: '1px solid #1e2535', overflow: 'hidden',
+                  marginBottom: 10, border: '1px solid #E5E7EB', overflow: 'hidden',
                 }}>
                   {count > 0 ? (
                     <div style={{ display: 'flex', gap: 3, padding: 4, width: '100%', height: '100%' }}>
                       {allPhotos.filter(p => String(p.jobId) === String(job.id)).slice(0, 3).map((p, i) => (
                         <div key={p.id} style={{
-                          flex: 1, background: PHOTO_CAT_COLORS[p.category] || '#475569',
+                          flex: 1, background: PHOTO_CAT_COLORS[p.category] || '#9CA3AF',
                           borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
                           opacity: 0.7 + i * 0.1,
                         }}>
@@ -6487,12 +6488,12 @@ function GlobalPhotoLog({ jobs }) {
                   )}
                 </div>
                 {/* Job info */}
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                <div style={{ fontSize: 10, color: '#475569', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: tc + '22', color: tc }}>{job.trade}</span>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: stColor + '22', color: stColor }}>{job.status}</span>
-                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#475569', fontWeight: 600, marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#9CA3AF', fontWeight: 600, marginLeft: 'auto' }}>
                     {count > 0 ? `${count} photos` : 'No photos'}
                   </span>
                 </div>
@@ -6508,16 +6509,16 @@ function GlobalPhotoLog({ jobs }) {
   const jobPhotos = allPhotos.filter(p => String(p.jobId) === String(selectedJob.id));
   const filtered = catFilter === 'All' ? jobPhotos : jobPhotos.filter(p => p.category === catFilter);
   const usedCats = ['All', ...PHOTO_CATS.filter(c => jobPhotos.some(p => p.category === c))];
-  const tc = TRADE_COLORS[selectedJob.trade] || '#f97316';
+  const tc = TRADE_COLORS[selectedJob.trade] || '#E8722A';
 
   return (
     <div>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 14, cursor: 'pointer', padding: '4px 8px' }}>← Back</button>
+        <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: 14, cursor: 'pointer', padding: '4px 8px' }}>← Back</button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
-          <div style={{ fontSize: 11, color: '#475569' }}>{selectedJob.address}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
+          <div style={{ fontSize: 11, color: '#9CA3AF' }}>{selectedJob.address}</div>
         </div>
         <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 6, background: tc + '22', color: tc }}>{selectedJob.trade}</span>
       </div>
@@ -6530,9 +6531,9 @@ function GlobalPhotoLog({ jobs }) {
           return (
             <button key={c} onClick={() => setCatFilter(c)} style={{
               padding: '5px 12px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-              border: isActive ? `1px solid ${color}` : '1px solid #1e2535',
+              border: isActive ? `1px solid ${color}` : '1px solid #E5E7EB',
               background: isActive ? color + '18' : 'transparent',
-              color: isActive ? color : '#94a3b8', whiteSpace: 'nowrap',
+              color: isActive ? color : '#6B7280', whiteSpace: 'nowrap',
             }}>
               {c} {c === 'All' ? `(${jobPhotos.length})` : `(${jobPhotos.filter(p => p.category === c).length})`}
             </button>
@@ -6542,20 +6543,20 @@ function GlobalPhotoLog({ jobs }) {
 
       {/* Photo grid */}
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed #1e2535', borderRadius: 10 }}>
+        <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed #E5E7EB', borderRadius: 10 }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
           <div style={{ fontSize: 13, color: '#64748b' }}>No photos in this category yet</div>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
           {filtered.map(photo => {
-            const catColor = PHOTO_CAT_COLORS[photo.category] || '#475569';
+            const catColor = PHOTO_CAT_COLORS[photo.category] || '#9CA3AF';
             const isPlaceholder = !photo.imageData;
             return (
               <div key={photo.id} style={{
                 position: 'relative', borderRadius: 8, overflow: 'hidden',
-                border: '1px solid #253048', aspectRatio: '4/3',
-                background: isPlaceholder ? catColor + '18' : '#0d1117',
+                border: '1px solid #E5E7EB', aspectRatio: '4/3',
+                background: isPlaceholder ? catColor + '18' : '#F8F9FA',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 cursor: isPlaceholder ? 'default' : 'pointer',
               }}>
@@ -6572,7 +6573,7 @@ function GlobalPhotoLog({ jobs }) {
                   background: 'rgba(0,0,0,0.7)', padding: '4px 7px',
                 }}>
                   <span style={{ background: catColor + '44', color: catColor, padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>
-                  <span style={{ fontSize: 9, color: '#94a3b8' }}>{photo.caption || formatTs(photo.timestamp)}</span>
+                  <span style={{ fontSize: 9, color: '#6B7280' }}>{photo.caption || formatTs(photo.timestamp)}</span>
                 </div>
               </div>
             );
@@ -6629,7 +6630,7 @@ function AddJobModal({ onSave, onClose }) {
     : { ...S.modal, maxWidth: 520 };
   const fi = (field) => ({
     ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '9px 12px',
-    border: `1px solid ${errors[field] ? '#ef4444' : '#1e2535'}`,
+    border: `1px solid ${errors[field] ? '#ef4444' : '#E5E7EB'}`,
   });
 
   return (
@@ -6665,8 +6666,8 @@ function AddJobModal({ onSave, onClose }) {
         <textarea style={{ ...fi('notes'), minHeight: 72, resize: 'vertical' }} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Job details, materials, crew notes..." />
 
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 8, color: '#94a3b8', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
-          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>Add Job</button>
+          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 8, color: '#6B7280', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>Add Job</button>
         </div>
       </div>
     </div>
@@ -6750,7 +6751,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={S.sectionLabel}>Crew</div>
         <button
-          style={{ fontSize: 11, fontWeight: 700, padding: '5px 12px', borderRadius: 6, background: showAssign ? '#1e2535' : 'rgba(249,115,22,0.12)', border: `1px solid ${showAssign ? '#2d3748' : 'rgba(249,115,22,0.3)'}`, color: showAssign ? '#94a3b8' : '#f97316', cursor: 'pointer' }}
+          style={{ fontSize: 11, fontWeight: 700, padding: '5px 12px', borderRadius: 6, background: showAssign ? '#E5E7EB' : 'rgba(249,115,22,0.12)', border: `1px solid ${showAssign ? '#E5E7EB' : 'rgba(249,115,22,0.3)'}`, color: showAssign ? '#6B7280' : '#E8722A', cursor: 'pointer' }}
           onClick={() => { setShowAssign(s => !s); setNewName(''); }}
         >
           {showAssign ? 'Done' : '+ Assign Crew'}
@@ -6758,7 +6759,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
       </div>
 
       {showAssign && (
-        <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
+        <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 8, padding: '12px', marginBottom: 12 }}>
           {/* Text input — always visible, fastest path */}
           <div style={{ display: 'flex', gap: 8, marginBottom: unassignedCrew.length > 0 ? 10 : 4 }}>
             <input
@@ -6767,12 +6768,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
               onChange={e => setNewName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCreateAndAssign(); } }}
               placeholder="Type crew member name…"
-              style={{ flex: 1, background: '#161b27', border: '1px solid #2d3748', borderRadius: 7, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+              style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 7, color: '#111827', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
             />
             <button
               onClick={handleCreateAndAssign}
               disabled={!newName.trim()}
-              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E5E7EB', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#9CA3AF', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
             >
               Add
             </button>
@@ -6780,19 +6781,19 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
           {/* Existing unassigned crew */}
           {unassignedCrew.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, color: '#475569', marginBottom: 6 }}>Or pick from your crew:</div>
+              <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 6 }}>Or pick from your crew:</div>
               {unassignedCrew.map(member => (
-                <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#161b27', border: '1px solid #253048' }}>
-                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#64748b' }}>
+                <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#64748b' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{member.name}</div>
-                    {member.role && <div style={{ fontSize: 11, color: '#475569' }}>{member.role}</div>}
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280' }}>{member.name}</div>
+                    {member.role && <div style={{ fontSize: 11, color: '#9CA3AF' }}>{member.role}</div>}
                   </div>
                   <button
                     onClick={() => doAssign(member.id)}
-                    style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}
+                    style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}
                   >
                     + Add
                   </button>
@@ -6801,15 +6802,15 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             </div>
           )}
           {unassignedCrew.length === 0 && !newName && (
-            <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>All crew members are assigned.</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>All crew members are assigned.</div>
           )}
         </div>
       )}
 
       {/* Assigned crew */}
       {assignedCrew.length === 0 && !showAssign && (
-        <div style={{ fontSize: 12, color: '#475569', padding: '4px 0 8px' }}>
-          No crew assigned yet. Click <span style={{ color: '#f97316' }}>+ Assign Crew</span> above.
+        <div style={{ fontSize: 12, color: '#9CA3AF', padding: '4px 0 8px' }}>
+          No crew assigned yet. Click <span style={{ color: '#E8722A' }}>+ Assign Crew</span> above.
         </div>
       )}
       {assignedCrew.map(member => {
@@ -6817,12 +6818,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
         const totalMs = memberTotalMs(member.id);
         const elapsed = open ? (now - open.clockIn) : 0;
         return (
-          <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#0f1117', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : '#1e2535'}` }}>
-            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#64748b' }}>
+          <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#F8F9FA', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : '#E5E7EB'}` }}>
+            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#64748b' }}>
               {member.name.slice(0, 2).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', marginBottom: 2 }}>{member.name}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280', marginBottom: 2 }}>{member.name}</div>
               <div style={{ fontSize: 11, color: '#64748b' }}>
                 {open
                   ? <span style={{ color: '#22c55e' }}>● Clocked in · {fmtDuration(elapsed)}</span>
@@ -6831,7 +6832,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             </div>
             <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
               <button
-                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid #2d3748', background: 'transparent', color: '#475569', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid #E5E7EB', background: 'transparent', color: '#9CA3AF', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => doUnassign(member.id)}
               >
                 Remove
@@ -6875,7 +6876,7 @@ function CrewMemberModal({ member, onSave, onClose }) {
   const mobModal = isMobile
     ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '90dvh', borderRadius: '16px 16px 0 0', margin: 0 }
     : { ...S.modal, maxWidth: 520 };
-  const inp = (err) => ({ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '9px 12px', border: `1px solid ${err ? '#ef4444' : '#1e2535'}` });
+  const inp = (err) => ({ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '9px 12px', border: `1px solid ${err ? '#ef4444' : '#E5E7EB'}` });
 
   return (
     <div style={mobOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -6900,7 +6901,7 @@ function CrewMemberModal({ member, onSave, onClose }) {
             const sel = specialties.includes(trade);
             const color = TRADE_COLORS[trade] || '#64748b';
             return (
-              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : '#1e2535'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
+              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : '#E5E7EB'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#64748b', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
                 {trade}
               </button>
             );
@@ -6908,8 +6909,8 @@ function CrewMemberModal({ member, onSave, onClose }) {
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 8, color: '#94a3b8', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
-          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #f97316, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>{member ? 'Save Changes' : 'Add Member'}</button>
+          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 8, color: '#6B7280', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>{member ? 'Save Changes' : 'Add Member'}</button>
         </div>
       </div>
     </div>
@@ -6963,13 +6964,13 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Crew</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Crew</div>
           <div style={{ fontSize: 13, color: '#64748b' }}>
             {crew.length} member{crew.length !== 1 ? 's' : ''} · Weekly hours overview
           </div>
         </div>
         <button
-          style={{ padding: '10px 18px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+          style={{ padding: '10px 18px', background: 'linear-gradient(135deg, #E8722A, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
           onClick={() => setCrewModal('add')}
         >
           + Add Member
@@ -6980,8 +6981,8 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
         <div style={{ textAlign: 'center', padding: 60 }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>👷</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>No crew members yet</div>
-          <div style={{ fontSize: 13, color: '#475569', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
-          <button style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={() => setCrewModal('add')}>
+          <div style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
+          <button style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #E8722A, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={() => setCrewModal('add')}>
             Add First Member
           </button>
         </div>
@@ -6995,37 +6996,37 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
             const sessionMs = status.clockedIn ? elapsed : 0;
 
             return (
-              <div key={member.id} style={{ background: '#161b27', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : '#1e2535'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none' }}>
+              <div key={member.id} style={{ background: '#FFFFFF', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : '#E5E7EB'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
+                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#f1f5f9' }}>{member.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#111827' }}>{member.name}</div>
                     {member.role && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{member.role}</div>}
-                    {member.phone && <div style={{ fontSize: 12, color: '#475569', marginTop: 1 }}>{member.phone}</div>}
+                    {member.phone && <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 1 }}>{member.phone}</div>}
                   </div>
                   <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-                    <button className="ri-btn ri-btn-secondary" style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #3a4d6b', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
+                    <button className="ri-btn ri-btn-secondary" style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
                     <button style={{ padding: '5px 8px', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 13, lineHeight: 1, WebkitTapHighlightColor: 'transparent' }} onClick={() => onDeleteMember(member.id)}>×</button>
                   </div>
                 </div>
 
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : '#1e2535'}` }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#475569', display: 'inline-block' }} />
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : '#E5E7EB'}` }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#9CA3AF', display: 'inline-block' }} />
                   <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#64748b' }}>
                     {status.clockedIn ? `On job · ${status.jobName}` : 'Off duty'}
                   </span>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-                  <div style={{ background: '#0f1117', borderRadius: 7, padding: '10px 12px' }}>
+                  <div style={{ background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
                     <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>This Week</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#f97316' }}>{fmtDuration(wMs + sessionMs)}</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#E8722A' }}>{fmtDuration(wMs + sessionMs)}</div>
                   </div>
-                  <div style={{ background: '#0f1117', borderRadius: 7, padding: '10px 12px' }}>
+                  <div style={{ background: '#F8F9FA', borderRadius: 7, padding: '10px 12px' }}>
                     <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>All Time</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0' }}>{fmtDuration(tMs + sessionMs)}</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#6B7280' }}>{fmtDuration(tMs + sessionMs)}</div>
                   </div>
                 </div>
 
@@ -7035,7 +7036,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                       <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: (TRADE_COLORS[t] || '#64748b') + '22', color: TRADE_COLORS[t] || '#64748b' }}>{t}</span>
                     ))}
                     {member.specialties.length > 3 && (
-                      <span style={{ fontSize: 10, color: '#475569', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
+                      <span style={{ fontSize: 10, color: '#9CA3AF', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
                     )}
                   </div>
                 )}
@@ -7112,28 +7113,28 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 320 }}>
       <div style={{ flex: 1, overflow: 'auto', maxHeight: 380, paddingBottom: 8 }}>
         {messages.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#475569' }}>
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9CA3AF' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#64748b' }}>No messages yet</div>
-            <div style={{ fontSize: 12, marginTop: 4, color: '#374151' }}>Start the conversation below</div>
+            <div style={{ fontSize: 12, marginTop: 4, color: '#6B7280' }}>Start the conversation below</div>
           </div>
         ) : messages.map(msg => (
           msg.type === 'system' ? (
             <div key={msg.id} style={{ textAlign: 'center', padding: '5px 0', margin: '4px 0' }}>
-              <span style={{ fontSize: 11, color: '#475569', background: '#0f1117', padding: '3px 12px', borderRadius: 20, border: '1px solid #253048' }}>
+              <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F8F9FA', padding: '3px 12px', borderRadius: 20, border: '1px solid #E5E7EB' }}>
                 {msg.text}
               </span>
             </div>
           ) : (
             <div key={msg.id} style={{ marginBottom: 14, padding: '0 2px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#6B7280', flexShrink: 0 }}>
                   {msg.senderName.slice(0, 2).toUpperCase()}
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f0' }}>{msg.senderName}</span>
-                <span style={{ fontSize: 11, color: '#374151' }}>{formatTs(msg.timestamp)}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#6B7280' }}>{msg.senderName}</span>
+                <span style={{ fontSize: 11, color: '#6B7280' }}>{formatTs(msg.timestamp)}</span>
               </div>
-              <div style={{ marginLeft: 34, fontSize: 13, color: '#cbd5e1', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{msg.text}</div>
+              <div style={{ marginLeft: 34, fontSize: 13, color: '#6B7280', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{msg.text}</div>
             </div>
           )
         ))}
@@ -7141,12 +7142,12 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
       </div>
 
       {!demoMessages && (
-        <div style={{ display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid #1e2535', marginTop: 4 }}>
+        <div style={{ display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid #E5E7EB', marginTop: 4 }}>
           <textarea
             style={{
               flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
-              background: '#111823', border: '1px solid #2e3d5c', borderRadius: 7,
-              color: '#e2e8f0', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
+              background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 7,
+              color: '#6B7280', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
               resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
               lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
             }}
@@ -7159,8 +7160,8 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
           <button
             style={{
               padding: '8px 14px', border: 'none', borderRadius: 7,
-              background: text.trim() ? 'linear-gradient(135deg, #f97316, #e8640c)' : '#1a2236',
-              color: text.trim() ? '#fff' : '#475569',
+              background: text.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#FFFFFF',
+              color: text.trim() ? '#fff' : '#9CA3AF',
               cursor: text.trim() ? 'pointer' : 'default',
               fontWeight: 600, fontSize: 13, flexShrink: 0,
               minWidth: 60, WebkitTapHighlightColor: 'transparent',
@@ -7208,7 +7209,7 @@ function ChatTab({ jobs }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Job Chat</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Job Chat</div>
         <div style={{ fontSize: 13, color: '#64748b' }}>Recent messages across all jobs</div>
       </div>
 
@@ -7224,7 +7225,7 @@ function ChatTab({ jobs }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: '#475569' }}>
+        <div style={{ textAlign: 'center', padding: 60, color: '#9CA3AF' }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>No messages yet</div>
           <div style={{ fontSize: 13 }}>Open a job and start chatting with your crew.</div>
@@ -7234,25 +7235,25 @@ function ChatTab({ jobs }) {
           {filtered.map(msg => (
             msg.type === 'system' ? (
               <div key={msg.id} style={{ textAlign: 'center', padding: '4px 0', marginBottom: 4 }}>
-                <span style={{ fontSize: 11, color: '#475569' }}>
+                <span style={{ fontSize: 11, color: '#9CA3AF' }}>
                   {jobName(msg.jobId)} · {msg.text}
                 </span>
               </div>
             ) : (
               <div key={msg.id} style={{
-                background: '#161b27', border: '1px solid #253048', borderRadius: 8,
+                background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8,
                 padding: '12px 16px', marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12,
               }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#6B7280', flexShrink: 0 }}>
                   {msg.senderName.slice(0, 2).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{msg.senderName}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#f97316', background: 'rgba(249,115,22,0.1)', padding: '1px 8px', borderRadius: 10 }}>{jobName(msg.jobId)}</span>
-                    <span style={{ fontSize: 11, color: '#374151', marginLeft: 'auto' }}>{formatTs(msg.timestamp)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#6B7280' }}>{msg.senderName}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#E8722A', background: 'rgba(249,115,22,0.1)', padding: '1px 8px', borderRadius: 10 }}>{jobName(msg.jobId)}</span>
+                    <span style={{ fontSize: 11, color: '#6B7280', marginLeft: 'auto' }}>{formatTs(msg.timestamp)}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.text}</div>
+                  <div style={{ fontSize: 13, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.text}</div>
                 </div>
               </div>
             )
@@ -7283,7 +7284,7 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 18, paddingRight: 40 }}>{title}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 18, paddingRight: 40 }}>{title}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {!targetJob && (
           <>
@@ -7299,8 +7300,8 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
         <label style={FLbl}>Duration (days)</label>
         <input type="number" min={1} max={365} style={{ ...FI, marginBottom: 20 }} value={duration} onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))} />
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button style={{ ...btnBase, background: '#1e2535', color: '#94a3b8' }} onClick={onClose}>Cancel</button>
-          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', color: jobId && date ? '#fff' : '#475569' }} onClick={handleSave} disabled={!jobId || !date}>
+          <button style={{ ...btnBase, background: '#E5E7EB', color: '#6B7280' }} onClick={onClose}>Cancel</button>
+          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E5E7EB', color: jobId && date ? '#fff' : '#9CA3AF' }} onClick={handleSave} disabled={!jobId || !date}>
             {isReschedule ? 'Reschedule' : 'Schedule'}
           </button>
         </div>
@@ -7414,13 +7415,13 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
   };
 
   return (
-    <div style={{ background: '#161b27', border: '1px solid #2d3748', borderRadius: 10, padding: '16px 18px', marginBottom: 16, position: 'relative' }}>
+    <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10, padding: '16px 18px', marginBottom: 16, position: 'relative' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{ flex: 1 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#f97316' }}>{isEdit ? 'Edit Entry' : '+ Schedule'}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#E8722A' }}>{isEdit ? 'Edit Entry' : '+ Schedule'}</span>
           {displayDate && <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>{displayDate}</span>}
-          <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{userTrade}</span>
+          <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 8 }}>{userTrade}</span>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
       </div>
@@ -7433,7 +7434,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) handleSave(); }}
         placeholder={`What's happening this day? (e.g. Roof replacement, final inspection, material delivery…)`}
         rows={3}
-        style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+        style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
       />
 
       {/* Secondary fields */}
@@ -7442,16 +7443,16 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
           value={customer}
           onChange={e => setCustomer(e.target.value)}
           placeholder="Client name (optional)"
-          style={{ flex: '2 1 160px', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+          style={{ flex: '2 1 160px', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: '1 1 120px' }}>
           <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>Duration:</span>
           <input
             type="number" min={1} max={365} value={duration}
             onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
-            style={{ width: 54, background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
+            style={{ width: 54, background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
           />
-          <span style={{ fontSize: 12, color: '#475569' }}>day{duration !== 1 ? 's' : ''}</span>
+          <span style={{ fontSize: 12, color: '#9CA3AF' }}>day{duration !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
@@ -7459,14 +7460,14 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
       <div style={{ marginBottom: showChecklist ? 10 : 0 }}>
         <button
           onClick={() => setShowChecklist(v => !v)}
-          style={{ background: 'none', border: 'none', color: showChecklist ? '#f97316' : '#64748b', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
+          style={{ background: 'none', border: 'none', color: showChecklist ? '#E8722A' : '#64748b', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
         >
           {showChecklist ? '▾ Checklist' : '▸ Add Checklist'}
         </button>
-        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#475569', marginLeft: 8 }}>{taskList.length} items</span>}
+        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 8 }}>{taskList.length} items</span>}
 
         {showChecklist && (
-          <div style={{ background: '#0f1117', border: '1px solid #253048', borderRadius: 8, padding: '10px 12px' }}>
+          <div style={{ background: '#F8F9FA', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px 12px' }}>
             {/* Input row */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
               <input
@@ -7474,9 +7475,9 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
                 onChange={e => setTaskInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTask(); } }}
                 placeholder='Step name, or "3. Step" to insert at position 3…'
-                style={{ flex: 1, background: '#161b27', border: '1px solid #2d3748', borderRadius: 6, color: '#f1f5f9', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
+                style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 6, color: '#111827', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
               />
-              <button onClick={useTemplate} style={{ padding: '6px 10px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              <button onClick={useTemplate} style={{ padding: '6px 10px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 6, color: '#6B7280', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Use {userTrade} template
               </button>
             </div>
@@ -7489,12 +7490,12 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
               </div>
             )}
             {/* Steps list */}
-            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
+            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
             {taskList.map((t, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < taskList.length - 1 ? '1px solid #1e2535' : 'none' }}>
-                <span style={{ fontSize: 11, color: '#475569', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
-                <span style={{ flex: 1, fontSize: 12, color: '#94a3b8' }}>{t}</span>
-                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < taskList.length - 1 ? '1px solid #E5E7EB' : 'none' }}>
+                <span style={{ fontSize: 11, color: '#9CA3AF', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
+                <span style={{ flex: 1, fontSize: 12, color: '#6B7280' }}>{t}</span>
+                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
               </div>
             ))}
           </div>
@@ -7503,12 +7504,12 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
 
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-        <span style={{ fontSize: 11, color: '#334155', marginRight: 'auto' }}>Ctrl+Enter to save</span>
-        <button onClick={onClose} style={{ padding: '7px 16px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 8, color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+        <span style={{ fontSize: 11, color: '#D1D5DB', marginRight: 'auto' }}>Ctrl+Enter to save</span>
+        <button onClick={onClose} style={{ padding: '7px 16px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 8, color: '#6B7280', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
         <button
           onClick={handleSave}
           disabled={!canSave}
-          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#475569', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
+          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E5E7EB', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#9CA3AF', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
         >
           {isEdit ? 'Update' : 'Schedule'}
         </button>
@@ -7522,7 +7523,7 @@ function StageChangeModal({ job, onSave, onClose }) {
   const stages = [
     { key: 'materials_ordered', label: 'Materials Ordered', color: '#8b5cf6' },
     { key: 'scheduled_for_install', label: 'Scheduled for Install', color: '#06b6d4' },
-    { key: 'in_progress', label: 'In Progress', color: '#f97316' },
+    { key: 'in_progress', label: 'In Progress', color: '#E8722A' },
     { key: 'punch_list', label: 'Punch List', color: '#ec4899' },
     { key: 'completed', label: 'Completed', color: '#22c55e' },
     { key: 'invoiced', label: 'Invoiced', color: '#a855f7' },
@@ -7531,7 +7532,7 @@ function StageChangeModal({ job, onSave, onClose }) {
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 300 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -7552,25 +7553,25 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {crew.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
+          <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {crew.map(m => {
               const assigned = assignedIds.includes(m.id);
               return (
-                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#0f1117', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : '#1e2535'}`, borderRadius: 8 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#f97316' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#64748b', flexShrink: 0 }}>
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F8F9FA', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, borderRadius: 8 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#64748b', flexShrink: 0 }}>
                     {m.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{m.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#6B7280' }}>{m.name}</div>
                     <div style={{ fontSize: 11, color: '#64748b' }}>{m.role}</div>
                   </div>
-                  <button onClick={() => assigned ? onUnassign(job.id, m.id) : onAssign(job.id, m.id)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer', background: assigned ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: assigned ? '#ef4444' : '#f97316' }}>
+                  <button onClick={() => assigned ? onUnassign(job.id, m.id) : onAssign(job.id, m.id)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer', background: assigned ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: assigned ? '#ef4444' : '#E8722A' }}>
                     {assigned ? 'Remove' : '+ Add'}
                   </button>
                 </div>
@@ -7578,7 +7579,7 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
             })}
           </div>
         )}
-        <button style={{ marginTop: 16, width: '100%', padding: '10px', background: '#1e2535', border: 'none', borderRadius: 8, color: '#94a3b8', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={onClose}>Done</button>
+        <button style={{ marginTop: 16, width: '100%', padding: '10px', background: '#E5E7EB', border: 'none', borderRadius: 8, color: '#6B7280', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={onClose}>Done</button>
       </div>
     </div>
   );
@@ -7589,19 +7590,19 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
   const todayJobs = useMemo(() => jobs.filter(j => jobOccupiesDate(j, TODAY)), [jobs]);
   const unassignedToday = useMemo(() => todayJobs.filter(j => !(assignments[String(j.id)] || []).length), [todayJobs, assignments]);
   return (
-    <div style={{ marginTop: 24, background: '#161b27', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 12, padding: 16 }}>
+    <div style={{ marginTop: 24, background: '#FFFFFF', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 12, padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#f97316' }}>Today's Dispatch</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#E8722A' }}>Today's Dispatch</div>
           <div style={{ fontSize: 12, color: '#64748b' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
         </div>
         <div style={{ fontSize: 12, color: '#64748b', textAlign: 'right' }}>
-          <span style={{ color: '#f1f5f9', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
-          <span style={{ color: unassignedToday.length ? '#f97316' : '#22c55e', fontWeight: 700 }}>{unassignedToday.length}</span> unassigned
+          <span style={{ color: '#111827', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
+          <span style={{ color: unassignedToday.length ? '#E8722A' : '#22c55e', fontWeight: 700 }}>{unassignedToday.length}</span> unassigned
         </div>
       </div>
       {todayJobs.length === 0 ? (
-        <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
+        <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: crew.length > 0 ? 16 : 0 }}>
           {todayJobs.map(job => {
@@ -7609,21 +7610,21 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
             const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
-              <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#0f1117', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#1e2535'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
+              <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
                   <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {jobDuration(job)}d</div>
                 </div>
                 {assignedCrew.length > 0 ? (
                   <div style={{ display: 'flex', gap: 3 }}>
                     {assignedCrew.slice(0, 3).map(m => (
-                      <div key={m.id} title={m.name} style={{ width: 22, height: 22, borderRadius: '50%', background: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>
+                      <div key={m.id} title={m.name} style={{ width: 22, height: 22, borderRadius: '50%', background: '#E8722A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>
                         {m.name.slice(0, 2).toUpperCase()}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <span style={{ fontSize: 11, color: '#f97316', fontWeight: 600 }}>Unassigned</span>
+                  <span style={{ fontSize: 11, color: '#E8722A', fontWeight: 600 }}>Unassigned</span>
                 )}
               </div>
             );
@@ -7639,13 +7640,13 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
               const busy = memberJobs.length > 0;
               const hasConflict = memberJobs.some(j => conflicts.has(`${member.id}-${String(j.id)}`));
               return (
-                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#0f1117', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : '#1e2535'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#f97316' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
+                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
-                    <div style={{ fontSize: 10, color: hasConflict ? '#ef4444' : busy ? '#f97316' : '#22c55e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+                    <div style={{ fontSize: 10, color: hasConflict ? '#ef4444' : busy ? '#E8722A' : '#22c55e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {hasConflict ? '⚠ Conflict' : busy ? memberJobs[0].customer : 'Available'}
                     </div>
                   </div>
@@ -7673,9 +7674,9 @@ function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, on
   ].filter(Boolean);
   return (
     <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', minWidth: 200, overflow: 'hidden' }}>
-      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#64748b', borderBottom: '1px solid #334155', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
+      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#64748b', borderBottom: '1px solid #D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
       {items.map(item => (
-        <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#e2e8f0', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
+        <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#6B7280', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}>
           <span style={{ width: 16, textAlign: 'center' }}>{item.icon}</span>
@@ -7692,16 +7693,16 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
   const dayJobs = jobs.filter(j => jobOccupiesDate(j, dateStr));
 
   return (
-    <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 10, padding: 16, marginTop: 12 }}>
+    <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10, padding: 16, marginTop: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14, gap: 8 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>
             {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
         </div>
         {onCreateForDate && (
-          <button onClick={onCreateForDate} style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={onCreateForDate} style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
             + New Job
           </button>
         )}
@@ -7709,7 +7710,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
       </div>
 
       {dayJobs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '20px 0', color: '#475569', fontSize: 13 }}>No jobs scheduled this day</div>
+        <div style={{ textAlign: 'center', padding: '20px 0', color: '#9CA3AF', fontSize: 13 }}>No jobs scheduled this day</div>
       ) : (
         <div style={{ marginBottom: 16 }}>
           {dayJobs.map(job => {
@@ -7720,10 +7721,10 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
               <div
                 key={job.id}
                 onClick={() => onJobClick && onJobClick(job)}
-                style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#0f1117', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#1e2535'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
+                style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#F8F9FA', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : '#E5E7EB'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{job.customer}</div>
+                  <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#111827' }}>{job.customer}</div>
                   <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: tc + '22', color: tc }}>{job.status}</span>
                 </div>
                 <div style={{ fontSize: 11, color: '#64748b', marginBottom: assignedCrew.length ? 6 : 0 }}>
@@ -7732,7 +7733,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
                 {assignedCrew.length > 0 && (
                   <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                     {assignedCrew.map(m => (
-                      <span key={m.id} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: '#1e2535', color: conflicts.has(`${m.id}-${String(job.id)}`) ? '#ef4444' : '#94a3b8' }}>
+                      <span key={m.id} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: '#E5E7EB', color: conflicts.has(`${m.id}-${String(job.id)}`) ? '#ef4444' : '#6B7280' }}>
                         {m.name}{conflicts.has(`${m.id}-${String(job.id)}`) ? ' ⚠' : ''}
                       </span>
                     ))}
@@ -7753,13 +7754,13 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
               const memberJobs = dayJobs.filter(j => (assignments[String(j.id)] || []).includes(member.id));
               const busy = memberJobs.length > 0;
               return (
-                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 7, background: '#0f1117', border: `1px solid ${busy ? 'rgba(249,115,22,0.3)' : '#1e2535'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#f97316' : '#1e2535', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
+                <div key={member.id} style={{ padding: '8px 10px', borderRadius: 7, background: '#F8F9FA', border: `1px solid ${busy ? 'rgba(249,115,22,0.3)' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#64748b' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
-                    <div style={{ fontSize: 10, color: busy ? '#f97316' : '#22c55e' }}>{busy ? memberJobs[0].customer : 'Available'}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+                    <div style={{ fontSize: 10, color: busy ? '#E8722A' : '#22c55e' }}>{busy ? memberJobs[0].customer : 'Available'}</div>
                   </div>
                 </div>
               );
@@ -7796,12 +7797,12 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
               onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
               onDragLeave={() => { if (onDragOver) onDragOver(null); }}
-              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(249,115,22,0.15)' : isSelected ? 'rgba(249,115,22,0.1)' : '#161b27', border: `1px solid ${isDragOver ? '#f97316' : isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(249,115,22,0.15)' : isSelected ? 'rgba(249,115,22,0.1)' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? 'rgba(249,115,22,0.5)' : '#E5E7EB'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
                 {isToday
-                  ? <span style={{ background: '#f97316', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
-                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#94a3b8' }}>{parseInt(dateStr.slice(8))}</span>
+                  ? <span style={{ background: '#E8722A', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
+                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#6B7280' }}>{parseInt(dateStr.slice(8))}</span>
                 }
               </div>
               {dayJobs.slice(0, maxVis).map(job => {
@@ -7821,7 +7822,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
                   </div>
                 );
               })}
-              {overflow > 0 && <div style={{ fontSize: 9, color: '#475569', padding: '1px 2px' }}>+{overflow}</div>}
+              {overflow > 0 && <div style={{ fontSize: 9, color: '#9CA3AF', padding: '1px 2px' }}>+{overflow}</div>}
               {dayNotes && dayNotes[dateStr] && <div style={{ fontSize: 8, color: '#818cf8', lineHeight: 1, paddingTop: 1 }}>&#128221;</div>}
             </div>
           );
@@ -7849,11 +7850,11 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
             onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
             onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
             onDragLeave={() => { if (onDragOver) onDragOver(null); }}
-            style={{ background: isDragOver ? 'rgba(249,115,22,0.12)' : isSelected ? 'rgba(249,115,22,0.08)' : '#161b27', border: `1px solid ${isDragOver ? '#f97316' : isSelected ? '#f97316' : isToday ? 'rgba(249,115,22,0.5)' : '#1e2535'}`, borderRadius: 8, padding: isMobile ? '6px 4px' : '10px 8px', cursor: 'pointer', minHeight: 100 }}
+            style={{ background: isDragOver ? 'rgba(249,115,22,0.12)' : isSelected ? 'rgba(249,115,22,0.08)' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? 'rgba(249,115,22,0.5)' : '#E5E7EB'}`, borderRadius: 8, padding: isMobile ? '6px 4px' : '10px 8px', cursor: 'pointer', minHeight: 100 }}
           >
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
               <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-              <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#f1f5f9', background: isToday ? '#f97316' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
+              <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#111827', background: isToday ? '#E8722A' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
                 {d.getDate()}
               </div>
             </div>
@@ -7927,7 +7928,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const backBtn = (
     <button
       onClick={() => setMode('menu')}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: '2px 0', marginBottom: 14 }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#6B7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: '2px 0', marginBottom: 14 }}
     >
       &#8592; Back
     </button>
@@ -7936,13 +7937,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const actionBtn = (icon, label, sub, onClick) => (
     <button
       onClick={onClick}
-      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px', background: '#161b27', border: '1px solid #253048', borderRadius: 9, cursor: 'pointer', textAlign: 'left', marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = '#253048'; e.currentTarget.style.background = '#161b27'; }}
+      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px', background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 9, cursor: 'pointer', textAlign: 'left', marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#E8722A'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#FFFFFF'; }}
     >
       <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0' }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#6B7280' }}>{label}</div>
         {sub && <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{sub}</div>}
       </div>
     </button>
@@ -7967,20 +7968,20 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     return (
       <button
         onClick={alreadyHere ? undefined : () => { onScheduleExisting(date, job.id); setJustScheduled(job); }}
-        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#0f1117' : '#161b27', border: '1px solid #253048', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
-        onMouseEnter={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; })}
-        onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#253048'; e.currentTarget.style.background = '#161b27'; })}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: alreadyHere ? '#F8F9FA' : '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, cursor: alreadyHere ? 'default' : 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box', opacity: alreadyHere ? 0.5 : 1 }}
+        onMouseEnter={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#E8722A'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; })}
+        onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#FFFFFF'; })}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748b' : '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
-          <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#64748b' : '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
+          <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>
             {job.customer && job.description ? `${job.customer} · ` : ''}{job.status || ''}{fmtDate ? ` · ${fmtDate}` : ''}
           </div>
           {crewNames && <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>&#128100; {crewNames}</div>}
         </div>
         {alreadyHere
-          ? <span style={{ fontSize: 10, color: '#475569', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
-          : <span style={{ fontSize: 11, color: '#f97316', fontWeight: 700, flexShrink: 0 }}>&#8594;</span>
+          ? <span style={{ fontSize: 10, color: '#9CA3AF', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
+          : <span style={{ fontSize: 11, color: '#E8722A', fontWeight: 700, flexShrink: 0 }}>&#8594;</span>
         }
       </button>
     );
@@ -8004,8 +8005,8 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     <div style={dayOverlay} onClick={onClose}>
       <div style={dayModalStyle} onClick={e => e.stopPropagation()}>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 2 }}>{displayDate}</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{displayDate}</div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20 }}>{subTitle}</div>
 
         {mode === 'menu' && (
@@ -8040,10 +8041,10 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by job or client name&#8230;"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
             />
             {filtered.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#475569', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
+              <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
             ) : (
               <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {unscheduledSection.length > 0 && (
@@ -8075,13 +8076,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Job description (required)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <input
               value={customer}
               onChange={e => setCustomer(e.target.value)}
               placeholder="Client name (optional)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <label style={{ fontSize: 12, color: '#64748b', flexShrink: 0 }}>Duration (days):</label>
@@ -8091,7 +8092,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 max={30}
                 value={duration}
                 onChange={e => setDuration(Math.max(1, Math.min(30, parseInt(e.target.value) || 1)))}
-                style={{ width: 60, background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
+                style={{ width: 60, background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
               />
             </div>
             <button
@@ -8102,7 +8103,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 }
               }}
               disabled={!description.trim()}
-              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E5E7EB', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#9CA3AF', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
             >
               Create &amp; Schedule
             </button>
@@ -8123,13 +8124,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } } }}
               placeholder="e.g. Office closed, rain day, equipment delivery&#8230;"
               rows={3}
-              style={{ width: '100%', boxSizing: 'border-box', background: '#0f1117', border: '1px solid #334155', borderRadius: 8, color: '#f1f5f9', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#F8F9FA', border: '1px solid #D1D5DB', borderRadius: 8, color: '#111827', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
             />
-            <div style={{ fontSize: 11, color: '#334155', marginBottom: 10 }}>Ctrl+Enter to save</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 10 }}>Ctrl+Enter to save</div>
             <button
               onClick={() => { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } }}
               disabled={!note.trim()}
-              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#1e2535', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#475569', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : '#E5E7EB', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#9CA3AF', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
             >
               Save Note
             </button>
@@ -8185,32 +8186,32 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
           const grandHours = jobDetails.reduce((s, d) => s + d.totalHours, 0);
           const grandLabor = jobDetails.reduce((s, d) => s + d.totalLabor, 0);
           const grandValue = dayJobs.reduce((s, j) => s + (j.value || 0), 0);
-          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#64748b', 'Scheduled': '#475569' }[s] || '#475569');
+          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#64748b', 'Scheduled': '#9CA3AF' }[s] || '#9CA3AF');
           const pill = (text, bg, fg) => ({ display: 'inline-block', fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 8, background: bg, color: fg, marginLeft: 4 });
           const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
-          const card = { background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '12px 14px', marginBottom: 8 };
+          const card = { background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '12px 14px', marginBottom: 8 };
 
           return (
             <div>
               {backBtn}
               {/* Day Totals */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 4 }}>
-                <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: '#f97316' }}>{grandHours.toFixed(1)}</div>
+                <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#E8722A' }}>{grandHours.toFixed(1)}</div>
                   <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Total Hours</div>
                 </div>
-                <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+                <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#3b82f6' }}>{allCrewIds.size}</div>
                   <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Crews Deployed</div>
                 </div>
-                <div style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+                <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#22c55e' }}>${grandValue.toLocaleString()}</div>
                   <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Active Job Value</div>
                 </div>
               </div>
 
               {dayJobs.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '28px 0', color: '#475569', fontSize: 13 }}>No jobs scheduled for this date.</div>
+                <div style={{ textAlign: 'center', padding: '28px 0', color: '#9CA3AF', fontSize: 13 }}>No jobs scheduled for this date.</div>
               )}
 
               {/* Jobs Scheduled */}
@@ -8218,38 +8219,38 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 <>
                   <div style={sectionLabel}>Jobs Scheduled ({jobDetails.length})</div>
                   {jobDetails.map(({ job, crewDetails: jcrew, totalHours: jHours, totalLabor: jLabor, completedCount, totalSteps, nextStep }) => {
-                    const tc = TRADE_COLORS[job.trade] || '#f97316';
+                    const tc = TRADE_COLORS[job.trade] || '#E8722A';
                     const estMargin = job.value > 0 ? Math.round((1 - jLabor / job.value) * 100) : null;
                     return (
                       <div key={job.id} style={card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                            <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>{job.address || ''}</div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{job.address || ''}</div>
                           </div>
                           <span style={{ ...pill('', tc + '22', tc), marginLeft: 8 }}>{job.trade}</span>
                         </div>
-                        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#94a3b8', marginBottom: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#6B7280', marginBottom: 8, flexWrap: 'wrap' }}>
                           <span>${(job.value || 0).toLocaleString()}</span>
                           <span>{jHours.toFixed(1)} hrs today</span>
                           <span>${jLabor.toFixed(0)} labor</span>
                           {estMargin !== null && <span style={{ color: estMargin > 40 ? '#22c55e' : estMargin > 20 ? '#f59e0b' : '#ef4444' }}>{estMargin}% est. margin</span>}
                         </div>
-                        <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ flex: 1, height: 4, background: '#1e2535', borderRadius: 2, overflow: 'hidden' }}>
+                        <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ flex: 1, height: 4, background: '#E5E7EB', borderRadius: 2, overflow: 'hidden' }}>
                             <div style={{ width: `${(completedCount / totalSteps) * 100}%`, height: '100%', background: tc, borderRadius: 2 }} />
                           </div>
                           <span style={{ fontSize: 10, color: '#64748b', flexShrink: 0 }}>{completedCount}/{totalSteps}</span>
                         </div>
-                        <div style={{ fontSize: 11, color: '#64748b' }}>Current: <span style={{ color: '#94a3b8' }}>{nextStep.label}</span></div>
+                        <div style={{ fontSize: 11, color: '#64748b' }}>Current: <span style={{ color: '#6B7280' }}>{nextStep.label}</span></div>
 
                         {/* Crew on this job */}
                         {jcrew.length > 0 && (
-                          <div style={{ marginTop: 8, borderTop: '1px solid #1e2535', paddingTop: 8 }}>
+                          <div style={{ marginTop: 8, borderTop: '1px solid #E5E7EB', paddingTop: 8 }}>
                             {jcrew.map(c => (
                               <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 12 }}>
-                                <span style={{ color: '#e2e8f0', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
-                                <span style={{ color: '#475569', fontSize: 10, minWidth: 60 }}>{c.role}</span>
+                                <span style={{ color: '#6B7280', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
+                                <span style={{ color: '#9CA3AF', fontSize: 10, minWidth: 60 }}>{c.role}</span>
                                 <span style={pill(c.status, statusColor(c.status) + '22', statusColor(c.status))}>{c.status}</span>
                                 <span style={{ color: '#64748b', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
                               </div>
@@ -8257,11 +8258,11 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                           </div>
                         )}
                         {jcrew.length === 0 && (
-                          <div style={{ fontSize: 11, color: '#475569', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
+                          <div style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
                         )}
                         {/* Action buttons */}
-                        <div style={{ display: 'flex', gap: 6, marginTop: 8, borderTop: '1px solid #1e2535', paddingTop: 8 }}>
-                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Job</button>
+                        <div style={{ display: 'flex', gap: 6, marginTop: 8, borderTop: '1px solid #E5E7EB', paddingTop: 8 }}>
+                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 6, color: '#6B7280', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Job</button>
                           <button style={{ flex: 1, padding: '6px', background: '#10b98118', border: '1px solid #10b98144', borderRadius: 6, color: '#10b981', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Message Crew</button>
                         </div>
                       </div>
@@ -8283,18 +8284,18 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                       const status = memberEntries[0]?.status || 'Scheduled';
                       const clockIn = memberEntries[0]?.clockIn || '—';
                       return (
-                        <div key={cid} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #1e2535', fontSize: 12 }}>
+                        <div key={cid} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #E5E7EB', fontSize: 12 }}>
                           <div style={{ minWidth: 110 }}>
-                            <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{member?.name || cid}</div>
-                            <div style={{ fontSize: 10, color: '#475569' }}>{member?.role || ''}</div>
+                            <div style={{ fontWeight: 600, color: '#6B7280' }}>{member?.name || cid}</div>
+                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{member?.role || ''}</div>
                           </div>
                           <div style={{ flex: 1, fontSize: 11, color: '#64748b' }}>
                             {memberJobs.map(d => d.job.customer).join(', ')}
                           </div>
                           <span style={pill(status, statusColor(status) + '22', statusColor(status))}>{status}</span>
                           <div style={{ textAlign: 'right', minWidth: 60 }}>
-                            <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{totalH.toFixed(1)}h</div>
-                            <div style={{ fontSize: 9, color: '#475569' }}>in {clockIn}</div>
+                            <div style={{ fontSize: 11, color: '#6B7280', fontWeight: 600 }}>{totalH.toFixed(1)}h</div>
+                            <div style={{ fontSize: 9, color: '#9CA3AF' }}>in {clockIn}</div>
                           </div>
                         </div>
                       );
@@ -8314,7 +8315,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               ) : (
                 <div style={{ ...card, marginTop: 12, border: '1px solid #7c3aed44' }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#a78bfa', marginBottom: 10 }}>Schedule a Job for {displayDate}</div>
-                  <select value={schedJobId} onChange={e => setSchedJobId(e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 13, marginBottom: 8, outline: 'none', fontFamily: 'inherit' }}>
+                  <select value={schedJobId} onChange={e => setSchedJobId(e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 13, marginBottom: 8, outline: 'none', fontFamily: 'inherit' }}>
                     <option value="">— Select a job —</option>
                     {jobs.filter(j => !j.scheduledDate || j.status === 'Scheduled').map(j => (
                       <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} (${(j.value || 0).toLocaleString()})</option>
@@ -8325,7 +8326,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                     {(crew || []).map(m => {
                       const sel = schedCrew.includes(m.id);
                       return (
-                        <button key={m.id} onClick={() => setSchedCrew(prev => sel ? prev.filter(x => x !== m.id) : [...prev, m.id])} style={{ padding: '4px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, border: sel ? '1px solid #7c3aed' : '1px solid #1e2535', background: sel ? 'rgba(124,58,237,0.15)' : 'transparent', color: sel ? '#a78bfa' : '#94a3b8', cursor: 'pointer' }}>
+                        <button key={m.id} onClick={() => setSchedCrew(prev => sel ? prev.filter(x => x !== m.id) : [...prev, m.id])} style={{ padding: '4px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, border: sel ? '1px solid #7c3aed' : '1px solid #E5E7EB', background: sel ? 'rgba(124,58,237,0.15)' : 'transparent', color: sel ? '#a78bfa' : '#6B7280', cursor: 'pointer' }}>
                           {m.name.split(' ')[0]}
                         </button>
                       );
@@ -8334,16 +8335,16 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 10, color: '#64748b', marginBottom: 3 }}>Start Time</div>
-                      <select value={schedTime} onChange={e => setSchedTime(e.target.value)} style={{ width: '100%', padding: '7px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}>
+                      <select value={schedTime} onChange={e => setSchedTime(e.target.value)} style={{ width: '100%', padding: '7px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}>
                         {['6:00 AM','6:30 AM','7:00 AM','7:30 AM','8:00 AM','8:30 AM','9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 10, color: '#64748b', marginBottom: 3 }}>Est. Hours</div>
-                      <input type="number" min={1} max={12} value={schedHours} onChange={e => setSchedHours(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))} style={{ width: '100%', padding: '7px 8px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                      <input type="number" min={1} max={12} value={schedHours} onChange={e => setSchedHours(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))} style={{ width: '100%', padding: '7px 8px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
                     </div>
                   </div>
-                  <input value={schedNotes} onChange={e => setSchedNotes(e.target.value)} placeholder="Notes (optional)" style={{ width: '100%', padding: '7px 10px', background: '#111823', border: '1px solid #2e3d5c', borderRadius: 6, color: '#e2e8f0', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 10 }} />
+                  <input value={schedNotes} onChange={e => setSchedNotes(e.target.value)} placeholder="Notes (optional)" style={{ width: '100%', padding: '7px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: 6, color: '#6B7280', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 10 }} />
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={() => {
@@ -8354,11 +8355,11 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                         }
                       }}
                       disabled={!schedJobId}
-                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : '#1e2535', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#475569', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
+                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : '#E5E7EB', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#9CA3AF', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
                     >
                       Add to Schedule
                     </button>
-                    <button onClick={() => setShowScheduleForm(false)} style={{ padding: '9px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+                    <button onClick={() => setShowScheduleForm(false)} style={{ padding: '9px 14px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 6, color: '#6B7280', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
                       Cancel
                     </button>
                   </div>
@@ -8371,10 +8372,10 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                   <div style={sectionLabel}>Hours Summary</div>
                   <div style={card}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 12px', fontSize: 11, color: '#64748b' }}>
-                      <div style={{ fontWeight: 700, color: '#94a3b8' }}>Job</div>
-                      <div style={{ fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>Hours</div>
-                      <div style={{ fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>Labor $</div>
-                      <div style={{ fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>Margin</div>
+                      <div style={{ fontWeight: 700, color: '#6B7280' }}>Job</div>
+                      <div style={{ fontWeight: 700, color: '#6B7280', textAlign: 'right' }}>Hours</div>
+                      <div style={{ fontWeight: 700, color: '#6B7280', textAlign: 'right' }}>Labor $</div>
+                      <div style={{ fontWeight: 700, color: '#6B7280', textAlign: 'right' }}>Margin</div>
                       {jobDetails.map(d => {
                         const em = d.job.value > 0 ? Math.round((1 - d.totalLabor / d.job.value) * 100) : null;
                         return (
@@ -8382,15 +8383,15 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                             <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingTop: 4 }}>{d.job.customer}</div>
                             <div style={{ textAlign: 'right', paddingTop: 4 }}>{d.totalHours.toFixed(1)}</div>
                             <div style={{ textAlign: 'right', paddingTop: 4 }}>${d.totalLabor.toFixed(0)}</div>
-                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#475569' }}>{em !== null ? `${em}%` : '—'}</div>
+                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#9CA3AF' }}>{em !== null ? `${em}%` : '—'}</div>
                           </div>
                         );
                       })}
-                      <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #253048', marginTop: 4 }} />
-                      <div style={{ fontWeight: 700, color: '#f1f5f9', paddingTop: 4 }}>Totals</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#f1f5f9', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#f1f5f9', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#475569', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
+                      <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #E5E7EB', marginTop: 4 }} />
+                      <div style={{ fontWeight: 700, color: '#111827', paddingTop: 4 }}>Totals</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#111827', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#111827', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#9CA3AF', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
                     </div>
                   </div>
                 </>
@@ -8443,7 +8444,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
     return set;
   }, [crew, assignments, scheduledJobs]);
 
-  const navBtn = { padding: '6px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 6, color: '#94a3b8', cursor: 'pointer', fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: 'transparent' };
+  const navBtn = { padding: '6px 14px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 6, color: '#6B7280', cursor: 'pointer', fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: 'transparent' };
   const currentStr = toDateStr(current);
 
   const prev = () => { const d = new Date(current); if (view === 'month') d.setMonth(d.getMonth() - 1); else if (view === 'week') d.setDate(d.getDate() - 7); else d.setDate(d.getDate() - 1); setCurrent(d); setSelectedDate(null); };
@@ -8504,16 +8505,16 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>Dispatch Board</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Dispatch Board</div>
           <div style={{ fontSize: 13, color: '#64748b' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
         {!isDemo && onCreate && (
-          <button onClick={() => setQuickBar({ date: TODAY, job: null })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={() => setQuickBar({ date: TODAY, job: null })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
             + New Job
           </button>
         )}
         {!isDemo && onSchedule && (
-          <button onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: null })} style={{ padding: '8px 14px', background: '#1e2535', border: '1px solid #2d3748', borderRadius: 8, color: '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: null })} style={{ padding: '8px 14px', background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 8, color: '#6B7280', fontWeight: 600, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
             Schedule Existing
           </button>
         )}
@@ -8531,8 +8532,8 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <button style={navBtn} onClick={prev}>‹</button>
         <button style={{ ...navBtn, fontSize: 12, padding: '6px 12px' }} onClick={() => { setCurrent(new Date(TODAY + 'T12:00:00')); setSelectedDate(null); }}>Today</button>
         <button style={navBtn} onClick={next}>›</button>
-        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#f1f5f9' }}>{headerLabel}</div>
-        {dragJobId && <span style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>Drop to reschedule</span>}
+        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#111827' }}>{headerLabel}</div>
+        {dragJobId && <span style={{ fontSize: 12, color: '#E8722A', fontWeight: 600 }}>Drop to reschedule</span>}
       </div>
 
       {/* ── Quick Schedule Bar ── */}
@@ -8552,14 +8553,14 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       {/* ── Unscheduled banner ── */}
       {unscheduledJobs.length > 0 && (
         <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 8, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 13, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
+          <span style={{ fontSize: 13, color: '#E8722A', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
             {unscheduledJobs.slice(0, 5).map(j => (
-              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 11, color: '#94a3b8', background: '#1e2535', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: 'pointer' }}>
+              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 11, color: '#6B7280', background: '#E5E7EB', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: 'pointer' }}>
                 {j.customer}
               </button>
             ))}
-            {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#475569' }}>+{unscheduledJobs.length - 5} more</span>}
+            {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#9CA3AF' }}>+{unscheduledJobs.length - 5} more</span>}
           </div>
         </div>
       )}
@@ -8590,13 +8591,13 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
             {unscheduledJobs.map(job => {
               const tc = TRADE_COLORS[job.trade] || '#64748b';
               return (
-                <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#161b27', border: '1px solid #253048', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
+                <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#FFFFFF', border: '1px solid #E5E7EB', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
                     <div style={{ fontSize: 11, color: '#64748b' }}>{job.trade} · {job.status}</div>
                   </div>
                   {!isDemo && onSchedule && (
-                    <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#f97316', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
+                    <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
                       Schedule
                     </button>
                   )}
@@ -8612,7 +8613,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8, padding: '10px 14px', marginTop: 8 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>📝</span>
           <div style={{ flex: 1, fontSize: 13, color: '#c7d2fe' }}>{dayNotes[dispatchDate]}</div>
-          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#475569', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
+          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
         </div>
       )}
 
@@ -8716,7 +8717,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
   starter: { label: 'Starter', color: '#64748b', desc: 'Basic pipeline management' },
-  pro:     { label: 'Pro',     color: '#f97316', desc: 'AI coaching + full analytics' },
+  pro:     { label: 'Pro',     color: '#E8722A', desc: 'AI coaching + full analytics' },
   business:{ label: 'Business',color: '#6366f1', desc: 'Team management + export' },
 };
 
@@ -8761,8 +8762,8 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0f1117',
-      color: '#e2e8f0', fontFamily: "'Inter', -apple-system, sans-serif",
+      minHeight: '100vh', background: '#F8F9FA',
+      color: '#6B7280', fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
       {/* Top demo banner */}
       <div style={{
@@ -8770,7 +8771,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         borderBottom: '1px solid rgba(249,115,22,0.15)',
         padding: '9px 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
-        fontSize: 13, color: '#f97316',
+        fontSize: 13, color: '#E8722A',
         position: 'sticky', top: 0, zIndex: 200,
         flexWrap: 'wrap',
       }}>
@@ -8780,7 +8781,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         <button
           onClick={goToSignup}
           style={{
-            padding: '4px 14px', background: '#f97316',
+            padding: '4px 14px', background: '#E8722A',
             border: 'none', borderRadius: 6, color: '#fff',
             fontWeight: 700, fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
           }}
@@ -8791,13 +8792,13 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
 
       {/* Tier selector bar */}
       <div style={{
-        background: '#0d1117', borderBottom: '1px solid #1e2535',
+        background: '#F8F9FA', borderBottom: '1px solid #E5E7EB',
         padding: isMobile ? '8px 12px' : '10px 24px',
         display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap',
         overflowX: isMobile ? 'auto' : 'visible',
         scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
       }}>
-        <span style={{ fontSize: 10, color: '#475569', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+        <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
           Tier:
         </span>
         {Object.entries(TIER_META).map(([key, meta]) => (
@@ -8807,7 +8808,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
             style={{
               padding: isMobile ? '7px 14px' : '5px 16px', borderRadius: 20, border: 'none',
               fontWeight: 600, fontSize: isMobile ? 13 : 12, cursor: 'pointer',
-              background: tier === key ? meta.color : '#1a1f2e',
+              background: tier === key ? meta.color : '#FFFFFF',
               color: tier === key ? '#fff' : '#64748b',
               transition: 'all 0.15s', flexShrink: 0,
               outline: tier === key ? `2px solid ${meta.color}44` : 'none', outlineOffset: 1,
@@ -8819,7 +8820,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           </button>
         ))}
         {!isMobile && (
-          <span style={{ marginLeft: 8, fontSize: 12, color: '#475569' }}>
+          <span style={{ marginLeft: 8, fontSize: 12, color: '#9CA3AF' }}>
             — {TIER_META[tier].desc}
           </span>
         )}
@@ -8846,7 +8847,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
             onClick={goToSignup}
             style={{
               padding: isMobile ? '8px 14px' : '4px 14px', background: '#eab308', border: 'none',
-              borderRadius: 6, color: '#0f1117', fontWeight: 700,
+              borderRadius: 6, color: '#F8F9FA', fontWeight: 700,
               fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
               minHeight: isMobile ? 36 : 'auto',
             }}
@@ -8858,7 +8859,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
 
       {/* Header */}
       <header style={{
-        background: '#161b27', borderBottom: '1px solid #1e2535',
+        background: '#FFFFFF', borderBottom: '1px solid #E5E7EB',
         padding: isMobile ? '0 12px' : '0 24px',
         display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12,
         height: isMobile ? 52 : 54,
@@ -8866,8 +8867,8 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         <button
           onClick={onChangeTrade}
           style={{
-            background: 'transparent', border: '1px solid #3a4d6b',
-            borderRadius: 6, color: '#94a3b8', fontSize: isMobile ? 13 : 12,
+            background: 'transparent', border: '1px solid #D1D5DB',
+            borderRadius: 6, color: '#6B7280', fontSize: isMobile ? 13 : 12,
             cursor: 'pointer', padding: isMobile ? '8px 10px' : '5px 12px',
             whiteSpace: 'nowrap', minHeight: isMobile ? 38 : 'auto',
             WebkitTapHighlightColor: 'transparent',
@@ -8899,7 +8900,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
                     padding: '6px 14px', borderRadius: 6, border: 'none',
                     cursor: locked ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
                     background: tab === key ? tierColor : 'transparent',
-                    color: locked ? '#2d3748' : tab === key ? '#fff' : '#94a3b8',
+                    color: locked ? '#E5E7EB' : tab === key ? '#fff' : '#6B7280',
                     transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
                   }}
                   onClick={() => !locked && setTab(key)}
@@ -8917,7 +8918,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           style={{
             marginLeft: isMobile ? 'auto' : 8,
             padding: isMobile ? '8px 12px' : '6px 16px',
-            background: 'linear-gradient(135deg, #f97316, #ea580c)',
+            background: 'linear-gradient(135deg, #E8722A, #ea580c)',
             border: 'none', borderRadius: 7,
             color: '#fff', fontWeight: 700, fontSize: isMobile ? 12 : 12,
             cursor: 'pointer', whiteSpace: 'nowrap',
@@ -8977,22 +8978,22 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         /* Desktop: sticky CTA bar */
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: '#161b27', borderTop: '1px solid #1e2535',
+          background: '#FFFFFF', borderTop: '1px solid #E5E7EB',
           padding: '13px 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           gap: 20, zIndex: 100,
           boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
         }}>
-          <span style={{ fontSize: 14, color: '#cbd5e1' }}>
+          <span style={{ fontSize: 14, color: '#6B7280' }}>
             Like what you see?{' '}
-            <span style={{ color: '#f97316', fontWeight: 600 }}>Start your 14-day free trial</span>
+            <span style={{ color: '#E8722A', fontWeight: 600 }}>Start your 14-day free trial</span>
             {' '}— no credit card required
           </span>
           <button
             onClick={goToSignup}
             style={{
               padding: '8px 22px',
-              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              background: 'linear-gradient(135deg, #E8722A, #ea580c)',
               border: 'none', borderRadius: 8,
               color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -9268,7 +9269,7 @@ export default function App() {
           {isDemo && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-              background: 'rgba(249,115,22,0.12)', color: '#f97316',
+              background: 'rgba(249,115,22,0.12)', color: '#E8722A',
               border: '1px solid rgba(249,115,22,0.2)', letterSpacing: '0.5px',
             }}>
               DEMO
@@ -9281,7 +9282,7 @@ export default function App() {
                 value={demoRole}
                 onChange={e => setDemoRole(e.target.value)}
                 style={{
-                  background: '#1a2236', border: '1px solid #3a4d6b', borderRadius: 6,
+                  background: '#FFFFFF', border: '1px solid #D1D5DB', borderRadius: 6,
                   color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 700,
                   padding: '4px 8px', cursor: 'pointer', outline: 'none',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
@@ -9313,7 +9314,7 @@ export default function App() {
           onClick={() => { setScreen('login'); setSession(null); }}
           className="ri-btn ri-btn-secondary"
           style={{
-            marginLeft: 'auto', background: 'transparent', border: '1px solid #2e3d5c',
+            marginLeft: 'auto', background: 'transparent', border: '1px solid #D1D5DB',
             color: '#6b7f9a', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
             padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
             minHeight: 'auto',
@@ -9424,8 +9425,8 @@ export default function App() {
             ? <TeamManagementTab />
             : <div style={{ textAlign: 'center', padding: '48px 24px' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>🔒</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#94a3b8' }}>Access Restricted</div>
-                <div style={{ fontSize: 13, color: '#475569', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#6B7280' }}>Access Restricted</div>
+                <div style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
               </div>
         )}
       </main>
