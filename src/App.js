@@ -972,6 +972,7 @@ const NAV_TABS = [
   { key: 'crew',      label: 'Crew',      icon: '👷' },
   { key: 'chat',      label: 'Chat',      icon: '💬' },
   { key: 'photos',    label: 'Photos',    icon: '📸' },
+  { key: 'team',      label: 'Team',      icon: '👥' },
 ];
 
 // ─── Section Color Map ──────────────────────────────────────────────────────
@@ -986,6 +987,7 @@ const SECTION_COLORS = {
   crew:      '#eab308',  // yellow
   chat:      '#10b981',  // green
   photos:    '#06b6d4',  // cyan
+  team:      '#22c55e',  // green
   // Job detail modal tabs
   checklist: '#f97316',  // orange
   crewpay:   '#14b8a6',  // teal (Cost Manager)
@@ -1003,27 +1005,31 @@ const CM_SUB_COLORS = {
 const DEMO_ROLES = {
   owner: {
     label: 'Owner/Admin', color: '#22c55e',
-    tabs: ['pipeline','callbacks','analytics','jobs','calendar','crew','chat','photos'],
+    tabs: ['pipeline','callbacks','analytics','jobs','calendar','crew','chat','photos','team'],
     seeDollars: true, seeRates: true, seeProfitability: true,
     seeCostManager: true, seeCrewPay: true, seeAnalyticsRevenue: true,
+    seeChangeOrders: true, seeTeamMgmt: true,
   },
   sales: {
-    label: 'Sales', color: '#6366f1',
-    tabs: ['pipeline','callbacks','jobs','calendar','chat','analytics'],
+    label: 'Sales/Estimator', color: '#6366f1',
+    tabs: ['pipeline','callbacks','jobs','analytics','chat'],
     seeDollars: true, seeRates: false, seeProfitability: false,
     seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: true,
+    seeChangeOrders: false, seeTeamMgmt: false,
   },
   foreman: {
     label: 'Foreman', color: '#f97316',
     tabs: ['jobs','calendar','crew','chat','photos'],
     seeDollars: false, seeRates: false, seeProfitability: false,
     seeCostManager: true, seeCrewPay: false, seeAnalyticsRevenue: false,
+    seeChangeOrders: false, seeTeamMgmt: false,
   },
   crew: {
-    label: 'Crew', color: '#64748b',
+    label: 'Crew/Installer', color: '#64748b',
     tabs: ['jobs','chat','photos'],
     seeDollars: false, seeRates: false, seeProfitability: false,
     seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: false,
+    seeChangeOrders: false, seeTeamMgmt: false,
   },
 };
 
@@ -5176,7 +5182,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === 'demo@ridgeos.com' && password === 'demo123') {
-      onLogin({ isDemo: true, companyName: 'Ridge & Sons Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' });
+      onLogin({ isDemo: true, companyName: 'Keystone Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' });
     } else if (email && password) {
       setError('Incorrect email or password. Try demo@ridgeos.com / demo123');
     } else {
@@ -5237,7 +5243,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
         </div>
         <div>
           <button
-            onClick={() => onLogin({ isDemo: true, companyName: 'Ridge & Sons Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' })}
+            onClick={() => onLogin({ isDemo: true, companyName: 'Keystone Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' })}
             style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 8, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
           >
             Try Demo — No signup needed
@@ -6248,6 +6254,172 @@ const DEMO_JOB_PHOTOS = [
   { id: 'dp21', jobId: 207, category: 'In-Progress', timestamp: 1744770100000, caption: 'TPO membrane welding' },
   { id: 'dp22', jobId: 207, category: 'Completion', timestamp: 1744780000000, caption: 'Finished flat roof' },
 ];
+
+// ─── Team Management ─────────────────────────────────────────────────────────
+const DEMO_TEAM_ROSTER = [
+  { id: 'tm1', name: 'Jake Stoltzfus', email: 'jake@keystoneroofing.com', role: 'Foreman', status: 'Active', phone: '(570) 555-2341' },
+  { id: 'tm2', name: 'Tom Bricker', email: 'tom@keystoneroofing.com', role: 'Installer', status: 'Active', phone: '(570) 555-3456' },
+  { id: 'tm3', name: 'Luis Ortiz', email: 'luis@keystoneroofing.com', role: 'Installer', status: 'Active', phone: '(570) 555-4567' },
+  { id: 'tm4', name: 'Ryan Hess', email: 'ryan@keystoneroofing.com', role: 'Installer', status: 'Active', phone: '(570) 555-5678' },
+  { id: 'tm5', name: 'Mark Sensenig', email: 'mark@keystoneroofing.com', role: 'Estimator', status: 'Active', phone: '(570) 555-6789' },
+  { id: 'tm6', name: 'Tara Zimmerman', email: 'tara@keystoneroofing.com', role: 'Sales', status: 'Active', phone: '(570) 555-7890' },
+];
+
+function TeamManagementTab() {
+  const [roster, setRoster] = useState(DEMO_TEAM_ROSTER);
+  const [showImport, setShowImport] = useState(false);
+  const [importMode, setImportMode] = useState('csv'); // 'csv' | 'paste'
+  const [pasteText, setPasteText] = useState('');
+  const [parsedPreview, setParsedPreview] = useState([]);
+  const [dragOver, setDragOver] = useState(false);
+  const isMobile = useMobile();
+  const fileRef = useRef(null);
+
+  const roleColor = (r) => ({ Owner: '#22c55e', Foreman: '#f97316', Installer: '#64748b', Sales: '#6366f1', Estimator: '#8b5cf6' }[r] || '#475569');
+  const statusColor = (s) => ({ Active: '#22c55e', 'Invite Pending': '#f59e0b', Inactive: '#64748b' }[s] || '#475569');
+
+  const parseCSV = (text) => {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    if (lines.length < 2) return [];
+    return lines.slice(1).map(line => {
+      const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+      return { name: `${cols[0] || ''} ${cols[1] || ''}`.trim(), email: cols[2] || '', phone: cols[3] || '', role: cols[4] || 'Installer' };
+    }).filter(p => p.name);
+  };
+
+  const parsePaste = (text) => {
+    return text.trim().split('\n').filter(l => l.trim()).map(line => {
+      const parts = line.split(/[,\t]+/).map(s => s.trim());
+      const name = parts[0] || '';
+      const email = parts.find(p => p.includes('@')) || '';
+      return { name, email, phone: '', role: 'Installer' };
+    }).filter(p => p.name);
+  };
+
+  const handleFileRead = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const parsed = parseCSV(e.target.result);
+      setParsedPreview(parsed);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault(); setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) handleFileRead(file);
+  };
+
+  const handleImportConfirm = () => {
+    const newMembers = parsedPreview.map((p, i) => ({
+      id: `tm-imp-${Date.now()}-${i}`, name: p.name, email: p.email, phone: p.phone, role: p.role, status: 'Invite Pending',
+    }));
+    setRoster(prev => [...prev, ...newMembers]);
+    setParsedPreview([]); setPasteText(''); setShowImport(false);
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>Team Management</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{roster.length} team members</div>
+        </div>
+        <button onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+          + Import Team
+        </button>
+      </div>
+
+      {/* Team roster */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
+        {roster.map(member => (
+          <div key={member.id} style={{ background: '#161b27', border: '1px solid #253048', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: roleColor(member.role) + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: roleColor(member.role), flexShrink: 0 }}>
+              {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+              <div style={{ fontSize: 11, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+              <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: roleColor(member.role) + '18', color: roleColor(member.role) }}>{member.role}</span>
+              <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: statusColor(member.status) + '18', color: statusColor(member.status) }}>{member.status}</span>
+            </div>
+            {member.status === 'Invite Pending' && (
+              <button onClick={() => setRoster(prev => prev.map(m => m.id === member.id ? { ...m, status: 'Active' } : m))} style={{ padding: '4px 10px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, color: '#22c55e', fontSize: 10, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
+                Send Invite
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Import Modal */}
+      {showImport && (
+        <div style={S.overlay} onClick={() => setShowImport(false)}>
+          <div style={{ ...S.modal, maxWidth: 520 }} onClick={e => e.stopPropagation()}>
+            <button className="ri-close-btn" style={S.closeBtn} onClick={() => setShowImport(false)}>×</button>
+            <div style={S.modalTitle}>Import Team Members</div>
+            <div style={S.modalSub}>Add your crew in bulk</div>
+
+            {/* Mode toggle */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+              <button onClick={() => { setImportMode('csv'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'csv' ? '1px solid #22c55e' : '1px solid #253048', background: importMode === 'csv' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'csv' ? '#22c55e' : '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>CSV Upload</button>
+              <button onClick={() => { setImportMode('paste'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'paste' ? '1px solid #22c55e' : '1px solid #253048', background: importMode === 'paste' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'paste' ? '#22c55e' : '#94a3b8', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Paste List</button>
+            </div>
+
+            {importMode === 'csv' && (
+              <div
+                onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                onClick={() => fileRef.current?.click()}
+                style={{ border: `2px dashed ${dragOver ? '#22c55e' : '#253048'}`, borderRadius: 10, padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: dragOver ? 'rgba(34,197,94,0.05)' : 'transparent', marginBottom: 16 }}
+              >
+                <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFileRead(e.target.files[0]); }} />
+                <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Drop a .csv file here or click to browse</div>
+                <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
+              </div>
+            )}
+
+            {importMode === 'paste' && (
+              <div style={{ marginBottom: 16 }}>
+                <textarea
+                  value={pasteText}
+                  onChange={e => { setPasteText(e.target.value); setParsedPreview(parsePaste(e.target.value)); }}
+                  placeholder={"Jake Stoltzfus, jake@keystoneroofing.com\nTom Bricker, tom@keystoneroofing.com"}
+                  rows={5}
+                  style={{ ...FI, resize: 'none', marginBottom: 8 }}
+                />
+              </div>
+            )}
+
+            {/* Preview table */}
+            {parsedPreview.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8 }}>Preview ({parsedPreview.length} employees)</div>
+                <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid #1e2535', borderRadius: 6 }}>
+                  {parsedPreview.map((p, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 10px', borderBottom: '1px solid #1e2535', fontSize: 12 }}>
+                      <span style={{ flex: 1, color: '#f1f5f9', fontWeight: 600 }}>{p.name}</span>
+                      <span style={{ color: '#64748b' }}>{p.email}</span>
+                      <span style={{ color: '#475569', fontSize: 10 }}>{p.role}</span>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={handleImportConfirm} style={{ width: '100%', marginTop: 10, padding: '10px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                  Import {parsedPreview.length} employee{parsedPreview.length !== 1 ? 's' : ''}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function GlobalPhotoLog({ jobs }) {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -9246,6 +9418,15 @@ export default function App() {
         )}
         {tab === 'photos' && (
           <GlobalPhotoLog jobs={jobs} />
+        )}
+        {tab === 'team' && (
+          rolePerms?.seeTeamMgmt
+            ? <TeamManagementTab />
+            : <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>🔒</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#94a3b8' }}>Access Restricted</div>
+                <div style={{ fontSize: 13, color: '#475569', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
+              </div>
         )}
       </main>
 
