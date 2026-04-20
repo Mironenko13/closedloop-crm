@@ -349,6 +349,77 @@ const DEMO_LEADS = [
     stallReason: 'wrong_contact', notes: '6 buildings, wind + ice dam damage. Nationwide Insurance adjusting. Need to engage full board, not just treasurer. Mix of 3-tab and architectural.',
     industry: 'HOA', dealAge: 62, address: '500 Shamokin Creek Dr, Shamokin PA 17872',
   },
+  // ── Large commercial pipeline ──
+  {
+    id: 27, name: 'Susquehanna University — Main Hall', contact: 'Dr. Karen Fulton', role: 'VP Facilities',
+    trade: 'Full Replacement', status: 'active', value: 308000, stage: 'estimate_sent',
+    callbackDate: '2026-04-28', lastContact: '2026-04-18',
+    stallReason: null, notes: '280 sq standing seam metal. Historic Main Hall. University procurement in review.',
+    industry: 'Institutional', dealAge: 14, address: '514 University Ave, Selinsgrove PA 17870',
+  },
+  {
+    id: 28, name: 'Geisinger Medical Center — Outpatient Wing', contact: 'Tom Kessler', role: 'Facilities Director',
+    trade: 'Full Replacement', status: 'active', value: 426000, stage: 'contract_signed',
+    callbackDate: '2026-04-25', lastContact: '2026-04-17',
+    stallReason: null, notes: '420 sq TPO 60-mil. Outpatient wing. Contract signed — materials ordering imminent.',
+    industry: 'Institutional', dealAge: 22, address: '100 N Academy Ave, Danville PA 17822',
+  },
+  {
+    id: 29, name: 'Penn State Extension', contact: 'Jim Hoover', role: 'Regional Facilities',
+    trade: 'Full Replacement', status: 'active', value: 87000, stage: 'lead',
+    callbackDate: '2026-05-05', lastContact: '2026-04-10',
+    stallReason: null, notes: '95 sq architectural shingles. State procurement process. Initial site visit scheduled.',
+    industry: 'Institutional', dealAge: 8, address: '340 W Aaron Dr, State College PA 16803',
+  },
+  {
+    id: 30, name: 'Evangelical Community Hospital', contact: 'Greg Stauffer', role: 'Facilities Manager',
+    trade: 'Full Replacement', status: 'active', value: 398000, stage: 'materials_ordered',
+    callbackDate: '2026-04-22', lastContact: '2026-04-18',
+    stallReason: null, notes: '380 sq TPO. Materials ordered from Boise Cascade. Scheduled start May 3.',
+    industry: 'Institutional', dealAge: 30, address: '1 Hospital Dr, Lewisburg PA 17837',
+  },
+  {
+    id: 31, name: 'Bucknell University — Bertrand Library', contact: 'Sarah Mitchell', role: 'Dir Capital Projects',
+    trade: 'Full Replacement', status: 'active', value: 524000, stage: 'estimate_sent',
+    callbackDate: '2026-04-30', lastContact: '2026-04-15',
+    stallReason: null, notes: '190 sq Peach Bottom slate. Historic library. Must match existing slate exactly. Board approval pending.',
+    industry: 'Institutional', dealAge: 18, address: '1 Dent Dr, Lewisburg PA 17837',
+  },
+  {
+    id: 32, name: 'Montour School District — 3 Buildings', contact: 'Dave Marks', role: 'Business Manager',
+    trade: 'Full Replacement', status: 'active', value: 312000, stage: 'lead',
+    callbackDate: '2026-05-10', lastContact: '2026-04-12',
+    stallReason: null, notes: '310 sq TPO across 3 buildings. School board vote in May. Summer installation window.',
+    industry: 'Institutional', dealAge: 6, address: '50 Hornet Dr, Danville PA 17822',
+  },
+  {
+    id: 33, name: 'Sunbury Community Hospital', contact: 'Linda Krebs', role: 'COO',
+    trade: 'Full Replacement', status: 'active', value: 271000, stage: 'estimate_sent',
+    callbackDate: '2026-04-29', lastContact: '2026-04-16',
+    stallReason: null, notes: '260 sq TPO. Main building + surgery wing. Competing with 2 other bids.',
+    industry: 'Institutional', dealAge: 12, address: '350 N 11th St, Sunbury PA 17801',
+  },
+  {
+    id: 34, name: 'Weis Markets Distribution Center', contact: 'Paul Wentz', role: 'Facilities VP',
+    trade: 'Full Replacement', status: 'active', value: 495000, stage: 'lead',
+    callbackDate: '2026-05-15', lastContact: '2026-04-08',
+    stallReason: null, notes: '450 sq standing seam metal. Distribution warehouse. Corporate approval required.',
+    industry: 'Commercial', dealAge: 10, address: '1000 S 2nd St, Sunbury PA 17801',
+  },
+  {
+    id: 35, name: 'PA State Police Barracks — Bloomsburg', contact: 'Sgt. Mike Torres', role: 'Facilities Coord',
+    trade: 'Full Replacement', status: 'won', value: 94000, stage: 'invoiced',
+    callbackDate: null, lastContact: '2026-04-15',
+    stallReason: null, notes: '68 sq architectural. Complete — awaiting state payment processing.',
+    industry: 'Institutional', dealAge: 45, address: '200 Commerce Blvd, Bloomsburg PA 17815',
+  },
+  {
+    id: 36, name: 'Shikellamy School District — 4 Buildings', contact: 'Ruth Ann Shaffer', role: 'Superintendent',
+    trade: 'Full Replacement', status: 'active', value: 687000, stage: 'estimate_sent',
+    callbackDate: '2026-05-01', lastContact: '2026-04-14',
+    stallReason: null, notes: '4 school buildings, mixed TPO + architectural. Summer 2026 installation. Board presentation scheduled.',
+    industry: 'Institutional', dealAge: 20, address: '200 Island Blvd, Sunbury PA 17801',
+  },
 ];
 
 const STALL_LABELS = {
@@ -671,7 +742,7 @@ const DEMO_DAY_DETAIL = {
 const S = {
   app: {
     minHeight: '100vh',
-    background: '#F0F2F5',
+    background: '#E8ECF0',
     color: '#1E2329',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
@@ -750,7 +821,7 @@ const S = {
     cursor: 'pointer',
     transition: 'all 0.15s',
     transform: hovered ? 'translateY(-2px)' : 'none',
-    boxShadow: hovered ? '0 4px 16px rgba(232,114,42,0.15)' : '0 1px 3px rgba(0,0,0,0.1)',
+    boxShadow: hovered ? '0 4px 16px rgba(232,114,42,0.15)' : '0 2px 8px rgba(0,0,0,0.10)',
   }),
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
   cardName: { fontSize: 15, fontWeight: 600, color: '#1E2329' },
@@ -1048,13 +1119,13 @@ function GlobalStyles() {
       .ri-nav-tab { transition:color 0.15s, background 0.15s; }
       .ri-nav-tab:hover { color:#FFFFFF !important; background:rgba(255,255,255,0.08) !important; border-radius:6px; }
       .ri-modal-tab { transition:all 0.15s; }
-      .ri-modal-tab:hover { background:#F0F2F5 !important; border-radius:6px 6px 0 0; }
+      .ri-modal-tab:hover { background:#E8ECF0 !important; border-radius:6px 6px 0 0; }
       .ri-bnav-btn { transition:color 0.15s, background 0.15s; }
-      .ri-bnav-btn:hover { background:#F0F2F5 !important; }
+      .ri-bnav-btn:hover { background:#E8ECF0 !important; }
       .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
-      .ri-cb-row:hover { background:#F0F2F5 !important; border-color:#CBD5E1 !important; }
+      .ri-cb-row:hover { background:#E8ECF0 !important; border-color:#CBD5E1 !important; }
       .ri-sec-hdr { transition:background 0.12s; }
-      .ri-sec-hdr:hover { background:#F0F2F5 !important; }
+      .ri-sec-hdr:hover { background:#E8ECF0 !important; }
       .ri-sub-tab { transition:color 0.15s, border-color 0.15s; cursor:pointer; }
       .ri-sub-tab:hover { color:#1E2329 !important; }
       .ri-card-btn:hover { color:#1E2329 !important; background:rgba(249,115,22,0.1) !important; }
@@ -2689,7 +2760,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               style={{
                 minWidth: isMobile ? 230 : 220,
                 flex: isMobile ? '0 0 230px' : '1 1 0',
-                background: isOver ? 'rgba(232,114,42,0.1)' : '#F0F2F5',
+                background: isOver ? 'rgba(232,114,42,0.1)' : '#E8ECF0',
                 border: `1px solid ${isOver ? '#E8722A' : '#E2E8F0'}`,
                 borderRadius: 10,
                 transition: 'border-color 0.15s, background 0.15s',
@@ -4997,7 +5068,7 @@ const A = {
   input: {
     width: '100%',
     padding: '10px 14px',
-    background: '#F0F2F5',
+    background: '#E8ECF0',
     border: '1px solid #CBD5E1',
     borderRadius: 8,
     color: '#1E2329',
@@ -7792,7 +7863,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
               onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
               onDragLeave={() => { if (onDragOver) onDragOver(null); }}
-              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(232,114,42,0.1)' : isSelected ? 'rgba(232,114,42,0.1)' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#F0F2F5' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E2E8F0'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(232,114,42,0.1)' : isSelected ? 'rgba(232,114,42,0.1)' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#E8ECF0' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E2E8F0'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
                 {isToday
