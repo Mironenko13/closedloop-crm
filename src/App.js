@@ -742,7 +742,7 @@ const DEMO_DAY_DETAIL = {
 const S = {
   app: {
     minHeight: '100vh',
-    background: '#E8ECF0',
+    background: '#D6DDE8',
     color: '#1E2329',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
@@ -1119,13 +1119,13 @@ function GlobalStyles() {
       .ri-nav-tab { transition:color 0.15s, background 0.15s; }
       .ri-nav-tab:hover { color:#FFFFFF !important; background:rgba(255,255,255,0.08) !important; border-radius:6px; }
       .ri-modal-tab { transition:all 0.15s; }
-      .ri-modal-tab:hover { background:#E8ECF0 !important; border-radius:6px 6px 0 0; }
+      .ri-modal-tab:hover { background:#D6DDE8 !important; border-radius:6px 6px 0 0; }
       .ri-bnav-btn { transition:color 0.15s, background 0.15s; }
-      .ri-bnav-btn:hover { background:#E8ECF0 !important; }
+      .ri-bnav-btn:hover { background:#D6DDE8 !important; }
       .ri-cb-row { transition:background 0.12s, border-color 0.12s; }
-      .ri-cb-row:hover { background:#E8ECF0 !important; border-color:#CBD5E1 !important; }
+      .ri-cb-row:hover { background:#D6DDE8 !important; border-color:#CBD5E1 !important; }
       .ri-sec-hdr { transition:background 0.12s; }
-      .ri-sec-hdr:hover { background:#E8ECF0 !important; }
+      .ri-sec-hdr:hover { background:#D6DDE8 !important; }
       .ri-sub-tab { transition:color 0.15s, border-color 0.15s; cursor:pointer; }
       .ri-sub-tab:hover { color:#1E2329 !important; }
       .ri-card-btn:hover { color:#1E2329 !important; background:rgba(249,115,22,0.1) !important; }
@@ -2760,7 +2760,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               style={{
                 minWidth: isMobile ? 230 : 220,
                 flex: isMobile ? '0 0 230px' : '1 1 0',
-                background: isOver ? 'rgba(232,114,42,0.1)' : '#E8ECF0',
+                background: isOver ? 'rgba(232,114,42,0.1)' : '#D6DDE8',
                 border: `1px solid ${isOver ? '#E8722A' : '#E2E8F0'}`,
                 borderRadius: 10,
                 transition: 'border-color 0.15s, background 0.15s',
@@ -3063,14 +3063,14 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
 
   const D = rolePerms?.seeDollars !== false;
   const kpis = [
-    { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value', color: '#E8722A' },
-    { val: D ? fmt(revenueClosed) : '—', label: 'Revenue Closed YTD', color: '#22c55e' },
-    { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value', color: '#6366f1' },
-    { val: `${avgMargin}%`, label: 'Avg Margin', color: avgMargin >= 30 ? '#22c55e' : avgMargin >= 15 ? '#f59e0b' : '#ef4444' },
-    { val: `${winRate}%`, label: 'Win / Close Rate', color: winRate >= 60 ? '#22c55e' : winRate >= 40 ? '#E8722A' : '#ef4444' },
-    { val: `${weekHours}h`, label: 'Scheduled Hrs This Week', color: '#7c3aed' },
-    { val: `${avgDealAge}d`, label: 'Avg Deal Age', color: '#64748B' },
-    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk', color: '#ef4444' },
+    { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value' },
+    { val: D ? fmt(revenueClosed) : '—', label: 'Revenue Closed YTD' },
+    { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value' },
+    { val: `${avgMargin}%`, label: 'Avg Margin' },
+    { val: `${winRate}%`, label: 'Win / Close Rate' },
+    { val: `${weekHours}h`, label: 'Scheduled Hrs This Week' },
+    { val: `${avgDealAge}d`, label: 'Avg Deal Age' },
+    { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk' },
   ];
 
   return (
@@ -3081,9 +3081,9 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         gap: isMobile ? 10 : 14,
         marginBottom: 24,
       }}>
-        {kpis.map(({ val, label, color }) => (
+        {kpis.map(({ val, label }) => (
           <div key={label} style={{ ...S.statCard, ...(isMobile ? { padding: 12 } : {}) }}>
-            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 20 } : {}), color }}>{val}</div>
+            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 20 } : {}), color: '#1E2329' }}>{val}</div>
             <div style={S.statLabel}>{label}</div>
           </div>
         ))}
@@ -3108,7 +3108,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
           ))}
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #E2E8F0' }}>
             <div style={{ fontSize: 11, color: '#64748B' }}>Total pipeline value</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#E8722A', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: '#E8722A', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
           </div>
         </div>
 
@@ -5068,7 +5068,7 @@ const A = {
   input: {
     width: '100%',
     padding: '10px 14px',
-    background: '#E8ECF0',
+    background: '#D6DDE8',
     border: '1px solid #CBD5E1',
     borderRadius: 8,
     color: '#1E2329',
@@ -7863,7 +7863,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               onDragOver={e => { e.preventDefault(); if (onDragOver) onDragOver(dateStr); }}
               onDrop={e => { e.preventDefault(); const jid = e.dataTransfer.getData('jobId'); if (jid && onDrop) onDrop(jid, dateStr); }}
               onDragLeave={() => { if (onDragOver) onDragOver(null); }}
-              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(232,114,42,0.1)' : isSelected ? 'rgba(232,114,42,0.1)' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#E8ECF0' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E2E8F0'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
+              style={{ minHeight: isMobile ? 52 : 80, background: isDragOver ? 'rgba(232,114,42,0.1)' : isSelected ? 'rgba(232,114,42,0.1)' : (parseInt(dateStr.slice(8)) % 7 === 0 || parseInt(dateStr.slice(8)) % 7 === 6) ? '#D6DDE8' : '#FFFFFF', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? '#E8722A' : '#E2E8F0'}`, borderRadius: 6, padding: isMobile ? '3px 4px' : '5px 6px', cursor: 'pointer', overflow: 'hidden', opacity: inMonth ? 1 : 0.35 }}
             >
               <div style={{ marginBottom: 2 }}>
                 {isToday
