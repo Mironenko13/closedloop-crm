@@ -5194,7 +5194,7 @@ function LoginScreen({ onLogin, onStartSignup }) {
     <div style={A.page}>
       <div style={A.card}>
         <div style={A.logo}>RidgeOS</div>
-        <div style={A.tagline}>The operating system for your roofing business.</div>
+        <div style={A.tagline}>By roofers, for roofers.</div>
 
         <form onSubmit={handleSubmit}>
           <label style={A.label}>Email</label>
