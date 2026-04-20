@@ -2622,17 +2622,17 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   return (
     <div>
       {/* Summary bar */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', borderRadius: 0, overflow: 'hidden', overflowX: 'auto' }}>
         {stageStats.map((s, i) => (
           <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid #E2E8F0' : 'none', textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: STAGE_COLORS[s.key] || '#E8722A' }}>{s.count}</div>
-            <div style={{ fontSize: 9, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#64748B', marginTop: 2 }}>{fmt(s.value)}</div>}
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#1E2329' }}>{s.count}</div>
+            <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
         ))}
-        <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', background: 'rgba(249,115,22,0.04)' }}>
+        <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', borderBottom: '2px solid #E8722A' }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
-          <div style={{ fontSize: 9, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
+          <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
         </div>
       </div>
 
