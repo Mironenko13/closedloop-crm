@@ -762,7 +762,7 @@ const S = {
   },
   logo: { fontSize: 22, fontWeight: 800, color: '#F0F2F5', letterSpacing: '-0.5px' },
   logoSub: { fontSize: 13, color: '#8B95A1', fontWeight: 500, marginLeft: 4 },
-  tabs: { display: 'flex', gap: 2, marginLeft: 'auto' },
+  tabs: { display: 'flex', gap: 2, marginLeft: 'auto', flexShrink: 0 },
   tab: (active) => ({
     padding: '8px 16px',
     borderRadius: 0,
