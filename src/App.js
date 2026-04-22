@@ -4838,6 +4838,13 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
       </div>
 
       <div style={S.grid}>
+        {filtered.length === 0 && (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px 24px' }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>🔨</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#8B95A1', marginBottom: 4 }}>No jobs match your filters</div>
+            <div style={{ fontSize: 13, color: '#5C6470' }}>Try adjusting the status or job type filter above.</div>
+          </div>
+        )}
         {filtered.map(job => {
           const steps = TRADE_CHECKLISTS[job.trade]
             || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
