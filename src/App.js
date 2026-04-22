@@ -5322,6 +5322,24 @@ function LoginScreen({ onLogin, onStartSignup }) {
         <div style={A.logo}>RidgeOS</div>
         <div style={A.tagline}>By roofers, for roofers.</div>
 
+        <div style={{ marginBottom: 8 }}>
+          <button
+            onClick={() => onLogin({ isDemo: true, companyName: 'Keystone Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' })}
+            style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 8, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
+          >
+            Try Demo — No signup needed
+          </button>
+          <div style={{ textAlign: 'center', fontSize: 12, color: '#8B95A1', marginTop: 8 }}>
+            Preloaded with real roofing data
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0' }}>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+          <span style={{ fontSize: 12, color: '#8B95A1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or sign in</span>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+        </div>
+
         <form onSubmit={handleSubmit}>
           <label style={A.label}>Email</label>
           <input
@@ -5357,22 +5375,6 @@ function LoginScreen({ onLogin, onStartSignup }) {
           <button style={A.linkBtn} onClick={onStartSignup}>Create an account</button>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0 20px' }}>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-          <span style={{ fontSize: 12, color: '#8B95A1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or</span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-        </div>
-        <div>
-          <button
-            onClick={() => onLogin({ isDemo: true, companyName: 'Keystone Roofing', userName: 'Demo Owner', trade: 'Full Replacement', plan: 'pro' })}
-            style={{ width: '100%', height: 48, background: '#e8722a', border: 'none', borderRadius: 8, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.3px' }}
-          >
-            Try Demo — No signup needed
-          </button>
-          <div style={{ textAlign: 'center', fontSize: 12, color: '#8B95A1', marginTop: 8 }}>
-            Preloaded with real roofing data
-          </div>
-        </div>
       </div>
     </div>
   );
