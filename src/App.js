@@ -169,6 +169,7 @@ const TRADE_CHECKLISTS = {
 const DEMO_LEADS = [
   {
     id: 1, name: 'Shumaker Residence', contact: 'Dave Shumaker', role: 'Homeowner',
+    phone: '(570) 966-4182', email: 'dshumaker@gmail.com',
     trade: 'Full Replacement', status: 'stalled', value: 14800, stage: 'estimate_sent',
     callbackDate: '2026-03-25', lastContact: '2026-03-10',
     stallReason: 'price_objection', notes: '28 sq, 7/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off over plywood deck. Wants 15% off — comparing 2 other bids from Lewisburg area roofers.',
@@ -176,6 +177,7 @@ const DEMO_LEADS = [
   },
   {
     id: 2, name: 'Susquehanna Valley Mall', contact: 'Denise Rhoads', role: 'Property Manager',
+    phone: '(570) 374-8100', email: 'drhoads@svmall.com',
     trade: 'Full Replacement', status: 'stalled', value: 23500, stage: 'contract_signed',
     callbackDate: '2026-03-24', lastContact: '2026-03-08',
     stallReason: 'budget_freeze', notes: 'TPO membrane, 140 sq flat roof on anchor store wing. Q1 budget locked — revisit April per ownership group. 2 HVAC curbs need reflashing.',
@@ -183,6 +185,7 @@ const DEMO_LEADS = [
   },
   {
     id: 3, name: 'Bowman Family', contact: 'Tina Bowman', role: 'Homeowner',
+    phone: '(570) 524-3947', email: 'tinabowman@hotmail.com',
     trade: 'Storm Damage', status: 'active', value: 18700, stage: 'inspection_scheduled',
     callbackDate: '2026-03-23', lastContact: '2026-03-20',
     stallReason: null, notes: 'Wind damage from 3/15 storm. Insurance claim filed with Erie Insurance. Adjuster visit pending. Architectural shingles, 24 sq, 6/12 pitch.',
@@ -190,6 +193,7 @@ const DEMO_LEADS = [
   },
   {
     id: 4, name: 'Northumberland Apartments', contact: 'Rick Hess', role: 'Building Manager',
+    phone: '(570) 473-3200', email: 'rhess@northumberlandapts.com',
     trade: 'Repair', status: 'stalled', value: 4200, stage: 'estimate_sent',
     callbackDate: '2026-03-19', lastContact: '2026-03-05',
     stallReason: 'no_response', notes: '3 follow-ups, no reply. Active leak in Bldg C — valley flashing failed. 3-tab, 6/12 pitch. Decking shows some staining.',
@@ -197,6 +201,7 @@ const DEMO_LEADS = [
   },
   {
     id: 5, name: 'Monroe Township Offices', contact: 'Jeff Weaver', role: 'Facilities Director',
+    phone: '(570) 374-4492', email: 'jweaver@monroetwp.org',
     trade: 'Full Replacement', status: 'active', value: 31200, stage: 'contract_signed',
     callbackDate: '2026-03-26', lastContact: '2026-03-21',
     stallReason: null, notes: '42 sq, low-slope modified bitumen on municipal bldg. 2 layers to tear off. Decking likely needs 10-15 sheets. Snyder County permit in hand.',
@@ -204,6 +209,7 @@ const DEMO_LEADS = [
   },
   {
     id: 6, name: 'Keller Residence', contact: 'Amy Keller', role: 'Homeowner',
+    phone: '(570) 742-8156', email: 'amykeller22@yahoo.com',
     trade: 'Full Replacement', status: 'stalled', value: 22600, stage: 'estimate_sent',
     callbackDate: '2026-03-22', lastContact: '2026-03-12',
     stallReason: 'competitor', notes: '32 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. 1 layer over OSB deck. Competitor bid $2k less — need to show SureStart warranty value.',
@@ -211,6 +217,7 @@ const DEMO_LEADS = [
   },
   {
     id: 7, name: 'Riverwoods HOA', contact: 'Susan Yoder', role: 'HOA President',
+    phone: '(570) 524-7200', email: 'syoder@riverwoodshoa.org',
     trade: 'Full Replacement', status: 'active', value: 94000, stage: 'inspection_scheduled',
     callbackDate: '2026-03-27', lastContact: '2026-03-18',
     stallReason: null, notes: '12-building townhome complex, ~280 sq total. Phased replacement. Board vote 3/28. Architectural shingles, color TBD by HOA. Ice & water shield required at eaves.',
@@ -218,6 +225,7 @@ const DEMO_LEADS = [
   },
   {
     id: 8, name: 'Market Street Commons', contact: 'Tom Brubaker', role: 'Property Manager',
+    phone: '(570) 286-5100', email: 'tbrubaker@marketstcommons.com',
     trade: 'Gutter Install', status: 'stalled', value: 5800, stage: 'estimate_sent',
     callbackDate: '2026-03-15', lastContact: '2026-03-03',
     stallReason: 'technical_fit', notes: '220 LF seamless aluminum 5". K-style vs half-round debate on 1890s building facade. Include leaf guards. Historic district review may apply.',
@@ -225,6 +233,7 @@ const DEMO_LEADS = [
   },
   {
     id: 9, name: 'Valley Fitness', contact: 'Marcus Stover', role: 'Owner',
+    phone: '(570) 374-6890', email: 'marcus@valleyfitness.com',
     trade: 'Repair', status: 'cold', value: 3400, stage: 'lead',
     callbackDate: '2026-04-05', lastContact: '2026-02-20',
     stallReason: 'timing', notes: 'Ponding water on flat section. TPO seam separation near HVAC curb. Wants to wait until summer. Follow up Q2.',
@@ -232,6 +241,7 @@ const DEMO_LEADS = [
   },
   {
     id: 10, name: 'Christ Lutheran Mifflinburg', contact: 'Pastor Ed Zimmerman', role: 'Facilities Coord',
+    phone: '(570) 966-1544', email: 'pezimmerman@christlutheran.org',
     trade: 'Storm Damage', status: 'won', value: 9400, stage: 'paid',
     callbackDate: null, lastContact: '2026-03-17',
     stallReason: null, notes: 'Closed! Wind damage to ridge cap + 3 sq of shingles on sanctuary. Nationwide Insurance covered. CertainTeed Landmark, Weathered Wood.',
@@ -239,6 +249,7 @@ const DEMO_LEADS = [
   },
   {
     id: 11, name: 'Hartman Residence', contact: 'Joe Hartman', role: 'Homeowner',
+    phone: '(570) 538-2210', email: 'joehartman@ptd.net',
     trade: 'Skylight', status: 'stalled', value: 4800, stage: 'contract_signed',
     callbackDate: '2026-03-23', lastContact: '2026-03-13',
     stallReason: 'wrong_contact', notes: '2 Velux skylights, curb-mount, bathroom + kitchen. Need to confirm size with wife who picked them out.',
@@ -246,6 +257,7 @@ const DEMO_LEADS = [
   },
   {
     id: 12, name: 'Buffalo Valley Townhomes', contact: 'Karen Bender', role: 'HOA Director',
+    phone: '(570) 524-1180', email: 'kbender@buffvalleyhoa.org',
     trade: 'Full Replacement', status: 'active', value: 34800, stage: 'estimate_sent',
     callbackDate: '2026-03-24', lastContact: '2026-03-22',
     stallReason: null, notes: '6 townhome units, 180 sq total. GAF Timberline architectural, Hickory. Ice & water at all valleys. Proposal well received by board.',
@@ -253,6 +265,7 @@ const DEMO_LEADS = [
   },
   {
     id: 13, name: 'Klinger Trucking', contact: 'Jim Klinger', role: 'Owner',
+    phone: '(570) 742-3400', email: 'jim@klingertrucking.com',
     trade: 'Full Replacement', status: 'lost', value: 19600, stage: 'lost',
     callbackDate: null, lastContact: '2026-03-09',
     stallReason: 'competitor', notes: 'Lost on price. 26 sq standing seam metal on shop. Competitor bid $3k less — no manufacturer warranty.',
@@ -260,6 +273,7 @@ const DEMO_LEADS = [
   },
   {
     id: 14, name: 'Deimler Residence', contact: 'Scott Deimler', role: 'Homeowner',
+    phone: '(570) 966-0247', email: 'scottd@gmail.com',
     trade: 'Full Replacement', status: 'stalled', value: 42000, stage: 'materials_ordered',
     callbackDate: '2026-03-23', lastContact: '2026-03-15',
     stallReason: 'budget_freeze', notes: '48 sq, standing seam metal Burnished Slate. 10/12 pitch, harness required. Materials on order at Boise Cascade Sunbury but homeowner paused — waiting on HELOC.',
@@ -267,6 +281,7 @@ const DEMO_LEADS = [
   },
   {
     id: 15, name: 'Blasius Chevrolet', contact: 'Steve Blasius', role: 'Shop Owner',
+    phone: '(570) 374-1234', email: 'steve@blasiuschevy.com',
     trade: 'Flashing Repair', status: 'active', value: 2800, stage: 'inspection_complete',
     callbackDate: '2026-03-28', lastContact: '2026-03-23',
     stallReason: null, notes: 'Chimney flashing failed on service bay. Active leak into office below. Counter-flashing pulling away from limestone mortar.',
@@ -274,6 +289,7 @@ const DEMO_LEADS = [
   },
   {
     id: 16, name: 'Packwood House Museum', contact: 'Patricia Landis', role: 'Facilities Manager',
+    phone: '(570) 524-0323', email: 'plandis@packwoodhouse.org',
     trade: 'Repair', status: 'active', value: 6400, stage: 'estimate_sent',
     callbackDate: '2026-03-26', lastContact: '2026-03-19',
     stallReason: null, notes: 'Slate roof — 8 cracked tiles + ridge mortar repointing. Historic property, must match existing PA slate. 12/12 pitch.',
@@ -281,6 +297,7 @@ const DEMO_LEADS = [
   },
   {
     id: 17, name: 'Susquehanna Industrial Park', contact: 'Nick Etter', role: 'Operations Mgr',
+    phone: '(570) 473-9500', email: 'netter@susqindpark.com',
     trade: 'Full Replacement', status: 'stalled', value: 38000, stage: 'estimate_sent',
     callbackDate: '2026-03-20', lastContact: '2026-03-04',
     stallReason: 'budget_freeze', notes: '52 sq TPO, flat warehouse roof. 2 layers existing. Full board approval pending. Northumberland County permit needed.',
@@ -288,6 +305,7 @@ const DEMO_LEADS = [
   },
   {
     id: 18, name: 'Flickinger Residence', contact: 'Carol Flickinger', role: 'Homeowner',
+    phone: '(570) 837-1055', email: 'carolflick@verizon.net',
     trade: 'Emergency Tarp', status: 'active', value: 1200, stage: 'inspection_scheduled',
     callbackDate: '2026-03-25', lastContact: '2026-03-20',
     stallReason: null, notes: 'Oak tree fell on roof during wind storm. Active water intrusion into upstairs bedroom. Tarp ASAP, then scope full replacement.',
@@ -295,6 +313,7 @@ const DEMO_LEADS = [
   },
   {
     id: 19, name: 'Danville Heritage Villas', contact: 'Dave Moyer', role: 'Board President',
+    phone: '(570) 275-4800', email: 'dmoyer@heritagevillas.org',
     trade: 'Inspection', status: 'cold', value: 1800, stage: 'lead',
     callbackDate: '2026-04-10', lastContact: '2026-02-28',
     stallReason: 'timing', notes: '15-building annual roof inspection. Waiting on spring maintenance budget approval. Could lead to multi-phase replacement — most roofs are 18+ years.',
@@ -302,6 +321,7 @@ const DEMO_LEADS = [
   },
   {
     id: 20, name: 'Sheetz #412', contact: 'Brian Lehr', role: 'Facilities Coord',
+    phone: '(570) 374-2200', email: 'blehr@sheetz.com',
     trade: 'Repair', status: 'won', value: 4200, stage: 'invoiced',
     callbackDate: null, lastContact: '2026-03-18',
     stallReason: null, notes: 'Closed! Patched 4 sq of wind-damaged 3-tab on flat canopy section. Resealed all pipe boots and HVAC curbs.',
@@ -309,6 +329,7 @@ const DEMO_LEADS = [
   },
   {
     id: 21, name: 'Evangelical Community Hospital', contact: 'Greg Stauffer', role: 'Facilities Manager',
+    phone: '(570) 522-2700', email: 'gstauffer@evanhospital.com',
     trade: 'Full Replacement', status: 'stalled', value: 67000, stage: 'contract_signed',
     callbackDate: '2026-03-22', lastContact: '2026-03-11',
     stallReason: 'price_objection', notes: 'Outpatient wing, 320 sq TPO. Hospital procurement wants to value-engineer. Union County permit in hand.',
@@ -316,6 +337,7 @@ const DEMO_LEADS = [
   },
   {
     id: 22, name: 'Rohrer Residence', contact: 'Mike Rohrer', role: 'Homeowner',
+    phone: '(570) 784-6322', email: 'mikerohrer@gmail.com',
     trade: 'Ventilation', status: 'active', value: 3200, stage: 'inspection_complete',
     callbackDate: '2026-03-27', lastContact: '2026-03-21',
     stallReason: null, notes: 'Attic hitting 145°F in summer. No ridge vent, only 2 box vents on 1960s ranch. OSB decking — need full intake/exhaust rebalance + check for moisture damage.',
@@ -323,6 +345,7 @@ const DEMO_LEADS = [
   },
   {
     id: 23, name: 'Susquehanna Valley Mall — JCPenney Wing', contact: 'Janet Groff', role: 'Facilities Mgr',
+    phone: '(570) 374-8105', email: 'jgroff@svmall.com',
     trade: 'Flashing Repair', status: 'stalled', value: 8500, stage: 'estimate_sent',
     callbackDate: '2026-03-21', lastContact: '2026-03-07',
     stallReason: 'no_response', notes: 'Parapet wall flashing failing on 3 sections. Submitted proposal 2 weeks ago. Zero feedback from corporate ownership.',
@@ -330,6 +353,7 @@ const DEMO_LEADS = [
   },
   {
     id: 24, name: 'RiverWoods Senior Living', contact: 'Andrew Musser', role: 'Maintenance Dir',
+    phone: '(570) 524-4600', email: 'amusser@riverwoodssenior.com',
     trade: 'Gutter Install', status: 'active', value: 13200, stage: 'estimate_sent',
     callbackDate: '2026-03-26', lastContact: '2026-03-20',
     stallReason: null, notes: '480 LF 6" commercial gutters + 12 downspouts on main building. Include splash guards at all walkways. On track.',
@@ -337,6 +361,7 @@ const DEMO_LEADS = [
   },
   {
     id: 25, name: 'Brenner Residence', contact: 'Sandra Brenner', role: 'Homeowner',
+    phone: '(570) 584-2718', email: 'sbrenner@ptd.net',
     trade: 'Skylight', status: 'stalled', value: 6100, stage: 'scheduled_for_install',
     callbackDate: '2026-03-23', lastContact: '2026-03-14',
     stallReason: 'technical_fit', notes: '3 Velux deck-mount skylights in cathedral ceiling. Flashing kit on backorder at Boise Cascade — ETA pushed 2 weeks. Homeowner frustrated.',
@@ -344,6 +369,7 @@ const DEMO_LEADS = [
   },
   {
     id: 26, name: 'Shamokin Creek Condos', contact: 'Bob Reider', role: 'Board Treasurer',
+    phone: '(570) 648-3100', email: 'breider@shamokincc.org',
     trade: 'Storm Damage', status: 'stalled', value: 47500, stage: 'estimate_sent',
     callbackDate: '2026-03-24', lastContact: '2026-03-10',
     stallReason: 'wrong_contact', notes: '6 buildings, wind + ice dam damage. Nationwide Insurance adjusting. Need to engage full board, not just treasurer. Mix of 3-tab and architectural.',
@@ -352,6 +378,7 @@ const DEMO_LEADS = [
   // ── Large commercial pipeline ──
   {
     id: 27, name: 'Susquehanna University — Main Hall', contact: 'Dr. Karen Fulton', role: 'VP Facilities',
+    phone: '(570) 372-4100', email: 'fultonk@susqu.edu',
     trade: 'Full Replacement', status: 'active', value: 308000, stage: 'estimate_sent',
     callbackDate: '2026-04-28', lastContact: '2026-04-18',
     stallReason: null, notes: '280 sq standing seam metal. Historic Main Hall. University procurement in review.',
@@ -359,6 +386,7 @@ const DEMO_LEADS = [
   },
   {
     id: 28, name: 'Geisinger Medical Center — Outpatient Wing', contact: 'Tom Kessler', role: 'Facilities Director',
+    phone: '(570) 271-6211', email: 'tkessler@geisinger.edu',
     trade: 'Full Replacement', status: 'active', value: 426000, stage: 'contract_signed',
     callbackDate: '2026-04-25', lastContact: '2026-04-17',
     stallReason: null, notes: '420 sq TPO 60-mil. Outpatient wing. Contract signed — materials ordering imminent.',
@@ -366,6 +394,7 @@ const DEMO_LEADS = [
   },
   {
     id: 29, name: 'Penn State Extension', contact: 'Jim Hoover', role: 'Regional Facilities',
+    phone: '(814) 863-3440', email: 'jhoover@psu.edu',
     trade: 'Full Replacement', status: 'active', value: 87000, stage: 'lead',
     callbackDate: '2026-05-05', lastContact: '2026-04-10',
     stallReason: null, notes: '95 sq architectural shingles. State procurement process. Initial site visit scheduled.',
@@ -373,6 +402,7 @@ const DEMO_LEADS = [
   },
   {
     id: 30, name: 'Evangelical Community Hospital', contact: 'Greg Stauffer', role: 'Facilities Manager',
+    phone: '(570) 522-2700', email: 'gstauffer@evanhospital.com',
     trade: 'Full Replacement', status: 'active', value: 398000, stage: 'materials_ordered',
     callbackDate: '2026-04-22', lastContact: '2026-04-18',
     stallReason: null, notes: '380 sq TPO. Materials ordered from Boise Cascade. Scheduled start May 3.',
@@ -380,6 +410,7 @@ const DEMO_LEADS = [
   },
   {
     id: 31, name: 'Bucknell University — Bertrand Library', contact: 'Sarah Mitchell', role: 'Dir Capital Projects',
+    phone: '(570) 577-3000', email: 'smitchell@bucknell.edu',
     trade: 'Full Replacement', status: 'active', value: 524000, stage: 'estimate_sent',
     callbackDate: '2026-04-30', lastContact: '2026-04-15',
     stallReason: null, notes: '190 sq Peach Bottom slate. Historic library. Must match existing slate exactly. Board approval pending.',
@@ -387,6 +418,7 @@ const DEMO_LEADS = [
   },
   {
     id: 32, name: 'Montour School District — 3 Buildings', contact: 'Dave Marks', role: 'Business Manager',
+    phone: '(570) 275-3192', email: 'dmarks@montoursd.org',
     trade: 'Full Replacement', status: 'active', value: 312000, stage: 'lead',
     callbackDate: '2026-05-10', lastContact: '2026-04-12',
     stallReason: null, notes: '310 sq TPO across 3 buildings. School board vote in May. Summer installation window.',
@@ -394,6 +426,7 @@ const DEMO_LEADS = [
   },
   {
     id: 33, name: 'Sunbury Community Hospital', contact: 'Linda Krebs', role: 'COO',
+    phone: '(570) 286-3333', email: 'lkrebs@sunburyhospital.org',
     trade: 'Full Replacement', status: 'active', value: 271000, stage: 'estimate_sent',
     callbackDate: '2026-04-29', lastContact: '2026-04-16',
     stallReason: null, notes: '260 sq TPO. Main building + surgery wing. Competing with 2 other bids.',
@@ -401,6 +434,7 @@ const DEMO_LEADS = [
   },
   {
     id: 34, name: 'Weis Markets Distribution Center', contact: 'Paul Wentz', role: 'Facilities VP',
+    phone: '(570) 286-4571', email: 'pwentz@weismarkets.com',
     trade: 'Full Replacement', status: 'active', value: 495000, stage: 'lead',
     callbackDate: '2026-05-15', lastContact: '2026-04-08',
     stallReason: null, notes: '450 sq standing seam metal. Distribution warehouse. Corporate approval required.',
@@ -408,6 +442,7 @@ const DEMO_LEADS = [
   },
   {
     id: 35, name: 'PA State Police Barracks — Bloomsburg', contact: 'Sgt. Mike Torres', role: 'Facilities Coord',
+    phone: '(570) 387-4255', email: 'mtorres@pa.gov',
     trade: 'Full Replacement', status: 'won', value: 94000, stage: 'invoiced',
     callbackDate: null, lastContact: '2026-04-15',
     stallReason: null, notes: '68 sq architectural. Complete — awaiting state payment processing.',
@@ -415,6 +450,7 @@ const DEMO_LEADS = [
   },
   {
     id: 36, name: 'Shikellamy School District — 4 Buildings', contact: 'Ruth Ann Shaffer', role: 'Superintendent',
+    phone: '(570) 286-3684', email: 'rshaffer@shiksd.org',
     trade: 'Full Replacement', status: 'active', value: 687000, stage: 'estimate_sent',
     callbackDate: '2026-05-01', lastContact: '2026-04-14',
     stallReason: null, notes: '4 school buildings, mixed TPO + architectural. Summer 2026 installation. Board presentation scheduled.',
