@@ -9152,6 +9152,7 @@ export default function App() {
 
   const [demoLeadOverrides, setDemoLeadOverrides] = useState({});
   const [demoJobOverrides, setDemoJobOverrides] = useState({});
+  const [demoCrew, setDemoCrew] = useState(DEMO_CREW);
 
   // Persist to localStorage whenever userLeads changes (non-demo only)
   useEffect(() => {
@@ -9184,6 +9185,9 @@ export default function App() {
   const handleAddCrew = (member) => setUserCrew(prev => [member, ...prev]);
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
+  const handleDemoAddCrew = (member) => setDemoCrew(prev => [member, ...prev]);
+  const handleDemoEditCrew = (member) => setDemoCrew(prev => prev.map(m => m.id === member.id ? member : m));
+  const handleDemoDeleteCrew = (id) => setDemoCrew(prev => prev.filter(m => m.id !== id));
   const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
   const handleCreateAndScheduleJob = (jobData) => {
     const id = `j-${Date.now()}`;
@@ -9330,7 +9334,7 @@ export default function App() {
   const leads = isDemo
     ? DEMO_LEADS.map(l => demoLeadOverrides[String(l.id)] ? { ...l, ...demoLeadOverrides[String(l.id)] } : l)
     : userLeads;
-  const crew = isDemo ? DEMO_CREW : userCrew;
+  const crew = isDemo ? demoCrew : userCrew;
 
   // Derive jobs from pipeline leads that have reached a job-execution stage,
   // then append any standalone jobs added via "Add Job" (deduplicated by id).
@@ -9506,9 +9510,9 @@ export default function App() {
             crew={crew}
             jobs={jobs}
             assignments={effectiveAssignments}
-            onAddMember={isDemo ? null : handleAddCrew}
-            onEditMember={isDemo ? null : handleEditCrew}
-            onDeleteMember={isDemo ? null : handleDeleteCrew}
+            onAddMember={isDemo ? handleDemoAddCrew : handleAddCrew}
+            onEditMember={isDemo ? handleDemoEditCrew : handleEditCrew}
+            onDeleteMember={isDemo ? handleDemoDeleteCrew : handleDeleteCrew}
           />
         )}
         {tab === 'chat' && (
