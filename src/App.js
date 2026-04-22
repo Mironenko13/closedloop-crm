@@ -1187,6 +1187,10 @@ function GlobalStyles() {
       .ri-card-btn:hover { color:#F0F2F5 !important; background:rgba(232,114,42,0.1) !important; }
       .ri-close-btn:hover { color:#F0F2F5 !important; background:rgba(255,255,255,0.1) !important; }
       .ri-add-item:hover { color:#8B95A1 !important; border-color:rgba(255,255,255,0.15) !important; }
+      @keyframes ri-pulse { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+      .ri-skel { animation:ri-pulse 1.5s ease-in-out infinite; background:#2A3140; border-radius:6px; }
+      @keyframes ri-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+      .ri-fadein { animation:ri-fadein 0.2s ease-out; }
       ::-webkit-scrollbar { width:5px; height:5px; }
       ::-webkit-scrollbar-track { background:transparent; }
       ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
@@ -9558,6 +9562,7 @@ export default function App() {
         ...S.body,
         ...(isMobile ? { padding: '16px 12px', paddingBottom: 72 } : { paddingBottom: 0 }),
       }}>
+        <div key={tab} className="ri-fadein">
         {tab === 'pipeline' && (
           leads.length === 0
             ? <EmptyState
@@ -9658,6 +9663,7 @@ export default function App() {
                 <div style={{ fontSize: 13, color: '#8B95A1', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
               </div>
         )}
+        </div>
       </main>
 
       {/* Mobile bottom navigation */}
