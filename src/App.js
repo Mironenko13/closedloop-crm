@@ -9543,6 +9543,26 @@ export default function App() {
           </div>
         )}
 
+        {isDemo && (
+          <button
+            onClick={() => {
+              setDemoLeadOverrides({});
+              setDemoJobOverrides({});
+              setDemoNewJobs([]);
+              setDemoCrew(DEMO_CREW);
+            }}
+            className="ri-btn ri-btn-secondary"
+            style={{
+              background: 'transparent', border: '1px solid rgba(232,114,42,0.3)',
+              color: '#E8722A', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
+              padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
+              minHeight: 'auto',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            Reset Demo
+          </button>
+        )}
         <button
           onClick={() => { setScreen('login'); setSession(null); }}
           className="ri-btn ri-btn-secondary"
