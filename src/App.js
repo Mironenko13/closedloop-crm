@@ -2765,6 +2765,15 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
       </div>
 
       {/* Kanban board */}
+      <div style={{ position: 'relative' }}>
+        {isMobile && (
+          <div style={{ position: 'absolute', right: 0, top: 0, bottom: 16, width: 40, background: 'linear-gradient(to right, transparent, #1E2329)', zIndex: 2, pointerEvents: 'none', borderRadius: '0 10px 10px 0' }} />
+        )}
+        {isMobile && (
+          <div style={{ textAlign: 'center', fontSize: 11, color: '#8B95A1', marginBottom: 6, letterSpacing: '0.3px' }}>
+            ← Swipe to see all stages →
+          </div>
+        )}
       <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, WebkitOverflowScrolling: 'touch', alignItems: 'flex-start' }}>
         {KANBAN_STAGES.map(stg => {
           const cards = byStage[stg.key] || [];
@@ -2834,6 +2843,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             </div>
           );
         })}
+      </div>
       </div>
 
       {/* Quick Edit Modal */}
