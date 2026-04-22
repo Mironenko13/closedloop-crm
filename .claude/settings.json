@@ -1,13 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(powershell -Command \":*)"
+      "Bash(npx eslint*)",
+      "Bash(CI=true npm run build*)",
+      "Bash(git *)"
     ]
-  },
-  "hooks": {
-    "postToolUse": [{
-      "matcher": "Edit|Write",
-      "command": "npx eslint --quiet --no-warn-ignored $CLAUDE_FILE_PATHS 2>/dev/null && echo 'LINT OK' || echo 'LINT ERRORS — fix before continuing'"
-    }]
   }
 }
