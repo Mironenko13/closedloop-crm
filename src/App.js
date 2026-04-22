@@ -662,15 +662,35 @@ const DEMO_CREW = [
 ];
 
 const DEMO_MESSAGES = [
+  // ── Christ Lutheran Church (201) — active tear-off conversation ──
   { id: 'dm-1', jobId: '201', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to this job', timestamp: 1744600000000, type: 'system' },
-  { id: 'dm-2', jobId: '201', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'On site at Christ Lutheran. Ridge cap removed, starting tear-off on damaged section.', timestamp: 1744610000000, type: 'user' },
-  { id: 'dm-3', jobId: '201', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Shingles matched — CertainTeed Landmark Weathered Wood. Picked up from Boise Cascade.', timestamp: 1744620000000, type: 'user' },
-  { id: 'dm-4', jobId: '202', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to Stoltzfus job', timestamp: 1744700000000, type: 'system' },
-  { id: 'dm-5', jobId: '202', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Farmhouse — confirmed no Sunday work. Materials staged in barn. Starting 7 AM Thursday.', timestamp: 1744710000000, type: 'user' },
-  { id: 'dm-6', jobId: '205', senderId: 'system', senderName: 'System', text: 'Job scheduled for 2026-04-21', timestamp: 1744800000000, type: 'system' },
-  { id: 'dm-7', jobId: '205', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Hotel Hershey — need to match Peach Bottom slate exactly. Supplier confirmed availability.', timestamp: 1744810000000, type: 'user' },
-  { id: 'dm-8', jobId: '207', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to Market St Commons', timestamp: 1744900000000, type: 'system' },
-  { id: 'dm-9', jobId: '207', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Fascia on south side is rotted worse than expected. Adding 20 LF fascia board to materials.', timestamp: 1744910000000, type: 'user' },
+  { id: 'dm-2', jobId: '201', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'On site at Christ Lutheran. Ridge cap removed, starting tear-off on damaged section. Weather is clear.', timestamp: 1744610000000, type: 'user' },
+  { id: 'dm-3', jobId: '201', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Shingles matched — CertainTeed Landmark Weathered Wood. Picked up 24 bundles from Boise Cascade Sunbury.', timestamp: 1744620000000, type: 'user' },
+  { id: 'dm-4', jobId: '201', senderId: 'owner', senderName: 'Demo Owner', text: 'How does the decking look under the tear-off? Any soft spots?', timestamp: 1744630000000, type: 'user' },
+  { id: 'dm-5', jobId: '201', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Found 14 sheets of rotted OSB on the north slope near the eave line. Sending photos now. Gonna need a change order.', timestamp: 1744635000000, type: 'user' },
+  { id: 'dm-6', jobId: '201', senderId: 'owner', senderName: 'Demo Owner', text: 'Got it. I\'ll write up the CO for $588 — 14 sheets at $42 each. Get those replaced before underlayment goes down.', timestamp: 1744640000000, type: 'user' },
+  { id: 'dm-7', jobId: '201', senderId: 'dc4', senderName: 'Ryan Hess', text: 'Dumpster is full. Called for a swap — should be here by 2 PM. Staging debris on the tarp for now.', timestamp: 1744650000000, type: 'user' },
+  { id: 'dm-8', jobId: '201', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Underlayment done on north slope. Ice & water shield at eaves and valleys. Starting south side tomorrow AM.', timestamp: 1744680000000, type: 'user' },
+  // ── Amos Stoltzfus (202) — farmhouse crew coordination ──
+  { id: 'dm-10', jobId: '202', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to Stoltzfus farmhouse', timestamp: 1744700000000, type: 'system' },
+  { id: 'dm-11', jobId: '202', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Farmhouse — confirmed no Sunday work with Amos. Materials staged in barn. Starting 7 AM Thursday.', timestamp: 1744710000000, type: 'user' },
+  { id: 'dm-12', jobId: '202', senderId: 'owner', senderName: 'Demo Owner', text: 'Good. Make sure crew parks on the gravel, not the lawn. Amos is particular about that.', timestamp: 1744715000000, type: 'user' },
+  { id: 'dm-13', jobId: '202', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Copy that. Also — GAF Timberline HDZ Charcoal is confirmed. 38 squares loaded on the trailer at Boise Cascade.', timestamp: 1744720000000, type: 'user' },
+  // ── Hotel Hershey (205) — slate matching discussion ──
+  { id: 'dm-14', jobId: '205', senderId: 'system', senderName: 'System', text: 'Job scheduled for 2026-04-21', timestamp: 1744800000000, type: 'system' },
+  { id: 'dm-15', jobId: '205', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Hotel Hershey — need to match Peach Bottom slate exactly. Supplier in York confirmed they have 180 sq in stock.', timestamp: 1744810000000, type: 'user' },
+  { id: 'dm-16', jobId: '205', senderId: 'owner', senderName: 'Demo Owner', text: 'Get a sample tile shipped before we commit. Patricia at the hotel wants to see it against the existing roof first.', timestamp: 1744815000000, type: 'user' },
+  { id: 'dm-17', jobId: '205', senderId: 'dc3', senderName: 'Luis Ortiz', text: 'Heads up — the access road behind the annex has a weight limit. Delivery truck needs to come through the main entrance.', timestamp: 1744820000000, type: 'user' },
+  // ── Market Street Commons (207) — gutter/fascia discovery ──
+  { id: 'dm-18', jobId: '207', senderId: 'system', senderName: 'System', text: 'Jake Stoltzfus assigned to Market St Commons', timestamp: 1744900000000, type: 'system' },
+  { id: 'dm-19', jobId: '207', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: 'Fascia on south side is rotted worse than expected. At least 20 LF needs replacing before we can hang gutters.', timestamp: 1744910000000, type: 'user' },
+  { id: 'dm-20', jobId: '207', senderId: 'owner', senderName: 'Demo Owner', text: 'Get measurements and I\'ll add fascia board to the materials order. What size — 1x6 or 1x8?', timestamp: 1744915000000, type: 'user' },
+  { id: 'dm-21', jobId: '207', senderId: 'dc1', senderName: 'Jake Stoltzfus', text: '1x8 cedar. 20 LF should cover it. Also need 2 tubes of PL Premium for the splice joints.', timestamp: 1744920000000, type: 'user' },
+  // ── Dan Sensenig (204) — punch list follow-up ──
+  { id: 'dm-22', jobId: '204', senderId: 'system', senderName: 'System', text: 'Tom Bricker assigned to Sensenig punch list', timestamp: 1744950000000, type: 'system' },
+  { id: 'dm-23', jobId: '204', senderId: 'dc2', senderName: 'Tom Bricker', text: 'At Sensenig\'s on Penns Creek Rd. Ridge cap looks good. Found one nail pop on the west gable — resealing now.', timestamp: 1744955000000, type: 'user' },
+  { id: 'dm-24', jobId: '204', senderId: 'owner', senderName: 'Demo Owner', text: 'Did the magnetic sweep on the driveway and yard? Last thing we need is a nail in someone\'s tire.', timestamp: 1744960000000, type: 'user' },
+  { id: 'dm-25', jobId: '204', senderId: 'dc2', senderName: 'Tom Bricker', text: 'Already done. Swept the full perimeter, driveway, and flower beds. All clear. Sensenig signed off — he\'s happy.', timestamp: 1744965000000, type: 'user' },
 ];
 
 const DEMO_JOB_DURATIONS = {
@@ -7243,15 +7263,21 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
 }
 
 // ─── Chat Tab (global) ────────────────────────────────────────────────────────
-function ChatTab({ jobs }) {
-  const [allMessages, setAllMessages] = useState([]);
+function ChatTab({ jobs, demoMessages }) {
+  const [dbMessages, setDbMessages] = useState([]);
   const [jobFilter, setJobFilter] = useState('all');
 
   useEffect(() => {
-    chatDB.getAll().then(msgs => {
-      setAllMessages(msgs.sort((a, b) => b.timestamp - a.timestamp));
-    }).catch(() => {});
-  }, []);
+    if (!demoMessages) {
+      chatDB.getAll().then(msgs => {
+        setDbMessages(msgs.sort((a, b) => b.timestamp - a.timestamp));
+      }).catch(() => {});
+    }
+  }, [demoMessages]);
+
+  const allMessages = demoMessages
+    ? [...demoMessages].sort((a, b) => b.timestamp - a.timestamp)
+    : dbMessages;
 
   const jobsWithMsgs = useMemo(() => {
     const ids = [...new Set(allMessages.map(m => m.jobId))];
@@ -9480,7 +9506,7 @@ export default function App() {
           />
         )}
         {tab === 'chat' && (
-          <ChatTab jobs={jobs} />
+          <ChatTab jobs={jobs} demoMessages={isDemo ? DEMO_MESSAGES : null} />
         )}
         {tab === 'photos' && (
           <GlobalPhotoLog jobs={jobs} />
