@@ -7172,7 +7172,13 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
 
   const send = async () => {
     const t = text.trim();
-    if (!t || demoMessages) return;
+    if (!t) return;
+    if (demoMessages) {
+      const demoMsg = { id: `demo-${Date.now()}`, jobId: String(jobId), senderId: 'owner', senderName: currentUser || 'Demo Owner', text: t, timestamp: Date.now(), type: 'user' };
+      setMessages(prev => [...prev, demoMsg]);
+      setText('');
+      return;
+    }
     const msg = {
       id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       jobId: String(jobId),
