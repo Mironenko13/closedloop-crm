@@ -8604,7 +8604,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
             + New Job
           </button>
         )}
-        {!isDemo && onSchedule && (
+        {onSchedule && (
           <button onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: null })} style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#8B95A1', fontWeight: 600, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
             Schedule Existing
           </button>
@@ -9151,6 +9151,7 @@ export default function App() {
   });
 
   const [demoLeadOverrides, setDemoLeadOverrides] = useState({});
+  const [demoJobOverrides, setDemoJobOverrides] = useState({});
 
   // Persist to localStorage whenever userLeads changes (non-demo only)
   useEffect(() => {
@@ -9231,6 +9232,9 @@ export default function App() {
   const handleScheduleJob = (jobId, scheduledDate, duration) => {
     setUserLeads(prev => prev.map(l => String(l.id) === String(jobId) ? { ...l, scheduledDate, duration } : l));
     setUserJobs(prev => prev.map(j => String(j.id) === String(jobId) ? { ...j, scheduledDate, duration } : j));
+  };
+  const handleDemoScheduleJob = (jobId, scheduledDate, duration) => {
+    setDemoJobOverrides(prev => ({ ...prev, [String(jobId)]: { ...prev[String(jobId)], scheduledDate, duration: duration || 1 } }));
   };
   const handleAssign = (jobId, crewId) => {
     setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
@@ -9335,7 +9339,9 @@ export default function App() {
     .map(leadToJob);
   const derivedIds = new Set(derivedJobs.map(j => String(j.id)));
   const standaloneJobs = userJobs.filter(j => !derivedIds.has(String(j.id)));
-  const jobs = isDemo ? DEMO_JOBS : [...derivedJobs, ...standaloneJobs];
+  const jobs = isDemo
+    ? DEMO_JOBS.map(j => demoJobOverrides[String(j.id)] ? { ...j, ...demoJobOverrides[String(j.id)] } : j)
+    : [...derivedJobs, ...standaloneJobs];
   const effectiveAssignments = isDemo ? DEMO_ASSIGNMENTS : assignments;
   const userTrade = session?.trade || 'Full Replacement';
   const companyName = session?.companyName || 'RidgeOS';
@@ -9478,7 +9484,7 @@ export default function App() {
             jobs={jobs}
             crew={crew}
             assignments={effectiveAssignments}
-            onSchedule={isDemo ? null : handleScheduleJob}
+            onSchedule={isDemo ? handleDemoScheduleJob : handleScheduleJob}
             onComplete={isDemo ? null : handleCompleteJob}
             onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
             onAssign={isDemo ? null : handleAssign}
