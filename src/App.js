@@ -3257,7 +3257,15 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
           <DisabledTooltip active={tier !== 'business'} label={tier === 'business' ? '' : 'Export — Business feature.'}>
             <button
-              onClick={() => tier === 'business' && void 0}
+              onClick={() => {
+                if (tier !== 'business') return;
+                const rows = [['Name','Stage','Status','Value','Trade','Deal Age'].join(',')];
+                leads.forEach(l => rows.push([`"${l.name}"`,STAGE_LABELS[l.stage]||l.stage,l.status,l.value,l.trade,l.dealAge||''].join(',')));
+                const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `ridgeos-pipeline-${TODAY}.csv`; a.click();
+                URL.revokeObjectURL(url);
+              }}
               style={{
                 padding: '8px 20px',
                 background: tier === 'business' ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#2A3140',
