@@ -8635,7 +8635,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <div style={{ fontSize: 20, fontWeight: 700, color: '#F0F2F5' }}>Dispatch Board</div>
           <div style={{ fontSize: 13, color: '#8B95A1' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
-        {!isDemo && onCreate && (
+        {onCreate && (
           <button onClick={() => setQuickBar({ date: TODAY, job: null })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
             + New Job
           </button>
@@ -9189,6 +9189,7 @@ export default function App() {
   const [demoLeadOverrides, setDemoLeadOverrides] = useState({});
   const [demoJobOverrides, setDemoJobOverrides] = useState({});
   const [demoCrew, setDemoCrew] = useState(DEMO_CREW);
+  const [demoNewJobs, setDemoNewJobs] = useState([]);
 
   // Persist to localStorage whenever userLeads changes (non-demo only)
   useEffect(() => {
@@ -9275,6 +9276,11 @@ export default function App() {
   };
   const handleDemoScheduleJob = (jobId, scheduledDate, duration) => {
     setDemoJobOverrides(prev => ({ ...prev, [String(jobId)]: { ...prev[String(jobId)], scheduledDate, duration: duration || 1 } }));
+    setDemoNewJobs(prev => prev.map(j => String(j.id) === String(jobId) ? { ...j, scheduledDate, duration: duration || 1 } : j));
+  };
+  const handleDemoCreateJob = (jobData) => {
+    const id = `demo-j-${Date.now()}`;
+    setDemoNewJobs(prev => [{ id, customer: jobData.customer, description: jobData.description || '', taskList: [], address: '', trade: jobData.trade || 'Full Replacement', value: 0, status: 'Scheduled', scheduledDate: jobData.scheduledDate, duration: jobData.duration || 1, notes: '', completedSteps: [], explicitlyScheduled: true }, ...prev]);
   };
   const handleAssign = (jobId, crewId) => {
     setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
@@ -9380,7 +9386,7 @@ export default function App() {
   const derivedIds = new Set(derivedJobs.map(j => String(j.id)));
   const standaloneJobs = userJobs.filter(j => !derivedIds.has(String(j.id)));
   const jobs = isDemo
-    ? DEMO_JOBS.map(j => demoJobOverrides[String(j.id)] ? { ...j, ...demoJobOverrides[String(j.id)] } : j)
+    ? [...DEMO_JOBS.map(j => demoJobOverrides[String(j.id)] ? { ...j, ...demoJobOverrides[String(j.id)] } : j), ...demoNewJobs]
     : [...derivedJobs, ...standaloneJobs];
   const effectiveAssignments = isDemo ? DEMO_ASSIGNMENTS : assignments;
   const userTrade = session?.trade || 'Full Replacement';
@@ -9534,7 +9540,7 @@ export default function App() {
             demoMessages={isDemo ? DEMO_MESSAGES : null}
             customChecklist={userCustomChecklist}
             isDemo={isDemo}
-            onCreate={isDemo ? null : handleCreateAndScheduleJob}
+            onCreate={isDemo ? handleDemoCreateJob : handleCreateAndScheduleJob}
             onUpdate={isDemo ? null : handleUpdateJob}
             onChangeStage={isDemo ? null : handleChangeJobStage}
             onDeleteJob={isDemo ? null : handleDeleteJob}
