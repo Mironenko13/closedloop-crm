@@ -6513,11 +6513,33 @@ function GlobalPhotoLog({ jobs }) {
   const [catFilter, setCatFilter] = useState('All');
   const [realPhotos, setRealPhotos] = useState([]);
   const isMobile = useMobile();
+  const photoFileRef = useRef(null);
 
   // Load real photos from IndexedDB
-  useEffect(() => {
+  const loadPhotos = useCallback(() => {
     photoDB.getAll().then(all => setRealPhotos(all.sort((a, b) => b.timestamp - a.timestamp))).catch(() => {});
   }, []);
+  useEffect(() => { loadPhotos(); }, [loadPhotos]);
+
+  const handlePhotoUpload = async (files) => {
+    if (!files || !files.length || !selectedJob) return;
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith('image/')) continue;
+      const imageData = await compressImage(file);
+      await photoDB.add({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        jobId: String(selectedJob.id),
+        jobName: selectedJob.customer,
+        imageData,
+        timestamp: Date.now(),
+        caption: '',
+        category: catFilter !== 'All' ? catFilter : 'Pre-Install',
+        stage: 'in_progress',
+        trade: selectedJob.trade || '',
+      });
+    }
+    loadPhotos();
+  };
 
   const allJobs = jobs || DEMO_JOBS;
   const allPhotos = [...DEMO_JOB_PHOTOS, ...realPhotos];
@@ -6668,8 +6690,9 @@ function GlobalPhotoLog({ jobs }) {
       )}
 
       {/* + Add Photo button */}
+      <input ref={photoFileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={e => { handlePhotoUpload(e.target.files); e.target.value = ''; }} />
       <button
-        onClick={() => {/* Would open upload flow */}}
+        onClick={() => photoFileRef.current?.click()}
         style={{ width: '100%', marginTop: 14, padding: '11px', background: 'linear-gradient(135deg,#06b6d4,#0891b2)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
       >
         + Add Photo
