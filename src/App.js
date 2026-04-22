@@ -3434,35 +3434,49 @@ function cpNewMakeInit(job, crewNames) {
 
 // Demo pre-filled Cost Manager data: jobId → { mat: {id→{qty,costPerUnit}}, lab: {id→{qty,rate}} }
 const DEMO_COST_DATA = {
-  201: { // Christ Lutheran Church — 118 sq Peach Bottom Slate, $80,240
+  201: { // Christ Lutheran Church — 118 sq, large commercial full replacement
     mat: {
-      ma3: { qty: '118', costPerUnit: '485' },   // Peach Bottom Slate
-      mb1: { qty: '12', costPerUnit: '76' },      // Synthetic Underlayment
-      mb4: { qty: '6', costPerUnit: '98' },       // Ice & Water Shield
-      mc2: { qty: '280', costPerUnit: '2.10' },   // Step Flashing
-      mc7: { qty: '2', costPerUnit: '420' },      // Large Chimney Flashing
-      mc6: { qty: '1', costPerUnit: '285' },      // Small Chimney Flashing
-      md2: { qty: '18', costPerUnit: '42' },      // OSB 4x8 Sheet
+      ma2: { qty: '354', costPerUnit: '38.50' },  // Architectural Shingles (118 sq × 3 bdl/sq)
+      ma4: { qty: '24', costPerUnit: '42' },       // Ridge Cap Shingles
+      ma5: { qty: '360', costPerUnit: '0.85' },    // Starter Strip LF
+      mb1: { qty: '12', costPerUnit: '76' },       // Synthetic Underlayment
+      mb4: { qty: '8', costPerUnit: '98' },        // Ice & Water Shield
+      mc1: { qty: '480', costPerUnit: '2.80' },    // Drip Edge LF
+      mc2: { qty: '280', costPerUnit: '2.10' },    // Step Flashing
+      mc7: { qty: '2', costPerUnit: '420' },       // Large Chimney Flashing
+      mc6: { qty: '1', costPerUnit: '285' },       // Small Chimney Flashing
+      md2: { qty: '18', costPerUnit: '42' },       // OSB 4x8 Sheet
+      me1: { qty: '96', costPerUnit: '4.25' },     // Ridge Vent LF
+      mg1: { qty: '12', costPerUnit: '32' },       // Roofing Nails (boxes)
+      mg2: { qty: '6', costPerUnit: '45' },        // Coil Nails
+      mh1: { qty: '2', costPerUnit: '425' },       // Dumpster
+      mf2: { qty: '320', costPerUnit: '8.40' },    // Gutter 6" (full system)
+      mf3: { qty: '8', costPerUnit: '48' },        // Downspouts
     },
     lab: {
-      la4: { qty: '118', rate: '195' },           // Slate Install (Extreme pitch)
-      lb1: { qty: '118', rate: '65' },            // Tearoff & Disposal
-      la7: { qty: '118', rate: '28' },            // Steep Pitch Surcharge (Harness)
+      la1: { qty: '118', rate: '225' },            // Shingle Installation
+      lb1: { qty: '118', rate: '65' },             // Tearoff & Disposal
+      la7: { qty: '118', rate: '28' },             // Steep Pitch Surcharge
     },
   },
-  202: { // Amos Stoltzfus — 38 sq GAF Timberline HDZ, $18,600
+  202: { // Amos Stoltzfus — 38 sq farmhouse, standard residential
     mat: {
-      ma2: { qty: '38', costPerUnit: '112' },     // GAF Timberline HDZ
-      mb1: { qty: '4', costPerUnit: '76' },       // Synthetic Underlayment
-      mb4: { qty: '3', costPerUnit: '98' },       // Ice & Water Shield
-      mc2: { qty: '140', costPerUnit: '2.10' },   // Step Flashing
-      ma6: { qty: '120', costPerUnit: '1.85' },   // Ridge Cap
-      mc6: { qty: '1', costPerUnit: '285' },      // Small Chimney Flashing
-      md2: { qty: '6', costPerUnit: '42' },       // OSB 4x8 Sheet
+      ma2: { qty: '114', costPerUnit: '38.50' },   // Architectural Shingles (38 sq × 3 bdl)
+      ma4: { qty: '8', costPerUnit: '42' },         // Ridge Cap Shingles
+      ma5: { qty: '180', costPerUnit: '0.85' },     // Starter Strip
+      mb1: { qty: '4', costPerUnit: '76' },         // Synthetic Underlayment
+      mb4: { qty: '3', costPerUnit: '98' },         // Ice & Water Shield
+      mc1: { qty: '200', costPerUnit: '2.80' },     // Drip Edge
+      mc2: { qty: '140', costPerUnit: '2.10' },     // Step Flashing
+      mc6: { qty: '1', costPerUnit: '285' },        // Small Chimney Flashing
+      md2: { qty: '6', costPerUnit: '42' },         // OSB 4x8 Sheet
+      me1: { qty: '42', costPerUnit: '4.25' },      // Ridge Vent
+      mg1: { qty: '6', costPerUnit: '32' },         // Roofing Nails
+      mh1: { qty: '1', costPerUnit: '425' },        // Dumpster
     },
     lab: {
-      la1: { qty: '38', rate: '225' },            // Shingle Installation (Standard)
-      lb1: { qty: '38', rate: '65' },             // Tearoff & Disposal
+      la1: { qty: '38', rate: '225' },              // Shingle Installation (Standard)
+      lb1: { qty: '38', rate: '65' },               // Tearoff & Disposal
     },
   },
   203: { // Betty Shumaker — 180 LF Gutter, $3,980
@@ -3477,34 +3491,32 @@ const DEMO_COST_DATA = {
       lc6: { qty: '180', rate: '1.20' },           // Old Gutter Removal
     },
   },
-  204: { // Dan Sensenig — 34 sq GAF Timberline HDZ, $14,900
+  204: { // Dan Sensenig — small residential punch list, minimal materials
     mat: {
-      ma2: { qty: '34', costPerUnit: '112' },     // GAF Timberline HDZ
-      mb1: { qty: '4', costPerUnit: '76' },       // Synthetic Underlayment
-      mb4: { qty: '2', costPerUnit: '98' },       // Ice & Water Shield
-      mc2: { qty: '110', costPerUnit: '2.10' },   // Step Flashing
-      ma6: { qty: '95', costPerUnit: '1.85' },    // Ridge Cap
-      md2: { qty: '4', costPerUnit: '42' },       // OSB 4x8 Sheet
+      ma4: { qty: '4', costPerUnit: '42' },        // Ridge Cap Shingles
+      ma6: { qty: '28', costPerUnit: '1.85' },     // Hip & Ridge LF
+      mg3: { qty: '3', costPerUnit: '18' },        // Roofing Cement/Tar
+      mg4: { qty: '4', costPerUnit: '6.50' },      // Caulk/Sealant
+      mc5: { qty: '2', costPerUnit: '12' },        // Pipe Boot/Jack
     },
     lab: {
-      la1: { qty: '34', rate: '225' },            // Shingle Installation
-      lb1: { qty: '34', rate: '65' },             // Tearoff & Disposal
+      lc1: { qty: '4', rate: '95' },              // Flashing Work (hours)
     },
   },
-  205: { // Hotel Hershey — 180 sq Standing Seam Metal, $198,000
+  205: { // Hotel Hershey — slate matching, York supplier, copper accents
     mat: {
-      ma3: { qty: '180', costPerUnit: '485' },    // Standing Seam Metal Panels
-      mb1: { qty: '18', costPerUnit: '76' },      // Synthetic Underlayment
-      mb4: { qty: '8', costPerUnit: '98' },       // Ice & Water Shield
-      mc1: { qty: '420', costPerUnit: '4.80' },   // Eave Trim (Drip Edge)
-      ma4: { qty: '210', costPerUnit: '6.20' },   // Ridge Cap Metal
-      mc7: { qty: '4', costPerUnit: '420' },      // Large Chimney Flashing
-      md2: { qty: '24', costPerUnit: '42' },      // OSB 4x8 Sheet
+      ma3: { qty: '12', costPerUnit: '685' },     // Peach Bottom Slate tiles (from York, low qty high cost)
+      mc7: { qty: '2', costPerUnit: '520' },      // Large Chimney Flashing (copper)
+      mc2: { qty: '48', costPerUnit: '4.80' },    // Step Flashing (copper)
+      mc4: { qty: '32', costPerUnit: '6.40' },    // Counter Flashing (copper)
+      mg3: { qty: '4', costPerUnit: '24' },       // Roofing Cement (slate grade)
+      mg4: { qty: '6', costPerUnit: '8.50' },     // Sealant (polyurethane)
+      md3: { qty: '16', costPerUnit: '4.20' },    // Boards/Lumber (nailer boards)
     },
     lab: {
-      la3: { qty: '180', rate: '420' },           // Metal Roof Installation (Very Steep)
-      lb1: { qty: '180', rate: '65' },            // Tearoff & Disposal
-      la7: { qty: '180', rate: '45' },            // Complex Roofline Surcharge (Harness)
+      la4: { qty: '12', rate: '285' },            // Slate Installation (Extreme pitch, specialty)
+      lc1: { qty: '8', rate: '95' },              // Flashing Work (hours)
+      lc2: { qty: '2', rate: '180' },             // Chimney Flashing (copper, each)
     },
   },
   206: { // Earl Yoder — Flashing Repair, $1,850
@@ -3519,17 +3531,20 @@ const DEMO_COST_DATA = {
       lc9: { qty: '1', rate: '85' },              // Sealant & Cleanup (Decking Repair sub)
     },
   },
-  207: { // Market Street Commons — 85 sq TPO, $42,800
+  207: { // Market Street Commons — gutter + fascia focused
     mat: {
-      ma3: { qty: '85', costPerUnit: '198' },     // TPO Membrane 60-mil (Premium sub)
-      mb2: { qty: '18', costPerUnit: '52' },      // TPO Adhesive (Felt sub)
-      mb1: { qty: '85', costPerUnit: '62' },      // Insulation Board 2" (Underlayment sub)
-      mb3: { qty: '85', costPerUnit: '38' },      // Cover Board (Felt 30# sub)
-      mc1: { qty: '380', costPerUnit: '3.20' },   // Edge Metal (Drip Edge sub)
+      mf2: { qty: '220', costPerUnit: '8.40' },   // Gutter 6" K-style seamless
+      mf3: { qty: '6', costPerUnit: '48' },        // Downspouts
+      mf4: { qty: '220', costPerUnit: '3.20' },    // Gutter Guards
+      mf5: { qty: '12', costPerUnit: '12' },       // End Caps & Outlets
+      md3: { qty: '20', costPerUnit: '6.80' },     // 1x8 Cedar Fascia board (FT)
+      mg4: { qty: '6', costPerUnit: '8.50' },      // PL Premium sealant
+      mg3: { qty: '2', costPerUnit: '18' },        // Roofing Cement (touchup)
     },
     lab: {
-      lc10: { qty: '85', rate: '165' },           // TPO Installation (EPDM/Flat Roof)
-      lb3: { qty: '85', rate: '72' },             // Tearoff Flat/Built-up
+      lc5: { qty: '220', rate: '6.80' },           // Gutter Installation LF
+      lc6: { qty: '220', rate: '1.20' },           // Old Gutter Removal LF
+      lc7: { qty: '20', rate: '4.50' },            // Fascia Repair/Replace LF
     },
   },
   208: { // Ray Brubaker — 52 sq CertainTeed Landmark Pro, $24,800
@@ -3573,13 +3588,17 @@ function applyDemoCostData(initData, jobId) {
   };
 }
 
-function CostManagerPanel({ job, crew, assignments, rolePerms }) {
+function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
   const cpKey = `cl_crewpay_${job.id}`;
   const assignedIds = assignments[String(job.id)] || [];
   const assignedCrew = (crew || []).filter(m => assignedIds.includes(m.id));
 
   const [subTab, setSubTab] = useState('materials');
   const [data, setData] = useState(() => {
+    // In demo mode with demo cost data, always use demo fills (ignore stale localStorage)
+    if (isDemo && DEMO_COST_DATA[job.id]) {
+      return applyDemoCostData(cpNewMakeInit(job, assignedCrew.map(m => m.name).join(', ')), job.id);
+    }
     try {
       const s = localStorage.getItem(cpKey);
       if (s) {
@@ -4156,7 +4175,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
       {/* ── Materials Tab ── */}
       {subTab === 'materials' && (
-        <div>
+        <div style={{ paddingBottom: 52 }}>
           {/* Sections */}
           {data.materials.sections.map(sec => renderMatSection(sec))}
           <button
@@ -4385,7 +4404,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms }) {
 
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
-function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
+function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, isDemo }) {
   const steps = (job.taskList && job.taskList.length ? job.taskList.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
@@ -4785,7 +4804,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
         )}
 
         {modalTab === 'crewpay' && (
-          <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} rolePerms={rolePerms} />
+          <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} rolePerms={rolePerms} isDemo={isDemo} />
         )}
         </div>{/* end scrollable content */}
       </div>
@@ -4936,6 +4955,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           onUpdateSteps={onUpdateSteps}
           onUpdateSchedule={onUpdateSchedule}
           rolePerms={rolePerms}
+          isDemo={!!demoMessages}
         />
       )}
     </div>
@@ -8824,6 +8844,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           onComplete={isDemo ? null : id => handleCompleteJob(id)}
           onUpdateSteps={isDemo ? null : onUpdateSteps}
           onUpdateSchedule={isDemo ? null : (jobId, date, dur) => { handleSaveSchedule(jobId, date, dur); setSelectedJob(null); }}
+          isDemo={isDemo}
         />
       )}
 
