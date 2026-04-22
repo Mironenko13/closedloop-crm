@@ -3442,9 +3442,10 @@ function cpNewMakeInit(job, crewNames) {
   };
 }
 
-// Demo pre-filled Cost Manager data: jobId → { mat: {id→{qty,costPerUnit}}, lab: {id→{qty,rate}} }
+// Demo pre-filled Cost Manager data: jobId → { mat: {id→{qty,costPerUnit}}, lab: {id→{qty,rate}}, signOff: {...} }
 const DEMO_COST_DATA = {
   201: { // Christ Lutheran Church — 118 sq, large commercial full replacement
+    signOff: { inspectionPass: 'yes', subName: 'Jake Stoltzfus', supervisor: 'Demo Owner', dateCompleted: '', notes: 'North slope decking replacement complete. Underlayment installed. South side in progress.', submitted: false },
     mat: {
       ma2: { qty: '354', costPerUnit: '38.50' },  // Architectural Shingles (118 sq × 3 bdl/sq)
       ma4: { qty: '24', costPerUnit: '42' },       // Ridge Cap Shingles
@@ -3470,6 +3471,7 @@ const DEMO_COST_DATA = {
     },
   },
   202: { // Amos Stoltzfus — 38 sq farmhouse, standard residential
+    signOff: { inspectionPass: '', subName: 'Jake Stoltzfus', supervisor: '', dateCompleted: '', notes: '', submitted: false },
     mat: {
       ma2: { qty: '114', costPerUnit: '38.50' },   // Architectural Shingles (38 sq × 3 bdl)
       ma4: { qty: '8', costPerUnit: '42' },         // Ridge Cap Shingles
@@ -3490,6 +3492,7 @@ const DEMO_COST_DATA = {
     },
   },
   203: { // Betty Shumaker — 180 LF Gutter, $3,980
+    signOff: { inspectionPass: '', subName: 'Tom Bricker', supervisor: '', dateCompleted: '', notes: '', submitted: false },
     mat: {
       mf2: { qty: '180', costPerUnit: '8.40' },   // Gutter 6" (K-style aluminum)
       mf5: { qty: '8', costPerUnit: '12' },        // End Caps & Outlets
@@ -3502,6 +3505,7 @@ const DEMO_COST_DATA = {
     },
   },
   204: { // Dan Sensenig — small residential punch list, minimal materials
+    signOff: { inspectionPass: 'yes', subName: 'Tom Bricker', supervisor: 'Demo Owner', dateCompleted: '2026-04-19', notes: 'Ridge cap extension complete. One nail pop on west gable resealed. Customer satisfied.', submitted: true },
     mat: {
       ma4: { qty: '4', costPerUnit: '42' },        // Ridge Cap Shingles
       ma6: { qty: '28', costPerUnit: '1.85' },     // Hip & Ridge LF
@@ -3514,6 +3518,7 @@ const DEMO_COST_DATA = {
     },
   },
   205: { // Hotel Hershey — slate matching, York supplier, copper accents
+    signOff: { inspectionPass: '', subName: 'Tom Bricker', supervisor: '', dateCompleted: '', notes: '', submitted: false },
     mat: {
       ma3: { qty: '12', costPerUnit: '685' },     // Peach Bottom Slate tiles (from York, low qty high cost)
       mc7: { qty: '2', costPerUnit: '520' },      // Large Chimney Flashing (copper)
@@ -3530,6 +3535,7 @@ const DEMO_COST_DATA = {
     },
   },
   206: { // Earl Yoder — Flashing Repair, $1,850
+    signOff: { inspectionPass: '', subName: '', supervisor: '', dateCompleted: '', notes: '', submitted: false },
     mat: {
       mc2: { qty: '40', costPerUnit: '2.10' },    // Step Flashing
       mc4: { qty: '24', costPerUnit: '3.40' },    // Counter Flashing
@@ -3542,6 +3548,7 @@ const DEMO_COST_DATA = {
     },
   },
   207: { // Market Street Commons — gutter + fascia focused
+    signOff: { inspectionPass: '', subName: 'Jake Stoltzfus', supervisor: '', dateCompleted: '', notes: 'Fascia repair needed on south side before gutter install.', submitted: false },
     mat: {
       mf2: { qty: '220', costPerUnit: '8.40' },   // Gutter 6" K-style seamless
       mf3: { qty: '6', costPerUnit: '48' },        // Downspouts
@@ -3558,6 +3565,7 @@ const DEMO_COST_DATA = {
     },
   },
   208: { // Ray Brubaker — 52 sq CertainTeed Landmark Pro, $24,800
+    signOff: { inspectionPass: '', subName: '', supervisor: '', dateCompleted: '', notes: '', submitted: false },
     mat: {
       ma2: { qty: '52', costPerUnit: '128' },     // CertainTeed Landmark Pro
       mb1: { qty: '6', costPerUnit: '76' },       // Synthetic Underlayment
@@ -3595,6 +3603,7 @@ function applyDemoCostData(initData, jobId) {
         items: sec.items.map(item => labFills[item.id] ? { ...item, qty: labFills[item.id].qty, rate: labFills[item.id].rate } : item),
       })),
     },
+    signOff: fills.signOff ? { ...initData.signOff, ...fills.signOff } : initData.signOff,
   };
 }
 
