@@ -1225,6 +1225,7 @@ function GlobalStyles() {
       @keyframes ri-pulse { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
       .ri-skel { animation:ri-pulse 1.5s ease-in-out infinite; background:#2A3140; border-radius:6px; }
       @keyframes ri-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+      @keyframes coSlideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
       .ri-fadein { animation:ri-fadein 0.2s ease-out; }
       ::-webkit-scrollbar { width:5px; height:5px; }
       ::-webkit-scrollbar-track { background:transparent; }
@@ -4547,12 +4548,17 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
     }
   }, [modalTab, job.id]);
   const [changeOrders, setChangeOrders] = useState(job.changeOrders || []);
-  const [showCOForm, setShowCOForm] = useState(false);
-  const [coTitle, setCOTitle] = useState('');
+  const [showCOPanel, setShowCOPanel] = useState(false);
   const [coDesc, setCODesc] = useState('');
   const [coAmount, setCOAmount] = useState('');
-  const [coNote, setCONote] = useState('');
+  const [coReason, setCOReason] = useState('');
   const [coPhase, setCOPhase] = useState('');
+  const [coPhoto, setCOPhoto] = useState(null);
+  const [coNotes, setCONotes] = useState('');
+  const [undoCO, setUndoCO] = useState(null);
+  const undoTimerRef = useRef(null);
+  const coDescRef = useRef(null);
+  const coPhotoRef = useRef(null);
   const [confirmComplete, setConfirmComplete] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(false);
   const [schedDate, setSchedDate] = useState(job.scheduledDate || '');
@@ -4897,15 +4903,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             <div style={{ marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <div style={S.sectionLabel}>Change Orders</div>
-                {!showCOForm && (
-                  <button onClick={() => setShowCOForm(true)} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
-                    + Add Change Order
-                  </button>
-                )}
+                <button onClick={() => { setShowCOPanel(true); setTimeout(() => coDescRef.current?.focus(), 50); }} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                  + Add Change Order
+                </button>
               </div>
 
               {/* Existing change orders */}
-              {changeOrders.length === 0 && !showCOForm && (
+              {changeOrders.length === 0 && !showCOPanel && (
                 <div style={{ fontSize: 12, color: '#8B95A1', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
               )}
               {changeOrders.map(co => {
@@ -4944,39 +4948,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 </div>
               )}
 
-              {/* Add change order form */}
-              {showCOForm && (
-                <div style={{ background: '#2A3140', border: '1px solid #E8722A44', borderRadius: 8, padding: '12px', marginTop: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#E8722A', marginBottom: 10 }}>New Change Order</div>
-                  <input value={coTitle} onChange={e => setCOTitle(e.target.value)} placeholder="Title (e.g. Additional decking repair)" style={{ ...FI, marginBottom: 8 }} />
-                  <textarea value={coDesc} onChange={e => setCODesc(e.target.value)} placeholder="Description" rows={2} style={{ ...FI, resize: 'none', marginBottom: 8 }} />
-                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <input value={coAmount} onChange={e => setCOAmount(e.target.value)} placeholder="Amount ($)" type="number" min="0" style={{ ...FI, flex: 1 }} />
-                    <input value={coNote} onChange={e => setCONote(e.target.value)} placeholder="Photo note (optional)" style={{ ...FI, flex: 1 }} />
-                  </div>
-                  <select value={coPhase} onChange={e => setCOPhase(e.target.value)} style={{ ...FI, marginBottom: 8, color: coPhase ? '#C9D1D9' : '#8B95A1' }}>
-                    <option value="">Tag to phase (optional)</option>
-                    {getDefaultPhases(job.jobType).map(p => (
-                      <option key={p.id} value={p.id}>Phase {p.id}: {p.label}</option>
-                    ))}
-                  </select>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={() => {
-                        if (coTitle.trim() && coAmount) {
-                          setChangeOrders(prev => [...prev, { id: `co-${Date.now()}`, title: coTitle.trim(), description: coDesc.trim(), amount: parseFloat(coAmount) || 0, status: 'Pending', date: TODAY, note: coNote.trim(), ...(coPhase ? { phase: parseInt(coPhase, 10) } : {}) }]);
-                          setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); setCOPhase(''); setShowCOForm(false);
-                        }
-                      }}
-                      disabled={!coTitle.trim() || !coAmount}
-                      style={{ flex: 1, padding: '9px', background: coTitle.trim() && coAmount ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 6, color: coTitle.trim() && coAmount ? '#fff' : '#8B95A1', fontWeight: 700, fontSize: 12, cursor: coTitle.trim() && coAmount ? 'pointer' : 'not-allowed' }}
-                    >
-                      Submit for Approval
-                    </button>
-                    <button onClick={() => { setShowCOForm(false); setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); }} style={{ padding: '9px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#8B95A1', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
-                  </div>
-                </div>
-              )}
+              {/* Change order slide-in panel is rendered at the modal level below */}
             </div>
           </>
         )}
@@ -5008,6 +4980,208 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           <CostManagerPanel job={job} crew={crew || []} assignments={assignments || {}} rolePerms={rolePerms} isDemo={isDemo} />
         )}
         </div>{/* end scrollable content */}
+
+        {/* ── Slide-in Change Order Panel ── */}
+        {showCOPanel && (
+          <div
+            style={{
+              position: 'absolute', top: 0, right: 0, bottom: 0,
+              width: isMobile ? '100%' : 320,
+              background: '#1E2329', borderLeft: isMobile ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              display: 'flex', flexDirection: 'column',
+              zIndex: 20, boxShadow: '-4px 0 24px rgba(0,0,0,0.4)',
+              animation: 'coSlideIn 0.15s ease-out',
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }
+              if (e.key === 'Enter' && !e.shiftKey && coDesc.trim() && coAmount) {
+                e.preventDefault();
+                document.getElementById('co-save-btn')?.click();
+              }
+            }}
+          >
+            {/* Panel header */}
+            <div style={{ padding: '16px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#F0F2F5' }}>New Change Order</div>
+                <button
+                  onClick={() => { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }}
+                  style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}
+                >
+                  ×
+                </button>
+              </div>
+              <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 2 }}>{job.customer} · #{job.id}</div>
+            </div>
+
+            {/* Panel form */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {/* Description */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Description *</label>
+                <input
+                  ref={coDescRef}
+                  value={coDesc}
+                  onChange={e => setCODesc(e.target.value)}
+                  placeholder="e.g. Additional decking repair"
+                  style={{ ...FI }}
+                />
+              </div>
+
+              {/* Amount */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Amount *</label>
+                <input
+                  value={coAmount}
+                  onChange={e => setCOAmount(e.target.value)}
+                  placeholder="0.00"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  style={{ ...FI, fontSize: 22, fontWeight: 700, padding: '14px 12px', letterSpacing: '0.5px' }}
+                />
+              </div>
+
+              {/* Reason */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Reason</label>
+                <select
+                  value={coReason}
+                  onChange={e => setCOReason(e.target.value)}
+                  style={{ ...FI, color: coReason ? '#C9D1D9' : '#8B95A1' }}
+                >
+                  <option value="">Select reason…</option>
+                  <option value="Customer Request">Customer Request</option>
+                  <option value="Scope Increase">Scope Increase</option>
+                  <option value="Unforeseen Condition">Unforeseen Condition</option>
+                  <option value="Weather">Weather</option>
+                  <option value="Materials Change">Materials Change</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {/* Phase */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Phase</label>
+                <select
+                  value={coPhase}
+                  onChange={e => setCOPhase(e.target.value)}
+                  style={{ ...FI, color: coPhase ? '#C9D1D9' : '#8B95A1' }}
+                >
+                  <option value="">Current phase ({getDefaultPhases(job.jobType).find(p => p.id === localCurrentPhase)?.label || '—'})</option>
+                  {getDefaultPhases(job.jobType).map(p => (
+                    <option key={p.id} value={p.id}>Phase {p.id}: {p.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Photo */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Photo (optional)</label>
+                <input ref={coPhotoRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) setCOPhoto(file.name);
+                  e.target.value = '';
+                }} />
+                <button
+                  onClick={() => coPhotoRef.current?.click()}
+                  style={{
+                    width: '100%', padding: '10px 12px', background: '#2A3140',
+                    border: '1px dashed rgba(255,255,255,0.15)', borderRadius: 8,
+                    color: coPhoto ? '#C9D1D9' : '#8B95A1', fontSize: 12, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>📷</span>
+                  {coPhoto || 'Attach photo'}
+                </button>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes (optional)</label>
+                <textarea
+                  value={coNotes}
+                  onChange={e => setCONotes(e.target.value)}
+                  placeholder="Additional context…"
+                  rows={2}
+                  style={{ ...FI, resize: 'vertical', minHeight: 48 }}
+                />
+              </div>
+            </div>
+
+            {/* Panel footer */}
+            <div style={{ padding: '14px 18px', borderTop: '1px solid rgba(255,255,255,0.08)', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button
+                id="co-save-btn"
+                disabled={!coDesc.trim() || !coAmount}
+                onClick={() => {
+                  const newCO = {
+                    id: `co-${Date.now()}`,
+                    title: coDesc.trim(),
+                    description: coNotes.trim() || undefined,
+                    amount: parseFloat(coAmount) || 0,
+                    status: 'Pending',
+                    date: TODAY,
+                    reason: coReason || undefined,
+                    phase: coPhase ? parseInt(coPhase, 10) : localCurrentPhase,
+                    loggedBy: currentUser,
+                    timestamp: new Date().toISOString(),
+                    ...(coPhoto ? { photo: coPhoto } : {}),
+                  };
+                  setChangeOrders(prev => [newCO, ...prev]);
+                  setUndoCO(newCO.id);
+                  if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+                  undoTimerRef.current = setTimeout(() => setUndoCO(null), 5000);
+                  setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes('');
+                  setShowCOPanel(false);
+                }}
+                style={{
+                  flex: 1, padding: '14px', border: 'none', borderRadius: 10,
+                  background: coDesc.trim() && coAmount ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'rgba(255,255,255,0.08)',
+                  color: coDesc.trim() && coAmount ? '#fff' : '#8B95A1',
+                  fontSize: 15, fontWeight: 700, cursor: coDesc.trim() && coAmount ? 'pointer' : 'not-allowed',
+                }}
+              >
+                Save Change Order
+              </button>
+              <button
+                onClick={() => { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }}
+                style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: '8px 4px' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Undo Toast ── */}
+        {undoCO && (
+          <div style={{
+            position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+            background: '#052e16', border: '1px solid rgba(34,197,94,0.5)',
+            borderRadius: 10, padding: '10px 18px', zIndex: 30,
+            display: 'flex', alignItems: 'center', gap: 12,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            animation: 'coSlideIn 0.15s ease-out',
+          }}>
+            <span style={{ fontSize: 13, color: '#C9D1D9' }}>✓ Change order added.</span>
+            <button
+              onClick={() => {
+                setChangeOrders(prev => prev.filter(c => c.id !== undoCO));
+                setUndoCO(null);
+                if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+              }}
+              style={{
+                background: 'transparent', border: '1px solid rgba(34,197,94,0.4)',
+                borderRadius: 6, color: '#22c55e', fontSize: 12, fontWeight: 700,
+                padding: '4px 10px', cursor: 'pointer',
+              }}
+            >
+              Undo
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
