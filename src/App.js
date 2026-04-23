@@ -9430,6 +9430,198 @@ function DemoPage() {
   );
 }
 
+// ─── Floating Action Button ──────────────────────────────────────────────────
+function FloatingActionButton({ tab, onAction }) {
+  const [open, setOpen] = useState(false);
+  const isMobile = useMobile();
+
+  const menuItems = useMemo(() => {
+    switch (tab) {
+      case 'pipeline': return [
+        { label: 'New Lead', icon: '📋', action: 'addLead' },
+        { label: 'New Job', icon: '🔨', action: 'addJob' },
+      ];
+      case 'jobs': return [
+        { label: 'New Job', icon: '🔨', action: 'addJob' },
+      ];
+      case 'crew': return [
+        { label: 'Add Crew Member', icon: '👷', action: 'addCrew' },
+      ];
+      case 'calendar': return [
+        { label: 'Schedule Job', icon: '📅', action: 'addJob' },
+      ];
+      default: return [
+        { label: 'New Lead', icon: '📋', action: 'addLead' },
+        { label: 'New Job', icon: '🔨', action: 'addJob' },
+      ];
+    }
+  }, [tab]);
+
+  return (
+    <div style={{ position: 'fixed', bottom: isMobile ? 72 : 28, right: 28, zIndex: 900 }}>
+      {open && (
+        <div style={{ position: 'absolute', bottom: 60, right: 0, display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
+          {menuItems.map(item => (
+            <button
+              key={item.action + item.label}
+              onClick={() => { onAction(item.action); setOpen(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 16px', background: '#2A3140',
+                border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+                color: '#C9D1D9', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+              }}
+            >
+              <span>{item.icon}</span> {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        style={{
+          width: 52, height: 52, borderRadius: '50%',
+          background: open ? '#8B95A1' : 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+          border: 'none', color: '#fff', fontSize: 26, fontWeight: 400,
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 20px rgba(45,80,22,0.5)',
+          transition: 'transform 0.15s, background 0.15s',
+          transform: open ? 'rotate(45deg)' : 'none',
+        }}
+      >
+        +
+      </button>
+    </div>
+  );
+}
+
+// ─── Universal Search (Cmd+K) ────────────────────────────────────────────────
+function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab, onClose }) {
+  const [query, setQuery] = useState('');
+  const [activeIdx, setActiveIdx] = useState(0);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, []);
+
+  const results = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    if (!q) return [];
+    const out = [];
+
+    // Search leads/customers
+    (leads || []).forEach(l => {
+      const hay = [l.name, l.contact, l.phone, l.email, l.address, l.trade].filter(Boolean).join(' ').toLowerCase();
+      if (hay.includes(q)) out.push({ type: 'Lead', label: l.name, sub: l.contact ? `${l.contact} · ${l.address || ''}` : l.address || '', data: l });
+    });
+
+    // Search jobs
+    (jobs || []).forEach(j => {
+      const hay = [j.customer, String(j.id), j.address, j.status, j.trade].filter(Boolean).join(' ').toLowerCase();
+      if (hay.includes(q)) out.push({ type: 'Job', label: j.customer, sub: `${j.trade} · ${j.status} · ${j.address || ''}`, data: j });
+    });
+
+    // Search crew
+    (crew || []).forEach(c => {
+      const hay = [c.name, c.role, c.phone].filter(Boolean).join(' ').toLowerCase();
+      if (hay.includes(q)) out.push({ type: 'Crew', label: c.name, sub: c.role || c.phone || '', data: c });
+    });
+
+    // Search change orders across jobs
+    (jobs || []).forEach(j => {
+      (j.changeOrders || []).forEach(co => {
+        const hay = [co.title, co.description, co.status].filter(Boolean).join(' ').toLowerCase();
+        if (hay.includes(q)) out.push({ type: 'Change Order', label: co.title, sub: `${j.customer} · ${co.status} · $${co.amount}`, data: { job: j, co } });
+      });
+    });
+
+    return out.slice(0, 20);
+  }, [query, leads, jobs, crew]);
+
+  useEffect(() => { setActiveIdx(0); }, [query]);
+
+  const handleSelect = useCallback((item) => {
+    if (item.type === 'Lead') {
+      if (setTab) setTab('pipeline');
+      if (onSelectLead) onSelectLead(item.data);
+    } else if (item.type === 'Job') {
+      if (setTab) setTab('jobs');
+    } else if (item.type === 'Crew') {
+      if (setTab) setTab('crew');
+    } else if (item.type === 'Change Order') {
+      if (setTab) setTab('jobs');
+    }
+    onClose();
+  }, [setTab, onSelectLead, onClose]);
+
+  const handleKey = useCallback((e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(prev => Math.min(prev + 1, results.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(prev => Math.max(prev - 1, 0)); }
+    else if (e.key === 'Enter' && results[activeIdx]) { e.preventDefault(); handleSelect(results[activeIdx]); }
+    else if (e.key === 'Escape') { onClose(); }
+  }, [results, activeIdx, handleSelect, onClose]);
+
+  const typeColor = { Lead: '#E8722A', Job: '#3b82f6', Crew: '#22c55e', 'Change Order': '#f59e0b' };
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1100, paddingTop: '15vh' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{ width: '100%', maxWidth: 520, background: '#1E2329', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <span style={{ fontSize: 16, marginRight: 10, color: '#8B95A1' }}>🔍</span>
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder="Search leads, jobs, crew, change orders…"
+            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#C9D1D9', fontSize: 15, fontFamily: 'inherit' }}
+          />
+          <kbd style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: '#8B95A1', border: '1px solid rgba(255,255,255,0.1)' }}>ESC</kbd>
+        </div>
+        <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+          {query && results.length === 0 && (
+            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#8B95A1', fontSize: 13 }}>No results for &ldquo;{query}&rdquo;</div>
+          )}
+          {results.map((r, i) => (
+            <div
+              key={`${r.type}-${r.label}-${i}`}
+              onClick={() => handleSelect(r)}
+              onMouseEnter={() => setActiveIdx(i)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 16px', cursor: 'pointer',
+                background: i === activeIdx ? 'rgba(255,255,255,0.06)' : 'transparent',
+              }}
+            >
+              <span style={{
+                fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                background: (typeColor[r.type] || '#8B95A1') + '22', color: typeColor[r.type] || '#8B95A1',
+                textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0,
+              }}>
+                {r.type}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#C9D1D9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.label}</div>
+                {r.sub && <div style={{ fontSize: 11, color: '#8B95A1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.sub}</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+        {!query && (
+          <div style={{ padding: '16px', textAlign: 'center', color: '#5C6470', fontSize: 12 }}>
+            Type to search across your entire workspace
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── App Root ─────────────────────────────────────────────────────────────────
 export { DemoPage };
 
@@ -9471,6 +9663,19 @@ export default function App() {
     try { const s = localStorage.getItem('cl_assignments'); return s ? JSON.parse(s) : {}; } catch { return {}; }
   });
   const [jobModal, setJobModal] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+
+  // Cmd+K / Ctrl+K to open universal search
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   useEffect(() => {
     if (session && !session.isDemo) localStorage.setItem('cl_crew', JSON.stringify(userCrew));
@@ -9719,6 +9924,20 @@ export default function App() {
           </div>
         )}
 
+        <button
+          onClick={() => setShowSearch(true)}
+          title="Search (⌘K)"
+          style={{
+            background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 8, color: '#8B95A1', cursor: 'pointer',
+            fontSize: 14, padding: isMobile ? '5px 8px' : '5px 12px',
+            display: 'flex', alignItems: 'center', gap: 6, minHeight: 'auto',
+            marginLeft: 'auto',
+          }}
+        >
+          🔍{!isMobile && <span style={{ fontSize: 11, color: '#5C6470' }}>⌘K</span>}
+        </button>
+
         {isDemo && (
           <button
             onClick={() => {
@@ -9888,6 +10107,26 @@ export default function App() {
 
       {jobModal && (
         <AddJobModal onSave={handleAddJob} onClose={() => setJobModal(false)} />
+      )}
+
+      <FloatingActionButton
+        tab={tab}
+        onAction={(action) => {
+          if (action === 'addLead') setLeadModal('add');
+          else if (action === 'addJob') setJobModal(true);
+          else if (action === 'addCrew') setTab('crew');
+        }}
+      />
+
+      {showSearch && (
+        <UniversalSearch
+          leads={leads}
+          jobs={jobs}
+          crew={crew}
+          onSelectLead={setSelectedLead}
+          setTab={setTab}
+          onClose={() => setShowSearch(false)}
+        />
       )}
     </div>
     </ToastProvider>
