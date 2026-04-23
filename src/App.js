@@ -597,6 +597,29 @@ const STAGE_TIPS = {
 };
 const TODAY = new Date().toISOString().slice(0, 10);
 
+// ─── Job Phases ──────────────────────────────────────────────────────────────
+const COMMERCIAL_PHASES = [
+  { id: 1, label: 'Pre-Construction' },
+  { id: 2, label: 'Tear-Off' },
+  { id: 3, label: 'Deck Repair / Inspection' },
+  { id: 4, label: 'Insulation' },
+  { id: 5, label: 'Membrane / Roofing System' },
+  { id: 6, label: 'Flashing & Details' },
+  { id: 7, label: 'Final Inspection & Close-Out' },
+];
+
+const RESIDENTIAL_PHASES = [
+  { id: 1, label: 'Pre-Construction' },
+  { id: 2, label: 'Tear-Off' },
+  { id: 3, label: 'Install' },
+  { id: 4, label: 'Close-Out' },
+];
+
+function getDefaultPhases(jobType) {
+  return jobType === 'Commercial' ? COMMERCIAL_PHASES : RESIDENTIAL_PHASES;
+}
+
+
 // ─── Jobs Data ────────────────────────────────────────────────────────────────
 const DEMO_JOBS = [
   // ── Completed (March) ──
@@ -605,12 +628,14 @@ const DEMO_JOBS = [
     trade: 'Storm Damage', value: 18700, status: 'Complete',
     scheduledDate: '2026-03-14', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     notes: 'Erie Insurance claim — wind damage. 24 sq architectural. Adjuster approved full replacement. Closed out.',
+    jobType: 'Residential', currentPhase: 4, completedPhases: [1, 2, 3, 4],
   },
   {
     id: 108, customer: 'Joe & Barb Hartman', address: '78 Pine Creek Rd, Watsontown PA 17777',
     trade: 'Skylight', value: 4800, status: 'Complete',
     scheduledDate: '2026-03-11', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     notes: '2 Velux curb-mount skylights installed. Flashing sealed, interior trim complete.',
+    jobType: 'Residential', currentPhase: 4, completedPhases: [1, 2, 3, 4],
   },
   // ── Active April schedule ──
   {
@@ -619,8 +644,9 @@ const DEMO_JOBS = [
     scheduledDate: '2026-04-14', completedSteps: [1, 2, 3, 4, 5, 6],
     notes: '118 sq Peach Bottom slate, steep pitch, 2 chimneys. Nationwide claim. Historic sanctuary roof.',
     duration: 5,
+    jobType: 'Commercial', currentPhase: 5, completedPhases: [1, 2, 3, 4],
     changeOrders: [
-      { id: 'co-201-1', title: 'Additional Decking — 14 sheets OSB found rotted', description: 'North slope decking rotted through at eave line. 14 sheets OSB replacement required. Discovered during tear-off.', amount: 588, status: 'Approved', date: '2026-04-15' },
+      { id: 'co-201-1', title: 'Additional Decking — 14 sheets OSB found rotted', description: 'North slope decking rotted through at eave line. 14 sheets OSB replacement required. Discovered during tear-off.', amount: 588, status: 'Approved', date: '2026-04-15', phase: 3 },
     ],
   },
   {
@@ -629,12 +655,14 @@ const DEMO_JOBS = [
     scheduledDate: '2026-04-17', completedSteps: [1, 2],
     notes: '38 sq, 6/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off. Storm damage — Erie Insurance claim. Farmhouse — no Sunday work.',
     duration: 2,
+    jobType: 'Residential', currentPhase: 1, completedPhases: [],
   },
   {
     id: 203, customer: 'Betty Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
     trade: 'Gutter Install', value: 3980, status: 'Scheduled', hours: 6,
     scheduledDate: '2026-04-17', completedSteps: [1],
     notes: '180 LF 6" K-style seamless aluminum. 4 downspouts. Old gutter removal included.',
+    jobType: 'Residential', currentPhase: 1, completedPhases: [],
   },
   {
     id: 204, customer: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870',
@@ -642,8 +670,9 @@ const DEMO_JOBS = [
     scheduledDate: '2026-04-18', completedSteps: [],
     notes: '34 sq, GAF Timberline HDZ. Standard pitch. Currently on punch list stage.',
     duration: 2,
+    jobType: 'Residential', currentPhase: 4, completedPhases: [1, 2, 3],
     changeOrders: [
-      { id: 'co-204-1', title: 'Ridge Cap Extension — west gable', description: 'West gable ridge cap 12 LF short of full coverage. Extend to match east side.', amount: 210, status: 'Approved', date: '2026-04-19' },
+      { id: 'co-204-1', title: 'Ridge Cap Extension — west gable', description: 'West gable ridge cap 12 LF short of full coverage. Extend to match east side.', amount: 210, status: 'Approved', date: '2026-04-19', phase: 3 },
     ],
   },
   {
@@ -652,12 +681,14 @@ const DEMO_JOBS = [
     scheduledDate: '2026-04-21', completedSteps: [1, 2],
     notes: '180 sq standing seam metal. Complex roofline, historic property. 4 large chimneys. Must match existing copper details.',
     duration: 8,
+    jobType: 'Commercial', currentPhase: 1, completedPhases: [],
   },
   {
     id: 206, customer: 'Earl Yoder', address: '320 Buffalo Rd, Lewisburg PA 17837',
     trade: 'Flashing Repair', value: 1850, status: 'Scheduled', hours: 3,
     scheduledDate: '2026-04-22', completedSteps: [],
     notes: 'Chimney valley flashing repair. Step + counter flashing replacement. Match existing architectural shingles.',
+    jobType: 'Residential', currentPhase: 1, completedPhases: [],
   },
   {
     id: 207, customer: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801',
@@ -665,6 +696,7 @@ const DEMO_JOBS = [
     scheduledDate: '2026-04-23', completedSteps: [1, 2],
     notes: '85 sq TPO 60-mil commercial flat roof. Insulation board + cover board. Edge metal perimeter.',
     duration: 4,
+    jobType: 'Commercial', currentPhase: 2, completedPhases: [1],
   },
   {
     id: 208, customer: 'Ray Brubaker', address: '410 N Front St, Milton PA 17847',
@@ -672,6 +704,7 @@ const DEMO_JOBS = [
     scheduledDate: '2026-04-28', completedSteps: [1, 2],
     notes: '52 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. Storm damage — State Farm claim. Harness required.',
     duration: 3,
+    jobType: 'Residential', currentPhase: 1, completedPhases: [],
   },
   // ── Unscheduled pipeline jobs ──
   {
@@ -679,12 +712,14 @@ const DEMO_JOBS = [
     trade: 'Full Replacement', value: 224000, status: 'Scheduled',
     completedSteps: [1, 2],
     notes: '240 sq mixed TPO + standing seam metal. Multi-building campus. Phased installation.',
+    jobType: 'Commercial', currentPhase: 1, completedPhases: [],
   },
   {
     id: 210, customer: 'Riverwoods HOA — Phase 2', address: '200 Riverwoods Dr, Lewisburg PA 17837',
     trade: 'Full Replacement', value: 94000, status: 'Scheduled',
     completedSteps: [1],
     notes: 'Phase 2: buildings 5-8. ~96 sq architectural. Waiting on HOA board to approve start date.',
+    jobType: 'Commercial', currentPhase: 1, completedPhases: [],
   },
 ];
 
@@ -1778,12 +1813,13 @@ const PHOTO_CATEGORIES = [
 ];
 
 // ─── Job Photos Panel ─────────────────────────────────────────────────────────
-function JobPhotosPanel({ lead, onCountChange }) {
+function JobPhotosPanel({ lead, onCountChange, phases }) {
   const [photos, setPhotos] = useState([]);
   const [lightbox, setLightbox] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [caption, setCaption] = useState('');
   const [photoCategory, setPhotoCategory] = useState('Before');
+  const [photoPhase, setPhotoPhase] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const isMobile = useMobile();
   const fileRef = useRef(null);
@@ -1816,9 +1852,11 @@ function JobPhotosPanel({ lead, onCountChange }) {
           category: photoCategory,
           stage: lead.stage || 'lead',
           trade: lead.trade || '',
+          ...(photoPhase ? { phase: parseInt(photoPhase, 10) } : {}),
         });
       }
       setCaption('');
+      setPhotoPhase('');
     } finally {
       setUploading(false);
       refresh();
@@ -1864,6 +1902,21 @@ function JobPhotosPanel({ lead, onCountChange }) {
           >
             {PHOTO_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
+          {phases && phases.length > 0 && (
+            <select
+              style={{
+                flex: 1, padding: '8px 12px', background: '#2A3140',
+                border: '1px solid rgba(45,80,22,0.4)', borderRadius: 7,
+                color: photoPhase ? '#2D5016' : '#8B95A1',
+                fontSize: 13, outline: 'none', fontFamily: 'inherit', fontWeight: 600,
+              }}
+              value={photoPhase}
+              onChange={e => setPhotoPhase(e.target.value)}
+            >
+              <option value="">Phase (optional)</option>
+              {phases.map(p => <option key={p.id} value={p.id}>Phase {p.id}: {p.label}</option>)}
+            </select>
+          )}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
@@ -1970,6 +2023,7 @@ function JobPhotosPanel({ lead, onCountChange }) {
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {photo.category && <span style={{ background: 'rgba(6,182,212,0.3)', color: '#22d3ee', padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>}
+                {photo.phase && <span style={{ background: 'rgba(45,80,22,0.3)', color: '#6abf40', padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>P{photo.phase}</span>}
                 {photo.caption || ''}
               </div>
             </div>
@@ -4498,10 +4552,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
   const [coDesc, setCODesc] = useState('');
   const [coAmount, setCOAmount] = useState('');
   const [coNote, setCONote] = useState('');
+  const [coPhase, setCOPhase] = useState('');
   const [confirmComplete, setConfirmComplete] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(false);
   const [schedDate, setSchedDate] = useState(job.scheduledDate || '');
   const [schedDur, setSchedDur] = useState(jobDuration(job));
+  const [localCurrentPhase, setLocalCurrentPhase] = useState(job.currentPhase || 1);
+  const [localCompletedPhases, setLocalCompletedPhases] = useState(job.completedPhases || []);
 
   useEffect(() => {
     if (demoMessages) {
@@ -4591,6 +4648,79 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               <div style={S.progressFill(pct, statusColor)} />
             </div>
           </div>
+
+          {/* ── Phase Stepper ── */}
+          {(() => {
+            const phases = getDefaultPhases(job.jobType);
+            const cp = localCurrentPhase;
+            const done = localCompletedPhases;
+            const allDone = done.length >= phases.length;
+            return (
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                    {job.jobType || 'Residential'} Phases
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#2D5016' }}>
+                    {allDone ? 'All Phases Complete' : `Phase ${cp} of ${phases.length}`}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                  {phases.map((phase, i) => {
+                    const isComplete = done.includes(phase.id);
+                    const isActive = phase.id === cp && !isComplete;
+                    return (
+                      <div key={phase.id} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                        <div
+                          title={phase.label}
+                          style={{
+                            width: 28, height: 28, borderRadius: '50%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0,
+                            background: isComplete ? '#2D5016' : isActive ? 'rgba(45,80,22,0.15)' : 'rgba(255,255,255,0.06)',
+                            border: isActive ? '2px solid #2D5016' : '2px solid transparent',
+                            color: isComplete ? '#fff' : isActive ? '#2D5016' : '#8B95A1',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          {isComplete ? '✓' : phase.id}
+                        </div>
+                        {i < phases.length - 1 && (
+                          <div style={{
+                            flex: 1, height: 2, minWidth: 8,
+                            background: done.includes(phases[i + 1]?.id) || phases[i + 1]?.id === cp ? '#2D5016' : 'rgba(255,255,255,0.08)',
+                          }} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
+                  <div style={{ fontSize: 11, color: '#8B95A1' }}>
+                    Current: <span style={{ color: '#C9D1D9', fontWeight: 600 }}>{phases.find(p => p.id === cp)?.label || 'N/A'}</span>
+                  </div>
+                  {!allDone && (
+                    <button
+                      onClick={() => {
+                        const newCompleted = [...done, cp];
+                        const nextPhase = cp < phases.length ? cp + 1 : cp;
+                        setLocalCompletedPhases(newCompleted);
+                        setLocalCurrentPhase(nextPhase);
+                      }}
+                      style={{
+                        padding: '4px 12px', fontSize: 11, fontWeight: 700,
+                        background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+                        border: 'none', borderRadius: 6, color: '#fff',
+                        cursor: 'pointer', whiteSpace: 'nowrap',
+                      }}
+                    >
+                      Mark Phase Complete
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Modal tab bar */}
           <div style={{ display: 'flex', background: '#2A3140', borderBottom: '2px solid rgba(255,255,255,0.08)', borderRadius: '8px 8px 0 0', marginBottom: 0, overflowX: 'auto', padding: '4px 4px 0' }}>
@@ -4787,9 +4917,14 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: stColor + '18', color: stColor }}>{co.status}</span>
                     </div>
                     {co.description && <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 6 }}>{co.description}</div>}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11, flexWrap: 'wrap' }}>
                       <span style={{ fontWeight: 700, color: '#22c55e' }}>+{fmt(co.amount)}</span>
                       <span style={{ color: '#8B95A1' }}>{co.date}</span>
+                      {co.phase && (
+                        <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 6, background: 'rgba(45,80,22,0.15)', color: '#2D5016' }}>
+                          Phase {co.phase}
+                        </span>
+                      )}
                       {co.status === 'Pending' && (
                         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
                           <button onClick={() => setChangeOrders(prev => prev.map(c => c.id === co.id ? { ...c, status: 'Approved' } : c))} style={{ padding: '3px 10px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, color: '#22c55e', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>Approve</button>
@@ -4819,12 +4954,18 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                     <input value={coAmount} onChange={e => setCOAmount(e.target.value)} placeholder="Amount ($)" type="number" min="0" style={{ ...FI, flex: 1 }} />
                     <input value={coNote} onChange={e => setCONote(e.target.value)} placeholder="Photo note (optional)" style={{ ...FI, flex: 1 }} />
                   </div>
+                  <select value={coPhase} onChange={e => setCOPhase(e.target.value)} style={{ ...FI, marginBottom: 8, color: coPhase ? '#C9D1D9' : '#8B95A1' }}>
+                    <option value="">Tag to phase (optional)</option>
+                    {getDefaultPhases(job.jobType).map(p => (
+                      <option key={p.id} value={p.id}>Phase {p.id}: {p.label}</option>
+                    ))}
+                  </select>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={() => {
                         if (coTitle.trim() && coAmount) {
-                          setChangeOrders(prev => [...prev, { id: `co-${Date.now()}`, title: coTitle.trim(), description: coDesc.trim(), amount: parseFloat(coAmount) || 0, status: 'Pending', date: TODAY, note: coNote.trim() }]);
-                          setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); setShowCOForm(false);
+                          setChangeOrders(prev => [...prev, { id: `co-${Date.now()}`, title: coTitle.trim(), description: coDesc.trim(), amount: parseFloat(coAmount) || 0, status: 'Pending', date: TODAY, note: coNote.trim(), ...(coPhase ? { phase: parseInt(coPhase, 10) } : {}) }]);
+                          setCOTitle(''); setCODesc(''); setCOAmount(''); setCONote(''); setCOPhase(''); setShowCOForm(false);
                         }
                       }}
                       disabled={!coTitle.trim() || !coAmount}
@@ -4844,6 +4985,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           <JobPhotosPanel
             lead={{ id: job.id, name: job.customer, stage: 'in_progress', trade: job.trade }}
             onCountChange={setPhotoCount}
+            phases={getDefaultPhases(job.jobType)}
           />
         )}
 
@@ -4971,6 +5113,16 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
               }}>
                 {job.trade}
               </span>
+              {job.jobType && (
+                <span style={{
+                  display: 'inline-block', fontSize: 10, fontWeight: 600,
+                  padding: '2px 8px', borderRadius: 10, marginBottom: 8, marginLeft: 6,
+                  background: 'rgba(45,80,22,0.15)', color: '#2D5016',
+                  letterSpacing: '0.3px',
+                }}>
+                  Phase {job.currentPhase || 1}/{getDefaultPhases(job.jobType).length}
+                </span>
+              )}
 
               <div style={S.cardMeta}>
                 <div style={S.metaItem}>Value: <span style={{ ...S.metaValue, color: '#22c55e' }}>{rolePerms?.seeDollars !== false ? fmt(job.value) : '—'}</span></div>
@@ -6801,7 +6953,7 @@ function GlobalPhotoLog({ jobs }) {
 function AddJobModal({ onSave, onClose }) {
   const isMobile = useMobile();
   const [form, setForm] = useState({
-    customer: '', address: '', trade: 'Full Replacement', value: '', scheduledDate: '', notes: '',
+    customer: '', address: '', trade: 'Full Replacement', value: '', scheduledDate: '', notes: '', jobType: 'Residential',
   });
   const [errors, setErrors] = useState({});
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
@@ -6826,6 +6978,9 @@ function AddJobModal({ onSave, onClose }) {
       scheduledDate: form.scheduledDate || new Date().toISOString().slice(0, 10),
       completedSteps: [],
       notes: form.notes.trim(),
+      jobType: form.jobType,
+      currentPhase: 1,
+      completedPhases: [],
     });
   };
 
@@ -6851,9 +7006,27 @@ function AddJobModal({ onSave, onClose }) {
         <label style={FLbl}>Job Address</label>
         <input style={fi('address')} value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Main St, Mechanicsburg PA 17055" />
 
+        <label style={FLbl}>Commercial / Residential</label>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          {['Residential', 'Commercial'].map(t => (
+            <button
+              key={t}
+              onClick={() => set('jobType', t)}
+              style={{
+                flex: 1, padding: '9px', border: `1px solid ${form.jobType === t ? '#2D5016' : 'rgba(255,255,255,0.08)'}`,
+                background: form.jobType === t ? 'rgba(45,80,22,0.15)' : 'transparent',
+                borderRadius: 8, color: form.jobType === t ? '#2D5016' : '#8B95A1',
+                fontWeight: 700, fontSize: 13, cursor: 'pointer',
+              }}
+            >
+              {t} ({t === 'Commercial' ? '7 phases' : '4 phases'})
+            </button>
+          ))}
+        </div>
+
         <div style={isMobile ? {} : FRow}>
           <div>
-            <label style={FLbl}>Job Type</label>
+            <label style={FLbl}>Trade Type</label>
             <select style={fi('trade')} value={form.trade} onChange={e => set('trade', e.target.value)}>
               {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -9332,6 +9505,9 @@ export default function App() {
       notes: jobData.notes || '',
       completedSteps: [],
       explicitlyScheduled: true,
+      jobType: jobData.jobType || 'Residential',
+      currentPhase: 1,
+      completedPhases: [],
     };
     setUserJobs(prev => [newJob, ...prev]);
     if (jobData.crewIds && jobData.crewIds.length) {
@@ -9370,7 +9546,7 @@ export default function App() {
   };
   const handleDemoCreateJob = (jobData) => {
     const id = `demo-j-${Date.now()}`;
-    setDemoNewJobs(prev => [{ id, customer: jobData.customer, description: jobData.description || '', taskList: [], address: '', trade: jobData.trade || 'Full Replacement', value: 0, status: 'Scheduled', scheduledDate: jobData.scheduledDate, duration: jobData.duration || 1, notes: '', completedSteps: [], explicitlyScheduled: true }, ...prev]);
+    setDemoNewJobs(prev => [{ id, customer: jobData.customer, description: jobData.description || '', taskList: [], address: '', trade: jobData.trade || 'Full Replacement', value: 0, status: 'Scheduled', scheduledDate: jobData.scheduledDate, duration: jobData.duration || 1, notes: '', completedSteps: [], explicitlyScheduled: true, jobType: jobData.jobType || 'Residential', currentPhase: 1, completedPhases: [] }, ...prev]);
   };
   const handleAssign = (jobId, crewId) => {
     setAssignments(prev => ({ ...prev, [String(jobId)]: [...(prev[String(jobId)] || []), crewId] }));
