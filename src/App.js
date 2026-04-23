@@ -883,25 +883,25 @@ const S = {
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 500,
-    minHeight: 36,
+    minHeight: 44,
     whiteSpace: 'nowrap',
     flexShrink: 0,
     WebkitTapHighlightColor: 'transparent',
   }),
   tradeFilterBtn: (active, color) => ({
-    padding: '4px 12px',
+    padding: '8px 14px', minHeight: 44,
     borderRadius: 20,
     border: `1px solid ${active ? color : 'rgba(255,255,255,0.08)'}`,
     background: active ? color + '22' : 'transparent',
     color: active ? color : '#8B95A1',
     cursor: 'pointer',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 500,
     whiteSpace: 'nowrap',
   }),
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))',
     gap: 16,
   },
   card: (hovered) => ({
@@ -1063,7 +1063,7 @@ const S = {
   modal: {
     background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: 14, width: '100%', maxWidth: 560,
-    maxHeight: '85vh', overflow: 'auto', padding: 28, position: 'relative',
+    maxHeight: '85dvh', overflow: 'auto', padding: 28, position: 'relative',
     boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
   },
   modalTitle: { fontSize: 18, fontWeight: 700, color: '#F0F2F5', marginBottom: 4 },
@@ -2365,6 +2365,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
   const [hovered, setHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const isMobile = useMobile();
 
   const handleDragStart = (e) => {
     e.dataTransfer.setData('text/plain', String(lead.id));
@@ -2432,27 +2433,24 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
         </div>
       )}
 
-      {/* Hover actions */}
-      {hovered && (
+      {/* Card actions — always visible on mobile, hover-only on desktop */}
+      {(isMobile || hovered) && !demoMode && (
         <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <span style={{ display: 'none' }}></span>
-          {!demoMode && (
-            <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
-              {!confirmDelete ? (
-                <button
-                  style={{ padding: '2px 8px', fontSize: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 4, color: '#8B95A1', cursor: 'pointer' }}
-                  onClick={() => setConfirmDelete(true)}
-                >
-                  🗑
-                </button>
-              ) : (
-                <>
-                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Del</button>
-                  <button style={{ padding: '2px 6px', fontSize: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 4, color: '#8B95A1', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>No</button>
-                </>
-              )}
-            </div>
-          )}
+          <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
+            {!confirmDelete ? (
+              <button
+                style={{ minWidth: 44, minHeight: 44, padding: '8px 12px', fontSize: 14, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => setConfirmDelete(true)}
+              >
+                🗑
+              </button>
+            ) : (
+              <>
+                <button style={{ minWidth: 44, minHeight: 44, padding: '8px 14px', fontSize: 13, fontWeight: 700, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Delete</button>
+                <button style={{ minWidth: 44, minHeight: 44, padding: '8px 14px', fontSize: 13, fontWeight: 600, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>Cancel</button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -2537,7 +2535,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
       onClick={onClose}
     >
       <div
-        style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.12)' }}
+        style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, width: '100%', maxWidth: 500, maxHeight: '92dvh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.12)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -2844,10 +2842,10 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           <DisabledTooltip active={demoMode} label="Sign up to add leads">
             <button
               style={{
-                padding: '8px 16px',
+                padding: '10px 16px', minHeight: 44,
                 background: demoMode ? 'transparent' : 'linear-gradient(135deg, #E8722A, #e8640c)',
-                border: demoMode ? '1px solid rgba(255,255,255,0.12)' : 'none', borderRadius: 7,
-                color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 13,
+                border: demoMode ? '1px solid rgba(255,255,255,0.12)' : 'none', borderRadius: 8,
+                color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 14,
                 cursor: demoMode ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
                 boxShadow: demoMode ? 'none' : '0 2px 10px rgba(249,115,22,0.3)',
               }}
@@ -2901,10 +2899,10 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                   <DisabledTooltip active={demoMode} label="Sign up to add leads">
                     <button
                       style={{
-                        padding: '3px 8px',
+                        padding: '6px 12px', minHeight: 44,
                         background: demoMode ? 'transparent' : 'linear-gradient(135deg, #E8722A, #e8640c)',
-                        border: demoMode ? '1px solid rgba(255,255,255,0.12)' : 'none', borderRadius: 5,
-                        color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 10,
+                        border: demoMode ? '1px solid rgba(255,255,255,0.12)' : 'none', borderRadius: 8,
+                        color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 12,
                         cursor: demoMode ? 'not-allowed' : 'pointer', flexShrink: 0,
                       }}
                       onClick={demoMode ? undefined : onAddLead}
@@ -4680,13 +4678,14 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                         <div
                           title={phase.label}
                           style={{
-                            width: 28, height: 28, borderRadius: '50%',
+                            width: 36, height: 36, borderRadius: '50%',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0,
+                            fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0,
                             background: isComplete ? '#2D5016' : isActive ? 'rgba(45,80,22,0.15)' : 'rgba(255,255,255,0.06)',
                             border: isActive ? '2px solid #2D5016' : '2px solid transparent',
                             color: isComplete ? '#fff' : isActive ? '#2D5016' : '#8B95A1',
                             transition: 'all 0.15s',
+                            padding: 4,
                           }}
                         >
                           {isComplete ? '✓' : phase.id}
@@ -4714,10 +4713,10 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                         setLocalCurrentPhase(nextPhase);
                       }}
                       style={{
-                        padding: '4px 12px', fontSize: 11, fontWeight: 700,
+                        padding: '8px 14px', fontSize: 12, fontWeight: 700,
                         background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
-                        border: 'none', borderRadius: 6, color: '#fff',
-                        cursor: 'pointer', whiteSpace: 'nowrap',
+                        border: 'none', borderRadius: 8, color: '#fff',
+                        cursor: 'pointer', whiteSpace: 'nowrap', minHeight: 44,
                       }}
                     >
                       Mark Phase Complete
@@ -5006,7 +5005,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#F0F2F5' }}>New Change Order</div>
                 <button
                   onClick={() => { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }}
-                  style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}
+                  style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 22, cursor: 'pointer', padding: '8px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
                 >
                   ×
                 </button>
@@ -5024,7 +5023,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   value={coDesc}
                   onChange={e => setCODesc(e.target.value)}
                   placeholder="e.g. Additional decking repair"
-                  style={{ ...FI }}
+                  style={{ ...FI, padding: '14px 12px', minHeight: 44, fontSize: 15 }}
                 />
               </div>
 
@@ -5038,7 +5037,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   type="number"
                   min="0"
                   step="0.01"
-                  style={{ ...FI, fontSize: 22, fontWeight: 700, padding: '14px 12px', letterSpacing: '0.5px' }}
+                  style={{ ...FI, fontSize: 22, fontWeight: 700, padding: '14px 12px', minHeight: 52, letterSpacing: '0.5px' }}
                 />
               </div>
 
@@ -5048,7 +5047,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 <select
                   value={coReason}
                   onChange={e => setCOReason(e.target.value)}
-                  style={{ ...FI, color: coReason ? '#C9D1D9' : '#8B95A1' }}
+                  style={{ ...FI, color: coReason ? '#C9D1D9' : '#8B95A1', padding: '14px 12px', minHeight: 44, fontSize: 15 }}
                 >
                   <option value="">Select reason…</option>
                   <option value="Customer Request">Customer Request</option>
@@ -5066,7 +5065,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 <select
                   value={coPhase}
                   onChange={e => setCOPhase(e.target.value)}
-                  style={{ ...FI, color: coPhase ? '#C9D1D9' : '#8B95A1' }}
+                  style={{ ...FI, color: coPhase ? '#C9D1D9' : '#8B95A1', padding: '14px 12px', minHeight: 44, fontSize: 15 }}
                 >
                   <option value="">Current phase ({getDefaultPhases(job.jobType).find(p => p.id === localCurrentPhase)?.label || '—'})</option>
                   {getDefaultPhases(job.jobType).map(p => (
@@ -5086,9 +5085,9 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 <button
                   onClick={() => coPhotoRef.current?.click()}
                   style={{
-                    width: '100%', padding: '10px 12px', background: '#2A3140',
+                    width: '100%', padding: '14px 12px', minHeight: 44, background: '#2A3140',
                     border: '1px dashed rgba(255,255,255,0.15)', borderRadius: 8,
-                    color: coPhoto ? '#C9D1D9' : '#8B95A1', fontSize: 12, cursor: 'pointer',
+                    color: coPhoto ? '#C9D1D9' : '#8B95A1', fontSize: 14, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: 8,
                   }}
                 >
@@ -5147,7 +5146,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               </button>
               <button
                 onClick={() => { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }}
-                style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: '8px 4px' }}
+                style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 14, fontWeight: 600, cursor: 'pointer', padding: '10px 14px', minHeight: 44 }}
               >
                 Cancel
               </button>
@@ -7558,9 +7557,9 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                     {member.role && <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>{member.role}</div>}
                     {member.phone && <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 1 }}>{member.phone}</div>}
                   </div>
-                  <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-                    <button className="ri-btn ri-btn-secondary" style={{ padding: '5px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', cursor: 'pointer', fontSize: 11, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
-                    <button style={{ padding: '5px 8px', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', cursor: 'pointer', fontSize: 13, lineHeight: 1, WebkitTapHighlightColor: 'transparent' }} onClick={() => onDeleteMember(member.id)}>×</button>
+                  <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                    <button className="ri-btn ri-btn-secondary" style={{ padding: '8px 14px', minHeight: 44, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
+                    <button style={{ padding: '8px 12px', minHeight: 44, minWidth: 44, background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#ef4444', cursor: 'pointer', fontSize: 16, lineHeight: 1, WebkitTapHighlightColor: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => onDeleteMember(member.id)}>×</button>
                   </div>
                 </div>
 
@@ -9119,7 +9118,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <span style={{ fontSize: 13, color: '#FCD34D', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
             {unscheduledJobs.slice(0, 5).map(j => (
-              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 11, color: '#8B95A1', background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: 10, border: 'none', cursor: 'pointer' }}>
+              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 12, color: '#8B95A1', background: 'rgba(255,255,255,0.08)', padding: '8px 12px', minHeight: 44, borderRadius: 10, border: 'none', cursor: 'pointer' }}>
                 {j.customer}
               </button>
             ))}
@@ -9160,7 +9159,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
                     <div style={{ fontSize: 11, color: '#8B95A1' }}>{job.trade} · {job.status}</div>
                   </div>
                   {!isDemo && onSchedule && (
-                    <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '5px 12px', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 6, color: '#E8722A', fontWeight: 600, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
+                    <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '8px 14px', minHeight: 44, background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 8, color: '#E8722A', fontWeight: 600, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
                       Schedule
                     </button>
                   )}
@@ -9641,9 +9640,9 @@ function FloatingActionButton({ tab, onAction }) {
               onClick={() => { onAction(item.action); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 16px', background: '#2A3140',
+                padding: '12px 18px', minHeight: 44, background: '#2A3140',
                 border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-                color: '#C9D1D9', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                color: '#C9D1D9', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
               }}
             >
@@ -9741,10 +9740,10 @@ function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab,
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1100, paddingTop: '15vh' }}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1100, paddingTop: '15dvh' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: '100%', maxWidth: 520, background: '#1E2329', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+      <div style={{ width: '100%', maxWidth: 520, margin: '0 12px', background: '#1E2329', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
         <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <span style={{ fontSize: 16, marginRight: 10, color: '#8B95A1' }}>🔍</span>
           <input
@@ -9768,12 +9767,12 @@ function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab,
               onMouseEnter={() => setActiveIdx(i)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: '10px 16px', cursor: 'pointer',
+                padding: '14px 16px', minHeight: 44, cursor: 'pointer',
                 background: i === activeIdx ? 'rgba(255,255,255,0.06)' : 'transparent',
               }}
             >
               <span style={{
-                fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                fontSize: 10, fontWeight: 700, padding: '3px 7px', borderRadius: 4,
                 background: (typeColor[r.type] || '#8B95A1') + '22', color: typeColor[r.type] || '#8B95A1',
                 textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0,
               }}>
@@ -10104,9 +10103,9 @@ export default function App() {
           style={{
             background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
             borderRadius: 8, color: '#8B95A1', cursor: 'pointer',
-            fontSize: 14, padding: isMobile ? '5px 8px' : '5px 12px',
-            display: 'flex', alignItems: 'center', gap: 6, minHeight: 'auto',
-            marginLeft: 'auto',
+            fontSize: 14, padding: isMobile ? '8px 10px' : '5px 12px',
+            display: 'flex', alignItems: 'center', gap: 6,
+            minHeight: isMobile ? 44 : 'auto', marginLeft: 'auto',
           }}
         >
           🔍{!isMobile && <span style={{ fontSize: 11, color: '#5C6470' }}>⌘K</span>}
