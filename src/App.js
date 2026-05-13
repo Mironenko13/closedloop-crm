@@ -19,7 +19,7 @@ function ToastProvider({ children }) {
             background: t.type === 'error' ? '#450a0a' : '#052e16',
             border: `1px solid ${t.type === 'error' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'}`,
             borderRadius: 8, padding: '10px 16px',
-            color: '#F0F2F5', fontSize: 13, fontWeight: 500,
+            color: '#FFFFFF', fontSize: 13, fontWeight: 500,
             boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             maxWidth: 300,
           }}>
@@ -471,9 +471,9 @@ const STALL_LABELS = {
 const STATUS_COLORS = {
   active: '#16A34A',
   stalled: '#DC2626',
-  cold: '#8B95A1',
+  cold: '#D1D5DB',
   won: '#16A34A',
-  lost: '#8B95A1',
+  lost: '#D1D5DB',
 };
 
 const STAGE_ORDER = [
@@ -834,7 +834,7 @@ const S = {
   app: {
     minHeight: '100vh',
     background: '#1E2329',
-    color: '#F0F2F5',
+    color: '#FFFFFF',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
     overflowX: 'hidden',
@@ -851,8 +851,8 @@ const S = {
     top: 0,
     zIndex: 100,
   },
-  logo: { fontSize: 22, fontWeight: 800, color: '#F0F2F5', letterSpacing: '-0.5px' },
-  logoSub: { fontSize: 13, color: '#8B95A1', fontWeight: 500, marginLeft: 4 },
+  logo: { fontSize: 22, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.5px' },
+  logoSub: { fontSize: 13, color: '#D1D5DB', fontWeight: 500, marginLeft: 4 },
   tabs: { display: 'flex', gap: 2, marginLeft: 'auto', flexShrink: 0 },
   tab: (active) => ({
     padding: '8px 16px',
@@ -863,7 +863,7 @@ const S = {
     fontSize: 14,
     fontWeight: active ? 600 : 500,
     background: 'transparent',
-    color: active ? '#E8722A' : '#8B95A1',
+    color: active ? '#E8722A' : '#D1D5DB',
     transition: 'all 0.15s',
     boxShadow: 'none',
   }),
@@ -879,7 +879,7 @@ const S = {
     borderRadius: 20,
     border: `1px solid ${active ? '#E8722A' : 'rgba(255,255,255,0.12)'}`,
     background: active ? 'rgba(232,114,42,0.12)' : 'transparent',
-    color: active ? '#E8722A' : '#8B95A1',
+    color: active ? '#E8722A' : '#D1D5DB',
     cursor: 'pointer',
     fontSize: 13,
     fontWeight: 500,
@@ -893,7 +893,7 @@ const S = {
     borderRadius: 20,
     border: `1px solid ${active ? color : 'rgba(255,255,255,0.08)'}`,
     background: active ? color + '22' : 'transparent',
-    color: active ? color : '#8B95A1',
+    color: active ? color : '#D1D5DB',
     cursor: 'pointer',
     fontSize: 12,
     fontWeight: 500,
@@ -915,8 +915,8 @@ const S = {
     boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.6)' : '0 2px 8px rgba(0,0,0,0.3)',
   }),
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  cardName: { fontSize: 15, fontWeight: 600, color: '#F0F2F5' },
-  cardContact: { fontSize: 12, color: '#8B95A1', marginTop: 2 },
+  cardName: { fontSize: 15, fontWeight: 600, color: '#FFFFFF' },
+  cardContact: { fontSize: 12, color: '#D1D5DB', marginTop: 2 },
   statusBadge: (status) => ({
     fontSize: 10,
     fontWeight: 700,
@@ -955,8 +955,8 @@ const S = {
     whiteSpace: 'nowrap',
   }),
   cardMeta: { display: 'flex', gap: 12, marginTop: 12, flexWrap: 'wrap' },
-  metaItem: { fontSize: 12, color: '#8B95A1' },
-  metaValue: { color: '#8B95A1', fontWeight: 500 },
+  metaItem: { fontSize: 12, color: '#D1D5DB' },
+  metaValue: { color: '#D1D5DB', fontWeight: 500 },
   stallTag: {
     marginTop: 10,
     display: 'inline-block',
@@ -989,8 +989,8 @@ const S = {
     fontSize: 13, fontWeight: 600,
     color: overdue ? '#ef4444' : '#E8722A', minWidth: 90,
   }),
-  cbName: { fontSize: 14, fontWeight: 600, color: '#F0F2F5', flex: 1 },
-  cbContact: { fontSize: 12, color: '#8B95A1' },
+  cbName: { fontSize: 14, fontWeight: 600, color: '#FFFFFF', flex: 1 },
+  cbContact: { fontSize: 12, color: '#D1D5DB' },
   cbValue: { fontSize: 13, fontWeight: 600, color: '#22c55e' },
 
   // Analytics
@@ -1004,23 +1004,23 @@ const S = {
     borderRadius: 12, padding: 20, textAlign: 'center',
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
   },
-  statVal: { fontSize: 28, fontWeight: 800, color: '#F0F2F5' },
-  statLabel: { fontSize: 12, color: '#8B95A1', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' },
+  statVal: { fontSize: 28, fontWeight: 800, color: '#FFFFFF' },
+  statLabel: { fontSize: 12, color: '#D1D5DB', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' },
   chartSection: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 },
   chartCard: {
     background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: 10, padding: 20,
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
   },
-  chartTitle: { fontSize: 14, fontWeight: 600, color: '#8B95A1', marginBottom: 16 },
+  chartTitle: { fontSize: 14, fontWeight: 600, color: '#D1D5DB', marginBottom: 16 },
   barRow: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 },
-  barLabel: { fontSize: 12, color: '#8B95A1', width: 120, flexShrink: 0 },
+  barLabel: { fontSize: 12, color: '#D1D5DB', width: 120, flexShrink: 0 },
   barTrack: { flex: 1, height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 4, overflow: 'hidden' },
   barFill: (pct, color) => ({
     height: '100%', width: `${pct}%`, background: color,
     borderRadius: 4, transition: 'width 0.5s ease',
   }),
-  barCount: { fontSize: 12, color: '#8B95A1', width: 28, textAlign: 'right' },
+  barCount: { fontSize: 12, color: '#D1D5DB', width: 28, textAlign: 'right' },
 
   // Jobs
   progressTrack: { height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden', marginTop: 10 },
@@ -1044,10 +1044,10 @@ const S = {
     boxShadow: done ? '0 0 6px rgba(249,115,22,0.35)' : 'none',
   }),
   checkLabel: (done) => ({
-    fontSize: 13, color: done ? '#8B95A1' : '#8B95A1',
+    fontSize: 13, color: done ? '#8B95A1' : '#D1D5DB',
     textDecoration: done ? 'line-through' : 'none', flex: 1,
   }),
-  checkTs: { fontSize: 11, color: '#8B95A1', whiteSpace: 'nowrap' },
+  checkTs: { fontSize: 11, color: '#D1D5DB', whiteSpace: 'nowrap' },
 
   // Modal
   overlay: {
@@ -1066,26 +1066,26 @@ const S = {
     maxHeight: '85dvh', overflow: 'auto', padding: 28, position: 'relative',
     boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
   },
-  modalTitle: { fontSize: 18, fontWeight: 700, color: '#F0F2F5', marginBottom: 4 },
-  modalSub: { fontSize: 13, color: '#8B95A1', marginBottom: 20 },
+  modalTitle: { fontSize: 18, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 },
+  modalSub: { fontSize: 13, color: '#D1D5DB', marginBottom: 20 },
   closeBtn: {
     position: 'absolute', top: 12, right: 12,
     background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: 8,
-    color: '#8B95A1', cursor: 'pointer', fontSize: 20, lineHeight: 1,
+    color: '#D1D5DB', cursor: 'pointer', fontSize: 20, lineHeight: 1,
     width: 40, height: 40,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     WebkitTapHighlightColor: 'transparent',
     transition: 'color 0.15s, background 0.15s',
   },
   sectionLabel: {
-    fontSize: 11, fontWeight: 600, color: '#8B95A1',
+    fontSize: 11, fontWeight: 600, color: '#D1D5DB',
     textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, marginTop: 0,
   },
   playbookList: { listStyle: 'none', padding: 0, margin: '0 0 20px 0' },
   playbookItem: {
     display: 'flex', gap: 10, padding: '8px 0',
-    borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: 13, color: '#8B95A1',
+    borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: 13, color: '#D1D5DB',
     alignItems: 'flex-start',
   },
   playbookNum: {
@@ -1106,9 +1106,9 @@ const S = {
   aiResponse: {
     background: '#2A3140', border: '1px solid rgba(249,115,22,0.2)',
     borderRadius: 8, padding: 16, fontSize: 13,
-    lineHeight: 1.75, color: '#8B95A1', whiteSpace: 'pre-wrap',
+    lineHeight: 1.75, color: '#D1D5DB', whiteSpace: 'pre-wrap',
   },
-  apiKeyNote: { fontSize: 11, color: '#8B95A1', marginTop: 10, textAlign: 'center' },
+  apiKeyNote: { fontSize: 11, color: '#D1D5DB', marginTop: 10, textAlign: 'center' },
 };
 
 // ─── Mobile Hook ─────────────────────────────────────────────────────────────
@@ -1185,7 +1185,7 @@ const DEMO_ROLES = {
     seeChangeOrders: false, seeTeamMgmt: false,
   },
   crew: {
-    label: 'Crew/Installer', color: '#8B95A1',
+    label: 'Crew/Installer', color: '#D1D5DB',
     tabs: ['jobs','chat','photos'],
     seeDollars: false, seeRates: false, seeProfitability: false,
     seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: false,
@@ -1261,7 +1261,7 @@ function BottomNav({ tab, setTab, tabs }) {
               minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               background: isActive ? c + '10' : 'transparent', border: 'none',
-              color: locked ? 'rgba(255,255,255,0.12)' : isActive ? '#E8722A' : '#8B95A1',
+              color: locked ? 'rgba(255,255,255,0.12)' : isActive ? '#E8722A' : '#D1D5DB',
               fontSize: 10, fontWeight: isActive ? 700 : 500,
               cursor: locked ? 'not-allowed' : 'pointer',
               gap: 3, minHeight: 64, padding: 0,
@@ -1364,13 +1364,13 @@ const LEAD_STAGES = [
 
 const FI = { // form input base
   width: '100%', padding: '10px 12px', background: '#2A3140',
-  border: '1.5px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5',
+  border: '1.5px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF',
   fontSize: 13, outline: 'none', boxSizing: 'border-box',
   fontFamily: "'Inter', -apple-system, sans-serif",
   transition: 'border-color 0.15s',
 };
 const FLbl = {
-  display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1',
+  display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB',
   marginBottom: 5, marginTop: 14, textTransform: 'uppercase', letterSpacing: '0.4px',
 };
 const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
@@ -1576,7 +1576,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
               padding: isMobile ? '14px 20px' : '10px 20px',
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
-              color: '#8B95A1', cursor: 'pointer', fontSize: 14,
+              color: '#D1D5DB', cursor: 'pointer', fontSize: 14,
               minHeight: 48, WebkitTapHighlightColor: 'transparent',
             }}
             onClick={onClose}
@@ -1883,7 +1883,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
         <input
           style={{
             width: '100%', padding: '8px 12px', background: '#2A3140',
-            border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1',
+            border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB',
             fontSize: 13, outline: 'none', boxSizing: 'border-box',
             fontFamily: 'inherit', marginBottom: 8,
           }}
@@ -1908,7 +1908,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
               style={{
                 flex: 1, padding: '8px 12px', background: '#2A3140',
                 border: '1px solid rgba(45,80,22,0.4)', borderRadius: 7,
-                color: photoPhase ? '#2D5016' : '#8B95A1',
+                color: photoPhase ? '#2D5016' : '#D1D5DB',
                 fontSize: 13, outline: 'none', fontFamily: 'inherit', fontWeight: 600,
               }}
               value={photoPhase}
@@ -1948,7 +1948,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
             style={{
               flex: 1, padding: '10px 14px', borderRadius: 8,
               background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-              color: uploading ? '#8B95A1' : '#8B95A1',
+              color: uploading ? '#8B95A1' : '#D1D5DB',
               fontSize: 13, fontWeight: 600,
               cursor: uploading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1968,7 +1968,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
               padding: '3px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
               border: categoryFilter === 'all' ? '1px solid #06b6d4' : '1px solid rgba(255,255,255,0.08)',
               background: categoryFilter === 'all' ? 'rgba(6,182,212,0.15)' : 'transparent',
-              color: categoryFilter === 'all' ? '#06b6d4' : '#8B95A1',
+              color: categoryFilter === 'all' ? '#06b6d4' : '#D1D5DB',
             }}
           >All</button>
           {PHOTO_CATEGORIES.filter(c => photos.some(p => p.category === c)).map(c => (
@@ -1979,7 +1979,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
                 padding: '3px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
                 border: categoryFilter === c ? '1px solid #06b6d4' : '1px solid rgba(255,255,255,0.08)',
                 background: categoryFilter === c ? 'rgba(6,182,212,0.15)' : 'transparent',
-                color: categoryFilter === c ? '#06b6d4' : '#8B95A1',
+                color: categoryFilter === c ? '#06b6d4' : '#D1D5DB',
               }}
             >{c}</button>
           ))}
@@ -1993,8 +1993,8 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
           border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 10,
         }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1', marginBottom: 4 }}>No photos yet</div>
-          <div style={{ fontSize: 12, color: '#8B95A1' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB', marginBottom: 4 }}>No photos yet</div>
+          <div style={{ fontSize: 12, color: '#D1D5DB' }}>
             {isMobile
               ? 'Tap Camera to shoot or Upload to pick from library.'
               : 'Use Take Photo or Upload to start documenting this job.'}
@@ -2020,7 +2020,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 background: 'rgba(0,0,0,0.65)', padding: '4px 7px',
-                fontSize: 10, color: '#8B95A1',
+                fontSize: 10, color: '#D1D5DB',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {photo.category && <span style={{ background: 'rgba(6,182,212,0.3)', color: '#22d3ee', padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>}
@@ -2062,9 +2062,9 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
               </span>
             )}
             {lightbox.caption && (
-              <span style={{ fontSize: 13, color: '#8B95A1' }}>{lightbox.caption}</span>
+              <span style={{ fontSize: 13, color: '#D1D5DB' }}>{lightbox.caption}</span>
             )}
-            <span style={{ fontSize: 11, color: '#8B95A1' }}>{formatTs(lightbox.timestamp)}</span>
+            <span style={{ fontSize: 11, color: '#D1D5DB' }}>{formatTs(lightbox.timestamp)}</span>
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 8,
               background: 'rgba(59,130,246,0.15)', color: '#3b82f6',
@@ -2079,7 +2079,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
               style={{
                 padding: '8px 20px', borderRadius: 7,
                 background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-                color: '#8B95A1', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                color: '#D1D5DB', fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}
             >
               Close
@@ -2204,7 +2204,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
               style={{
                 padding: '8px 16px', background: 'transparent', border: 'none',
                 borderBottom: activeTab === key ? '2px solid #E8722A' : '2px solid transparent',
-                color: activeTab === key ? '#E8722A' : '#8B95A1',
+                color: activeTab === key ? '#E8722A' : '#D1D5DB',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 marginBottom: -1, transition: 'color 0.15s', fontFamily: 'inherit',
               }}
@@ -2221,7 +2221,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
               <>
                 <div style={S.sectionLabel}>Job Notes</div>
                 <div style={{
-                  fontSize: 13, color: '#8B95A1', marginBottom: 20,
+                  fontSize: 13, color: '#D1D5DB', marginBottom: 20,
                   padding: '10px 12px', background: '#2A3140', borderRadius: 6,
                 }}>
                   {lead.notes}
@@ -2240,7 +2240,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                     fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
                     border: localStage === s ? 'none' : '1px solid rgba(255,255,255,0.08)',
                     background: localStage === s ? '#E8722A' : '#2A3140',
-                    color: localStage === s ? '#fff' : '#8B95A1',
+                    color: localStage === s ? '#fff' : '#D1D5DB',
                   }}
                 >
                   {STAGE_LABELS[s]}
@@ -2265,7 +2265,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                   style={{
                     width: '100%', padding: '11px 16px', borderRadius: 8,
                     background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#8B95A1', fontSize: 13, fontWeight: 600,
+                    color: '#D1D5DB', fontSize: 13, fontWeight: 600,
                     cursor: 'not-allowed', textAlign: 'left',
                     display: 'flex', alignItems: 'center', gap: 8,
                   }}
@@ -2277,7 +2277,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
                 <div style={{
                   marginTop: 10, padding: '10px 14px',
                   background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)',
-                  borderRadius: 7, fontSize: 12, color: '#8B95A1',
+                  borderRadius: 7, fontSize: 12, color: '#D1D5DB',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
                 }}>
                   <span>AI job advice with stage-specific next steps is available on Pro and Business plans.</span>
@@ -2341,7 +2341,7 @@ function DisabledTooltip({ active, label, children }) {
           transform: 'translateX(-50%)',
           background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: 6, padding: '5px 10px',
-          fontSize: 11, color: '#8B95A1', whiteSpace: 'nowrap',
+          fontSize: 11, color: '#D1D5DB', whiteSpace: 'nowrap',
           zIndex: 200, pointerEvents: 'none',
         }}>
           {label}
@@ -2394,8 +2394,8 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
-          <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+          <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
       </div>
@@ -2421,14 +2421,14 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
           {lead.issues.slice(0, 2).map(issue => (
             <span key={issue} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>{issue}</span>
           ))}
-          {lead.issues.length > 2 && <span style={{ fontSize: 9, color: '#8B95A1' }}>+{lead.issues.length - 2}</span>}
+          {lead.issues.length > 2 && <span style={{ fontSize: 9, color: '#D1D5DB' }}>+{lead.issues.length - 2}</span>}
         </div>
       )}
 
       {/* Last update preview */}
       {lead.lastUpdate && (
-        <div style={{ fontSize: 10, color: '#8B95A1', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
-          <span style={{ color: '#8B95A1' }}>↳ </span>
+        <div style={{ fontSize: 10, color: '#D1D5DB', marginTop: 5, paddingTop: 5, borderTop: '1px solid #1a2035', lineHeight: 1.4 }}>
+          <span style={{ color: '#D1D5DB' }}>↳ </span>
           {lead.lastUpdate.length > 60 ? lead.lastUpdate.slice(0, 60) + '…' : lead.lastUpdate}
         </div>
       )}
@@ -2439,7 +2439,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
           <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
             {!confirmDelete ? (
               <button
-                style={{ minWidth: 44, minHeight: 44, padding: '8px 12px', fontSize: 14, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ minWidth: 44, minHeight: 44, padding: '8px 12px', fontSize: 14, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onClick={() => setConfirmDelete(true)}
               >
                 🗑
@@ -2447,7 +2447,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
             ) : (
               <>
                 <button style={{ minWidth: 44, minHeight: 44, padding: '8px 14px', fontSize: 13, fontWeight: 700, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#ef4444', cursor: 'pointer' }} onClick={() => onDelete && onDelete(lead.id)}>Delete</button>
-                <button style={{ minWidth: 44, minHeight: 44, padding: '8px 14px', fontSize: 13, fontWeight: 600, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>Cancel</button>
+                <button style={{ minWidth: 44, minHeight: 44, padding: '8px 14px', fontSize: 13, fontWeight: 600, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer' }} onClick={() => setConfirmDelete(false)}>Cancel</button>
               </>
             )}
           </div>
@@ -2541,8 +2541,8 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
-            <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 2 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 2 }}>
               {lead.contact}{lead.trade ? ` · ${lead.trade}` : ''} · <span style={{ color: '#22c55e', fontWeight: 600 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
             </div>
           </div>
@@ -2551,12 +2551,12 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               <button
                 onClick={onOpenDetail}
                 className="ri-btn ri-btn-secondary"
-                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 11, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 AI Coach ↗
               </button>
             )}
-            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 20, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
           </div>
         </div>
 
@@ -2575,7 +2575,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               style={{
                 width: '100%', boxSizing: 'border-box',
                 background: '#060a12', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
-                color: '#F0F2F5', fontSize: 13, padding: '10px 12px',
+                color: '#FFFFFF', fontSize: 13, padding: '10px 12px',
                 resize: 'vertical', outline: 'none', fontFamily: 'inherit', lineHeight: 1.6,
               }}
             />
@@ -2599,7 +2599,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
           {/* ── Stage + Status ── */}
           <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stage</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stage</div>
               <select
                 value={stage}
                 onChange={e => setStage(e.target.value)}
@@ -2611,7 +2611,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</div>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
@@ -2640,7 +2640,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
 
           {/* ── Issues ── */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Issues</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Issues</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
               {issues.map(issue => (
                 <span key={issue} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#fca5a5' }}>
@@ -2651,7 +2651,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
               <div style={{ position: 'relative' }}>
                 <button
                   onClick={() => setShowIssueMenu(v => !v)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#8B95A1', cursor: 'pointer' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: '4px 10px', fontSize: 11, color: '#D1D5DB', cursor: 'pointer' }}
                 >
                   + Add Issue
                 </button>
@@ -2664,7 +2664,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                       <div
                         key={p}
                         onClick={() => addIssue(p)}
-                        style={{ padding: '7px 14px', fontSize: 12, color: '#8B95A1', cursor: 'pointer' }}
+                        style={{ padding: '7px 14px', fontSize: 12, color: '#D1D5DB', cursor: 'pointer' }}
                         onMouseEnter={e => e.currentTarget.style.background = '#1a2035'}
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                       >
@@ -2678,7 +2678,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                         onKeyDown={e => { if (e.key === 'Enter' && customIssue.trim()) addIssue(customIssue); }}
                         placeholder="Custom issue... (Enter)"
                         autoFocus
-                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#F0F2F5', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                        style={{ width: '100%', background: 'transparent', border: 'none', color: '#FFFFFF', fontSize: 12, padding: '4px 6px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                       />
                     </div>
                   </div>
@@ -2690,14 +2690,14 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
           {/* ── Recent Activity ── */}
           {recentActivity.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Recent Activity</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Recent Activity</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {recentActivity.map((entry, i) => (
                   <div key={i} style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                    <span style={{ color: '#8B95A1', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
+                    <span style={{ color: '#D1D5DB', flexShrink: 0 }}>{ACTIVITY_ICONS[entry.type] || '·'}</span>
                     <div style={{ minWidth: 0 }}>
-                      <span style={{ color: '#8B95A1' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
-                      <span style={{ color: '#8B95A1' }}>{entry.message}</span>
+                      <span style={{ color: '#D1D5DB' }}>{new Date(entry.timestamp).toLocaleDateString()} </span>
+                      <span style={{ color: '#D1D5DB' }}>{entry.message}</span>
                     </div>
                   </div>
                 ))}
@@ -2809,14 +2809,14 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
       <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#2A3140', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, overflow: 'hidden', overflowX: 'auto' }}>
         {stageStats.map((s, i) => (
           <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none', textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#F0F2F5' }}>{s.count}</div>
-            <div style={{ fontSize: 11, color: '#8B95A1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>{fmt(s.value)}</div>}
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>{s.count}</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{fmt(s.value)}</div>}
           </div>
         ))}
         <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', borderBottom: '2px solid #E8722A' }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
-          <div style={{ fontSize: 11, color: '#8B95A1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
+          <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
         </div>
       </div>
 
@@ -2863,7 +2863,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           <div style={{ position: 'absolute', right: 0, top: 0, bottom: 16, width: 40, background: 'linear-gradient(to right, transparent, #1E2329)', zIndex: 2, pointerEvents: 'none', borderRadius: '0 10px 10px 0' }} />
         )}
         {isMobile && (
-          <div style={{ textAlign: 'center', fontSize: 11, color: '#8B95A1', marginBottom: 6, letterSpacing: '0.3px' }}>
+          <div style={{ textAlign: 'center', fontSize: 11, color: '#D1D5DB', marginBottom: 6, letterSpacing: '0.3px' }}>
             ← Swipe to see all stages →
           </div>
         )}
@@ -2891,9 +2891,9 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               {/* Column header */}
               <div style={{ padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)', borderLeft: `4px solid ${STAGE_COLORS[stg.key] || '#E8722A'}`, background: '#2A3140', borderRadius: '10px 10px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
                 <div style={{ minWidth: 0 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#F0F2F5', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
-                  <span style={{ fontSize: 11, color: '#8B95A1', marginLeft: 6 }}>{cards.length}</span>
-                  {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#8B95A1' }}>{fmt(colValue)}</div>}
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stg.label}</span>
+                  <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 6 }}>{cards.length}</span>
+                  {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#D1D5DB' }}>{fmt(colValue)}</div>}
                 </div>
                 {stg.key === 'lead' && (onAddLead || demoMode) && (
                   <DisabledTooltip active={demoMode} label="Sign up to add leads">
@@ -2916,7 +2916,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
               {/* Cards */}
               <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 120 }}>
                 {cards.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '20px 8px', color: 'rgba(255,255,255,0.08)', fontSize: 11 }}>
+                  <div style={{ textAlign: 'center', padding: '20px 8px', color: '#9CA3AF', fontSize: 11 }}>
                     Drop here
                   </div>
                 ) : cards.map(lead => (
@@ -3023,7 +3023,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
                 <div style={S.cbName}>{lead.name}</div>
                 <div style={S.cbContact}>
                   {lead.contact} · {STAGE_LABELS[lead.stage] || lead.stage}
-                  {lead.phone && <span style={{ marginLeft: 8, color: '#8B95A1' }}>{lead.phone}</span>}
+                  {lead.phone && <span style={{ marginLeft: 8, color: '#D1D5DB' }}>{lead.phone}</span>}
                 </div>
                 {lead.stallReason && (
                   <div style={{ fontSize: 11, color: '#E8722A', marginTop: 3 }}>⚠ {STALL_LABELS[lead.stallReason]}</div>
@@ -3031,7 +3031,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={S.cbValue}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</div>
-                <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 6 }}>{lead.callbackDate}</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 6 }}>{lead.callbackDate}</div>
                 {onUpdateLead && (
                   <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
                     <button
@@ -3064,8 +3064,8 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
       {!overdue.length && !today.length && !upcoming.length && (
         <div style={{ textAlign: 'center', padding: '80px 24px' }}>
           <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>📞</div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#8B95A1', marginBottom: 8 }}>No callbacks scheduled</div>
-          <div style={{ fontSize: 13, color: '#8B95A1', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: '#D1D5DB', marginBottom: 8 }}>No callbacks scheduled</div>
+          <div style={{ fontSize: 13, color: '#D1D5DB', maxWidth: 320, margin: '0 auto' }}>Jobs with follow-up reminders will appear here. Set a callback date when editing a lead.</div>
         </div>
       )}
 
@@ -3079,7 +3079,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
             <label style={FLbl}>New Callback Date</label>
             <input type="date" style={{ ...FI, marginBottom: 20 }} value={snoozeDate} onChange={e => setSnoozeDate(e.target.value)} />
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
+              <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', cursor: 'pointer' }} onClick={() => setSnoozeModal(null)}>Cancel</button>
               <button style={{ flex: 2, padding: '8px', background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, cursor: 'pointer' }} onClick={confirmSnooze}>Set Snooze Date</button>
             </div>
           </div>
@@ -3181,7 +3181,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
 
   const STALL_COLORS = {
     price_objection: '#E8722A', budget_freeze: '#6366f1', no_response: '#ef4444',
-    competitor: '#f59e0b', timing: '#8B95A1', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
+    competitor: '#f59e0b', timing: '#D1D5DB', wrong_contact: '#8b5cf6', technical_fit: '#06b6d4',
   };
 
   const D = rolePerms?.seeDollars !== false;
@@ -3206,7 +3206,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
       }}>
         {kpis.map(({ val, label }) => (
           <div key={label} style={{ ...S.statCard, ...(isMobile ? { padding: 12 } : {}) }}>
-            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 20 } : {}), color: '#F0F2F5' }}>{val}</div>
+            <div style={{ ...S.statVal, ...(isMobile ? { fontSize: 20 } : {}), color: '#FFFFFF' }}>{val}</div>
             <div style={S.statLabel}>{label}</div>
           </div>
         ))}
@@ -3217,20 +3217,20 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Revenue by Stage</div>
           {stageFunnel.length === 0 ? (
-            <div style={{ color: '#8B95A1', fontSize: 13 }}>No active leads</div>
+            <div style={{ color: '#D1D5DB', fontSize: 13 }}>No active leads</div>
           ) : stageFunnel.map(({ stage, count, value, avgAge }) => (
             <div key={stage} style={S.barRow}>
               <div style={{ ...S.barLabel, width: 110 }}>{STAGE_LABELS[stage] || stage}</div>
               <div style={S.barTrack}>
                 <div style={S.barFill(value / maxStageValue * 100, STAGE_COLORS[stage] || '#E8722A')} />
               </div>
-              <div style={{ fontSize: 11, color: '#8B95A1', width: 24, textAlign: 'right' }}>{count}</div>
-              <div style={{ fontSize: 11, color: '#8B95A1', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
-              {avgAge > 0 && <div style={{ fontSize: 10, color: '#8B95A1', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
+              <div style={{ fontSize: 11, color: '#D1D5DB', width: 24, textAlign: 'right' }}>{count}</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB', width: 72, textAlign: 'right' }}>{D ? fmt(value) : '—'}</div>
+              {avgAge > 0 && <div style={{ fontSize: 10, color: '#D1D5DB', width: 36, textAlign: 'right' }}>{avgAge}d</div>}
             </div>
           ))}
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: 11, color: '#8B95A1' }}>Total pipeline value</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB' }}>Total pipeline value</div>
             <div style={{ fontSize: 32, fontWeight: 800, color: '#E8722A', marginTop: 4 }}>{D ? fmt(totalPipeline) : '—'}</div>
           </div>
         </div>
@@ -3239,7 +3239,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Stall Reason Breakdown</div>
           {stallBreakdown.length === 0 && (
-            <div style={{ color: '#8B95A1', fontSize: 13 }}>No stalled deals</div>
+            <div style={{ color: '#D1D5DB', fontSize: 13 }}>No stalled deals</div>
           )}
           {stallBreakdown.map(([reason, count]) => (
             <div key={reason} style={S.barRow}>
@@ -3248,13 +3248,13 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 <div style={S.barFill(count / maxStallCount * 100, STALL_COLORS[reason] || '#E8722A')} />
               </div>
               <div style={S.barCount}>{count}</div>
-              <div style={{ fontSize: 11, color: '#8B95A1', width: 72, textAlign: 'right' }}>
+              <div style={{ fontSize: 11, color: '#D1D5DB', width: 72, textAlign: 'right' }}>
                 {fmt(stalled.filter(l => l.stallReason === reason).reduce((s, l) => s + l.value, 0))}
               </div>
             </div>
           ))}
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: 12, color: '#8B95A1', marginBottom: 6 }}>Total value at risk</div>
+            <div style={{ fontSize: 12, color: '#D1D5DB', marginBottom: 6 }}>Total value at risk</div>
             <div style={{ fontSize: 24, fontWeight: 700, color: '#E8722A' }}>{fmt(stalledValue)}</div>
           </div>
         </div>
@@ -3263,7 +3263,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         <div style={S.chartCard}>
           <div style={S.chartTitle}>Win / Loss Analysis</div>
           {[
-            { label: 'Total Leads', count: leads.length, color: '#8B95A1' },
+            { label: 'Total Leads', count: leads.length, color: '#D1D5DB' },
             { label: 'Active', count: active.length, color: '#3b82f6' },
             { label: 'Won', count: won.length, color: '#22c55e' },
             { label: 'Lost', count: lost.length, color: '#ef4444' },
@@ -3280,11 +3280,11 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ display: 'flex', gap: 16 }}>
               <div>
-                <div style={{ fontSize: 11, color: '#8B95A1' }}>Win Rate</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB' }}>Win Rate</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: winRate >= 60 ? '#22c55e' : '#E8722A' }}>{winRate}%</div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: '#8B95A1' }}>Avg Job Value</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB' }}>Avg Job Value</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#6366f1' }}>{fmt(avgJobValue)}</div>
               </div>
             </div>
@@ -3311,8 +3311,8 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 <div style={S.barTrack}>
                   <div style={S.barFill(data.value / maxVal * 100, TRADE_COLORS[trade] || '#E8722A')} />
                 </div>
-                <div style={{ fontSize: 11, color: '#8B95A1', width: 24, textAlign: 'right' }}>{data.count}</div>
-                <div style={{ fontSize: 11, color: '#8B95A1', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB', width: 24, textAlign: 'right' }}>{data.count}</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB', width: 72, textAlign: 'right' }}>{fmt(data.value)}</div>
               </div>
             ));
           })()}
@@ -3373,7 +3373,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
                 padding: '8px 20px',
                 background: tier === 'business' ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#2A3140',
                 border: tier === 'business' ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 7, color: tier === 'business' ? '#fff' : '#8B95A1',
+                borderRadius: 7, color: tier === 'business' ? '#fff' : '#D1D5DB',
                 fontWeight: 600, fontSize: 13, cursor: tier === 'business' ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', gap: 7,
               }}
@@ -3951,9 +3951,9 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
   const isMobile = useMobile();
 
   // ── shared cell styles ───────────────────────────────────────────────────────
-  const NINP = { background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 4, color: '#8B95A1', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s' };
-  const UINP = { background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 4, color: '#8B95A1', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' };
-  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px' };
+  const NINP = { background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 4, color: '#D1D5DB', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', padding: '4px 6px', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s' };
+  const UINP = { background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 4, color: '#D1D5DB', fontSize: 11, outline: 'none', textAlign: 'center', padding: '4px 2px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' };
+  const CHEAD = { fontSize: 10, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px' };
   const seeRates = rolePerms?.seeRates !== false;
   const MAT_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
   const LAB_COLS = seeRates ? '1fr 44px 58px 72px 72px 20px' : '1fr 44px 58px 20px';
@@ -3981,7 +3981,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
           value={sec.title}
           onChange={e => { e.stopPropagation(); updMatSecTitle(sec.id, e.target.value); }}
           onClick={e => e.stopPropagation()}
-          style={{ flex: 1, background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
+          style={{ flex: 1, background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
         <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#14b8a6' : 'rgba(255,255,255,0.12)', flexShrink: 0 }}>
           {secTot > 0 ? fmtC(secTot) : '—'}
@@ -4000,7 +4000,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                 return (
                   <div key={item.id} style={{ padding: '8px 10px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.04)' : 'transparent', borderLeft: filled ? '3px solid rgba(249,115,22,0.4)' : '3px solid transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7 }}>
-                      <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
+                      <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
                       <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr', gap: 8, alignItems: 'end' }}>
@@ -4025,8 +4025,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                 );
               })}
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
-                <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#8B95A1', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#8B95A1', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
+                <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '10px 10px', background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                {secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#D1D5DB', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
               </div>
             </div>
           )}
@@ -4051,7 +4051,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
               const filled = tot > 0;
               return (
                 <div key={item.id} style={{ display: 'grid', gridTemplateColumns: MAT_COLS, gap: 4, alignItems: 'center', padding: '3px 8px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.03)' : 'transparent', borderLeft: filled ? '2px solid rgba(249,115,22,0.35)' : '2px solid transparent' }}>
-                  <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 13, fontWeight: 500, outline: 'none', width: '100%', fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0' }} />
+                  <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 13, fontWeight: 500, outline: 'none', width: '100%', fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0' }} />
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updMat(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {seeRates && <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />}
@@ -4061,8 +4061,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
               );
             })}
             <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
-              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#8B95A1', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#8B95A1', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
+              <button onClick={() => addMatItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+              {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#D1D5DB', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#E8722A' }}>{fmtC(secTot)}</strong></div>}
             </div>
           </div>
         )}
@@ -4085,7 +4085,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
           value={sec.title}
           onChange={e => { e.stopPropagation(); updLaborSecTitle(sec.id, e.target.value); }}
           onClick={e => e.stopPropagation()}
-          style={{ flex: 1, background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
+          style={{ flex: 1, background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 11, fontWeight: 700, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", textTransform: 'uppercase', letterSpacing: '0.6px', cursor: 'text' }}
         />
         {!sec.isWaste && seeRates && (
           <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: secTot > 0 ? '#0d9488' : 'rgba(255,255,255,0.12)', flexShrink: 0 }}>
@@ -4107,8 +4107,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                   <div key={item.id} style={{ padding: '8px 10px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(99,102,241,0.04)' : 'transparent', borderLeft: filled ? '3px solid rgba(99,102,241,0.4)' : '3px solid transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: sec.isWaste ? 7 : 7 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ color: '#8B95A1', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
-                        {item.note && <div style={{ fontSize: 10, color: '#8B95A1', fontStyle: 'italic' }}>{item.note}</div>}
+                        <div style={{ color: '#D1D5DB', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
+                        {item.note && <div style={{ fontSize: 10, color: '#D1D5DB', fontStyle: 'italic' }}>{item.note}</div>}
                       </div>
                       <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
@@ -4139,14 +4139,14 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
               })}
               {!sec.isWaste && (
                 <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
-                  <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#8B95A1', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                  {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#8B95A1', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
+                  <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '10px', background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 13, textAlign: 'left', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                  {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#D1D5DB', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Sub: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
                 </div>
               )}
               {sec.isWaste && (
                 <div style={{ padding: '8px 10px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 13, color: '#8B95A1' }}>Net Waste</span>
-                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#8B95A1' }}>{netWaste.toFixed(1)} BDL</span>
+                  <span style={{ fontSize: 13, color: '#D1D5DB' }}>Net Waste</span>
+                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#D1D5DB' }}>{netWaste.toFixed(1)} BDL</span>
                 </div>
               )}
             </div>
@@ -4173,8 +4173,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
               return (
                 <div key={item.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: 4, alignItems: 'center', padding: '3px 8px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(99,102,241,0.04)' : 'transparent', borderLeft: filled ? '2px solid rgba(99,102,241,0.35)' : '2px solid transparent' }}>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ color: '#8B95A1', fontSize: 13, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label || <span style={{ color: 'rgba(255,255,255,0.12)' }}>—</span>}</div>
-                    {item.note && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', fontStyle: 'italic' }}>{item.note}</div>}
+                    <div style={{ color: '#D1D5DB', fontSize: 13, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", padding: '4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label || <span style={{ color: '#9CA3AF' }}>—</span>}</div>
+                    {item.note && <div style={{ fontSize: 10, color: '#D1D5DB', fontStyle: 'italic' }}>{item.note}</div>}
                   </div>
                   <input list="cp_unit_dl" value={item.unit} onChange={e => updLabor(sec.id, item.id, 'unit', e.target.value)} style={{ ...UINP }} />
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updLabor(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
@@ -4190,14 +4190,14 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
             })}
             {!sec.isWaste && (
               <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
-                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#8B95A1', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
-                {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#8B95A1', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
+                <button onClick={() => addLaborItem(sec.id)} style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 12, textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>+ Add Item</button>
+                {seeRates && secTot > 0 && <div style={{ padding: '6px 10px', fontSize: 12, color: '#D1D5DB', fontFamily: "'Courier New', monospace", whiteSpace: 'nowrap' }}>Subtotal: <strong style={{ color: '#6366f1' }}>{fmtC(secTot)}</strong></div>}
               </div>
             )}
             {sec.isWaste && (
               <div style={{ padding: '6px 8px 8px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#8B95A1' }}>Net Waste</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#8B95A1' }}>{netWaste.toFixed(1)} BDL</span>
+                <span style={{ fontSize: 12, color: '#D1D5DB' }}>Net Waste</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, color: netWaste > 0 ? '#f59e0b' : '#D1D5DB' }}>{netWaste.toFixed(1)} BDL</span>
               </div>
             )}
           </div>
@@ -4214,7 +4214,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
 
       {/* ── Template bar ── */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0 }}>Template:</span>
         <select
           value={data.jobInfo.templateName || ''}
           onChange={e => {
@@ -4223,7 +4223,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
             const hasData = data.materials.sections.some(sec => sec.items.some(item => item.qty || item.costPerUnit));
             if (hasData) { setPendingTpl(name); } else { applyTpl(name); }
           }}
-          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 13, outline: 'none', transition: 'border-color 0.15s' }}
+          style={{ flex: 1, minWidth: 140, padding: '6px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 13, outline: 'none', transition: 'border-color 0.15s' }}
         >
           <option value="">Select template…</option>
           <optgroup label="Built-in">
@@ -4240,14 +4240,14 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
         <button
           onClick={() => setShowTplSave(s => !s)}
           className="ri-btn ri-btn-secondary"
-          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
+          style={{ padding: '6px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent' }}
         >
           Save as Template
         </button>
       </div>
       {showTplSave && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 13, outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+          <input value={tplName} onChange={e => setTplName(e.target.value)} placeholder="Template name" style={{ flex: 1, padding: '7px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 13, outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           <button onClick={saveJobTpl} style={{ padding: '7px 14px', background: '#E8722A', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>Save</button>
         </div>
       )}
@@ -4255,7 +4255,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 7, padding: '9px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, color: '#fca5a5', flex: 1 }}>Replace all line items with the <strong>{pendingTpl}</strong> template?</span>
           <button onClick={() => applyTpl(pendingTpl)} style={{ padding: '5px 12px', background: '#ef4444', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Yes, Replace</button>
-          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
+          <button onClick={() => setPendingTpl(null)} style={{ padding: '5px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }}>Cancel</button>
         </div>
       )}
 
@@ -4274,7 +4274,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
               borderBottom: `2px solid ${isActive ? cmColor : 'transparent'}`,
               background: isActive ? cmColor + '18' : 'transparent',
               borderRadius: isActive ? '6px 6px 0 0' : 0,
-              color: isActive ? cmColor : '#8B95A1',
+              color: isActive ? cmColor : '#D1D5DB',
               cursor: 'pointer', fontSize: 13, fontWeight: isActive ? 700 : 600,
               marginBottom: -2, whiteSpace: 'nowrap', WebkitTapHighlightColor: 'transparent',
             }}
@@ -4293,7 +4293,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
           <button
             onClick={addMatSec}
             className="ri-add-item"
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
@@ -4312,15 +4312,15 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
         <div>
           {/* Crew info */}
           <div style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
-            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Crew Assigned</div>
+            <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
           </div>
           {/* Sections */}
           {data.labor.sections.map(sec => renderLaborSection(sec))}
           <button
             onClick={addLaborSec}
             className="ri-add-item"
-            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
+            style={{ width: '100%', padding: '10px', marginTop: 8, background: 'transparent', border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', cursor: 'pointer', fontSize: 12, WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s, border-color 0.15s' }}
           >
             + Add Section
           </button>
@@ -4339,19 +4339,19 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
         <div>
           {/* Job Cost Breakdown */}
           <div style={{ background: '#2A3140', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Cost Breakdown</div>
             {[
               { label: 'Materials', val: matTotal, color: '#14b8a6' },
               { label: 'Labor', val: laborTotal, color: '#0d9488' },
             ].map(({ label, val, color }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#8B95A1' }}>{label}</span>
+                <span style={{ fontSize: 13, color: '#D1D5DB' }}>{label}</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color }}>{fmtC(val)}</span>
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid rgba(255,255,255,0.08)', marginBottom: 10 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1' }}>Subtotal</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#F0F2F5' }}>{fmtC(subtotal)}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB' }}>Subtotal</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>{fmtC(subtotal)}</span>
             </div>
             {/* Overhead & Tax */}
             {[
@@ -4359,48 +4359,48 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
               { label: 'Tax (%)', field: 'tax', pct: taxPct, amt: taxAmt },
             ].map(({ label, field, pct, amt }) => (
               <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#8B95A1', flex: 1 }}>{label}</span>
+                <span style={{ fontSize: 13, color: '#D1D5DB', flex: 1 }}>{label}</span>
                 <input
                   type="text"
                   inputMode="decimal"
                   value={data.jobInfo[field]}
                   onChange={e => updInfo(field, e.target.value)}
                   placeholder="0"
-                  style={{ width: 60, padding: '6px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                  style={{ width: 60, padding: '6px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 13, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
-                <span style={{ fontSize: 11, color: '#8B95A1', width: 14 }}>%</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#8B95A1', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
+                <span style={{ fontSize: 11, color: '#D1D5DB', width: 14 }}>%</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 13, color: '#D1D5DB', width: 80, textAlign: 'right' }}>{fmtC(amt)}</span>
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', marginTop: 8, background: '#2A3140', borderRadius: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#F0F2F5' }}>Total Job Cost</span>
-              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#F0F2F5' }}>{fmtC(totalJobCost)}</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>Total Job Cost</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>{fmtC(totalJobCost)}</span>
             </div>
           </div>
 
           {/* Profitability */}
           <div style={{ background: '#2A3140', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Job Profitability</div>
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Contract / Sale Price</div>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#8B95A1', fontSize: 15 }}>$</span>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#D1D5DB', fontSize: 15 }}>$</span>
                 <input
                   type="text"
                   inputMode="decimal"
                   value={data.jobInfo.contractPrice}
                   onChange={e => updInfo('contractPrice', e.target.value)}
                   placeholder="0.00"
-                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                  style={{ width: '100%', padding: '10px 10px 10px 24px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', fontSize: 18, fontFamily: "'Courier New', monospace", textAlign: 'right', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
                 />
               </div>
             </div>
             {[
-              { label: 'Total Cost', val: totalJobCost, color: '#8B95A1' },
+              { label: 'Total Cost', val: totalJobCost, color: '#D1D5DB' },
               { label: 'Gross Profit', val: grossProfit, color: profitColor },
             ].map(({ label, val, color }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#8B95A1' }}>{label}</span>
+                <span style={{ fontSize: 13, color: '#D1D5DB' }}>{label}</span>
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: 15, fontWeight: 700, color }}>{fmtC(val)}</span>
               </div>
             ))}
@@ -4413,10 +4413,10 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
           {/* Per-Square Metrics */}
           {totalSq > 0 && (
             <div style={{ background: '#2A3140', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Per-Square Metrics</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, color: '#8B95A1' }}>Total Squares</span>
-                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#8B95A1', fontWeight: 700 }}>{totalSq.toFixed(1)} SQ</span>
+                <span style={{ fontSize: 13, color: '#D1D5DB' }}>Total Squares</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#D1D5DB', fontWeight: 700 }}>{totalSq.toFixed(1)} SQ</span>
               </div>
               {[
                 { label: 'Cost / SQ', val: costPerSq },
@@ -4424,8 +4424,8 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                 { label: 'Profit / SQ', val: profitPerSq },
               ].map(({ label, val }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, color: '#8B95A1' }}>{label}</span>
-                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#8B95A1' }}>{fmtC(val)}</span>
+                  <span style={{ fontSize: 13, color: '#D1D5DB' }}>{label}</span>
+                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 14, color: '#D1D5DB' }}>{fmtC(val)}</span>
                 </div>
               ))}
             </div>
@@ -4433,18 +4433,18 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
 
           {/* Crew Pay */}
           <div style={{ background: '#2A3140', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Crew Pay</div>
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
-              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Crew Assigned</div>
+              <input value={data.jobInfo.subContractorName} onChange={e => updInfo('subContractorName', e.target.value)} style={{ width: '100%', padding: '9px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#6366f1' }}>Total Labor Pay</span>
               <span style={{ fontFamily: "'Courier New', monospace", fontSize: 18, fontWeight: 700, color: '#0d9488' }}>{fmtC(laborTotal)}</span>
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
-              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes / Pay Adjustments</div>
+              <textarea value={data.jobInfo.notes} onChange={e => updInfo('notes', e.target.value)} rows={3} placeholder="Any adjustments or notes…" style={{ width: '100%', padding: '9px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
             </div>
           </div>
         </div>
@@ -4457,18 +4457,18 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
             <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 10, padding: '24px 18px', textAlign: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#22c55e', marginBottom: 4 }}>Submitted & Locked</div>
-              <div style={{ fontSize: 12, color: '#8B95A1' }}>This form has been submitted and locked.</div>
+              <div style={{ fontSize: 12, color: '#D1D5DB' }}>This form has been submitted and locked.</div>
             </div>
           ) : (
             <div style={{ background: '#2A3140', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Inspection Pass?</div>
                 <div style={{ display: 'flex', gap: 10 }}>
                   {['yes', 'no'].map(v => (
                     <button
                       key={v}
                       onClick={() => updSignOff('inspectionPass', v)}
-                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#8B95A1', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                      style={{ flex: 1, padding: '13px', background: data.signOff.inspectionPass === v ? (v === 'yes' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)') : 'transparent', border: `1px solid ${data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: data.signOff.inspectionPass === v ? (v === 'yes' ? '#22c55e' : '#ef4444') : '#D1D5DB', fontWeight: 700, fontSize: 16, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                     >
                       {v === 'yes' ? 'Yes ✓' : 'No ✗'}
                     </button>
@@ -4481,13 +4481,13 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                 { field: 'dateCompleted', label: 'Date Completed', type: 'date' },
               ].map(({ field, label, type }) => (
                 <div key={field} style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
-                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>{label}</div>
+                  <input type={type} value={data.signOff[field]} onChange={e => updSignOff(field, e.target.value)} style={{ width: '100%', padding: '11px 12px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', fontSize: 15, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
                 </div>
               ))}
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
-                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Notes / Comments</div>
+                <textarea value={data.signOff.notes} onChange={e => updSignOff('notes', e.target.value)} rows={4} placeholder="Any notes or comments…" style={{ width: '100%', padding: '11px 12px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s' }} />
               </div>
             </div>
           )}
@@ -4503,7 +4503,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
             <button
               onClick={() => window.print()}
               className="ri-btn ri-btn-secondary"
-              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#8B95A1', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+              style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#D1D5DB', fontWeight: 600, fontSize: 14, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
             >
               Print
             </button>
@@ -4645,7 +4645,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
           <div style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: '#8B95A1' }}>Progress</span>
+              <span style={{ fontSize: 12, color: '#D1D5DB' }}>Progress</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{doneCount}/{total} steps — {pct}%</span>
             </div>
             <div style={S.progressTrack}>
@@ -4662,7 +4662,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             return (
               <div style={{ marginBottom: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                     {job.jobType || 'Residential'} Phases
                   </span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#2D5016' }}>
@@ -4683,7 +4683,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                             fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0,
                             background: isComplete ? '#2D5016' : isActive ? 'rgba(45,80,22,0.15)' : 'rgba(255,255,255,0.06)',
                             border: isActive ? '2px solid #2D5016' : '2px solid transparent',
-                            color: isComplete ? '#fff' : isActive ? '#2D5016' : '#8B95A1',
+                            color: isComplete ? '#fff' : isActive ? '#2D5016' : '#D1D5DB',
                             transition: 'all 0.15s',
                             padding: 4,
                           }}
@@ -4701,7 +4701,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   })}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-                  <div style={{ fontSize: 11, color: '#8B95A1' }}>
+                  <div style={{ fontSize: 11, color: '#D1D5DB' }}>
                     Current: <span style={{ color: '#C9D1D9', fontWeight: 600 }}>{phases.find(p => p.id === cp)?.label || 'N/A'}</span>
                   </div>
                   {!allDone && (
@@ -4748,7 +4748,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 borderBottom: `2px solid ${isActive ? accent : 'transparent'}`,
                 background: isActive ? accent + '18' : 'transparent',
                 borderRadius: isActive ? '6px 6px 0 0' : 0,
-                color: isActive ? accent : '#8B95A1',
+                color: isActive ? accent : '#D1D5DB',
                 cursor: 'pointer', fontSize: 13, fontWeight: isActive ? 700 : 600,
                 marginBottom: -2, whiteSpace: 'nowrap', flexShrink: 0,
                 WebkitTapHighlightColor: 'transparent',
@@ -4769,7 +4769,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
           <>
             <div style={S.sectionLabel}>Job Notes</div>
             <div style={{
-              fontSize: 13, color: '#8B95A1', marginBottom: 20,
+              fontSize: 13, color: '#D1D5DB', marginBottom: 20,
               padding: '10px 12px', background: '#2A3140', borderRadius: 6,
             }}>
               {job.notes}
@@ -4789,7 +4789,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                       )}
                     </div>
                     <span style={S.checkLabel(c.done)}>
-                      <span style={{ color: '#8B95A1', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
+                      <span style={{ color: '#D1D5DB', marginRight: 6, fontSize: 11 }}>{step.id}.</span>
                       {step.label}
                     </span>
                     {c.ts && <span style={S.checkTs}>{c.ts}</span>}
@@ -4802,7 +4802,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             <div style={{ marginTop: 16, background: '#2A3140', borderRadius: 7, padding: '10px 12px' }}>
               {editingSchedule ? (
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Schedule</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Schedule</div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     <input
                       type="date"
@@ -4811,7 +4811,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                       style={{ ...FI, fontSize: 13, padding: '7px 10px', flex: 1, minWidth: 130 }}
                     />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                      <span style={{ fontSize: 12, color: '#8B95A1' }}>Duration</span>
+                      <span style={{ fontSize: 12, color: '#D1D5DB' }}>Duration</span>
                       <input
                         type="number"
                         min="1"
@@ -4820,13 +4820,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                         onChange={e => setSchedDur(Math.max(1, parseInt(e.target.value) || 1))}
                         style={{ ...FI, fontSize: 13, padding: '7px 8px', width: 56 }}
                       />
-                      <span style={{ fontSize: 12, color: '#8B95A1' }}>days</span>
+                      <span style={{ fontSize: 12, color: '#D1D5DB' }}>days</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                     <button
                       className="ri-btn ri-btn-secondary"
-                      style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', cursor: 'pointer', fontSize: 12 }}
+                      style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', cursor: 'pointer', fontSize: 12 }}
                       onClick={() => setEditingSchedule(false)}
                     >
                       Cancel
@@ -4844,13 +4844,13 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 </div>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 11, color: '#8B95A1' }}>📅</span>
+                  <span style={{ fontSize: 11, color: '#D1D5DB' }}>📅</span>
                   <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 12, color: '#8B95A1', fontWeight: 500 }}>
+                    <span style={{ fontSize: 12, color: '#D1D5DB', fontWeight: 500 }}>
                       {job.scheduledDate || 'Not scheduled'}
                     </span>
                     {job.scheduledDate && (
-                      <span style={{ fontSize: 11, color: '#8B95A1', marginLeft: 8 }}>
+                      <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 8 }}>
                         → {jobEndDate(job)} · {jobDuration(job)}d
                       </span>
                     )}
@@ -4858,7 +4858,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   {onUpdateSchedule && (
                     <button
                       className="ri-btn ri-btn-secondary"
-                      style={{ padding: '4px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
+                      style={{ padding: '4px 10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
                       onClick={() => setEditingSchedule(true)}
                     >
                       {job.scheduledDate ? 'Reschedule' : 'Schedule'}
@@ -4882,14 +4882,14 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8, padding: '12px 14px' }}>
                     <div style={{ fontSize: 13, color: '#E8722A', marginBottom: 10 }}>Not all checklist items are done. Complete anyway?</div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#8B95A1', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
+                      <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, color: '#D1D5DB', cursor: 'pointer', fontSize: 13 }} onClick={() => setConfirmComplete(false)}>Cancel</button>
                       <button style={{ flex: 2, padding: '8px', background: '#22c55e', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }} onClick={() => onComplete(job.id)}>Complete Anyway</button>
                     </div>
                   </div>
                 ) : (
                   <button
                     className="ri-btn ri-btn-secondary"
-                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                    style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                     onClick={() => setConfirmComplete(true)}
                   >
                     Mark as Complete
@@ -4909,20 +4909,20 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Existing change orders */}
               {changeOrders.length === 0 && !showCOPanel && (
-                <div style={{ fontSize: 12, color: '#8B95A1', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
+                <div style={{ fontSize: 12, color: '#D1D5DB', fontStyle: 'italic', marginBottom: 8 }}>No change orders on this job.</div>
               )}
               {changeOrders.map(co => {
                 const stColor = co.status === 'Approved' ? '#22c55e' : co.status === 'Declined' ? '#ef4444' : '#f59e0b';
                 return (
                   <div key={co.id} style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px 12px', marginBottom: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#F0F2F5' }}>{co.title}</div>
+                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>{co.title}</div>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 8, background: stColor + '18', color: stColor }}>{co.status}</span>
                     </div>
-                    {co.description && <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 6 }}>{co.description}</div>}
+                    {co.description && <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 6 }}>{co.description}</div>}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11, flexWrap: 'wrap' }}>
                       <span style={{ fontWeight: 700, color: '#22c55e' }}>+{fmt(co.amount)}</span>
-                      <span style={{ color: '#8B95A1' }}>{co.date}</span>
+                      <span style={{ color: '#D1D5DB' }}>{co.date}</span>
                       {co.phase && (
                         <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 6, background: 'rgba(45,80,22,0.15)', color: '#2D5016' }}>
                           Phase {co.phase}
@@ -4942,7 +4942,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               {/* Change order total */}
               {changeOrders.filter(c => c.status === 'Approved').length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1' }}>Change Order Total (Approved)</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB' }}>Change Order Total (Approved)</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#22c55e' }}>+{fmt(changeOrders.filter(c => c.status === 'Approved').reduce((s, c) => s + c.amount, 0))}</span>
                 </div>
               )}
@@ -5002,22 +5002,22 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
             {/* Panel header */}
             <div style={{ padding: '16px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#F0F2F5' }}>New Change Order</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>New Change Order</div>
                 <button
                   onClick={() => { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }}
-                  style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 22, cursor: 'pointer', padding: '8px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
+                  style={{ background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 22, cursor: 'pointer', padding: '8px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
                 >
                   ×
                 </button>
               </div>
-              <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 2 }}>{job.customer} · #{job.id}</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 2 }}>{job.customer} · #{job.id}</div>
             </div>
 
             {/* Panel form */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
               {/* Description */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Description *</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Description *</label>
                 <input
                   ref={coDescRef}
                   value={coDesc}
@@ -5029,7 +5029,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Amount */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Amount *</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Amount *</label>
                 <input
                   value={coAmount}
                   onChange={e => setCOAmount(e.target.value)}
@@ -5043,11 +5043,11 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Reason */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Reason</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Reason</label>
                 <select
                   value={coReason}
                   onChange={e => setCOReason(e.target.value)}
-                  style={{ ...FI, color: coReason ? '#C9D1D9' : '#8B95A1', padding: '14px 12px', minHeight: 44, fontSize: 15 }}
+                  style={{ ...FI, color: coReason ? '#C9D1D9' : '#D1D5DB', padding: '14px 12px', minHeight: 44, fontSize: 15 }}
                 >
                   <option value="">Select reason…</option>
                   <option value="Customer Request">Customer Request</option>
@@ -5061,11 +5061,11 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Phase */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Phase</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Phase</label>
                 <select
                   value={coPhase}
                   onChange={e => setCOPhase(e.target.value)}
-                  style={{ ...FI, color: coPhase ? '#C9D1D9' : '#8B95A1', padding: '14px 12px', minHeight: 44, fontSize: 15 }}
+                  style={{ ...FI, color: coPhase ? '#C9D1D9' : '#D1D5DB', padding: '14px 12px', minHeight: 44, fontSize: 15 }}
                 >
                   <option value="">Current phase ({getDefaultPhases(job.jobType).find(p => p.id === localCurrentPhase)?.label || '—'})</option>
                   {getDefaultPhases(job.jobType).map(p => (
@@ -5076,7 +5076,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Photo */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Photo (optional)</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Photo (optional)</label>
                 <input ref={coPhotoRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={e => {
                   const file = e.target.files?.[0];
                   if (file) setCOPhoto(file.name);
@@ -5087,7 +5087,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                   style={{
                     width: '100%', padding: '14px 12px', minHeight: 44, background: '#2A3140',
                     border: '1px dashed rgba(255,255,255,0.15)', borderRadius: 8,
-                    color: coPhoto ? '#C9D1D9' : '#8B95A1', fontSize: 14, cursor: 'pointer',
+                    color: coPhoto ? '#C9D1D9' : '#D1D5DB', fontSize: 14, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: 8,
                   }}
                 >
@@ -5098,7 +5098,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 
               {/* Notes */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes (optional)</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>Notes (optional)</label>
                 <textarea
                   value={coNotes}
                   onChange={e => setCONotes(e.target.value)}
@@ -5138,7 +5138,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
                 style={{
                   flex: 1, padding: '14px', border: 'none', borderRadius: 10,
                   background: coDesc.trim() && coAmount ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'rgba(255,255,255,0.08)',
-                  color: coDesc.trim() && coAmount ? '#fff' : '#8B95A1',
+                  color: coDesc.trim() && coAmount ? '#fff' : '#D1D5DB',
                   fontSize: 15, fontWeight: 700, cursor: coDesc.trim() && coAmount ? 'pointer' : 'not-allowed',
                 }}
               >
@@ -5146,7 +5146,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
               </button>
               <button
                 onClick={() => { setCODesc(''); setCOAmount(''); setCOReason(''); setCOPhase(''); setCOPhoto(null); setCONotes(''); setShowCOPanel(false); }}
-                style={{ background: 'transparent', border: 'none', color: '#8B95A1', fontSize: 14, fontWeight: 600, cursor: 'pointer', padding: '10px 14px', minHeight: 44 }}
+                style={{ background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 14, fontWeight: 600, cursor: 'pointer', padding: '10px 14px', minHeight: 44 }}
               >
                 Cancel
               </button>
@@ -5213,7 +5213,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
               : `${s} (${jobs.filter(j => j.status === s).length})`}
           </button>
         ))}
-        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#8B95A1' }}>
+        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#D1D5DB' }}>
           Total: <span style={{ color: '#E8722A', fontWeight: 700, marginLeft: 4 }}>
             {rolePerms?.seeDollars !== false ? fmt(filtered.reduce((s, j) => s + j.value, 0)) : '—'}
           </span>
@@ -5242,8 +5242,8 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
         {filtered.length === 0 && (
           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px 24px' }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>🔨</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#8B95A1', marginBottom: 4 }}>No jobs match your filters</div>
-            <div style={{ fontSize: 13, color: '#5C6470' }}>Try adjusting the status or job type filter above.</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#D1D5DB', marginBottom: 4 }}>No jobs match your filters</div>
+            <div style={{ fontSize: 13, color: '#D1D5DB' }}>Try adjusting the status or job type filter above.</div>
           </div>
         )}
         {filtered.map(job => {
@@ -5303,7 +5303,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
 
               <div style={{ marginTop: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 11, color: '#8B95A1' }}>
+                  <span style={{ fontSize: 11, color: '#D1D5DB' }}>
                     {steps[doneCount < total ? doneCount : total - 1]?.label || 'Complete'}
                   </span>
                   <span style={{ fontSize: 11, fontWeight: 600, color }}>
@@ -5315,7 +5315,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
                 </div>
               </div>
 
-              <div style={{ marginTop: 10, fontSize: 11, color: '#8B95A1' }}>
+              <div style={{ marginTop: 10, fontSize: 11, color: '#D1D5DB' }}>
                 📅 Scheduled: {job.scheduledDate}
               </div>
             </div>
@@ -5396,7 +5396,7 @@ function TeamTab() {
             background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
             padding: '14px 16px',
           }}>
-            <div style={{ fontSize: 11, color: '#8B95A1', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color }}>{value}</div>
           </div>
         ))}
@@ -5430,7 +5430,7 @@ function TeamTab() {
 
             {/* Name + role */}
             <div>
-              <div style={{ fontWeight: 600, fontSize: 14, color: '#8B95A1', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#D1D5DB', display: 'flex', alignItems: 'center', gap: 8 }}>
                 {rep.name}
                 <span style={{
                   fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 10,
@@ -5441,20 +5441,20 @@ function TeamTab() {
                   {rep.status === 'active' ? 'Active' : 'Away'}
                 </span>
               </div>
-              <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>{rep.role}</div>
+              <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{rep.role}</div>
             </div>
 
             {/* Stats */}
             {[
-              { label: 'Leads', value: rep.leads, color: '#8B95A1' },
+              { label: 'Leads', value: rep.leads, color: '#D1D5DB' },
               { label: 'Win Rate', value: `${rep.winRate}%`, color: rep.winRate >= 70 ? '#22c55e' : rep.winRate >= 50 ? '#E8722A' : '#ef4444' },
               { label: 'Pipeline', value: fmt(rep.pipelineValue), color: '#E8722A' },
               { label: 'Closed Revenue', value: fmt(rep.revenue), color: '#22c55e' },
-              { label: 'Callbacks Due', value: rep.callbacksDue, color: rep.callbacksDue > 5 ? '#ef4444' : '#8B95A1' },
+              { label: 'Callbacks Due', value: rep.callbacksDue, color: rep.callbacksDue > 5 ? '#ef4444' : '#D1D5DB' },
             ].map(({ label, value, color }) => (
               <div key={label} style={{ textAlign: 'center', minWidth: 80 }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color }}>{value}</div>
-                <div style={{ fontSize: 10, color: '#8B95A1', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+                <div style={{ fontSize: 10, color: '#D1D5DB', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -5492,7 +5492,7 @@ const A = {
   },
   tagline: {
     fontSize: 13,
-    color: '#8B95A1',
+    color: '#D1D5DB',
     textAlign: 'center',
     marginBottom: 36,
   },
@@ -5500,7 +5500,7 @@ const A = {
     display: 'block',
     fontSize: 12,
     fontWeight: 600,
-    color: '#8B95A1',
+    color: '#D1D5DB',
     marginBottom: 6,
     marginTop: 18,
   },
@@ -5510,7 +5510,7 @@ const A = {
     background: '#1E2329',
     border: '1px solid rgba(255,255,255,0.12)',
     borderRadius: 8,
-    color: '#F0F2F5',
+    color: '#FFFFFF',
     fontSize: 14,
     outline: 'none',
     boxSizing: 'border-box',
@@ -5538,7 +5538,7 @@ const A = {
     background: 'transparent',
     border: '1px solid rgba(255,255,255,0.12)',
     borderRadius: 8,
-    color: '#8B95A1',
+    color: '#D1D5DB',
     fontSize: 14,
     fontWeight: 500,
     cursor: 'pointer',
@@ -5547,7 +5547,7 @@ const A = {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 13,
-    color: '#8B95A1',
+    color: '#D1D5DB',
   },
   linkBtn: {
     background: 'none',
@@ -5583,12 +5583,12 @@ const A = {
   stepTitle: {
     fontSize: 20,
     fontWeight: 700,
-    color: '#F0F2F5',
+    color: '#FFFFFF',
     marginBottom: 4,
   },
   stepSub: {
     fontSize: 13,
-    color: '#8B95A1',
+    color: '#D1D5DB',
     marginBottom: 24,
   },
   tradeGrid: {
@@ -5605,7 +5605,7 @@ const A = {
     borderRadius: 8,
     border: `1px solid ${selected ? color : 'rgba(255,255,255,0.08)'}`,
     background: selected ? color + '18' : '#2A3140',
-    color: selected ? color : '#8B95A1',
+    color: selected ? color : '#D1D5DB',
     cursor: 'pointer',
     fontSize: 12,
     fontWeight: selected ? 600 : 400,
@@ -5627,12 +5627,12 @@ const A = {
     transition: 'all 0.12s',
     position: 'relative',
   }),
-  planName: { fontSize: 14, fontWeight: 700, color: '#F0F2F5', marginBottom: 4 },
+  planName: { fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 },
   planPrice: { fontSize: 22, fontWeight: 800, color: '#E8722A', marginBottom: 12 },
-  planPriceSub: { fontSize: 11, color: '#8B95A1', fontWeight: 400 },
+  planPriceSub: { fontSize: 11, color: '#D1D5DB', fontWeight: 400 },
   planFeature: {
     fontSize: 11,
-    color: '#8B95A1',
+    color: '#D1D5DB',
     marginBottom: 5,
     display: 'flex',
     alignItems: 'flex-start',
@@ -5713,14 +5713,14 @@ function LoginScreen({ onLogin, onStartSignup }) {
           >
             Try Demo — No signup needed
           </button>
-          <div style={{ textAlign: 'center', fontSize: 12, color: '#8B95A1', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: '#D1D5DB', marginTop: 8 }}>
             Preloaded with real roofing data
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0' }}>
           <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-          <span style={{ fontSize: 12, color: '#8B95A1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or sign in</span>
+          <span style={{ fontSize: 12, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>or sign in</span>
           <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
         </div>
 
@@ -5954,7 +5954,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                   width: '100%', marginBottom: 16, padding: '9px 12px',
                   background: 'transparent',
                   border: '1px dashed rgba(255,255,255,0.08)',
-                  borderRadius: 8, color: '#8B95A1',
+                  borderRadius: 8, color: '#D1D5DB',
                   fontSize: 13, cursor: 'pointer', textAlign: 'center',
                 }}
               >
@@ -5965,7 +5965,7 @@ function OnboardingFlow({ onComplete, onBackToLogin }) {
                 background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 8, padding: '14px', marginBottom: 16,
               }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#8B95A1', marginBottom: 10 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#D1D5DB', marginBottom: 10 }}>
                   ✨ Custom Job Type Generator
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -6056,8 +6056,8 @@ function EmptyState({ icon, title, sub, btnLabel, onAction }) {
       justifyContent: 'center', padding: '80px 24px', textAlign: 'center',
     }}>
       <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>{icon}</div>
-      <div style={{ fontSize: 18, fontWeight: 600, color: '#8B95A1', marginBottom: 8 }}>{title}</div>
-      <div style={{ fontSize: 13, color: '#8B95A1', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, color: '#D1D5DB', marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: 13, color: '#D1D5DB', marginBottom: 28, maxWidth: 320 }}>{sub}</div>
       <button
         style={{
           padding: '10px 24px',
@@ -6294,7 +6294,7 @@ function TradeSelectScreen({ onSelect }) {
   return (
     <div style={{
       minHeight: '100vh', background: '#2A3140',
-      color: '#8B95A1', fontFamily: "'Inter', -apple-system, sans-serif",
+      color: '#D1D5DB', fontFamily: "'Inter', -apple-system, sans-serif",
       padding: '40px 24px 80px',
     }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
@@ -6303,10 +6303,10 @@ function TradeSelectScreen({ onSelect }) {
           <div style={{ fontSize: 28, fontWeight: 800, color: '#E8722A', letterSpacing: '-1px', marginBottom: 16 }}>
             RidgeOS
           </div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: '#F0F2F5', marginBottom: 10 }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginBottom: 10 }}>
             See RidgeOS in action
           </div>
-          <div style={{ fontSize: 15, color: '#8B95A1', maxWidth: 480, margin: '0 auto' }}>
+          <div style={{ fontSize: 15, color: '#D1D5DB', maxWidth: 480, margin: '0 auto' }}>
             Pick a job type to see a live demo tailored to your roofing business
           </div>
         </div>
@@ -6342,7 +6342,7 @@ function TradeSelectScreen({ onSelect }) {
                 </div>
                 <div style={{
                   fontSize: 12, fontWeight: 600,
-                  color: isHovered ? color : '#8B95A1',
+                  color: isHovered ? color : '#D1D5DB',
                   lineHeight: 1.3,
                 }}>
                   {trade}
@@ -6363,7 +6363,7 @@ function TradeSelectScreen({ onSelect }) {
             onClick={() => { setShowCustom(true); setCustomResult(null); setCustomError(''); }}
           >
             <div style={{ fontSize: 26, marginBottom: 8 }}>✨</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: showCustom ? '#818cf8' : '#8B95A1', lineHeight: 1.3 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: showCustom ? '#818cf8' : '#D1D5DB', lineHeight: 1.3 }}>
               + Add your<br/>job type
             </div>
           </div>
@@ -6376,10 +6376,10 @@ function TradeSelectScreen({ onSelect }) {
             borderRadius: 12, padding: '20px 20px',
             marginBottom: 32,
           }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#F0F2F5', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
               ✨ Custom Job Type Generator
             </div>
-            <div style={{ fontSize: 12, color: '#8B95A1', marginBottom: 14 }}>
+            <div style={{ fontSize: 12, color: '#D1D5DB', marginBottom: 14 }}>
               AI builds your job checklist and pipeline stages automatically.
             </div>
 
@@ -6391,7 +6391,7 @@ function TradeSelectScreen({ onSelect }) {
                 style={{
                   flex: 1, minWidth: 200, padding: '9px 12px',
                   background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 7, color: '#8B95A1', fontSize: 13,
+                  borderRadius: 7, color: '#D1D5DB', fontSize: 13,
                   outline: 'none',
                 }}
               />
@@ -6435,7 +6435,7 @@ function TradeSelectScreen({ onSelect }) {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                   <div>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#F0F2F5' }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
                       ✨ {customResult.name}
                     </span>
                     <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: 'rgba(99,102,241,0.2)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)' }}>
@@ -6456,27 +6456,27 @@ function TradeSelectScreen({ onSelect }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
                       Job Checklist ({customResult.checklist.length} steps)
                     </div>
                     {customResult.checklist.map((step, i) => (
-                      <div key={i} style={{ fontSize: 12, color: '#8B95A1', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 10, color: '#8B95A1', minWidth: 16 }}>{i + 1}.</span>
+                      <div key={i} style={{ fontSize: 12, color: '#D1D5DB', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 10, color: '#D1D5DB', minWidth: 16 }}>{i + 1}.</span>
                         {step}
                       </div>
                     ))}
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
                       Pipeline Stages
                     </div>
                     {customResult.pipeline.map((stage, i) => (
-                      <div key={i} style={{ fontSize: 12, color: '#8B95A1', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div key={i} style={{ fontSize: 12, color: '#D1D5DB', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontSize: 10, background: '#6366f120', color: '#818cf8', borderRadius: 4, padding: '1px 5px', minWidth: 18, textAlign: 'center' }}>{i + 1}</span>
                         {stage}
                       </div>
                     ))}
-                    <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 6, fontSize: 11, color: '#8B95A1' }}>
+                    <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 6, fontSize: 11, color: '#D1D5DB' }}>
                       🔒 Sign up to generate your own job type with real data
                     </div>
                   </div>
@@ -6488,7 +6488,7 @@ function TradeSelectScreen({ onSelect }) {
 
         {/* Bottom CTA */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: '#8B95A1', marginBottom: 12 }}>
+          <div style={{ fontSize: 13, color: '#D1D5DB', marginBottom: 12 }}>
             Already have an account?
           </div>
           <button
@@ -6548,8 +6548,8 @@ function PhotoLogTab({ tier }) {
         marginBottom: 16, flexWrap: 'wrap', gap: 8,
       }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#F0F2F5' }}>Photo Log</div>
-          <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Photo Log</div>
+          <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>
             Job site documentation &amp; client report photos
           </div>
         </div>
@@ -6558,7 +6558,7 @@ function PhotoLogTab({ tier }) {
             style={{
               padding: '7px 14px', borderRadius: 7,
               background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-              color: '#8B95A1', fontSize: 12, fontWeight: 600,
+              color: '#D1D5DB', fontSize: 12, fontWeight: 600,
               cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: 6,
             }}
             disabled
@@ -6582,11 +6582,11 @@ function PhotoLogTab({ tier }) {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 6 : 16 }}>
             {[
-              { tier: 'Starter', color: '#8B95A1', desc: 'Photo upload + captions' },
+              { tier: 'Starter', color: '#D1D5DB', desc: 'Photo upload + captions' },
               { tier: 'Pro',     color: '#E8722A', desc: 'Client-facing toggle + PDF export' },
               { tier: 'Business',color: '#6366f1', desc: 'Crew attribution + bulk download' },
             ].map(({ tier: t, color, desc }) => (
-              <span key={t} style={{ fontSize: 12, color: '#8B95A1', display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span key={t} style={{ fontSize: 12, color: '#D1D5DB', display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10, background: color + '22', color, border: `1px solid ${color}33` }}>{t}</span>
                 {desc}
               </span>
@@ -6607,8 +6607,8 @@ function PhotoLogTab({ tier }) {
             gap: 10,
           }}>
             <span style={{ fontSize: 32 }}>🔒</span>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#8B95A1' }}>Photo Log — Pro feature</div>
-            <div style={{ fontSize: 12, color: '#8B95A1', textAlign: 'center', maxWidth: 260 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#D1D5DB' }}>Photo Log — Pro feature</div>
+            <div style={{ fontSize: 12, color: '#D1D5DB', textAlign: 'center', maxWidth: 260 }}>
               Upgrade to Pro or Business to access the photo log.
             </div>
             <button
@@ -6700,15 +6700,15 @@ function PhotoLogTab({ tier }) {
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                     <circle cx="12" cy="13" r="4"/>
                   </svg>
-                  <span style={{ fontSize: 11, color: '#8B95A1' }}>{photo.time}</span>
+                  <span style={{ fontSize: 11, color: '#D1D5DB' }}>{photo.time}</span>
                 </div>
 
                 {/* Card body */}
                 <div style={{ padding: '10px 12px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1', marginBottom: 4 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB', marginBottom: 4 }}>
                     {photo.caption}
                   </div>
-                  <div style={{ fontSize: 11, color: '#8B95A1' }}>
+                  <div style={{ fontSize: 11, color: '#D1D5DB' }}>
                     📷 {photo.takenBy}
                   </div>
                 </div>
@@ -6721,7 +6721,7 @@ function PhotoLogTab({ tier }) {
         <div style={{
           marginTop: 16, padding: '9px 14px',
           background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.18)',
-          borderRadius: 7, fontSize: 12, color: '#8B95A1',
+          borderRadius: 7, fontSize: 12, color: '#D1D5DB',
           display: 'flex', alignItems: 'center', gap: 6,
         }}>
           <span style={{ color: '#818cf8', fontWeight: 600 }}>{clientCount}</span>
@@ -6784,7 +6784,7 @@ function TeamManagementTab() {
 
   const roleColor = (r) => ({ Owner: '#7C3AED', Foreman: '#E8722A', Installer: '#2563EB', Sales: '#DB2777', Estimator: '#059669' }[r] || '#8B95A1');
   const statusBg = (s) => ({ Active: 'rgba(16,185,129,0.15)', 'Invite Pending': 'rgba(245,158,11,0.15)', Inactive: '#2A3140' }[s] || '#2A3140');
-  const statusFg = (s) => ({ Active: '#10B981', 'Invite Pending': '#FCD34D', Inactive: '#8B95A1' }[s] || '#8B95A1');
+  const statusFg = (s) => ({ Active: '#10B981', 'Invite Pending': '#FCD34D', Inactive: '#D1D5DB' }[s] || '#8B95A1');
 
   const parseCSV = (text) => {
     const lines = text.trim().split('\n').filter(l => l.trim());
@@ -6831,8 +6831,8 @@ function TeamManagementTab() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#F0F2F5' }}>Team Management</div>
-          <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>{roster.length} team members</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Team Management</div>
+          <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{roster.length} team members</div>
         </div>
         <button onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
           + Import Team
@@ -6847,8 +6847,8 @@ function TeamManagementTab() {
               {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
-              <div style={{ fontSize: 11, color: '#8B95A1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.email}</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: roleColor(member.role), color: '#2A3140' }}>{member.role}</span>
@@ -6873,8 +6873,8 @@ function TeamManagementTab() {
 
             {/* Mode toggle */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-              <button onClick={() => { setImportMode('csv'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'csv' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.08)', background: importMode === 'csv' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'csv' ? '#22c55e' : '#8B95A1', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>CSV Upload</button>
-              <button onClick={() => { setImportMode('paste'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'paste' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.08)', background: importMode === 'paste' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'paste' ? '#22c55e' : '#8B95A1', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Paste List</button>
+              <button onClick={() => { setImportMode('csv'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'csv' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.08)', background: importMode === 'csv' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'csv' ? '#22c55e' : '#D1D5DB', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>CSV Upload</button>
+              <button onClick={() => { setImportMode('paste'); setParsedPreview([]); }} style={{ flex: 1, padding: '9px', borderRadius: 6, border: importMode === 'paste' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.08)', background: importMode === 'paste' ? 'rgba(34,197,94,0.1)' : 'transparent', color: importMode === 'paste' ? '#22c55e' : '#D1D5DB', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Paste List</button>
             </div>
 
             {importMode === 'csv' && (
@@ -6887,8 +6887,8 @@ function TeamManagementTab() {
               >
                 <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFileRead(e.target.files[0]); }} />
                 <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1' }}>Drop a .csv file here or click to browse</div>
-                <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB' }}>Drop a .csv file here or click to browse</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 4 }}>Expected columns: First Name, Last Name, Email, Phone, Role</div>
               </div>
             )}
 
@@ -6907,13 +6907,13 @@ function TeamManagementTab() {
             {/* Preview table */}
             {parsedPreview.length > 0 && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', marginBottom: 8 }}>Preview ({parsedPreview.length} employees)</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', marginBottom: 8 }}>Preview ({parsedPreview.length} employees)</div>
                 <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6 }}>
                   {parsedPreview.map((p, i) => (
                     <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: 12 }}>
-                      <span style={{ flex: 1, color: '#F0F2F5', fontWeight: 600 }}>{p.name}</span>
-                      <span style={{ color: '#8B95A1' }}>{p.email}</span>
-                      <span style={{ color: '#8B95A1', fontSize: 10 }}>{p.role}</span>
+                      <span style={{ flex: 1, color: '#FFFFFF', fontWeight: 600 }}>{p.name}</span>
+                      <span style={{ color: '#D1D5DB' }}>{p.email}</span>
+                      <span style={{ color: '#D1D5DB', fontSize: 10 }}>{p.role}</span>
                     </div>
                   ))}
                 </div>
@@ -6975,8 +6975,8 @@ function GlobalPhotoLog({ jobs }) {
     return (
       <div>
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#F0F2F5' }}>Job Photos</div>
-          <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Job Photos</div>
+          <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{totalPhotos} photos across {allJobs.length} jobs</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
           {allJobs.map(job => {
@@ -7017,12 +7017,12 @@ function GlobalPhotoLog({ jobs }) {
                   )}
                 </div>
                 {/* Job info */}
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#F0F2F5', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                <div style={{ fontSize: 10, color: '#8B95A1', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                <div style={{ fontSize: 10, color: '#D1D5DB', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.address}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: tc + '22', color: tc }}>{job.trade}</span>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: stColor + '22', color: stColor }}>{job.status}</span>
-                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#8B95A1', fontWeight: 600, marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 10, color: count > 0 ? '#06b6d4' : '#D1D5DB', fontWeight: 600, marginLeft: 'auto' }}>
                     {count > 0 ? `${count} photos` : 'No photos'}
                   </span>
                 </div>
@@ -7044,10 +7044,10 @@ function GlobalPhotoLog({ jobs }) {
     <div>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', color: '#8B95A1', fontSize: 14, cursor: 'pointer', padding: '4px 8px' }}>← Back</button>
+        <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', color: '#D1D5DB', fontSize: 14, cursor: 'pointer', padding: '4px 8px' }}>← Back</button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
-          <div style={{ fontSize: 11, color: '#8B95A1' }}>{selectedJob.address}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedJob.customer}</div>
+          <div style={{ fontSize: 11, color: '#D1D5DB' }}>{selectedJob.address}</div>
         </div>
         <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 6, background: tc + '22', color: tc }}>{selectedJob.trade}</span>
       </div>
@@ -7062,7 +7062,7 @@ function GlobalPhotoLog({ jobs }) {
               padding: '5px 12px', borderRadius: 14, fontSize: 11, fontWeight: 600, cursor: 'pointer',
               border: isActive ? `1px solid ${color}` : '1px solid rgba(255,255,255,0.08)',
               background: isActive ? color + '18' : 'transparent',
-              color: isActive ? color : '#8B95A1', whiteSpace: 'nowrap',
+              color: isActive ? color : '#D1D5DB', whiteSpace: 'nowrap',
             }}>
               {c} {c === 'All' ? `(${jobPhotos.length})` : `(${jobPhotos.filter(p => p.category === c).length})`}
             </button>
@@ -7074,7 +7074,7 @@ function GlobalPhotoLog({ jobs }) {
       {filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 10 }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-          <div style={{ fontSize: 13, color: '#8B95A1' }}>No photos in this category yet</div>
+          <div style={{ fontSize: 13, color: '#D1D5DB' }}>No photos in this category yet</div>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
@@ -7102,7 +7102,7 @@ function GlobalPhotoLog({ jobs }) {
                   background: 'rgba(0,0,0,0.12)', padding: '4px 7px',
                 }}>
                   <span style={{ background: catColor + '44', color: catColor, padding: '1px 5px', borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{photo.category}</span>
-                  <span style={{ fontSize: 9, color: '#8B95A1' }}>{photo.caption || formatTs(photo.timestamp)}</span>
+                  <span style={{ fontSize: 9, color: '#D1D5DB' }}>{photo.caption || formatTs(photo.timestamp)}</span>
                 </div>
               </div>
             );
@@ -7188,7 +7188,7 @@ function AddJobModal({ onSave, onClose }) {
               style={{
                 flex: 1, padding: '9px', border: `1px solid ${form.jobType === t ? '#2D5016' : 'rgba(255,255,255,0.08)'}`,
                 background: form.jobType === t ? 'rgba(45,80,22,0.15)' : 'transparent',
-                borderRadius: 8, color: form.jobType === t ? '#2D5016' : '#8B95A1',
+                borderRadius: 8, color: form.jobType === t ? '#2D5016' : '#D1D5DB',
                 fontWeight: 700, fontSize: 13, cursor: 'pointer',
               }}
             >
@@ -7217,7 +7217,7 @@ function AddJobModal({ onSave, onClose }) {
         <textarea style={{ ...fi('notes'), minHeight: 72, resize: 'vertical' }} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Job details, materials, crew notes..." />
 
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
           <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>Add Job</button>
         </div>
       </div>
@@ -7319,12 +7319,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
               onChange={e => setNewName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCreateAndAssign(); } }}
               placeholder="Type crew member name…"
-              style={{ flex: 1, background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 7, color: '#F0F2F5', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+              style={{ flex: 1, background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 7, color: '#FFFFFF', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
             />
             <button
               onClick={handleCreateAndAssign}
               disabled={!newName.trim()}
-              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#8B95A1', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ padding: '8px 14px', background: newName.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 7, color: newName.trim() ? '#fff' : '#D1D5DB', fontWeight: 700, fontSize: 12, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
             >
               Add
             </button>
@@ -7332,15 +7332,15 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
           {/* Existing unassigned crew */}
           {unassignedCrew.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 6 }}>Or pick from your crew:</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 6 }}>Or pick from your crew:</div>
               {unassignedCrew.map(member => (
                 <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 7, marginBottom: 4, background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#8B95A1' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#D1D5DB' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1' }}>{member.name}</div>
-                    {member.role && <div style={{ fontSize: 11, color: '#8B95A1' }}>{member.role}</div>}
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB' }}>{member.name}</div>
+                    {member.role && <div style={{ fontSize: 11, color: '#D1D5DB' }}>{member.role}</div>}
                   </div>
                   <button
                     onClick={() => doAssign(member.id)}
@@ -7353,14 +7353,14 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             </div>
           )}
           {unassignedCrew.length === 0 && !newName && (
-            <div style={{ fontSize: 11, color: '#8B95A1', fontStyle: 'italic' }}>All crew members are assigned.</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', fontStyle: 'italic' }}>All crew members are assigned.</div>
           )}
         </div>
       )}
 
       {/* Assigned crew */}
       {assignedCrew.length === 0 && !showAssign && (
-        <div style={{ fontSize: 12, color: '#8B95A1', padding: '4px 0 8px' }}>
+        <div style={{ fontSize: 12, color: '#D1D5DB', padding: '4px 0 8px' }}>
           No crew assigned yet. Click <span style={{ color: '#E8722A' }}>+ Assign Crew</span> above.
         </div>
       )}
@@ -7370,12 +7370,12 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
         const elapsed = open ? (now - open.clockIn) : 0;
         return (
           <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: isMobile ? '14px 12px' : '10px 12px', borderRadius: 8, marginBottom: 6, background: open ? 'rgba(34,197,94,0.06)' : '#2A3140', border: `1px solid ${open ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.08)'}` }}>
-            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#8B95A1' }}>
+            <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: open ? '#22c55e' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: open ? '#fff' : '#D1D5DB' }}>
               {member.name.slice(0, 2).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1', marginBottom: 2 }}>{member.name}</div>
-              <div style={{ fontSize: 11, color: '#8B95A1' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB', marginBottom: 2 }}>{member.name}</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB' }}>
                 {open
                   ? <span style={{ color: '#22c55e' }}>● Clocked in · {fmtDuration(elapsed)}</span>
                   : `Total: ${fmtDuration(totalMs)}`}
@@ -7383,7 +7383,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
             </div>
             <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
               <button
-                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#8B95A1', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
+                style={{ padding: isMobile ? '8px 10px' : '5px 9px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#D1D5DB', fontSize: 11, fontWeight: 600, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => doUnassign(member.id)}
               >
                 Remove
@@ -7452,7 +7452,7 @@ function CrewMemberModal({ member, onSave, onClose }) {
             const sel = specialties.includes(trade);
             const color = TRADE_COLORS[trade] || '#8B95A1';
             return (
-              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : 'rgba(255,255,255,0.08)'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#8B95A1', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
+              <button key={trade} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: `1px solid ${sel ? color : 'rgba(255,255,255,0.08)'}`, background: sel ? color + '22' : 'transparent', color: sel ? color : '#D1D5DB', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }} onClick={() => toggleSpecialty(trade)}>
                 {trade}
               </button>
             );
@@ -7460,7 +7460,7 @@ function CrewMemberModal({ member, onSave, onClose }) {
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
+          <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
           <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>{member ? 'Save Changes' : 'Add Member'}</button>
         </div>
       </div>
@@ -7515,8 +7515,8 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#F0F2F5' }}>Crew</div>
-          <div style={{ fontSize: 13, color: '#8B95A1' }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>Crew</div>
+          <div style={{ fontSize: 13, color: '#D1D5DB' }}>
             {crew.length} member{crew.length !== 1 ? 's' : ''} · Weekly hours overview
           </div>
         </div>
@@ -7531,8 +7531,8 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
       {crew.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 60 }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>👷</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#8B95A1', marginBottom: 6 }}>No crew members yet</div>
-          <div style={{ fontSize: 13, color: '#8B95A1', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#D1D5DB', marginBottom: 6 }}>No crew members yet</div>
+          <div style={{ fontSize: 13, color: '#D1D5DB', marginBottom: 20 }}>Add your first team member to start tracking time on jobs.</div>
           <button style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #E8722A, #ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={() => setCrewModal('add')}>
             Add First Member
           </button>
@@ -7549,35 +7549,35 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
             return (
               <div key={member.id} style={{ background: '#2A3140', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#8B95A1', transition: 'all 0.2s' }}>
+                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#D1D5DB', transition: 'all 0.2s' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#F0F2F5' }}>{member.name}</div>
-                    {member.role && <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 2 }}>{member.role}</div>}
-                    {member.phone && <div style={{ fontSize: 12, color: '#8B95A1', marginTop: 1 }}>{member.phone}</div>}
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>{member.name}</div>
+                    {member.role && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{member.role}</div>}
+                    {member.phone && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 1 }}>{member.phone}</div>}
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                    <button className="ri-btn ri-btn-secondary" style={{ padding: '8px 14px', minHeight: 44, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#8B95A1', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
+                    <button className="ri-btn ri-btn-secondary" style={{ padding: '8px 14px', minHeight: 44, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
                     <button style={{ padding: '8px 12px', minHeight: 44, minWidth: 44, background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#ef4444', cursor: 'pointer', fontSize: 16, lineHeight: 1, WebkitTapHighlightColor: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => onDeleteMember(member.id)}>×</button>
                   </div>
                 </div>
 
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.08)'}` }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#8B95A1', display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#8B95A1' }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#D1D5DB', display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#D1D5DB' }}>
                     {status.clockedIn ? `On job · ${status.jobName}` : 'Off duty'}
                   </span>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                   <div style={{ background: '#2A3140', borderRadius: 7, padding: '10px 12px' }}>
-                    <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 4 }}>This Week</div>
+                    <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 4 }}>This Week</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#E8722A' }}>{fmtDuration(wMs + sessionMs)}</div>
                   </div>
                   <div style={{ background: '#2A3140', borderRadius: 7, padding: '10px 12px' }}>
-                    <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 4 }}>All Time</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#8B95A1' }}>{fmtDuration(tMs + sessionMs)}</div>
+                    <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 4 }}>All Time</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#D1D5DB' }}>{fmtDuration(tMs + sessionMs)}</div>
                   </div>
                 </div>
 
@@ -7587,7 +7587,7 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                       <span key={t} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: (TRADE_COLORS[t] || '#8B95A1') + '22', color: TRADE_COLORS[t] || '#8B95A1' }}>{t}</span>
                     ))}
                     {member.specialties.length > 3 && (
-                      <span style={{ fontSize: 10, color: '#8B95A1', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
+                      <span style={{ fontSize: 10, color: '#D1D5DB', padding: '2px 7px' }}>+{member.specialties.length - 3} more</span>
                     )}
                   </div>
                 )}
@@ -7670,28 +7670,28 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 320 }}>
       <div style={{ flex: 1, overflow: 'auto', maxHeight: 380, paddingBottom: 8 }}>
         {messages.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#8B95A1' }}>
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#D1D5DB' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#8B95A1' }}>No messages yet</div>
-            <div style={{ fontSize: 12, marginTop: 4, color: '#8B95A1' }}>Start the conversation below</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#D1D5DB' }}>No messages yet</div>
+            <div style={{ fontSize: 12, marginTop: 4, color: '#D1D5DB' }}>Start the conversation below</div>
           </div>
         ) : messages.map(msg => (
           msg.type === 'system' ? (
             <div key={msg.id} style={{ textAlign: 'center', padding: '5px 0', margin: '4px 0' }}>
-              <span style={{ fontSize: 11, color: '#8B95A1', background: '#2A3140', padding: '3px 12px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: 11, color: '#D1D5DB', background: '#2A3140', padding: '3px 12px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)' }}>
                 {msg.text}
               </span>
             </div>
           ) : (
             <div key={msg.id} style={{ marginBottom: 14, padding: '0 2px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#8B95A1', flexShrink: 0 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#D1D5DB', flexShrink: 0 }}>
                   {msg.senderName.slice(0, 2).toUpperCase()}
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#8B95A1' }}>{msg.senderName}</span>
-                <span style={{ fontSize: 11, color: '#8B95A1' }}>{formatTs(msg.timestamp)}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#D1D5DB' }}>{msg.senderName}</span>
+                <span style={{ fontSize: 11, color: '#D1D5DB' }}>{formatTs(msg.timestamp)}</span>
               </div>
-              <div style={{ marginLeft: 34, fontSize: 13, color: '#8B95A1', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{msg.text}</div>
+              <div style={{ marginLeft: 34, fontSize: 13, color: '#D1D5DB', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{msg.text}</div>
             </div>
           )
         ))}
@@ -7704,7 +7704,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
             style={{
               flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
               background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7,
-              color: '#8B95A1', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
+              color: '#D1D5DB', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
               resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
               lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
             }}
@@ -7718,7 +7718,7 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
             style={{
               padding: '8px 14px', border: 'none', borderRadius: 7,
               background: text.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
-              color: text.trim() ? '#fff' : '#8B95A1',
+              color: text.trim() ? '#fff' : '#D1D5DB',
               cursor: text.trim() ? 'pointer' : 'default',
               fontWeight: 600, fontSize: 13, flexShrink: 0,
               minWidth: 60, WebkitTapHighlightColor: 'transparent',
@@ -7772,8 +7772,8 @@ function ChatTab({ jobs, demoMessages }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#F0F2F5' }}>Job Chat</div>
-        <div style={{ fontSize: 13, color: '#8B95A1' }}>Recent messages across all jobs</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>Job Chat</div>
+        <div style={{ fontSize: 13, color: '#D1D5DB' }}>Recent messages across all jobs</div>
       </div>
 
       <div style={S.filterRow}>
@@ -7788,9 +7788,9 @@ function ChatTab({ jobs, demoMessages }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: '#8B95A1' }}>
+        <div style={{ textAlign: 'center', padding: 60, color: '#D1D5DB' }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#8B95A1', marginBottom: 6 }}>No messages yet</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#D1D5DB', marginBottom: 6 }}>No messages yet</div>
           <div style={{ fontSize: 13 }}>Open a job and start chatting with your crew.</div>
         </div>
       ) : (
@@ -7798,7 +7798,7 @@ function ChatTab({ jobs, demoMessages }) {
           {filtered.map(msg => (
             msg.type === 'system' ? (
               <div key={msg.id} style={{ textAlign: 'center', padding: '4px 0', marginBottom: 4 }}>
-                <span style={{ fontSize: 11, color: '#8B95A1' }}>
+                <span style={{ fontSize: 11, color: '#D1D5DB' }}>
                   {jobName(msg.jobId)} · {msg.text}
                 </span>
               </div>
@@ -7807,16 +7807,16 @@ function ChatTab({ jobs, demoMessages }) {
                 background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
                 padding: '12px 16px', marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12,
               }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#8B95A1', flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#D1D5DB', flexShrink: 0 }}>
                   {msg.senderName.slice(0, 2).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1' }}>{msg.senderName}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB' }}>{msg.senderName}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: '#E8722A', background: 'rgba(249,115,22,0.1)', padding: '1px 8px', borderRadius: 10 }}>{jobName(msg.jobId)}</span>
-                    <span style={{ fontSize: 11, color: '#8B95A1', marginLeft: 'auto' }}>{formatTs(msg.timestamp)}</span>
+                    <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 'auto' }}>{formatTs(msg.timestamp)}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: '#8B95A1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.text}</div>
+                  <div style={{ fontSize: 13, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.text}</div>
                 </div>
               </div>
             )
@@ -7847,7 +7847,7 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#F0F2F5', marginBottom: 18, paddingRight: 40 }}>{title}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF', marginBottom: 18, paddingRight: 40 }}>{title}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {!targetJob && (
           <>
@@ -7863,8 +7863,8 @@ function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
         <label style={FLbl}>Duration (days)</label>
         <input type="number" min={1} max={365} style={{ ...FI, marginBottom: 20 }} value={duration} onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))} />
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button style={{ ...btnBase, background: 'rgba(255,255,255,0.08)', color: '#8B95A1' }} onClick={onClose}>Cancel</button>
-          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', color: jobId && date ? '#fff' : '#8B95A1' }} onClick={handleSave} disabled={!jobId || !date}>
+          <button style={{ ...btnBase, background: 'rgba(255,255,255,0.08)', color: '#D1D5DB' }} onClick={onClose}>Cancel</button>
+          <button style={{ ...btnBase, background: jobId && date ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', color: jobId && date ? '#fff' : '#D1D5DB' }} onClick={handleSave} disabled={!jobId || !date}>
             {isReschedule ? 'Reschedule' : 'Schedule'}
           </button>
         </div>
@@ -7983,10 +7983,10 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{ flex: 1 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#E8722A' }}>{isEdit ? 'Edit Entry' : '+ Schedule'}</span>
-          {displayDate && <span style={{ fontSize: 12, color: '#8B95A1', marginLeft: 8 }}>{displayDate}</span>}
-          <span style={{ fontSize: 11, color: '#8B95A1', marginLeft: 8 }}>{userTrade}</span>
+          {displayDate && <span style={{ fontSize: 12, color: '#D1D5DB', marginLeft: 8 }}>{displayDate}</span>}
+          <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 8 }}>{userTrade}</span>
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8B95A1', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#D1D5DB', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
       </div>
 
       {/* Main textarea */}
@@ -7997,7 +7997,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
         onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) handleSave(); }}
         placeholder={`What's happening this day? (e.g. Roof replacement, final inspection, material delivery…)`}
         rows={3}
-        style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+        style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 14, padding: '10px 12px', resize: 'vertical', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
       />
 
       {/* Secondary fields */}
@@ -8006,16 +8006,16 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
           value={customer}
           onChange={e => setCustomer(e.target.value)}
           placeholder="Client name (optional)"
-          style={{ flex: '2 1 160px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
+          style={{ flex: '2 1 160px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: '1 1 120px' }}>
-          <span style={{ fontSize: 12, color: '#8B95A1', whiteSpace: 'nowrap' }}>Duration:</span>
+          <span style={{ fontSize: 12, color: '#D1D5DB', whiteSpace: 'nowrap' }}>Duration:</span>
           <input
             type="number" min={1} max={365} value={duration}
             onChange={e => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
-            style={{ width: 54, background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
+            style={{ width: 54, background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 13, padding: '7px 8px', textAlign: 'center', fontFamily: 'inherit', outline: 'none' }}
           />
-          <span style={{ fontSize: 12, color: '#8B95A1' }}>day{duration !== 1 ? 's' : ''}</span>
+          <span style={{ fontSize: 12, color: '#D1D5DB' }}>day{duration !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
@@ -8023,11 +8023,11 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
       <div style={{ marginBottom: showChecklist ? 10 : 0 }}>
         <button
           onClick={() => setShowChecklist(v => !v)}
-          style={{ background: 'none', border: 'none', color: showChecklist ? '#E8722A' : '#8B95A1', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
+          style={{ background: 'none', border: 'none', color: showChecklist ? '#E8722A' : '#D1D5DB', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0, marginBottom: showChecklist ? 8 : 0 }}
         >
           {showChecklist ? '▾ Checklist' : '▸ Add Checklist'}
         </button>
-        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#8B95A1', marginLeft: 8 }}>{taskList.length} items</span>}
+        {!showChecklist && taskList.length > 0 && <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 8 }}>{taskList.length} items</span>}
 
         {showChecklist && (
           <div style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px 12px' }}>
@@ -8038,9 +8038,9 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
                 onChange={e => setTaskInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTask(); } }}
                 placeholder='Step name, or "3. Step" to insert at position 3…'
-                style={{ flex: 1, background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#F0F2F5', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
+                style={{ flex: 1, background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#FFFFFF', fontSize: 12, padding: '6px 10px', fontFamily: 'inherit', outline: 'none' }}
               />
-              <button onClick={useTemplate} style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#8B95A1', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              <button onClick={useTemplate} style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Use {userTrade} template
               </button>
             </div>
@@ -8053,12 +8053,12 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
               </div>
             )}
             {/* Steps list */}
-            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#8B95A1', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
+            {taskList.length === 0 && <div style={{ fontSize: 11, color: '#D1D5DB', fontStyle: 'italic' }}>No steps yet — type above or use the template</div>}
             {taskList.map((t, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < taskList.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none' }}>
-                <span style={{ fontSize: 11, color: '#8B95A1', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
-                <span style={{ flex: 1, fontSize: 12, color: '#8B95A1' }}>{t}</span>
-                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#8B95A1', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                <span style={{ fontSize: 11, color: '#D1D5DB', minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
+                <span style={{ flex: 1, fontSize: 12, color: '#D1D5DB' }}>{t}</span>
+                <button onClick={() => removeTask(i)} style={{ background: 'none', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
               </div>
             ))}
           </div>
@@ -8067,12 +8067,12 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
 
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.12)', marginRight: 'auto' }}>Ctrl+Enter to save</span>
-        <button onClick={onClose} style={{ padding: '7px 16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#8B95A1', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+        <span style={{ fontSize: 11, color: '#9CA3AF', marginRight: 'auto' }}>Ctrl+Enter to save</span>
+        <button onClick={onClose} style={{ padding: '7px 16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#D1D5DB', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
         <button
           onClick={handleSave}
           disabled={!canSave}
-          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#8B95A1', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
+          style={{ padding: '7px 20px', background: canSave ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 8, color: canSave ? '#fff' : '#D1D5DB', fontSize: 13, fontWeight: 700, cursor: canSave ? 'pointer' : 'not-allowed' }}
         >
           {isEdit ? 'Update' : 'Schedule'}
         </button>
@@ -8095,8 +8095,8 @@ function StageChangeModal({ job, onSave, onClose }) {
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 300 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#F0F2F5', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
-        <div style={{ fontSize: 12, color: '#8B95A1', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', marginBottom: 4, paddingRight: 40 }}>Change Stage</div>
+        <div style={{ fontSize: 12, color: '#D1D5DB', marginBottom: 18 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {stages.map(s => (
@@ -8116,23 +8116,23 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
   return (
     <div style={S.modalOverlay} onClick={onClose}>
       <div style={{ ...S.modal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#F0F2F5', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
-        <div style={{ fontSize: 12, color: '#8B95A1', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', marginBottom: 4, paddingRight: 40 }}>Assign Crew</div>
+        <div style={{ fontSize: 12, color: '#D1D5DB', marginBottom: 16 }}>{job.customer} · {job.trade}</div>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         {crew.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#8B95A1', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
+          <div style={{ textAlign: 'center', color: '#D1D5DB', fontSize: 13, padding: '16px 0' }}>No crew members added yet. Go to the Crew tab to add your team.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {crew.map(m => {
               const assigned = assignedIds.includes(m.id);
               return (
                 <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#2A3140', border: `1px solid ${assigned ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#E8722A' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#8B95A1', flexShrink: 0 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: assigned ? '#E8722A' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: assigned ? '#fff' : '#D1D5DB', flexShrink: 0 }}>
                     {m.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#8B95A1' }}>{m.name}</div>
-                    <div style={{ fontSize: 11, color: '#8B95A1' }}>{m.role}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB' }}>{m.name}</div>
+                    <div style={{ fontSize: 11, color: '#D1D5DB' }}>{m.role}</div>
                   </div>
                   <button onClick={() => assigned ? onUnassign(job.id, m.id) : onAssign(job.id, m.id)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer', background: assigned ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: assigned ? '#ef4444' : '#E8722A' }}>
                     {assigned ? 'Remove' : '+ Add'}
@@ -8142,7 +8142,7 @@ function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, on
             })}
           </div>
         )}
-        <button style={{ marginTop: 16, width: '100%', padding: '10px', background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 8, color: '#8B95A1', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={onClose}>Done</button>
+        <button style={{ marginTop: 16, width: '100%', padding: '10px', background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 8, color: '#D1D5DB', fontWeight: 600, fontSize: 13, cursor: 'pointer' }} onClick={onClose}>Done</button>
       </div>
     </div>
   );
@@ -8157,15 +8157,15 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#E8722A' }}>Today's Dispatch</div>
-          <div style={{ fontSize: 12, color: '#8B95A1' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+          <div style={{ fontSize: 12, color: '#D1D5DB' }}>{new Date(TODAY + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
         </div>
-        <div style={{ fontSize: 12, color: '#8B95A1', textAlign: 'right' }}>
-          <span style={{ color: '#F0F2F5', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
+        <div style={{ fontSize: 12, color: '#D1D5DB', textAlign: 'right' }}>
+          <span style={{ color: '#FFFFFF', fontWeight: 700 }}>{todayJobs.length}</span> jobs ·{' '}
           <span style={{ color: unassignedToday.length ? '#E8722A' : '#22c55e', fontWeight: 700 }}>{unassignedToday.length}</span> unassigned
         </div>
       </div>
       {todayJobs.length === 0 ? (
-        <div style={{ textAlign: 'center', color: '#8B95A1', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
+        <div style={{ textAlign: 'center', color: '#D1D5DB', fontSize: 13, padding: '12px 0' }}>No jobs scheduled today</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: crew.length > 0 ? 16 : 0 }}>
           {todayJobs.map(job => {
@@ -8175,8 +8175,8 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
             return (
               <div key={job.id} onClick={() => onJobClick(job)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#2A3140', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.08)'}`, borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                  <div style={{ fontSize: 11, color: '#8B95A1' }}>{job.trade} · {jobDuration(job)}d</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                  <div style={{ fontSize: 11, color: '#D1D5DB' }}>{job.trade} · {jobDuration(job)}d</div>
                 </div>
                 {assignedCrew.length > 0 ? (
                   <div style={{ display: 'flex', gap: 3 }}>
@@ -8204,11 +8204,11 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
               const hasConflict = memberJobs.some(j => conflicts.has(`${member.id}-${String(j.id)}`));
               return (
                 <div key={member.id} style={{ padding: '8px 10px', borderRadius: 8, background: '#2A3140', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.3)' : busy ? 'rgba(249,115,22,0.2)' : 'rgba(255,255,255,0.08)'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#8B95A1' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#D1D5DB' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
                     <div style={{ fontSize: 10, color: hasConflict ? '#ef4444' : busy ? '#E8722A' : '#22c55e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {hasConflict ? '⚠ Conflict' : busy ? memberJobs[0].customer : 'Available'}
                     </div>
@@ -8237,7 +8237,7 @@ function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, on
   ].filter(Boolean);
   return (
     <div style={{ position: 'fixed', left: x, top: y, zIndex: 2000, background: '#1e293b', border: `1px solid ${tc}44`, borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.1)', minWidth: 200, overflow: 'hidden' }}>
-      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#8B95A1', borderBottom: '1px solid rgba(255,255,255,0.12)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
+      <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 700, color: '#D1D5DB', borderBottom: '1px solid rgba(255,255,255,0.12)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{job.customer}</div>
       {items.map(item => (
         <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: item.color || '#8B95A1', fontSize: 13, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
@@ -8259,10 +8259,10 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
     <div style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 16, marginTop: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14, gap: 8 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#F0F2F5' }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>
             {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
-          <div style={{ fontSize: 12, color: '#8B95A1' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
+          <div style={{ fontSize: 12, color: '#D1D5DB' }}>{dayJobs.length} job{dayJobs.length !== 1 ? 's' : ''} scheduled</div>
         </div>
         {onCreateForDate && (
           <button onClick={onCreateForDate} style={{ padding: '6px 14px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 7, color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
@@ -8273,7 +8273,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
       </div>
 
       {dayJobs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '20px 0', color: '#8B95A1', fontSize: 13 }}>No jobs scheduled this day</div>
+        <div style={{ textAlign: 'center', padding: '20px 0', color: '#D1D5DB', fontSize: 13 }}>No jobs scheduled this day</div>
       ) : (
         <div style={{ marginBottom: 16 }}>
           {dayJobs.map(job => {
@@ -8287,16 +8287,16 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
                 style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, background: '#2A3140', border: `1px solid ${hasConflict ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.08)'}`, borderLeft: `3px solid ${tc}`, cursor: onJobClick ? 'pointer' : 'default' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#F0F2F5' }}>{job.customer}</div>
+                  <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>{job.customer}</div>
                   <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: tc + '22', color: tc }}>{job.status}</span>
                 </div>
-                <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: assignedCrew.length ? 6 : 0 }}>
+                <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: assignedCrew.length ? 6 : 0 }}>
                   {job.trade} · {job.scheduledDate} → {jobEndDate(job)} · {jobDuration(job)}d
                 </div>
                 {assignedCrew.length > 0 && (
                   <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                     {assignedCrew.map(m => (
-                      <span key={m.id} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: conflicts.has(`${m.id}-${String(job.id)}`) ? '#ef4444' : '#8B95A1' }}>
+                      <span key={m.id} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: conflicts.has(`${m.id}-${String(job.id)}`) ? '#ef4444' : '#D1D5DB' }}>
                         {m.name}{conflicts.has(`${m.id}-${String(job.id)}`) ? ' ⚠' : ''}
                       </span>
                     ))}
@@ -8318,11 +8318,11 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
               const busy = memberJobs.length > 0;
               return (
                 <div key={member.id} style={{ padding: '8px 10px', borderRadius: 7, background: '#2A3140', border: `1px solid ${busy ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.08)'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#8B95A1' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: busy ? '#E8722A' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: busy ? '#fff' : '#D1D5DB' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
                     <div style={{ fontSize: 10, color: busy ? '#E8722A' : '#22c55e' }}>{busy ? memberJobs[0].customer : 'Available'}</div>
                   </div>
                 </div>
@@ -8342,7 +8342,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-        {DAY_NAMES.map((d, i) => <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#8B95A1', padding: '4px 0' }}>{d}</div>)}
+        {DAY_NAMES.map((d, i) => <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#D1D5DB', padding: '4px 0' }}>{d}</div>)}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
         {days.map(dateStr => {
@@ -8365,7 +8365,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
               <div style={{ marginBottom: 2 }}>
                 {isToday
                   ? <span style={{ background: '#E8722A', color: '#fff', borderRadius: '50%', width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{parseInt(dateStr.slice(8))}</span>
-                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#8B95A1', fontWeight: 500 }}>{parseInt(dateStr.slice(8))}</span>
+                  : <span style={{ fontSize: isMobile ? 10 : 12, color: '#D1D5DB', fontWeight: 500 }}>{parseInt(dateStr.slice(8))}</span>
                 }
               </div>
               {dayJobs.slice(0, maxVis).map(job => {
@@ -8384,7 +8384,7 @@ function MonthView({ days, currentMonth, today, dayJobsFn, onDayClick, selectedD
                   </div>
                 );
               })}
-              {overflow > 0 && <div style={{ fontSize: 9, color: '#8B95A1', padding: '1px 2px' }}>+{overflow}</div>}
+              {overflow > 0 && <div style={{ fontSize: 9, color: '#D1D5DB', padding: '1px 2px' }}>+{overflow}</div>}
               {dayNotes && dayNotes[dateStr] && <div style={{ fontSize: 8, color: '#818cf8', lineHeight: 1, paddingTop: 1 }}>&#128221;</div>}
             </div>
           );
@@ -8415,7 +8415,7 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
             style={{ background: isDragOver ? 'rgba(249,115,22,0.12)' : isSelected ? 'rgba(249,115,22,0.08)' : '#2A3140', border: `1px solid ${isDragOver ? '#E8722A' : isSelected ? '#E8722A' : isToday ? 'rgba(249,115,22,0.5)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, padding: isMobile ? '6px 4px' : '10px 8px', cursor: 'pointer', minHeight: 100 }}
           >
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
-              <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#8B95A1', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+              <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
               <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: isToday ? '#fff' : '#1E2329', background: isToday ? '#E8722A' : 'transparent', borderRadius: '50%', width: isMobile ? 22 : 28, height: isMobile ? 22 : 28, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px auto 0' }}>
                 {d.getDate()}
               </div>
@@ -8490,7 +8490,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
   const backBtn = (
     <button
       onClick={() => setMode('menu')}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#8B95A1', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: '2px 0', marginBottom: 14 }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#D1D5DB', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: '2px 0', marginBottom: 14 }}
     >
       &#8592; Back
     </button>
@@ -8505,8 +8505,8 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     >
       <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#8B95A1' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 2 }}>{sub}</div>}
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#D1D5DB' }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 2 }}>{sub}</div>}
       </div>
     </button>
   );
@@ -8536,13 +8536,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#8B95A1' : '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
-          <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 1 }}>
+          <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1 }}>
             {job.customer && job.description ? `${job.customer} · ` : ''}{job.status || ''}{fmtDate ? ` · ${fmtDate}` : ''}
           </div>
-          {crewNames && <div style={{ fontSize: 10, color: '#8B95A1', marginTop: 1 }}>&#128100; {crewNames}</div>}
+          {crewNames && <div style={{ fontSize: 10, color: '#D1D5DB', marginTop: 1 }}>&#128100; {crewNames}</div>}
         </div>
         {alreadyHere
-          ? <span style={{ fontSize: 10, color: '#8B95A1', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
+          ? <span style={{ fontSize: 10, color: '#D1D5DB', flexShrink: 0, whiteSpace: 'nowrap' }}>Already here</span>
           : <span style={{ fontSize: 11, color: '#E8722A', fontWeight: 700, flexShrink: 0 }}>&#8594;</span>
         }
       </button>
@@ -8553,7 +8553,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
     <div style={{ textAlign: 'center', padding: '28px 0' }}>
       <div style={{ fontSize: 36, marginBottom: 12 }}>{icon}</div>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#4ade80', marginBottom: 6 }}>{title}</div>
-      <div style={{ fontSize: 12, color: '#8B95A1' }}>{sub}</div>
+      <div style={{ fontSize: 12, color: '#D1D5DB' }}>{sub}</div>
     </div>
   );
 
@@ -8568,8 +8568,8 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
       <div style={dayModalStyle} onClick={e => e.stopPropagation()}>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>Dispatch Board</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#F0F2F5', marginBottom: 2 }}>{displayDate}</div>
-        <div style={{ fontSize: 12, color: '#8B95A1', marginBottom: 20 }}>{subTitle}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>{displayDate}</div>
+        <div style={{ fontSize: 12, color: '#D1D5DB', marginBottom: 20 }}>{subTitle}</div>
 
         {mode === 'menu' && (
           <div>
@@ -8603,21 +8603,21 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by job or client name&#8230;"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 13, padding: '8px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 12 }}
             />
             {filtered.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#8B95A1', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
+              <div style={{ textAlign: 'center', color: '#D1D5DB', fontSize: 13, padding: '20px 0' }}>No jobs match your search.</div>
             ) : (
               <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {unscheduledSection.length > 0 && (
                   <>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Unscheduled</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Unscheduled</div>
                     {unscheduledSection.map(job => <JobRow key={job.id} job={job} />)}
                   </>
                 )}
                 {scheduledSection.length > 0 && (
                   <>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: unscheduledSection.length > 0 ? 10 : 0, marginBottom: 3 }}>Reschedule</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: unscheduledSection.length > 0 ? 10 : 0, marginBottom: 3 }}>Reschedule</div>
                     {scheduledSection.map(job => <JobRow key={job.id} job={job} />)}
                   </>
                 )}
@@ -8638,23 +8638,23 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Job description (required)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <input
               value={customer}
               onChange={e => setCustomer(e.target.value)}
               placeholder="Client name (optional)"
-              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 14, padding: '10px 12px', fontFamily: 'inherit', outline: 'none', marginBottom: 8 }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-              <label style={{ fontSize: 12, color: '#8B95A1', flexShrink: 0 }}>Duration (days):</label>
+              <label style={{ fontSize: 12, color: '#D1D5DB', flexShrink: 0 }}>Duration (days):</label>
               <input
                 type="number"
                 min={1}
                 max={30}
                 value={duration}
                 onChange={e => setDuration(Math.max(1, Math.min(30, parseInt(e.target.value) || 1)))}
-                style={{ width: 60, background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
+                style={{ width: 60, background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 14, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', textAlign: 'center' }}
               />
             </div>
             <button
@@ -8665,7 +8665,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 }
               }}
               disabled={!description.trim()}
-              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#8B95A1', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ width: '100%', padding: '10px', background: description.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 7, color: description.trim() ? '#fff' : '#D1D5DB', fontWeight: 700, fontSize: 13, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
             >
               Create &amp; Schedule
             </button>
@@ -8686,13 +8686,13 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } } }}
               placeholder="e.g. Office closed, rain day, equipment delivery&#8230;"
               rows={3}
-              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#F0F2F5', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#FFFFFF', fontSize: 14, padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none', marginBottom: 10 }}
             />
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.12)', marginBottom: 10 }}>Ctrl+Enter to save</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 10 }}>Ctrl+Enter to save</div>
             <button
               onClick={() => { if (note.trim()) { onAddNote(date, note.trim()); setJustScheduled({ description: note.trim() }); } }}
               disabled={!note.trim()}
-              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#8B95A1', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ width: '100%', padding: '9px', background: note.trim() ? 'linear-gradient(135deg,#E8722A,#ea580c)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 7, color: note.trim() ? '#fff' : '#D1D5DB', fontWeight: 700, fontSize: 13, cursor: note.trim() ? 'pointer' : 'not-allowed' }}
             >
               Save Note
             </button>
@@ -8748,9 +8748,9 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
           const grandHours = jobDetails.reduce((s, d) => s + d.totalHours, 0);
           const grandLabor = jobDetails.reduce((s, d) => s + d.totalLabor, 0);
           const grandValue = dayJobs.reduce((s, j) => s + (j.value || 0), 0);
-          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#8B95A1', 'Scheduled': '#8B95A1' }[s] || '#8B95A1');
+          const statusColor = (s) => ({ 'On Site': '#22c55e', 'Traveling': '#3b82f6', 'Break': '#f59e0b', 'Clocked Out': '#D1D5DB', 'Scheduled': '#D1D5DB' }[s] || '#8B95A1');
           const pill = (text, bg, fg) => ({ display: 'inline-block', fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 8, background: bg, color: fg, marginLeft: 4 });
-          const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#8B95A1', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
+          const sectionLabel = { fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 16, marginBottom: 8 };
           const card = { background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '12px 14px', marginBottom: 8 };
 
           return (
@@ -8760,20 +8760,20 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 4 }}>
                 <div style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#E8722A' }}>{grandHours.toFixed(1)}</div>
-                  <div style={{ fontSize: 10, color: '#8B95A1', fontWeight: 600 }}>Total Hours</div>
+                  <div style={{ fontSize: 10, color: '#D1D5DB', fontWeight: 600 }}>Total Hours</div>
                 </div>
                 <div style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#3b82f6' }}>{allCrewIds.size}</div>
-                  <div style={{ fontSize: 10, color: '#8B95A1', fontWeight: 600 }}>Crews Deployed</div>
+                  <div style={{ fontSize: 10, color: '#D1D5DB', fontWeight: 600 }}>Crews Deployed</div>
                 </div>
                 <div style={{ background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#22c55e' }}>${grandValue.toLocaleString()}</div>
-                  <div style={{ fontSize: 10, color: '#8B95A1', fontWeight: 600 }}>Active Job Value</div>
+                  <div style={{ fontSize: 10, color: '#D1D5DB', fontWeight: 600 }}>Active Job Value</div>
                 </div>
               </div>
 
               {dayJobs.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '28px 0', color: '#8B95A1', fontSize: 13 }}>No jobs scheduled for this date.</div>
+                <div style={{ textAlign: 'center', padding: '28px 0', color: '#D1D5DB', fontSize: 13 }}>No jobs scheduled for this date.</div>
               )}
 
               {/* Jobs Scheduled */}
@@ -8787,44 +8787,44 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                       <div key={job.id} style={card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                            <div style={{ fontSize: 11, color: '#8B95A1', marginTop: 1 }}>{job.address || ''}</div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                            <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1 }}>{job.address || ''}</div>
                           </div>
                           <span style={{ ...pill('', tc + '22', tc), marginLeft: 8 }}>{job.trade}</span>
                         </div>
-                        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#8B95A1', marginBottom: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#D1D5DB', marginBottom: 8, flexWrap: 'wrap' }}>
                           <span>${(job.value || 0).toLocaleString()}</span>
                           <span>{jHours.toFixed(1)} hrs today</span>
                           <span>${jLabor.toFixed(0)} labor</span>
                           {estMargin !== null && <span style={{ color: estMargin > 40 ? '#22c55e' : estMargin > 20 ? '#f59e0b' : '#ef4444' }}>{estMargin}% est. margin</span>}
                         </div>
-                        <div style={{ fontSize: 11, color: '#8B95A1', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                           <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
                             <div style={{ width: `${(completedCount / totalSteps) * 100}%`, height: '100%', background: tc, borderRadius: 2 }} />
                           </div>
-                          <span style={{ fontSize: 10, color: '#8B95A1', flexShrink: 0 }}>{completedCount}/{totalSteps}</span>
+                          <span style={{ fontSize: 10, color: '#D1D5DB', flexShrink: 0 }}>{completedCount}/{totalSteps}</span>
                         </div>
-                        <div style={{ fontSize: 11, color: '#8B95A1' }}>Current: <span style={{ color: '#8B95A1' }}>{nextStep.label}</span></div>
+                        <div style={{ fontSize: 11, color: '#D1D5DB' }}>Current: <span style={{ color: '#D1D5DB' }}>{nextStep.label}</span></div>
 
                         {/* Crew on this job */}
                         {jcrew.length > 0 && (
                           <div style={{ marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
                             {jcrew.map(c => (
                               <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 12 }}>
-                                <span style={{ color: '#8B95A1', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
-                                <span style={{ color: '#8B95A1', fontSize: 10, minWidth: 60 }}>{c.role}</span>
+                                <span style={{ color: '#D1D5DB', fontWeight: 600, minWidth: 100 }}>{c.name}</span>
+                                <span style={{ color: '#D1D5DB', fontSize: 10, minWidth: 60 }}>{c.role}</span>
                                 <span style={pill(c.status, statusColor(c.status) + '22', statusColor(c.status))}>{c.status}</span>
-                                <span style={{ color: '#8B95A1', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
+                                <span style={{ color: '#D1D5DB', fontSize: 10, marginLeft: 'auto' }}>{c.clockIn} · {c.hoursLogged.toFixed(1)}h</span>
                               </div>
                             ))}
                           </div>
                         )}
                         {jcrew.length === 0 && (
-                          <div style={{ fontSize: 11, color: '#8B95A1', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
+                          <div style={{ fontSize: 11, color: '#D1D5DB', fontStyle: 'italic', marginTop: 6 }}>No crew assigned</div>
                         )}
                         {/* Action buttons */}
                         <div style={{ display: 'flex', gap: 6, marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
-                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#8B95A1', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Job</button>
+                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Job</button>
                           <button style={{ flex: 1, padding: '6px', background: '#10b98118', border: '1px solid #10b98144', borderRadius: 6, color: '#10b981', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Message Crew</button>
                         </div>
                       </div>
@@ -8848,16 +8848,16 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                       return (
                         <div key={cid} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: 12 }}>
                           <div style={{ minWidth: 110 }}>
-                            <div style={{ fontWeight: 600, color: '#8B95A1' }}>{member?.name || cid}</div>
-                            <div style={{ fontSize: 10, color: '#8B95A1' }}>{member?.role || ''}</div>
+                            <div style={{ fontWeight: 600, color: '#D1D5DB' }}>{member?.name || cid}</div>
+                            <div style={{ fontSize: 10, color: '#D1D5DB' }}>{member?.role || ''}</div>
                           </div>
-                          <div style={{ flex: 1, fontSize: 11, color: '#8B95A1' }}>
+                          <div style={{ flex: 1, fontSize: 11, color: '#D1D5DB' }}>
                             {memberJobs.map(d => d.job.customer).join(', ')}
                           </div>
                           <span style={pill(status, statusColor(status) + '22', statusColor(status))}>{status}</span>
                           <div style={{ textAlign: 'right', minWidth: 60 }}>
-                            <div style={{ fontSize: 11, color: '#8B95A1', fontWeight: 600 }}>{totalH.toFixed(1)}h</div>
-                            <div style={{ fontSize: 9, color: '#8B95A1' }}>in {clockIn}</div>
+                            <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600 }}>{totalH.toFixed(1)}h</div>
+                            <div style={{ fontSize: 9, color: '#D1D5DB' }}>in {clockIn}</div>
                           </div>
                         </div>
                       );
@@ -8877,18 +8877,18 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
               ) : (
                 <div style={{ ...card, marginTop: 12, border: '1px solid #7c3aed44' }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#a78bfa', marginBottom: 10 }}>Schedule a Job for {displayDate}</div>
-                  <select value={schedJobId} onChange={e => setSchedJobId(e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 13, marginBottom: 8, outline: 'none', fontFamily: 'inherit' }}>
+                  <select value={schedJobId} onChange={e => setSchedJobId(e.target.value)} style={{ width: '100%', padding: '8px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 13, marginBottom: 8, outline: 'none', fontFamily: 'inherit' }}>
                     <option value="">— Select a job —</option>
                     {jobs.filter(j => !j.scheduledDate || j.status === 'Scheduled').map(j => (
                       <option key={j.id} value={String(j.id)}>{j.customer} — {j.trade} (${(j.value || 0).toLocaleString()})</option>
                     ))}
                   </select>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#8B95A1', marginBottom: 6 }}>Assign Crew</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', marginBottom: 6 }}>Assign Crew</div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
                     {(crew || []).map(m => {
                       const sel = schedCrew.includes(m.id);
                       return (
-                        <button key={m.id} onClick={() => setSchedCrew(prev => sel ? prev.filter(x => x !== m.id) : [...prev, m.id])} style={{ padding: '4px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, border: sel ? '1px solid #7c3aed' : '1px solid rgba(255,255,255,0.08)', background: sel ? 'rgba(124,58,237,0.15)' : 'transparent', color: sel ? '#a78bfa' : '#8B95A1', cursor: 'pointer' }}>
+                        <button key={m.id} onClick={() => setSchedCrew(prev => sel ? prev.filter(x => x !== m.id) : [...prev, m.id])} style={{ padding: '4px 10px', borderRadius: 14, fontSize: 11, fontWeight: 600, border: sel ? '1px solid #7c3aed' : '1px solid rgba(255,255,255,0.08)', background: sel ? 'rgba(124,58,237,0.15)' : 'transparent', color: sel ? '#a78bfa' : '#D1D5DB', cursor: 'pointer' }}>
                           {m.name.split(' ')[0]}
                         </button>
                       );
@@ -8896,17 +8896,17 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 10, color: '#8B95A1', marginBottom: 3 }}>Start Time</div>
-                      <select value={schedTime} onChange={e => setSchedTime(e.target.value)} style={{ width: '100%', padding: '7px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}>
+                      <div style={{ fontSize: 10, color: '#D1D5DB', marginBottom: 3 }}>Start Time</div>
+                      <select value={schedTime} onChange={e => setSchedTime(e.target.value)} style={{ width: '100%', padding: '7px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 12, outline: 'none', fontFamily: 'inherit' }}>
                         {['6:00 AM','6:30 AM','7:00 AM','7:30 AM','8:00 AM','8:30 AM','9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 10, color: '#8B95A1', marginBottom: 3 }}>Est. Hours</div>
-                      <input type="number" min={1} max={12} value={schedHours} onChange={e => setSchedHours(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))} style={{ width: '100%', padding: '7px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                      <div style={{ fontSize: 10, color: '#D1D5DB', marginBottom: 3 }}>Est. Hours</div>
+                      <input type="number" min={1} max={12} value={schedHours} onChange={e => setSchedHours(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))} style={{ width: '100%', padding: '7px 8px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
                     </div>
                   </div>
-                  <input value={schedNotes} onChange={e => setSchedNotes(e.target.value)} placeholder="Notes (optional)" style={{ width: '100%', padding: '7px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#8B95A1', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 10 }} />
+                  <input value={schedNotes} onChange={e => setSchedNotes(e.target.value)} placeholder="Notes (optional)" style={{ width: '100%', padding: '7px 10px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#D1D5DB', fontSize: 12, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 10 }} />
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={() => {
@@ -8917,11 +8917,11 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                         }
                       }}
                       disabled={!schedJobId}
-                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#8B95A1', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
+                      style={{ flex: 1, padding: '9px', background: schedJobId ? 'linear-gradient(135deg,#7c3aed,#6d28d9)' : 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 6, color: schedJobId ? '#fff' : '#D1D5DB', fontWeight: 700, fontSize: 12, cursor: schedJobId ? 'pointer' : 'not-allowed' }}
                     >
                       Add to Schedule
                     </button>
-                    <button onClick={() => setShowScheduleForm(false)} style={{ padding: '9px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#8B95A1', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+                    <button onClick={() => setShowScheduleForm(false)} style={{ padding: '9px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#D1D5DB', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
                       Cancel
                     </button>
                   </div>
@@ -8933,11 +8933,11 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 <>
                   <div style={sectionLabel}>Hours Summary</div>
                   <div style={card}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 12px', fontSize: 11, color: '#8B95A1' }}>
-                      <div style={{ fontWeight: 700, color: '#8B95A1' }}>Job</div>
-                      <div style={{ fontWeight: 700, color: '#8B95A1', textAlign: 'right' }}>Hours</div>
-                      <div style={{ fontWeight: 700, color: '#8B95A1', textAlign: 'right' }}>Labor $</div>
-                      <div style={{ fontWeight: 700, color: '#8B95A1', textAlign: 'right' }}>Margin</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 12px', fontSize: 11, color: '#D1D5DB' }}>
+                      <div style={{ fontWeight: 700, color: '#D1D5DB' }}>Job</div>
+                      <div style={{ fontWeight: 700, color: '#D1D5DB', textAlign: 'right' }}>Hours</div>
+                      <div style={{ fontWeight: 700, color: '#D1D5DB', textAlign: 'right' }}>Labor $</div>
+                      <div style={{ fontWeight: 700, color: '#D1D5DB', textAlign: 'right' }}>Margin</div>
                       {jobDetails.map(d => {
                         const em = d.job.value > 0 ? Math.round((1 - d.totalLabor / d.job.value) * 100) : null;
                         return (
@@ -8945,15 +8945,15 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                             <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingTop: 4 }}>{d.job.customer}</div>
                             <div style={{ textAlign: 'right', paddingTop: 4 }}>{d.totalHours.toFixed(1)}</div>
                             <div style={{ textAlign: 'right', paddingTop: 4 }}>${d.totalLabor.toFixed(0)}</div>
-                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#8B95A1' }}>{em !== null ? `${em}%` : '—'}</div>
+                            <div style={{ textAlign: 'right', paddingTop: 4, color: em !== null ? (em > 40 ? '#22c55e' : em > 20 ? '#f59e0b' : '#ef4444') : '#D1D5DB' }}>{em !== null ? `${em}%` : '—'}</div>
                           </div>
                         );
                       })}
                       <div style={{ gridColumn: '1 / -1', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }} />
-                      <div style={{ fontWeight: 700, color: '#F0F2F5', paddingTop: 4 }}>Totals</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#F0F2F5', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#F0F2F5', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
-                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#8B95A1', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
+                      <div style={{ fontWeight: 700, color: '#FFFFFF', paddingTop: 4 }}>Totals</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#FFFFFF', paddingTop: 4 }}>{grandHours.toFixed(1)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: '#FFFFFF', paddingTop: 4 }}>${grandLabor.toFixed(0)}</div>
+                      <div style={{ textAlign: 'right', fontWeight: 700, color: grandValue > 0 ? '#22c55e' : '#D1D5DB', paddingTop: 4 }}>{grandValue > 0 ? `${Math.round((1 - grandLabor / grandValue) * 100)}%` : '—'}</div>
                     </div>
                   </div>
                 </>
@@ -9006,7 +9006,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
     return set;
   }, [crew, assignments, scheduledJobs]);
 
-  const navBtn = { padding: '6px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#8B95A1', cursor: 'pointer', fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: 'transparent' };
+  const navBtn = { padding: '6px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#D1D5DB', cursor: 'pointer', fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: 'transparent' };
   const currentStr = toDateStr(current);
 
   const prev = () => { const d = new Date(current); if (view === 'month') d.setMonth(d.getMonth() - 1); else if (view === 'week') d.setDate(d.getDate() - 7); else d.setDate(d.getDate() - 1); setCurrent(d); setSelectedDate(null); };
@@ -9067,8 +9067,8 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#F0F2F5' }}>Dispatch Board</div>
-          <div style={{ fontSize: 13, color: '#8B95A1' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>Dispatch Board</div>
+          <div style={{ fontSize: 13, color: '#D1D5DB' }}>{scheduledJobs.length} scheduled · {unscheduledJobs.length} unscheduled</div>
         </div>
         {onCreate && (
           <button onClick={() => setQuickBar({ date: TODAY, job: null })} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#E8722A,#ea580c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
@@ -9076,13 +9076,13 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           </button>
         )}
         {onSchedule && (
-          <button onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: null })} style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#8B95A1', fontWeight: 600, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: null })} style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#D1D5DB', fontWeight: 600, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>
             Schedule Existing
           </button>
         )}
         <div style={{ display: 'flex', gap: 4 }}>
           {['month', 'week', 'day'].map(v => (
-            <button key={v} style={{ padding: '6px 12px', minHeight: 32, fontSize: 12, borderRadius: 6, border: view === v ? 'none' : '1px solid rgba(255,255,255,0.12)', background: view === v ? '#E8722A' : '#2A3140', color: view === v ? '#2A3140' : '#8B95A1', fontWeight: view === v ? 600 : 500, cursor: 'pointer' }} onClick={() => { setView(v); setSelectedDate(null); }}>
+            <button key={v} style={{ padding: '6px 12px', minHeight: 32, fontSize: 12, borderRadius: 6, border: view === v ? 'none' : '1px solid rgba(255,255,255,0.12)', background: view === v ? '#E8722A' : '#2A3140', color: view === v ? '#2A3140' : '#D1D5DB', fontWeight: view === v ? 600 : 500, cursor: 'pointer' }} onClick={() => { setView(v); setSelectedDate(null); }}>
               {v.charAt(0).toUpperCase() + v.slice(1)}
             </button>
           ))}
@@ -9094,7 +9094,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <button style={navBtn} onClick={prev}>‹</button>
         <button style={{ ...navBtn, fontSize: 12, padding: '6px 12px' }} onClick={() => { setCurrent(new Date(TODAY + 'T12:00:00')); setSelectedDate(null); }}>Today</button>
         <button style={navBtn} onClick={next}>›</button>
-        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#F0F2F5' }}>{headerLabel}</div>
+        <div style={{ flex: 1, textAlign: 'center', fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#FFFFFF' }}>{headerLabel}</div>
         {dragJobId && <span style={{ fontSize: 12, color: '#E8722A', fontWeight: 600 }}>Drop to reschedule</span>}
       </div>
 
@@ -9118,11 +9118,11 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <span style={{ fontSize: 13, color: '#FCD34D', fontWeight: 600, flexShrink: 0 }}>⚠ {unscheduledJobs.length} need scheduling:</span>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
             {unscheduledJobs.slice(0, 5).map(j => (
-              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 12, color: '#8B95A1', background: 'rgba(255,255,255,0.08)', padding: '8px 12px', minHeight: 44, borderRadius: 10, border: 'none', cursor: 'pointer' }}>
+              <button key={j.id} onClick={() => setScheduleModal({ defaultDate: TODAY, targetJob: j })} style={{ fontSize: 12, color: '#D1D5DB', background: 'rgba(255,255,255,0.08)', padding: '8px 12px', minHeight: 44, borderRadius: 10, border: 'none', cursor: 'pointer' }}>
                 {j.customer}
               </button>
             ))}
-            {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#8B95A1' }}>+{unscheduledJobs.length - 5} more</span>}
+            {unscheduledJobs.length > 5 && <span style={{ fontSize: 11, color: '#D1D5DB' }}>+{unscheduledJobs.length - 5} more</span>}
           </div>
         </div>
       )}
@@ -9155,8 +9155,8 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
               return (
                 <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F2F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
-                    <div style={{ fontSize: 11, color: '#8B95A1' }}>{job.trade} · {job.status}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}</div>
+                    <div style={{ fontSize: 11, color: '#D1D5DB' }}>{job.trade} · {job.status}</div>
                   </div>
                   {!isDemo && onSchedule && (
                     <button onClick={e => { e.stopPropagation(); setScheduleModal({ defaultDate: TODAY, targetJob: job }); }} style={{ padding: '8px 14px', minHeight: 44, background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 8, color: '#E8722A', fontWeight: 600, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
@@ -9175,7 +9175,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8, padding: '10px 14px', marginTop: 8 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>📝</span>
           <div style={{ flex: 1, fontSize: 13, color: '#c7d2fe' }}>{dayNotes[dispatchDate]}</div>
-          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#8B95A1', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
+          <button onClick={() => setDayNotes(p => { const n = { ...p }; delete n[dispatchDate]; return n; })} style={{ background: 'none', border: 'none', color: '#D1D5DB', fontSize: 16, cursor: 'pointer', lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
         </div>
       )}
 
@@ -9279,7 +9279,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
 
 // ─── Demo Dashboard ────────────────────────────────────────────────────────────
 const TIER_META = {
-  starter: { label: 'Starter', color: '#8B95A1', desc: 'Basic pipeline management' },
+  starter: { label: 'Starter', color: '#D1D5DB', desc: 'Basic pipeline management' },
   pro:     { label: 'Pro',     color: '#E8722A', desc: 'AI coaching + full analytics' },
   business:{ label: 'Business',color: '#6366f1', desc: 'Team management + export' },
 };
@@ -9326,7 +9326,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
   return (
     <div style={{
       minHeight: '100vh', background: '#2A3140',
-      color: '#8B95A1', fontFamily: "'Inter', -apple-system, sans-serif",
+      color: '#D1D5DB', fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
       {/* Top demo banner */}
       <div style={{
@@ -9361,7 +9361,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
         overflowX: isMobile ? 'auto' : 'visible',
         scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
       }}>
-        <span style={{ fontSize: 10, color: '#8B95A1', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+        <span style={{ fontSize: 10, color: '#D1D5DB', fontWeight: 600, marginRight: 2, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0 }}>
           Tier:
         </span>
         {Object.entries(TIER_META).map(([key, meta]) => (
@@ -9372,7 +9372,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
               padding: isMobile ? '7px 14px' : '5px 16px', borderRadius: 20, border: 'none',
               fontWeight: 600, fontSize: isMobile ? 13 : 12, cursor: 'pointer',
               background: tier === key ? meta.color : '#2A3140',
-              color: tier === key ? '#fff' : '#8B95A1',
+              color: tier === key ? '#fff' : '#D1D5DB',
               transition: 'all 0.15s', flexShrink: 0,
               outline: tier === key ? `2px solid ${meta.color}44` : 'none', outlineOffset: 1,
               minHeight: isMobile ? 36 : 'auto',
@@ -9383,7 +9383,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           </button>
         ))}
         {!isMobile && (
-          <span style={{ marginLeft: 8, fontSize: 12, color: '#8B95A1' }}>
+          <span style={{ marginLeft: 8, fontSize: 12, color: '#D1D5DB' }}>
             — {TIER_META[tier].desc}
           </span>
         )}
@@ -9431,7 +9431,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           onClick={onChangeTrade}
           style={{
             background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: 6, color: '#8B95A1', fontSize: isMobile ? 13 : 12,
+            borderRadius: 6, color: '#D1D5DB', fontSize: isMobile ? 13 : 12,
             cursor: 'pointer', padding: isMobile ? '8px 10px' : '5px 12px',
             whiteSpace: 'nowrap', minHeight: isMobile ? 38 : 'auto',
             WebkitTapHighlightColor: 'transparent',
@@ -9463,7 +9463,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
                     padding: '6px 14px', borderRadius: 6, border: 'none',
                     cursor: locked ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
                     background: tab === key ? tierColor : 'transparent',
-                    color: locked ? 'rgba(255,255,255,0.08)' : tab === key ? '#fff' : '#8B95A1',
+                    color: locked ? 'rgba(255,255,255,0.08)' : tab === key ? '#fff' : '#D1D5DB',
                     transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
                   }}
                   onClick={() => !locked && setTab(key)}
@@ -9547,7 +9547,7 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
           gap: 20, zIndex: 100,
           boxShadow: '0 -4px 24px rgba(0,0,0,0.2)',
         }}>
-          <span style={{ fontSize: 14, color: '#8B95A1' }}>
+          <span style={{ fontSize: 14, color: '#D1D5DB' }}>
             Like what you see?{' '}
             <span style={{ color: '#E8722A', fontWeight: 600 }}>Start your 14-day free trial</span>
             {' '}— no credit card required
@@ -9745,7 +9745,7 @@ function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab,
     >
       <div style={{ width: '100%', maxWidth: 520, margin: '0 12px', background: '#1E2329', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
         <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <span style={{ fontSize: 16, marginRight: 10, color: '#8B95A1' }}>🔍</span>
+          <span style={{ fontSize: 16, marginRight: 10, color: '#D1D5DB' }}>🔍</span>
           <input
             ref={inputRef}
             value={query}
@@ -9754,11 +9754,11 @@ function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab,
             placeholder="Search leads, jobs, crew, change orders…"
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#C9D1D9', fontSize: 15, fontFamily: 'inherit' }}
           />
-          <kbd style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: '#8B95A1', border: '1px solid rgba(255,255,255,0.1)' }}>ESC</kbd>
+          <kbd style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: '#D1D5DB', border: '1px solid rgba(255,255,255,0.1)' }}>ESC</kbd>
         </div>
         <div style={{ maxHeight: 360, overflowY: 'auto' }}>
           {query && results.length === 0 && (
-            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#8B95A1', fontSize: 13 }}>No results for &ldquo;{query}&rdquo;</div>
+            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#D1D5DB', fontSize: 13 }}>No results for &ldquo;{query}&rdquo;</div>
           )}
           {results.map((r, i) => (
             <div
@@ -9780,13 +9780,13 @@ function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab,
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#C9D1D9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.label}</div>
-                {r.sub && <div style={{ fontSize: 11, color: '#8B95A1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.sub}</div>}
+                {r.sub && <div style={{ fontSize: 11, color: '#D1D5DB', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.sub}</div>}
               </div>
             </div>
           ))}
         </div>
         {!query && (
-          <div style={{ padding: '16px', textAlign: 'center', color: '#5C6470', fontSize: 12 }}>
+          <div style={{ padding: '16px', textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
             Type to search across your entire workspace
           </div>
         )}
@@ -10102,13 +10102,13 @@ export default function App() {
           title="Search (⌘K)"
           style={{
             background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: 8, color: '#8B95A1', cursor: 'pointer',
+            borderRadius: 8, color: '#D1D5DB', cursor: 'pointer',
             fontSize: 14, padding: isMobile ? '8px 10px' : '5px 12px',
             display: 'flex', alignItems: 'center', gap: 6,
             minHeight: isMobile ? 44 : 'auto', marginLeft: 'auto',
           }}
         >
-          🔍{!isMobile && <span style={{ fontSize: 11, color: '#5C6470' }}>⌘K</span>}
+          🔍{!isMobile && <span style={{ fontSize: 11, color: '#9CA3AF' }}>⌘K</span>}
         </button>
 
         {isDemo && (
@@ -10136,7 +10136,7 @@ export default function App() {
           className="ri-btn ri-btn-secondary"
           style={{
             background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
-            color: '#8B95A1', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
+            color: '#D1D5DB', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
             padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
             minHeight: 'auto',
             WebkitTapHighlightColor: 'transparent',
@@ -10247,8 +10247,8 @@ export default function App() {
             ? <TeamManagementTab />
             : <div style={{ textAlign: 'center', padding: '48px 24px' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>🔒</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#8B95A1' }}>Access Restricted</div>
-                <div style={{ fontSize: 13, color: '#8B95A1', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#D1D5DB' }}>Access Restricted</div>
+                <div style={{ fontSize: 13, color: '#D1D5DB', marginTop: 4 }}>Team Management is only available to Owner/Admin accounts.</div>
               </div>
         )}
         </div>
