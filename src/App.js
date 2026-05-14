@@ -2429,19 +2429,20 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
         cursor: 'pointer', position: 'relative',
         transition: 'all 0.15s',
         userSelect: 'none',
+        overflow: 'hidden',
         boxShadow: hovered ? '0 4px 12px rgba(0,0,0,0.25)' : '0 1px 3px rgba(0,0,0,0.2)',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6, gap: 6 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
           <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
         </div>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginLeft: 8, flexShrink: 0 }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', flexShrink: 0, whiteSpace: 'nowrap' }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
       </div>
 
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
-        <span style={{ ...S.tradeBadge(lead.trade), marginTop: 0, fontSize: 9, padding: '1px 6px' }}>{lead.trade}</span>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4, minWidth: 0 }}>
+        <span style={{ ...S.tradeBadge(lead.trade), marginTop: 0, fontSize: 9, padding: '1px 6px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lead.trade}</span>
         <span style={{ ...S.statusBadge(lead.status), fontSize: 9 }}>{lead.status}</span>
       </div>
 
@@ -2846,18 +2847,21 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   return (
     <div>
       {/* Summary bar */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 14, background: '#2A3140', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, overflow: 'hidden', overflowX: 'auto' }}>
-        {stageStats.map((s, i) => (
-          <div key={s.key} style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', borderRight: i < stageStats.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none', textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>{s.count}</div>
-            <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-            {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{fmt(s.value)}</div>}
+      <div style={{ position: 'relative', marginBottom: 14 }}>
+        <div style={{ display: 'flex', gap: 0, background: '#2A3140', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
+          {stageStats.map((s, i) => (
+            <div key={s.key} style={{ flex: '0 0 auto', minWidth: 96, padding: '10px 8px', borderRight: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>{s.count}</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{s.label}</div>
+              {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2, whiteSpace: 'nowrap' }}>{fmt(s.value)}</div>}
+            </div>
+          ))}
+          <div style={{ flex: '0 0 auto', minWidth: 96, padding: '10px 12px', textAlign: 'center', borderBottom: '2px solid #E8722A' }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A', whiteSpace: 'nowrap' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
           </div>
-        ))}
-        <div style={{ flex: '1 1 0', minWidth: 90, padding: '10px 8px', textAlign: 'center', borderBottom: '2px solid #E8722A' }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
-          <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
         </div>
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 1, width: 32, background: 'linear-gradient(to right, transparent, #1E2329)', pointerEvents: 'none' }} />
       </div>
 
       {/* Search + trade filter */}
@@ -10115,11 +10119,11 @@ export default function App() {
     <div style={S.app}>
       <header style={{
         ...S.header,
-        ...(isMobile ? { padding: '0 12px', height: 44, gap: 8 } : {}),
+        ...(isMobile ? { padding: '0 10px', height: 48, gap: 6, overflow: 'hidden' } : {}),
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={S.logo}>RidgeOS</span>
-          {isDemo && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8, minWidth: 0, flexShrink: 1 }}>
+          <span style={{ ...S.logo, fontSize: isMobile ? 17 : 22, flexShrink: 0 }}>RidgeOS</span>
+          {isDemo && !isMobile && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
               background: 'rgba(232,114,42,0.2)', color: '#E8722A',
@@ -10129,16 +10133,19 @@ export default function App() {
             </span>
           )}
           {isDemo && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEMO_ROLES[demoRole].color, flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+              {!isMobile && <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEMO_ROLES[demoRole].color, flexShrink: 0 }} />}
               <select
                 value={demoRole}
                 onChange={e => setDemoRole(e.target.value)}
                 style={{
                   background: '#2A2E36', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6,
                   color: DEMO_ROLES[demoRole].color, fontSize: 11, fontWeight: 700,
-                  padding: '4px 8px', cursor: 'pointer', outline: 'none',
+                  padding: isMobile ? '6px 6px' : '4px 8px',
+                  cursor: 'pointer', outline: 'none',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                  maxWidth: isMobile ? 110 : 'none',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 {Object.entries(DEMO_ROLES).map(([key, r]) => (
@@ -10166,12 +10173,15 @@ export default function App() {
         <button
           onClick={() => setShowSearch(true)}
           title="Search (⌘K)"
+          aria-label="Search"
           style={{
             background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
             borderRadius: 8, color: '#D1D5DB', cursor: 'pointer',
-            fontSize: 14, padding: isMobile ? '8px 10px' : '5px 12px',
-            display: 'flex', alignItems: 'center', gap: 6,
-            minHeight: isMobile ? 44 : 'auto', marginLeft: 'auto',
+            fontSize: 14, padding: isMobile ? '0' : '5px 12px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            width: isMobile ? 36 : 'auto', height: isMobile ? 36 : 'auto',
+            minHeight: isMobile ? 36 : 'auto', flexShrink: 0,
+            marginLeft: 'auto',
           }}
         >
           🔍{!isMobile && <span style={{ fontSize: 11, color: '#9CA3AF' }}>⌘K</span>}
@@ -10186,29 +10196,39 @@ export default function App() {
               setDemoCrew(DEMO_CREW);
             }}
             className="ri-btn ri-btn-secondary"
+            title="Reset Demo"
+            aria-label="Reset Demo"
             style={{
               background: 'transparent', border: '1px solid rgba(232,114,42,0.3)',
-              color: '#E8722A', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
-              padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
-              minHeight: 'auto',
+              color: '#E8722A', cursor: 'pointer',
+              fontSize: isMobile ? 15 : 12,
+              padding: isMobile ? '0' : '5px 12px', borderRadius: 6,
+              width: isMobile ? 36 : 'auto', height: isMobile ? 36 : 'auto',
+              minHeight: isMobile ? 36 : 'auto', flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               WebkitTapHighlightColor: 'transparent',
             }}
           >
-            Reset Demo
+            {isMobile ? '↻' : 'Reset Demo'}
           </button>
         )}
         <button
           onClick={() => { setScreen('login'); setSession(null); }}
           className="ri-btn ri-btn-secondary"
+          title="Sign out"
+          aria-label="Sign out"
           style={{
             background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
-            color: '#D1D5DB', cursor: 'pointer', fontSize: isMobile ? 11 : 12,
-            padding: isMobile ? '5px 8px' : '5px 12px', borderRadius: 6,
-            minHeight: 'auto',
+            color: '#D1D5DB', cursor: 'pointer',
+            fontSize: isMobile ? 11 : 12,
+            padding: isMobile ? '0 10px' : '5px 12px', borderRadius: 6,
+            height: isMobile ? 36 : 'auto',
+            minHeight: isMobile ? 36 : 'auto', flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             WebkitTapHighlightColor: 'transparent',
           }}
         >
-          Sign out
+          {isMobile ? 'Exit' : 'Sign out'}
         </button>
       </header>
 
