@@ -4048,7 +4048,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                   <div key={item.id} style={{ padding: '8px 10px', borderBottom: '1px solid #0a0e18', background: filled ? 'rgba(249,115,22,0.04)' : 'transparent', borderLeft: filled ? '3px solid rgba(249,115,22,0.4)' : '3px solid transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7 }}>
                       <input value={item.item} onChange={e => updMat(sec.id, item.id, 'item', e.target.value)} placeholder="Item name" style={{ flex: 1, background: 'transparent', border: 'none', color: '#D1D5DB', fontSize: 14, fontWeight: 600, outline: 'none', fontFamily: "'Inter', -apple-system, sans-serif", minHeight: 44, padding: '0 4px' }} />
-                      <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
+                      <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr', gap: 8, alignItems: 'end' }}>
                       <div>
@@ -4103,7 +4103,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                   <input type="text" inputMode="decimal" value={item.qty} onChange={e => updMat(sec.id, item.id, 'qty', e.target.value)} placeholder="0" style={{ ...NINP }} />
                   {seeRates && <input type="text" inputMode="decimal" value={item.costPerUnit} onChange={e => updMat(sec.id, item.id, 'costPerUnit', e.target.value)} placeholder="0.00" style={{ ...NINP }} />}
                   {seeRates && <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#1E2329' : 'rgba(255,255,255,0.12)' }}>{filled ? fmtC(tot) : '—'}</div>}
-                  <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
+                  <button onClick={() => removeMatItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
@@ -4157,7 +4157,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                         <div style={{ color: '#D1D5DB', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 0' }}>{item.label || '—'}</div>
                         {item.note && <div style={{ fontSize: 10, color: '#D1D5DB', fontStyle: 'italic' }}>{item.note}</div>}
                       </div>
-                      <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
+                      <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 20, padding: '0 4px', minHeight: 44, minWidth: 36, flexShrink: 0 }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: sec.isWaste ? '52px 1fr' : (seeRates ? '52px 1fr 1fr 1fr' : '52px 1fr'), gap: 8, alignItems: 'end' }}>
                       <div>
@@ -4231,7 +4231,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
                       <div style={{ fontFamily: "'Courier New', monospace", fontSize: 13, fontWeight: 700, textAlign: 'right', color: filled ? '#1E2329' : 'rgba(255,255,255,0.12)' }}>{filled ? fmtC(tot) : '—'}</div>
                     </>
                   )}
-                  <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#4a5e7a', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
+                  <button onClick={() => removeLaborItem(sec.id, item.id)} className="ri-del" style={{ background: 'transparent', border: 'none', color: '#D1D5DB', cursor: 'pointer', fontSize: 15, padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               );
             })}
