@@ -7539,15 +7539,11 @@ function CrewMemberModal({ member, onSave, onClose }) {
 }
 
 // ─── Crew Tab ──────────────────────────────────────────────────────────────────
-function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteMember, addTrigger }) {
+function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteMember }) {
   const [allEntries, setAllEntries] = useState([]);
   const [now, setNow] = useState(Date.now());
   const [crewModal, setCrewModal] = useState(null);
   const isMobile = useMobile();
-
-  useEffect(() => {
-    if (addTrigger && addTrigger > 0) setCrewModal('add');
-  }, [addTrigger]);
 
   useEffect(() => {
     const load = () => timeDB.getAll().then(setAllEntries).catch(() => {});
@@ -9681,12 +9677,14 @@ function DemoPage() {
 function FloatingActionButton({ tab, onAction }) {
   const isMobile = useMobile();
 
+  // FAB renders only on tabs without an existing in-page add affordance.
+  // Pipeline has "+ Add Lead" in the search row; Crew has "+ Add Member"
+  // in its header. Jobs has no header-level add button, so the FAB is
+  // the sole add entry there.
   const config = useMemo(() => {
     switch (tab) {
-      case 'pipeline': return { label: 'Add Lead', action: 'addLead' };
-      case 'jobs':     return { label: 'Add Job',  action: 'addJob' };
-      case 'crew':     return { label: 'Add Crew', action: 'addCrew' };
-      default:         return null;
+      case 'jobs': return { label: 'Add Job', action: 'addJob' };
+      default:     return null;
     }
   }, [tab]);
 
@@ -9888,7 +9886,6 @@ export default function App() {
   const [jobModal, setJobModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
-  const [addCrewTrigger, setAddCrewTrigger] = useState(0);
 
   // Cmd+K / Ctrl+K to open universal search
   useEffect(() => {
@@ -10393,7 +10390,6 @@ export default function App() {
             onAddMember={isDemo ? handleDemoAddCrew : handleAddCrew}
             onEditMember={isDemo ? handleDemoEditCrew : handleEditCrew}
             onDeleteMember={isDemo ? handleDemoDeleteCrew : handleDeleteCrew}
-            addTrigger={addCrewTrigger}
           />
         )}
         {tab === 'chat' && (
@@ -10445,9 +10441,7 @@ export default function App() {
       <FloatingActionButton
         tab={tab}
         onAction={(action) => {
-          if (action === 'addLead') setLeadModal('add');
-          else if (action === 'addJob') setJobModal(true);
-          else if (action === 'addCrew') setAddCrewTrigger(t => t + 1);
+          if (action === 'addJob') setJobModal(true);
         }}
       />
 
