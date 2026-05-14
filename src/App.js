@@ -50,6 +50,12 @@ const TRADE_COLORS = {
   'Emergency Tarp':   '#dc2626',
 };
 
+const CUSTOM_TRADE_COLOR = '#A78BFA';
+function getTradeColor(trade) {
+  if (!trade) return '#8B95A1';
+  return TRADE_COLORS[trade] || CUSTOM_TRADE_COLOR;
+}
+
 const TRADE_CHECKLISTS = {
   'Full Replacement': [
     { id: 1, label: 'Site inspection & measurements' },
@@ -929,19 +935,22 @@ const S = {
     letterSpacing: '0.5px',
     whiteSpace: 'nowrap',
   }),
-  tradeBadge: (trade) => ({
-    display: 'inline-block',
-    fontSize: 10,
-    fontWeight: 600,
-    padding: '2px 8px',
-    borderRadius: 10,
-    background: (TRADE_COLORS[trade] || '#8B95A1') + '2e',
-    color: TRADE_COLORS[trade] || '#8B95A1',
-    border: `1px solid ${(TRADE_COLORS[trade] || '#8B95A1')}44`,
-    letterSpacing: '0.3px',
-    whiteSpace: 'nowrap',
-    marginTop: 6,
-  }),
+  tradeBadge: (trade) => {
+    const c = getTradeColor(trade);
+    return {
+      display: 'inline-block',
+      fontSize: 10,
+      fontWeight: 600,
+      padding: '2px 8px',
+      borderRadius: 10,
+      background: c + '2e',
+      color: c,
+      border: `1px solid ${c}44`,
+      letterSpacing: '0.3px',
+      whiteSpace: 'nowrap',
+      marginTop: 6,
+    };
+  },
   stageBadge: (stage) => ({
     display: 'inline-block',
     fontSize: 11,
@@ -1378,6 +1387,8 @@ const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
 function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
   const isMobile = useMobile();
   const isEdit = !!lead;
+  const initialTrade = lead?.trade || defaultTrade || 'Full Replacement';
+  const initialIsOther = !!initialTrade && !TRADE_LIST.includes(initialTrade) && initialTrade !== customTrade;
   const [form, setForm] = useState({
     name: lead?.name || '',
     contact: lead?.contact || '',
@@ -1385,7 +1396,8 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
     email: lead?.email || '',
     address: lead?.address || '',
     value: lead?.value ? String(lead.value) : '',
-    trade: lead?.trade || defaultTrade || 'Full Replacement',
+    trade: initialIsOther ? '__OTHER__' : initialTrade,
+    tradeCustom: initialIsOther ? initialTrade : '',
     stage: lead?.stage || 'lead',
     source: lead?.source || 'Referral',
     notes: lead?.notes || '',
@@ -1409,9 +1421,12 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
     if (!form.phone.trim()) e.phone = true;
     if (!form.value || isNaN(Number(form.value)) || Number(form.value) <= 0) e.value = true;
     if (!form.trade) e.trade = true;
+    if (form.trade === '__OTHER__' && !form.tradeCustom.trim()) e.trade = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
+
+  const resolvedTrade = form.trade === '__OTHER__' ? form.tradeCustom.trim() : form.trade;
 
   const handleSave = () => {
     if (!validate()) return;
@@ -1424,7 +1439,7 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
       phone: form.phone.trim(),
       email: form.email.trim(),
       address: form.address.trim(),
-      trade: form.trade,
+      trade: resolvedTrade,
       status: lead?.status || 'active',
       value: Math.round(Number(form.value)),
       stage: form.stage,
@@ -1518,7 +1533,17 @@ function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
                 <option value={customTrade}>{customTrade} ✨</option>
               )}
               {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
+              <option value="__OTHER__">Other…</option>
             </select>
+            {form.trade === '__OTHER__' && (
+              <input
+                style={{ ...(isMobile ? mobileInput : fi('trade')), marginTop: 8 }}
+                value={form.tradeCustom}
+                onChange={e => set('tradeCustom', e.target.value)}
+                placeholder="Describe job type (e.g. Solar reinstall, Chimney cricket, Snow guards)"
+                autoFocus
+              />
+            )}
           </div>
           <div>
             <label style={FLbl}>Lead Stage</label>
@@ -2835,6 +2860,9 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
         >
           <option value="all">All Job Types</option>
           {TRADE_LIST.filter(t => leads.some(l => l.trade === t)).map(t => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+          {Array.from(new Set(leads.map(l => l.trade).filter(t => t && !TRADE_LIST.includes(t)))).sort().map(t => (
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
@@ -4521,7 +4549,7 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
     || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS['Full Replacement'];
-  const tradeColor = TRADE_COLORS[job.trade] || '#E8722A';
+  const tradeColor = getTradeColor(job.trade);
 
   const [checks, setChecks] = useState(() => {
     const init = {};
@@ -5236,6 +5264,15 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
             {t}
           </button>
         ))}
+        {Array.from(new Set(jobs.map(j => j.trade).filter(t => t && !TRADE_LIST.includes(t)))).sort().map(t => (
+          <button
+            key={t}
+            style={S.tradeFilterBtn(tradeFilter === t, CUSTOM_TRADE_COLOR)}
+            onClick={() => setTradeFilter(tradeFilter === t ? 'all' : t)}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
       <div style={S.grid}>
@@ -5254,7 +5291,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
           const total = steps.length;
           const pct = Math.round(doneCount / total * 100);
           const color = statusColor(job.status);
-          const tradeColor = TRADE_COLORS[job.trade] || '#8B95A1';
+          const tradeColor = getTradeColor(job.trade);
 
           return (
             <div
@@ -6981,7 +7018,7 @@ function GlobalPhotoLog({ jobs }) {
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
           {allJobs.map(job => {
             const count = photoCountForJob(job.id);
-            const tc = TRADE_COLORS[job.trade] || '#E8722A';
+            const tc = getTradeColor(job.trade);
             const stColor = job.status === 'Complete' ? '#22c55e' : job.status === 'In Progress' ? '#E8722A' : '#6366f1';
             return (
               <div
@@ -7038,7 +7075,7 @@ function GlobalPhotoLog({ jobs }) {
   const jobPhotos = allPhotos.filter(p => String(p.jobId) === String(selectedJob.id));
   const filtered = catFilter === 'All' ? jobPhotos : jobPhotos.filter(p => p.category === catFilter);
   const usedCats = ['All', ...PHOTO_CATS.filter(c => jobPhotos.some(p => p.category === c))];
-  const tc = TRADE_COLORS[selectedJob.trade] || '#E8722A';
+  const tc = getTradeColor(selectedJob.trade);
 
   return (
     <div>
@@ -7126,7 +7163,7 @@ function GlobalPhotoLog({ jobs }) {
 function AddJobModal({ onSave, onClose }) {
   const isMobile = useMobile();
   const [form, setForm] = useState({
-    customer: '', address: '', trade: 'Full Replacement', value: '', scheduledDate: '', notes: '', jobType: 'Residential',
+    customer: '', address: '', trade: 'Full Replacement', tradeCustom: '', value: '', scheduledDate: '', notes: '', jobType: 'Residential',
   });
   const [errors, setErrors] = useState({});
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
@@ -7135,9 +7172,12 @@ function AddJobModal({ onSave, onClose }) {
     const e = {};
     if (!form.customer.trim()) e.customer = true;
     if (!form.value || isNaN(Number(form.value)) || Number(form.value) <= 0) e.value = true;
+    if (form.trade === '__OTHER__' && !form.tradeCustom.trim()) e.trade = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
+
+  const resolvedTrade = form.trade === '__OTHER__' ? form.tradeCustom.trim() : form.trade;
 
   const handleSave = () => {
     if (!validate()) return;
@@ -7145,7 +7185,7 @@ function AddJobModal({ onSave, onClose }) {
       id: Date.now(),
       customer: form.customer.trim(),
       address: form.address.trim(),
-      trade: form.trade,
+      trade: resolvedTrade,
       value: Math.round(Number(form.value)),
       status: 'Scheduled',
       scheduledDate: form.scheduledDate || new Date().toISOString().slice(0, 10),
@@ -7202,7 +7242,17 @@ function AddJobModal({ onSave, onClose }) {
             <label style={FLbl}>Trade Type</label>
             <select style={fi('trade')} value={form.trade} onChange={e => set('trade', e.target.value)}>
               {TRADE_LIST.map(t => <option key={t} value={t}>{t}</option>)}
+              <option value="__OTHER__">Other…</option>
             </select>
+            {form.trade === '__OTHER__' && (
+              <input
+                style={{ ...fi('trade'), marginTop: 8 }}
+                value={form.tradeCustom}
+                onChange={e => set('tradeCustom', e.target.value)}
+                placeholder="Describe job type (e.g. Solar reinstall, Snow guards)"
+                autoFocus
+              />
+            )}
           </div>
           <div>
             <label style={FLbl}>Job Value *</label>
@@ -8169,7 +8219,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: crew.length > 0 ? 16 : 0 }}>
           {todayJobs.map(job => {
-            const tc = TRADE_COLORS[job.trade] || '#8B95A1';
+            const tc = getTradeColor(job.trade);
             const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
@@ -8225,7 +8275,7 @@ function TodaySummaryPanel({ jobs, crew, assignments, conflicts, onJobClick }) {
 
 // ─── Calendar: Context Menu ─────────────────────────────────────────────────────
 function CalendarContextMenu({ job, x, y, onView, onReschedule, onAssignCrew, onChangeStage, onRemove, onComplete, onDelete }) {
-  const tc = TRADE_COLORS[job.trade] || '#8B95A1';
+  const tc = getTradeColor(job.trade);
   const items = [
     { label: 'View Details', action: onView, icon: '📋' },
     { label: 'Reschedule', action: onReschedule, icon: '📅' },
@@ -8277,7 +8327,7 @@ function DayDispatch({ dateStr, jobs, crew, assignments, conflicts, onClose, onJ
       ) : (
         <div style={{ marginBottom: 16 }}>
           {dayJobs.map(job => {
-            const tc = TRADE_COLORS[job.trade] || '#8B95A1';
+            const tc = getTradeColor(job.trade);
             const assignedCrew = (assignments[String(job.id)] || []).map(id => crew.find(m => m.id === id)).filter(Boolean);
             const hasConflict = assignedCrew.some(m => conflicts.has(`${m.id}-${String(job.id)}`));
             return (
@@ -8421,7 +8471,7 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
               </div>
             </div>
             {dayJobs.map(job => {
-              const tc = TRADE_COLORS[job.trade] || '#8B95A1';
+              const tc = getTradeColor(job.trade);
               const isDragging = dragJobId === String(job.id);
               return (
                 <div
@@ -8781,7 +8831,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                 <>
                   <div style={sectionLabel}>Jobs Scheduled ({jobDetails.length})</div>
                   {jobDetails.map(({ job, crewDetails: jcrew, totalHours: jHours, totalLabor: jLabor, completedCount, totalSteps, nextStep }) => {
-                    const tc = TRADE_COLORS[job.trade] || '#E8722A';
+                    const tc = getTradeColor(job.trade);
                     const estMargin = job.value > 0 ? Math.round((1 - jLabor / job.value) * 100) : null;
                     return (
                       <div key={job.id} style={card}>
@@ -9151,7 +9201,7 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           <div style={S.sectionLabel}>Unscheduled Jobs</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {unscheduledJobs.map(job => {
-              const tc = TRADE_COLORS[job.trade] || '#8B95A1';
+              const tc = getTradeColor(job.trade);
               return (
                 <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderLeft: `3px solid ${tc}`, borderRadius: 8, cursor: 'pointer' }} onClick={() => handleJobClick(job)}>
                   <div style={{ flex: 1, minWidth: 0 }}>
