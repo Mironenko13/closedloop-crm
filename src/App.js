@@ -853,12 +853,15 @@ const DEMO_DAY_DETAIL = {
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const S = {
   app: {
+    height: '100dvh',
     minHeight: '100vh',
     background: '#1E2329',
     color: '#FFFFFF',
     fontFamily: "'Inter', -apple-system, sans-serif",
     fontSize: 14,
     overflowX: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   },
   header: {
     background: '#161B22',
@@ -868,8 +871,7 @@ const S = {
     alignItems: 'center',
     gap: 16,
     height: 56,
-    position: 'sticky',
-    top: 0,
+    flexShrink: 0,
     zIndex: 100,
   },
   logo: { fontSize: 22, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.5px' },
@@ -1266,7 +1268,7 @@ function GlobalStyles() {
 function BottomNav({ tab, setTab, tabs }) {
   return (
     <div style={{
-      position: 'fixed', bottom: 0, left: 0, right: 0,
+      flexShrink: 0,
       background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
       display: 'flex', height: 64, zIndex: 200,
       boxShadow: '0 -4px 12px rgba(0,0,0,0.3)',
@@ -9395,8 +9397,9 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#2A3140',
+      height: '100dvh', minHeight: '100vh', background: '#2A3140',
       color: '#D1D5DB', fontFamily: "'Inter', -apple-system, sans-serif",
+      display: 'flex', flexDirection: 'column', overflowX: 'hidden',
     }}>
       {/* Top demo banner */}
       <div style={{
@@ -9566,8 +9569,9 @@ function DemoDashboard({ trade, onChangeTrade, customTradeConfig }) {
       {/* Content */}
       <main style={{
         padding: isMobile ? '16px 12px' : 24,
-        maxWidth: 1400, margin: '0 auto',
-        paddingBottom: isMobile ? 80 : 88,
+        flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+        width: '100%', maxWidth: 1400, margin: '0 auto', boxSizing: 'border-box',
+        paddingBottom: isMobile ? 24 : 88,
       }}>
         {tab === 'pipeline' && (
           <PipelineTab
@@ -10304,7 +10308,8 @@ export default function App() {
 
       <main style={{
         ...S.body,
-        ...(isMobile ? { padding: '16px 12px', paddingBottom: 72 } : { paddingBottom: 0 }),
+        flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+        ...(isMobile ? { padding: '16px 12px', paddingBottom: 96 } : { paddingBottom: 32 }),
       }}>
         <div key={tab} className="ri-fadein">
         {tab === 'pipeline' && (
