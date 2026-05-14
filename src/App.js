@@ -909,6 +909,9 @@ const S = {
     minHeight: 44,
     whiteSpace: 'nowrap',
     flexShrink: 0,
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     WebkitTapHighlightColor: 'transparent',
   }),
   tradeFilterBtn: (active, color) => ({
@@ -921,6 +924,9 @@ const S = {
     fontSize: 12,
     fontWeight: 500,
     whiteSpace: 'nowrap',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
   grid: {
     display: 'grid',
@@ -936,10 +942,12 @@ const S = {
     transition: 'all 0.15s',
     transform: hovered ? 'translateY(-2px)' : 'none',
     boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.6)' : '0 2px 8px rgba(0,0,0,0.3)',
+    overflow: 'hidden',
+    minWidth: 0,
   }),
-  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  cardName: { fontSize: 15, fontWeight: 600, color: '#FFFFFF' },
-  cardContact: { fontSize: 12, color: '#D1D5DB', marginTop: 2 },
+  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10, gap: 8, minWidth: 0 },
+  cardName: { fontSize: 15, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  cardContact: { fontSize: 12, color: '#D1D5DB', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   statusBadge: (status) => ({
     fontSize: 10,
     fontWeight: 700,
@@ -5324,14 +5332,14 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
               onClick={() => setSelectedJob(job)}
             >
               <div style={S.cardHeader}>
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={S.cardName}>{job.customer}</div>
                   <div style={S.cardContact}>{job.address}</div>
                 </div>
                 <span style={{
                   fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
                   background: color + '22', color, textTransform: 'uppercase',
-                  letterSpacing: '0.5px', whiteSpace: 'nowrap',
+                  letterSpacing: '0.5px', whiteSpace: 'nowrap', flexShrink: 0,
                 }}>
                   {job.status}
                 </span>
@@ -5342,6 +5350,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
                 padding: '2px 8px', borderRadius: 10, marginBottom: 8,
                 background: tradeColor + '22', color: tradeColor,
                 letterSpacing: '0.3px',
+                maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'middle',
               }}>
                 {job.trade}
               </span>
@@ -5361,11 +5370,11 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
               </div>
 
               <div style={{ marginTop: 12 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 11, color: '#D1D5DB' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, gap: 8, minWidth: 0 }}>
+                  <span style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
                     {steps[doneCount < total ? doneCount : total - 1]?.label || 'Complete'}
                   </span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color, flexShrink: 0, whiteSpace: 'nowrap' }}>
                     {doneCount}/{total}
                   </span>
                 </div>
@@ -7619,15 +7628,15 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
             const sessionMs = status.clockedIn ? elapsed : 0;
 
             return (
-              <div key={member.id} style={{ background: '#2A3140', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
+              <div key={member.id} style={{ background: '#2A3140', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10, padding: 16, boxShadow: status.clockedIn ? '0 0 12px rgba(34,197,94,0.08)' : 'none', overflow: 'hidden', minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12, minWidth: 0 }}>
                   <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: status.clockedIn ? '#22c55e' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: status.clockedIn ? '#fff' : '#D1D5DB', transition: 'all 0.2s' }}>
                     {member.name.slice(0, 2).toUpperCase()}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>{member.name}</div>
-                    {member.role && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{member.role}</div>}
-                    {member.phone && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 1 }}>{member.phone}</div>}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</div>
+                    {member.role && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.role}</div>}
+                    {member.phone && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.phone}</div>}
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                     <button className="ri-btn ri-btn-secondary" style={{ padding: '8px 14px', minHeight: 44, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer', fontSize: 13, WebkitTapHighlightColor: 'transparent' }} onClick={() => setCrewModal(member)}>Edit</button>
@@ -7635,9 +7644,9 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                   </div>
                 </div>
 
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.08)'}` }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#D1D5DB', display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#D1D5DB' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, marginBottom: 12, background: status.clockedIn ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)', border: `1px solid ${status.clockedIn ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.08)'}`, maxWidth: '100%', minWidth: 0 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: status.clockedIn ? '#22c55e' : '#D1D5DB', display: 'inline-block', flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: status.clockedIn ? '#22c55e' : '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
                     {status.clockedIn ? `On job · ${status.jobName}` : 'Off duty'}
                   </span>
                 </div>
@@ -7878,17 +7887,18 @@ function ChatTab({ jobs, demoMessages }) {
               <div key={msg.id} style={{
                 background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
                 padding: '12px 16px', marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12,
+                overflow: 'hidden',
               }}>
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#D1D5DB', flexShrink: 0 }}>
                   {msg.senderName.slice(0, 2).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap', minWidth: 0 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#D1D5DB' }}>{msg.senderName}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#E8722A', background: 'rgba(249,115,22,0.1)', padding: '1px 8px', borderRadius: 10 }}>{jobName(msg.jobId)}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#E8722A', background: 'rgba(249,115,22,0.1)', padding: '1px 8px', borderRadius: 10, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{jobName(msg.jobId)}</span>
                     <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 'auto' }}>{formatTs(msg.timestamp)}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.text}</div>
+                  <div style={{ fontSize: 13, color: '#D1D5DB', overflowWrap: 'anywhere', wordBreak: 'break-word', lineHeight: 1.45 }}>{msg.text}</div>
                 </div>
               </div>
             )
