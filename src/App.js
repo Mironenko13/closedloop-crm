@@ -712,6 +712,21 @@ const DEMO_JOBS = [
     duration: 3,
     jobType: 'Residential', currentPhase: 1, completedPhases: [],
   },
+  {
+    id: 211, customer: 'Eli Beiler', address: '892 Old Turnpike Rd, Mifflinburg PA 17844',
+    trade: 'Solar Panel Reinstall', value: 5600, status: 'Scheduled', hours: 6,
+    scheduledDate: '2026-04-29', completedSteps: [],
+    notes: 'Uninstall + reinstall 24-panel grid-tied array for full reroof underneath. Coordinate with homeowner\'s electrician for disconnect/reconnect. Panel removal day 1, shingles days 2-3, panel reinstall day 4.',
+    duration: 4,
+    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+  },
+  {
+    id: 212, customer: 'Wengert Residence', address: '54 Buffalo Cross Rd, Lewisburg PA 17837',
+    trade: 'Chimney Cricket', value: 2200, status: 'Scheduled', hours: 4,
+    scheduledDate: '2026-04-30', completedSteps: [],
+    notes: 'Build 36" cricket behind 5\' wide masonry chimney. Persistent leak at upslope side. Frame, deck, ice & water shield, integrate with existing field. Match Owens Corning Duration Onyx Black.',
+    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+  },
   // ── Unscheduled pipeline jobs ──
   {
     id: 209, customer: 'Messiah Village', address: '100 Mt Allen Dr, Mechanicsburg PA 17055',
@@ -5225,7 +5240,11 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
 
   const filtered = useMemo(() => {
     let result = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
-    if (tradeFilter !== 'all') result = result.filter(j => j.trade === tradeFilter);
+    if (tradeFilter === '__OTHER__') {
+      result = result.filter(j => j.trade && !TRADE_LIST.includes(j.trade));
+    } else if (tradeFilter !== 'all') {
+      result = result.filter(j => j.trade === tradeFilter);
+    }
     return result;
   }, [jobs, filter, tradeFilter]);
 
@@ -5255,7 +5274,7 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
         >
           All Job Types
         </button>
-        {TRADE_LIST.filter(t => jobs.some(j => j.trade === t)).map(t => (
+        {TRADE_LIST.map(t => (
           <button
             key={t}
             style={S.tradeFilterBtn(tradeFilter === t, TRADE_COLORS[t])}
@@ -5264,15 +5283,12 @@ function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassig
             {t}
           </button>
         ))}
-        {Array.from(new Set(jobs.map(j => j.trade).filter(t => t && !TRADE_LIST.includes(t)))).sort().map(t => (
-          <button
-            key={t}
-            style={S.tradeFilterBtn(tradeFilter === t, CUSTOM_TRADE_COLOR)}
-            onClick={() => setTradeFilter(tradeFilter === t ? 'all' : t)}
-          >
-            {t}
-          </button>
-        ))}
+        <button
+          style={S.tradeFilterBtn(tradeFilter === '__OTHER__', CUSTOM_TRADE_COLOR)}
+          onClick={() => setTradeFilter(tradeFilter === '__OTHER__' ? 'all' : '__OTHER__')}
+        >
+          Other
+        </button>
       </div>
 
       <div style={S.grid}>
