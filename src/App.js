@@ -9907,6 +9907,7 @@ export default function App() {
   });
   const [jobModal, setJobModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showHeaderMenu, setShowHeaderMenu] = useState(false);
 
   // Cmd+K / Ctrl+K to open universal search
   useEffect(() => {
@@ -9919,6 +9920,23 @@ export default function App() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  // Close header overflow menu on outside tap or Escape
+  useEffect(() => {
+    if (!showHeaderMenu) return undefined;
+    const onDown = (e) => {
+      if (!e.target.closest || !e.target.closest('[data-header-menu]')) setShowHeaderMenu(false);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') setShowHeaderMenu(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [showHeaderMenu]);
 
   useEffect(() => {
     if (session && !session.isDemo) localStorage.setItem('cl_crew', JSON.stringify(userCrew));
@@ -10119,22 +10137,24 @@ export default function App() {
     <div style={S.app}>
       <header style={{
         ...S.header,
-        ...(isMobile ? { padding: '0 10px', height: 48, gap: 6, overflow: 'hidden' } : {}),
+        ...(isMobile ? { padding: '0 10px', height: 48, gap: 6, overflow: 'visible' } : {}),
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8, minWidth: 0, flexShrink: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8, minWidth: 0, flexShrink: 1, overflow: 'hidden' }}>
           <span style={{ ...S.logo, fontSize: isMobile ? 17 : 22, flexShrink: 0 }}>RidgeOS</span>
-          {isDemo && !isMobile && (
+          {isDemo && (
             <span style={{
-              fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+              fontSize: isMobile ? 9 : 10, fontWeight: 600,
+              padding: isMobile ? '2px 6px' : '2px 8px', borderRadius: 10,
               background: 'rgba(232,114,42,0.2)', color: '#E8722A',
               border: '1px solid rgba(232,114,42,0.3)', letterSpacing: '0.5px',
+              flexShrink: 0,
             }}>
               DEMO
             </span>
           )}
           {isDemo && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-              {!isMobile && <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEMO_ROLES[demoRole].color, flexShrink: 0 }} />}
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEMO_ROLES[demoRole].color, flexShrink: 0 }} />
               <select
                 value={demoRole}
                 onChange={e => setDemoRole(e.target.value)}
@@ -10144,8 +10164,8 @@ export default function App() {
                   padding: isMobile ? '6px 6px' : '4px 8px',
                   cursor: 'pointer', outline: 'none',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
-                  maxWidth: isMobile ? 110 : 'none',
-                  textOverflow: 'ellipsis',
+                  maxWidth: isMobile ? 120 : 'none',
+                  textOverflow: 'ellipsis', minWidth: 0,
                 }}
               >
                 {Object.entries(DEMO_ROLES).map(([key, r]) => (
@@ -10170,66 +10190,138 @@ export default function App() {
           </div>
         )}
 
-        <button
-          onClick={() => setShowSearch(true)}
-          title="Search (⌘K)"
-          aria-label="Search"
-          style={{
-            background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: 8, color: '#D1D5DB', cursor: 'pointer',
-            fontSize: 14, padding: isMobile ? '0' : '5px 12px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            width: isMobile ? 36 : 'auto', height: isMobile ? 36 : 'auto',
-            minHeight: isMobile ? 36 : 'auto', flexShrink: 0,
-            marginLeft: 'auto',
-          }}
-        >
-          🔍{!isMobile && <span style={{ fontSize: 11, color: '#9CA3AF' }}>⌘K</span>}
-        </button>
-
-        {isDemo && (
-          <button
-            onClick={() => {
-              setDemoLeadOverrides({});
-              setDemoJobOverrides({});
-              setDemoNewJobs([]);
-              setDemoCrew(DEMO_CREW);
-            }}
-            className="ri-btn ri-btn-secondary"
-            title="Reset Demo"
-            aria-label="Reset Demo"
-            style={{
-              background: 'transparent', border: '1px solid rgba(232,114,42,0.3)',
-              color: '#E8722A', cursor: 'pointer',
-              fontSize: isMobile ? 15 : 12,
-              padding: isMobile ? '0' : '5px 12px', borderRadius: 6,
-              width: isMobile ? 36 : 'auto', height: isMobile ? 36 : 'auto',
-              minHeight: isMobile ? 36 : 'auto', flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            {isMobile ? '↻' : 'Reset Demo'}
-          </button>
+        {/* Desktop: search + reset + sign out as separate controls */}
+        {!isMobile && (
+          <>
+            <button
+              onClick={() => setShowSearch(true)}
+              title="Search (⌘K)"
+              aria-label="Search"
+              style={{
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 8, color: '#D1D5DB', cursor: 'pointer',
+                fontSize: 14, padding: '5px 12px',
+                display: 'flex', alignItems: 'center', gap: 6,
+                flexShrink: 0, marginLeft: 'auto',
+              }}
+            >
+              🔍<span style={{ fontSize: 11, color: '#9CA3AF' }}>⌘K</span>
+            </button>
+            {isDemo && (
+              <button
+                onClick={() => {
+                  setDemoLeadOverrides({});
+                  setDemoJobOverrides({});
+                  setDemoNewJobs([]);
+                  setDemoCrew(DEMO_CREW);
+                }}
+                className="ri-btn ri-btn-secondary"
+                style={{
+                  background: 'transparent', border: '1px solid rgba(232,114,42,0.3)',
+                  color: '#E8722A', cursor: 'pointer', fontSize: 12,
+                  padding: '5px 12px', borderRadius: 6,
+                  minHeight: 'auto', flexShrink: 0,
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                Reset Demo
+              </button>
+            )}
+            <button
+              onClick={() => { setScreen('login'); setSession(null); }}
+              className="ri-btn ri-btn-secondary"
+              style={{
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
+                color: '#D1D5DB', cursor: 'pointer', fontSize: 12,
+                padding: '5px 12px', borderRadius: 6,
+                minHeight: 'auto', flexShrink: 0,
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              Sign out
+            </button>
+          </>
         )}
-        <button
-          onClick={() => { setScreen('login'); setSession(null); }}
-          className="ri-btn ri-btn-secondary"
-          title="Sign out"
-          aria-label="Sign out"
-          style={{
-            background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
-            color: '#D1D5DB', cursor: 'pointer',
-            fontSize: isMobile ? 11 : 12,
-            padding: isMobile ? '0 10px' : '5px 12px', borderRadius: 6,
-            height: isMobile ? 36 : 'auto',
-            minHeight: isMobile ? 36 : 'auto', flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          {isMobile ? 'Exit' : 'Sign out'}
-        </button>
+
+        {/* Mobile: single kebab overflow menu */}
+        {isMobile && (
+          <div data-header-menu style={{ position: 'relative', marginLeft: 'auto', flexShrink: 0 }}>
+            <button
+              onClick={() => setShowHeaderMenu(v => !v)}
+              aria-label="More actions"
+              aria-expanded={showHeaderMenu}
+              style={{
+                width: 40, height: 36, padding: 0,
+                background: showHeaderMenu ? 'rgba(255,255,255,0.08)' : 'transparent',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 8, color: '#FFFFFF',
+                fontSize: 22, lineHeight: 1, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              ⋯
+            </button>
+            {showHeaderMenu && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                minWidth: 180, background: '#2A3140',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 10, padding: 6,
+                boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+                zIndex: 200, display: 'flex', flexDirection: 'column', gap: 2,
+              }}>
+                <button
+                  onClick={() => { setShowHeaderMenu(false); setShowSearch(true); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', minHeight: 44,
+                    background: 'transparent', border: 'none', borderRadius: 8,
+                    color: '#FFFFFF', fontSize: 14, fontWeight: 600,
+                    cursor: 'pointer', textAlign: 'left',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                >
+                  <span style={{ fontSize: 16, width: 22 }}>🔍</span> Search
+                </button>
+                {isDemo && (
+                  <button
+                    onClick={() => {
+                      setDemoLeadOverrides({});
+                      setDemoJobOverrides({});
+                      setDemoNewJobs([]);
+                      setDemoCrew(DEMO_CREW);
+                      setShowHeaderMenu(false);
+                    }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '10px 12px', minHeight: 44,
+                      background: 'transparent', border: 'none', borderRadius: 8,
+                      color: '#E8722A', fontSize: 14, fontWeight: 600,
+                      cursor: 'pointer', textAlign: 'left',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >
+                    <span style={{ fontSize: 16, width: 22 }}>↻</span> Reset Demo
+                  </button>
+                )}
+                <button
+                  onClick={() => { setShowHeaderMenu(false); setScreen('login'); setSession(null); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', minHeight: 44,
+                    background: 'transparent', border: 'none', borderRadius: 8,
+                    color: '#D1D5DB', fontSize: 14, fontWeight: 600,
+                    cursor: 'pointer', textAlign: 'left',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                >
+                  <span style={{ fontSize: 16, width: 22 }}>⏻</span> Sign out
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
       <main style={{
