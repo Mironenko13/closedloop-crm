@@ -7539,11 +7539,15 @@ function CrewMemberModal({ member, onSave, onClose }) {
 }
 
 // ─── Crew Tab ──────────────────────────────────────────────────────────────────
-function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteMember }) {
+function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteMember, addTrigger }) {
   const [allEntries, setAllEntries] = useState([]);
   const [now, setNow] = useState(Date.now());
   const [crewModal, setCrewModal] = useState(null);
   const isMobile = useMobile();
+
+  useEffect(() => {
+    if (addTrigger && addTrigger > 0) setCrewModal('add');
+  }, [addTrigger]);
 
   useEffect(() => {
     const load = () => timeDB.getAll().then(setAllEntries).catch(() => {});
@@ -9675,67 +9679,43 @@ function DemoPage() {
 
 // ─── Floating Action Button ──────────────────────────────────────────────────
 function FloatingActionButton({ tab, onAction }) {
-  const [open, setOpen] = useState(false);
   const isMobile = useMobile();
 
-  const menuItems = useMemo(() => {
+  const config = useMemo(() => {
     switch (tab) {
-      case 'pipeline': return [
-        { label: 'New Lead', icon: '📋', action: 'addLead' },
-        { label: 'New Job', icon: '🔨', action: 'addJob' },
-      ];
-      case 'jobs': return [
-        { label: 'New Job', icon: '🔨', action: 'addJob' },
-      ];
-      case 'crew': return [
-        { label: 'Add Crew Member', icon: '👷', action: 'addCrew' },
-      ];
-      case 'calendar': return [
-        { label: 'Schedule Job', icon: '📅', action: 'addJob' },
-      ];
-      default: return [
-        { label: 'New Lead', icon: '📋', action: 'addLead' },
-        { label: 'New Job', icon: '🔨', action: 'addJob' },
-      ];
+      case 'pipeline': return { label: 'Add Lead', action: 'addLead' };
+      case 'jobs':     return { label: 'Add Job',  action: 'addJob' };
+      case 'crew':     return { label: 'Add Crew', action: 'addCrew' };
+      default:         return null;
     }
   }, [tab]);
 
+  if (!config) return null;
+
   return (
-    <div style={{ position: 'fixed', bottom: isMobile ? 72 : 28, right: 28, zIndex: 900 }}>
-      {open && (
-        <div style={{ position: 'absolute', bottom: 60, right: 0, display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
-          {menuItems.map(item => (
-            <button
-              key={item.action + item.label}
-              onClick={() => { onAction(item.action); setOpen(false); }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '12px 18px', minHeight: 44, background: '#2A3140',
-                border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-                color: '#C9D1D9', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-              }}
-            >
-              <span>{item.icon}</span> {item.label}
-            </button>
-          ))}
-        </div>
-      )}
-      <button
-        onClick={() => setOpen(prev => !prev)}
-        style={{
-          width: 52, height: 52, borderRadius: '50%',
-          background: open ? '#8B95A1' : 'linear-gradient(135deg, #2D5016, #3d6b1e)',
-          border: 'none', color: '#fff', fontSize: 26, fontWeight: 400,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(45,80,22,0.5)',
-          transition: 'transform 0.15s, background 0.15s',
-          transform: open ? 'rotate(45deg)' : 'none',
-        }}
-      >
-        +
-      </button>
-    </div>
+    <button
+      onClick={() => onAction(config.action)}
+      aria-label={config.label}
+      style={{
+        position: 'fixed', bottom: isMobile ? 80 : 28, right: isMobile ? 16 : 28,
+        zIndex: 900, height: 52, padding: '0 22px',
+        borderRadius: 26,
+        background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+        border: 'none', color: '#fff',
+        fontSize: 15, fontWeight: 700, letterSpacing: '0.2px',
+        cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 8,
+        boxShadow: '0 6px 20px rgba(45,80,22,0.5), 0 2px 6px rgba(0,0,0,0.3)',
+        transition: 'transform 0.12s, box-shadow 0.15s',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+      onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+      onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+    >
+      <span style={{ fontSize: 22, lineHeight: 1, fontWeight: 400 }}>+</span>
+      {config.label}
+    </button>
   );
 }
 
@@ -9908,6 +9888,7 @@ export default function App() {
   const [jobModal, setJobModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
+  const [addCrewTrigger, setAddCrewTrigger] = useState(0);
 
   // Cmd+K / Ctrl+K to open universal search
   useEffect(() => {
@@ -10412,6 +10393,7 @@ export default function App() {
             onAddMember={isDemo ? handleDemoAddCrew : handleAddCrew}
             onEditMember={isDemo ? handleDemoEditCrew : handleEditCrew}
             onDeleteMember={isDemo ? handleDemoDeleteCrew : handleDeleteCrew}
+            addTrigger={addCrewTrigger}
           />
         )}
         {tab === 'chat' && (
@@ -10465,7 +10447,7 @@ export default function App() {
         onAction={(action) => {
           if (action === 'addLead') setLeadModal('add');
           else if (action === 'addJob') setJobModal(true);
-          else if (action === 'addCrew') setTab('crew');
+          else if (action === 'addCrew') setAddCrewTrigger(t => t + 1);
         }}
       />
 
