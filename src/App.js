@@ -1088,17 +1088,21 @@ const S = {
     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
+    overscrollBehavior: 'contain',
   },
   modalOverlay: {
     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000, padding: 20,
+    overscrollBehavior: 'contain',
   },
   modal: {
     background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: 14, width: '100%', maxWidth: 560,
     maxHeight: '85dvh', overflow: 'auto', padding: 28, position: 'relative',
     boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+    overscrollBehavior: 'contain',
+    WebkitOverflowScrolling: 'touch',
   },
   modalTitle: { fontSize: 18, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 },
   modalSub: { fontSize: 13, color: '#D1D5DB', marginBottom: 20 },
@@ -1154,6 +1158,27 @@ function useMobile() {
     return () => window.removeEventListener('resize', h);
   }, []);
   return isMobile;
+}
+
+// Lock background scroll while a modal is open. Stops the page from
+// drifting when the user swipes inside the modal (scroll-chaining)
+// and prevents the backdrop from scrolling the page on touch.
+// Our app uses <main> as the scroll container (flex column layout),
+// so we lock both <main> and <body>. Pass `active` for inline modals
+// rendered conditionally in their parent.
+function useScrollLock(active = true) {
+  useEffect(() => {
+    if (!active) return undefined;
+    const mainEl = document.querySelector('main');
+    const prevMain = mainEl ? mainEl.style.overflow : '';
+    const prevBody = document.body.style.overflow;
+    if (mainEl) mainEl.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      if (mainEl) mainEl.style.overflow = prevMain;
+      document.body.style.overflow = prevBody;
+    };
+  }, [active]);
 }
 
 // Shared tab definitions for bottom nav
@@ -1411,6 +1436,7 @@ const FRow = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
 
 function AddLeadModal({ lead, defaultTrade, customTrade, onSave, onClose }) {
   const isMobile = useMobile();
+  useScrollLock();
   const isEdit = !!lead;
   const initialTrade = lead?.trade || defaultTrade || 'Full Replacement';
   const initialIsOther = !!initialTrade && !TRADE_LIST.includes(initialTrade) && initialTrade !== customTrade;
@@ -1867,6 +1893,7 @@ const PHOTO_CATEGORIES = [
 function JobPhotosPanel({ lead, onCountChange, phases }) {
   const [photos, setPhotos] = useState([]);
   const [lightbox, setLightbox] = useState(null);
+  useScrollLock(!!lightbox);
   const [uploading, setUploading] = useState(false);
   const [caption, setCaption] = useState('');
   const [photoCategory, setPhotoCategory] = useState('Before');
@@ -2153,6 +2180,7 @@ function JobPhotosPanel({ lead, onCountChange, phases }) {
 
 // ─── CoachPanel ──────────────────────────────────────────────────────────────
 function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
+  useScrollLock();
   const [aiText, setAiText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -2510,6 +2538,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
 
 // ─── Card Quick Edit Modal ─────────────────────────────────────────────────────
 function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rolePerms }) {
+  useScrollLock();
   const [stage, setStage] = useState(lead.stage);
   const [status, setStatus] = useState(lead.status || 'active');
   const [updateText, setUpdateText] = useState('');
@@ -3021,6 +3050,7 @@ function CallbacksTab({ leads, onSelectLead, onUpdateLead, rolePerms }) {
   const [snoozeModal, setSnoozeModal] = useState(null);
   const [snoozeDate, setSnoozeDate] = useState('');
   const showToast = useToast();
+  useScrollLock(!!snoozeModal);
 
   const withCallbacks = leads
     .filter(l => l.callbackDate && l.status !== 'won' && l.status !== 'lost')
@@ -4574,6 +4604,7 @@ function CostManagerPanel({ job, crew, assignments, rolePerms, isDemo }) {
 
 // ─── Job Modal ────────────────────────────────────────────────────────────────
 function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, isDemo }) {
+  useScrollLock();
   const steps = (job.taskList && job.taskList.length ? job.taskList.map((label, i) => ({ id: i + 1, label })) : null)
     || TRADE_CHECKLISTS[job.trade]
     || (customChecklist ? customChecklist.map((label, i) => ({ id: i + 1, label })) : null)
@@ -6854,6 +6885,7 @@ function TeamManagementTab() {
   const isMobile = useMobile();
   const fileRef = useRef(null);
   const ROLE_OPTIONS = ['Foreman', 'Installer', 'Estimator', 'Sales'];
+  useScrollLock(showImport || showAddMember);
 
   const closeAddMember = () => { setShowAddMember(false); setAddForm(initialAddForm); setAddErrors({}); };
 
@@ -7315,6 +7347,7 @@ function GlobalPhotoLog({ jobs }) {
 // ─── Add Job Modal ────────────────────────────────────────────────────────────
 function AddJobModal({ onSave, onClose }) {
   const isMobile = useMobile();
+  useScrollLock();
   const [form, setForm] = useState({
     customer: '', address: '', trade: 'Full Replacement', tradeCustom: '', value: '', scheduledDate: '', notes: '', jobType: 'Residential',
   });
@@ -7608,6 +7641,7 @@ function JobCrewSection({ job, crew, assignments, onAssign, onUnassign, onAddCre
 // ─── Crew Member Modal ──────────────────────────────────────────────────────────
 function CrewMemberModal({ member, onSave, onClose }) {
   const isMobile = useMobile();
+  useScrollLock();
   const [name, setName] = useState(member?.name || '');
   const [role, setRole] = useState(member?.role || '');
   const [phone, setPhone] = useState(member?.phone || '');
@@ -8033,6 +8067,7 @@ function ChatTab({ jobs, demoMessages }) {
 
 // ─── Schedule Job Modal (reschedule existing) ──────────────────────────────────
 function ScheduleJobModal({ defaultDate, jobs, onSave, onClose, targetJob }) {
+  useScrollLock();
   const activeJobs = jobs.filter(j => j.status !== 'Complete');
   const isReschedule = targetJob && targetJob.scheduledDate;
   const [jobId, setJobId] = useState(targetJob ? String(targetJob.id) : (activeJobs[0] ? String(activeJobs[0].id) : ''));
@@ -8107,6 +8142,7 @@ function getWorkflowScore(text) {
 
 // ─── Quick Schedule Bar (inline panel) ─────────────────────────────────────────
 function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
+  useScrollLock();
   const [description, setDescription] = useState(job?.description || '');
   const [customer, setCustomer] = useState(job?.customer || '');
   const [duration, setDuration] = useState(job?.duration || 1);
@@ -8287,6 +8323,7 @@ function QuickScheduleBar({ date, job, userTrade, onSave, onClose }) {
 
 // ─── Stage Change Modal ─────────────────────────────────────────────────────────
 function StageChangeModal({ job, onSave, onClose }) {
+  useScrollLock();
   const stages = [
     { key: 'materials_ordered', label: 'Materials Ordered', color: '#8b5cf6' },
     { key: 'scheduled_for_install', label: 'Scheduled for Install', color: '#06b6d4' },
@@ -8316,6 +8353,7 @@ function StageChangeModal({ job, onSave, onClose }) {
 
 // ─── Quick Assign Crew Panel ─────────────────────────────────────────────────────
 function QuickAssignCrewPanel({ job, crew, assignments, onAssign, onUnassign, onClose }) {
+  useScrollLock();
   const assignedIds = assignments[String(job.id)] || [];
   return (
     <div style={S.modalOverlay} onClick={onClose}>
@@ -8655,6 +8693,7 @@ function WeekView({ days, today, dayJobsFn, onDayClick, selectedDate, onJobClick
 
 // ─── Day Action Modal ──────────────────────────────────────────────────────────
 function DayActionModal({ date, allJobs, assignments, crew, existingNote, onScheduleExisting, onCreateNew, onAddNote, onClose }) {
+  useScrollLock();
   const [mode, setMode] = useState('menu'); // 'menu' | 'schedule' | 'create' | 'note' | 'dayDetail'
   const [note, setNote] = useState(existingNote || '');
   const [description, setDescription] = useState('');
@@ -9855,6 +9894,7 @@ function FloatingActionButton({ tab, onAction }) {
 
 // ─── Universal Search (Cmd+K) ────────────────────────────────────────────────
 function UniversalSearch({ leads, jobs, crew, onSelectLead, onSelectJob, setTab, onClose }) {
+  useScrollLock();
   const [query, setQuery] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
   const inputRef = useRef(null);
