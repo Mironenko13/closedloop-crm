@@ -6847,8 +6847,36 @@ function TeamManagementTab() {
   const [pasteText, setPasteText] = useState('');
   const [parsedPreview, setParsedPreview] = useState([]);
   const [dragOver, setDragOver] = useState(false);
+  const [showAddMember, setShowAddMember] = useState(false);
+  const initialAddForm = { firstName: '', lastName: '', email: '', phone: '', role: 'Installer' };
+  const [addForm, setAddForm] = useState(initialAddForm);
+  const [addErrors, setAddErrors] = useState({});
   const isMobile = useMobile();
   const fileRef = useRef(null);
+  const ROLE_OPTIONS = ['Foreman', 'Installer', 'Estimator', 'Sales'];
+
+  const closeAddMember = () => { setShowAddMember(false); setAddForm(initialAddForm); setAddErrors({}); };
+
+  const handleAddMember = () => {
+    const errs = {};
+    if (!addForm.firstName.trim()) errs.firstName = true;
+    if (!addForm.lastName.trim()) errs.lastName = true;
+    if (!addForm.email.trim()) errs.email = true;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addForm.email.trim())) errs.email = 'invalid';
+    if (!addForm.role) errs.role = true;
+    setAddErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+    const member = {
+      id: `tm-add-${Date.now()}`,
+      name: `${addForm.firstName.trim()} ${addForm.lastName.trim()}`,
+      email: addForm.email.trim(),
+      phone: addForm.phone.trim(),
+      role: addForm.role,
+      status: 'Active',
+    };
+    setRoster(prev => [...prev, member]);
+    closeAddMember();
+  };
 
   const roleColor = (r) => ({ Owner: '#7C3AED', Foreman: '#E8722A', Installer: '#2563EB', Sales: '#DB2777', Estimator: '#059669' }[r] || '#8B95A1');
   const statusBg = (s) => ({ Active: 'rgba(16,185,129,0.15)', 'Invite Pending': 'rgba(245,158,11,0.15)', Inactive: '#2A3140' }[s] || '#2A3140');
@@ -6898,13 +6926,24 @@ function TeamManagementTab() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Team Management</div>
           <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2 }}>{roster.length} team members</div>
         </div>
-        <button onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }} style={{ padding: '8px 16px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
-          + Import Team
-        </button>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <button
+            onClick={() => setShowAddMember(true)}
+            style={{ padding: '10px 16px', minHeight: 44, background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', boxShadow: '0 2px 10px rgba(249,115,22,0.3)', WebkitTapHighlightColor: 'transparent', whiteSpace: 'nowrap' }}
+          >
+            + Add Member
+          </button>
+          <button
+            onClick={() => { setShowImport(true); setParsedPreview([]); setPasteText(''); }}
+            style={{ padding: '10px 14px', minHeight: 44, background: 'transparent', border: '1px solid rgba(34,197,94,0.4)', borderRadius: 8, color: '#22c55e', fontWeight: 600, fontSize: 13, cursor: 'pointer', WebkitTapHighlightColor: 'transparent', whiteSpace: 'nowrap' }}
+          >
+            + Import Team
+          </button>
+        </div>
       </div>
 
       {/* Team roster */}
@@ -6930,6 +6969,89 @@ function TeamManagementTab() {
           </div>
         ))}
       </div>
+
+      {/* Add Member Modal */}
+      {showAddMember && (
+        <div style={S.overlay} onClick={closeAddMember}>
+          <div style={{ ...S.modal, maxWidth: 460 }} onClick={e => e.stopPropagation()}>
+            <button className="ri-close-btn" style={S.closeBtn} onClick={closeAddMember}>×</button>
+            <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add Team Member</div>
+            <div style={S.modalSub}>Add one person to your team.</div>
+
+            <div style={isMobile ? {} : { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={FLbl}>First Name *</label>
+                <input
+                  value={addForm.firstName}
+                  onChange={e => setAddForm(f => ({ ...f, firstName: e.target.value }))}
+                  placeholder="Jake"
+                  style={{ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '10px 12px', border: `1px solid ${addErrors.firstName ? '#ef4444' : 'rgba(255,255,255,0.12)'}`, minHeight: 44 }}
+                />
+              </div>
+              <div>
+                <label style={FLbl}>Last Name *</label>
+                <input
+                  value={addForm.lastName}
+                  onChange={e => setAddForm(f => ({ ...f, lastName: e.target.value }))}
+                  placeholder="Stoltzfus"
+                  style={{ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '10px 12px', border: `1px solid ${addErrors.lastName ? '#ef4444' : 'rgba(255,255,255,0.12)'}`, minHeight: 44 }}
+                />
+              </div>
+            </div>
+
+            <label style={FLbl}>Email *</label>
+            <input
+              type="email"
+              value={addForm.email}
+              onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))}
+              placeholder="jake@keystoneroofing.com"
+              style={{ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '10px 12px', border: `1px solid ${addErrors.email ? '#ef4444' : 'rgba(255,255,255,0.12)'}`, minHeight: 44 }}
+            />
+            {addErrors.email === 'invalid' && (
+              <div style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>Enter a valid email address.</div>
+            )}
+
+            <div style={isMobile ? {} : { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={FLbl}>Phone</label>
+                <input
+                  type="tel"
+                  value={addForm.phone}
+                  onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="(570) 555-1234"
+                  style={{ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '10px 12px', minHeight: 44 }}
+                />
+              </div>
+              <div>
+                <label style={FLbl}>Role *</label>
+                <select
+                  value={addForm.role}
+                  onChange={e => setAddForm(f => ({ ...f, role: e.target.value }))}
+                  style={{ ...FI, fontSize: isMobile ? 16 : 13, padding: isMobile ? '13px 14px' : '10px 12px', border: `1px solid ${addErrors.role ? '#ef4444' : 'rgba(255,255,255,0.12)'}`, minHeight: 44 }}
+                >
+                  {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+              <button
+                onClick={closeAddMember}
+                className="ri-btn ri-btn-secondary"
+                style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', fontWeight: 600, fontSize: 14, cursor: 'pointer', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddMember}
+                style={{ flex: 2, padding: '12px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', minHeight: 44, boxShadow: '0 2px 10px rgba(249,115,22,0.3)', WebkitTapHighlightColor: 'transparent' }}
+              >
+                Add Member
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Import Modal */}
       {showImport && (
