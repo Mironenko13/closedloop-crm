@@ -1160,22 +1160,27 @@ function useMobile() {
   return isMobile;
 }
 
-// Lock background scroll while a modal is open. Stops the page from
-// drifting when the user swipes inside the modal (scroll-chaining)
-// and prevents the backdrop from scrolling the page on touch.
-// Our app uses <main> as the scroll container (flex column layout),
-// so we lock both <main> and <body>. Pass `active` for inline modals
-// rendered conditionally in their parent.
+// Lock background scroll while a modal is open WITHOUT perturbing
+// the app's 100dvh flex-column layout (header → main → BottomNav).
+//
+// Critical: do NOT touch <main>'s overflow property. Changing
+// overflow on a flex-1 child triggers an iOS Safari layout
+// recalculation that visibly re-flows the BottomNav out of its
+// pinned position. Instead we lock scroll with touch-action and
+// body-overflow, which don't disturb the flex layout at all.
+//
+// Pass `active` for inline modals rendered conditionally in their
+// parent.
 function useScrollLock(active = true) {
   useEffect(() => {
     if (!active) return undefined;
     const mainEl = document.querySelector('main');
-    const prevMain = mainEl ? mainEl.style.overflow : '';
+    const prevTouch = mainEl ? mainEl.style.touchAction : '';
     const prevBody = document.body.style.overflow;
-    if (mainEl) mainEl.style.overflow = 'hidden';
+    if (mainEl) mainEl.style.touchAction = 'none';
     document.body.style.overflow = 'hidden';
     return () => {
-      if (mainEl) mainEl.style.overflow = prevMain;
+      if (mainEl) mainEl.style.touchAction = prevTouch;
       document.body.style.overflow = prevBody;
     };
   }, [active]);
