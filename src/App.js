@@ -1304,16 +1304,24 @@ function GlobalStyles() {
 }
 
 function BottomNav({ tab, setTab, tabs }) {
+  const tabList = tabs || NAV_TABS;
+  // Show right-edge fade gradient when tabs may overflow the viewport.
+  // 6+ tabs at flex-basis 56 = 336px+, which can overflow at 360-390px.
+  const showFade = tabList.length > 5;
   return (
     <div style={{
       flexShrink: 0,
+      position: 'relative',
       background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
-      display: 'flex', height: 64, zIndex: 200,
+      zIndex: 200,
       boxShadow: '0 -4px 12px rgba(0,0,0,0.3)',
-      overflowX: 'auto', scrollbarWidth: 'none',
-      WebkitOverflowScrolling: 'touch',
     }}>
-      {(tabs || NAV_TABS).map(({ key, label, icon, locked }) => {
+      <div style={{
+        display: 'flex', height: 64,
+        overflowX: 'auto', scrollbarWidth: 'none',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+      {tabList.map(({ key, label, icon, locked }) => {
         const c = SECTION_COLORS[key] || '#E8722A';
         const isActive = tab === key && !locked;
         return (
@@ -1322,7 +1330,7 @@ function BottomNav({ tab, setTab, tabs }) {
             className={isActive ? '' : 'ri-bnav-btn'}
             onClick={() => !locked && setTab(key)}
             style={{
-              minWidth: 64, flexShrink: 0, display: 'flex', flexDirection: 'column',
+              flex: '1 0 56px', display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               background: isActive ? c + '10' : 'transparent', border: 'none',
               color: locked ? 'rgba(255,255,255,0.12)' : isActive ? '#E8722A' : '#D1D5DB',
@@ -1341,6 +1349,14 @@ function BottomNav({ tab, setTab, tabs }) {
           </button>
         );
       })}
+      </div>
+      {showFade && (
+        <div style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: 32,
+          background: 'linear-gradient(to right, rgba(22,27,34,0), #161B22 85%)',
+          pointerEvents: 'none',
+        }} />
+      )}
     </div>
   );
 }
@@ -2394,7 +2410,7 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
 
             {aiText && <div style={S.aiResponse}>{aiText}</div>}
 
-            {!demoMode && <div style={S.apiKeyNote}>Powered by Claude · Add ANTHROPIC_API_KEY to Vercel environment variables</div>}
+            {!demoMode && <div style={S.apiKeyNote}>Powered by Claude</div>}
           </>
         )}
 
