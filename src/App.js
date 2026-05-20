@@ -1259,7 +1259,7 @@ const NAV_TABS = [
   { key: 'pipeline',  label: 'Pipeline',  icon: '📋' },
   { key: 'callbacks', label: 'Callbacks', icon: '📞' },
   { key: 'analytics', label: 'Analytics', icon: '📊' },
-  { key: 'jobs',      label: 'Jobs',      icon: '🔨' },
+  { key: 'jobs',      label: 'Projects',  icon: '🔨' },
   { key: 'calendar',  label: 'Calendar',  icon: '📅' },
   { key: 'crew',      label: 'Crew',      icon: '👷' },
   { key: 'chat',      label: 'Chat',      icon: '💬' },
@@ -5392,6 +5392,310 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 }
 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
+// ─── Projects Tab (project-centric view; scopes live inside) ─────────────────
+function deriveProjectStatusFromJobs(scopes) {
+  if (!scopes || scopes.length === 0) return 'Scheduled';
+  if (scopes.some(s => s.status === 'In Progress')) return 'In Progress';
+  if (scopes.every(s => s.status === 'Complete')) return 'Complete';
+  return scopes.find(s => s.status !== 'Complete')?.status || 'Scheduled';
+}
+
+function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [tradeFilter, setTradeFilter] = useState('all');
+
+  const statuses = ['all', 'Scheduled', 'In Progress', 'Complete'];
+
+  // Group jobs (scopes) into projects by customer+address
+  const projects = useMemo(() => {
+    const byKey = new Map();
+    jobs.forEach(j => {
+      const key = `${j.customer}|${j.address}`;
+      if (!byKey.has(key)) {
+        byKey.set(key, {
+          id: key,
+          customerName: j.customer || 'Unknown',
+          address: j.address || '',
+          scopes: [],
+        });
+      }
+      byKey.get(key).scopes.push(j);
+    });
+    return Array.from(byKey.values()).map(p => ({
+      ...p,
+      totalValue: p.scopes.reduce((s, j) => s + (j.value || 0), 0),
+      status: deriveProjectStatusFromJobs(p.scopes),
+      nextScheduledDate: p.scopes
+        .map(s => s.scheduledDate)
+        .filter(Boolean)
+        .sort()[0] || null,
+    }));
+  }, [jobs]);
+
+  const filtered = useMemo(() => {
+    let result = filter === 'all' ? projects : projects.filter(p => p.status === filter);
+    if (tradeFilter === '__OTHER__') {
+      result = result.filter(p => p.scopes.some(j => j.trade && !TRADE_LIST.includes(j.trade)));
+    } else if (tradeFilter !== 'all') {
+      result = result.filter(p => p.scopes.some(j => j.trade === tradeFilter));
+    }
+    return result;
+  }, [projects, filter, tradeFilter]);
+
+  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#8B95A1');
+
+  return (
+    <div>
+      <div style={S.filterRow}>
+        {statuses.map(s => (
+          <button key={s} style={S.filterBtn(filter === s)} onClick={() => setFilter(s)}>
+            {s === 'all'
+              ? `All (${projects.length})`
+              : `${s} (${projects.filter(p => p.status === s).length})`}
+          </button>
+        ))}
+        <div style={{ marginLeft: 'auto', fontSize: 13, color: '#D1D5DB' }}>
+          Total: <span style={{ color: '#E8722A', fontWeight: 700, marginLeft: 4 }}>
+            {rolePerms?.seeDollars !== false ? fmt(filtered.reduce((s, p) => s + p.totalValue, 0)) : '—'}
+          </span>
+        </div>
+      </div>
+
+      <div style={S.tradeFilterRow}>
+        <button
+          style={S.tradeFilterBtn(tradeFilter === 'all', '#E8722A')}
+          onClick={() => setTradeFilter('all')}
+        >
+          All Scope Types
+        </button>
+        {TRADE_LIST.map(t => (
+          <button
+            key={t}
+            style={S.tradeFilterBtn(tradeFilter === t, TRADE_COLORS[t])}
+            onClick={() => setTradeFilter(tradeFilter === t ? 'all' : t)}
+          >
+            {t}
+          </button>
+        ))}
+        <button
+          style={S.tradeFilterBtn(tradeFilter === '__OTHER__', CUSTOM_TRADE_COLOR)}
+          onClick={() => setTradeFilter(tradeFilter === '__OTHER__' ? 'all' : '__OTHER__')}
+        >
+          Other
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {filtered.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>🔨</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#D1D5DB', marginBottom: 4 }}>No projects match your filters</div>
+            <div style={{ fontSize: 13, color: '#D1D5DB' }}>Try adjusting the status or scope-type filter above.</div>
+          </div>
+        )}
+        {filtered.map(project => {
+          const sc = statusColor(project.status);
+          return (
+            <div
+              key={project.id}
+              onClick={() => setSelectedProject(project)}
+              style={{
+                background: '#2A3140',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 12, padding: 14,
+                cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
+                overflow: 'hidden',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(232,114,42,0.6)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.customerName}</div>
+                  <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.address}</div>
+                </div>
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                  background: sc + '22', color: sc,
+                  textTransform: 'uppercase', letterSpacing: '0.5px',
+                  whiteSpace: 'nowrap', flexShrink: 0,
+                }}>{project.status}</span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8, minWidth: 0 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                  background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
+                  letterSpacing: '0.3px',
+                }}>
+                  {project.scopes.length} {project.scopes.length === 1 ? 'scope' : 'scopes'}
+                </span>
+                {project.scopes.map(s => {
+                  const c = getTradeColor(s.trade);
+                  return (
+                    <span key={s.id} style={{
+                      fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                      background: c + '22', color: c, letterSpacing: '0.3px',
+                      maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>{s.trade}</span>
+                  );
+                })}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#D1D5DB' }}>
+                <span>Total: <span style={{ color: '#22c55e', fontWeight: 700 }}>{rolePerms?.seeDollars !== false ? fmt(project.totalValue) : '—'}</span></span>
+                {project.nextScheduledDate && <span>📅 {project.nextScheduledDate}</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedProject && (
+        <ProjectDetail
+          project={selectedProject}
+          rolePerms={rolePerms}
+          onClose={() => setSelectedProject(null)}
+          onSelectScope={(scope) => { setSelectedJob(scope); }}
+        />
+      )}
+
+      {selectedJob && (
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          customChecklist={customChecklist}
+          crew={crew}
+          assignments={assignments}
+          onAssign={onAssign}
+          onUnassign={onUnassign}
+          onAddCrew={onAddCrew}
+          currentUser={currentUser}
+          demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
+          onComplete={onComplete ? (id) => { onComplete(id); setSelectedJob(null); } : null}
+          onUpdateSteps={onUpdateSteps}
+          onUpdateSchedule={onUpdateSchedule}
+          rolePerms={rolePerms}
+          isDemo={!!demoMessages}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Project Detail Modal (lists scopes inside a project) ────────────────────
+function ProjectDetail({ project, rolePerms, onClose, onSelectScope }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const showToast = useToast();
+  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#8B95A1');
+  const sc = statusColor(project.status);
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 560 };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+
+        <div style={{ paddingRight: 48 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF' }}>{project.customerName}</div>
+            <span style={{
+              fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+              background: sc + '22', color: sc,
+              textTransform: 'uppercase', letterSpacing: '0.5px',
+            }}>{project.status}</span>
+          </div>
+          <div style={{ fontSize: 13, color: '#D1D5DB', marginBottom: 8 }}>{project.address}</div>
+
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 18, fontSize: 12, color: '#D1D5DB' }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 2 }}>Total Value</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#22c55e' }}>{rolePerms?.seeDollars !== false ? fmt(project.totalValue) : '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 2 }}>Scopes</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>{project.scopes.length}</div>
+            </div>
+            {project.nextScheduledDate && (
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 2 }}>Next Date</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#D1D5DB' }}>{project.nextScheduledDate}</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Scopes of Work
+          </div>
+          <button
+            onClick={() => showToast('Add Scope flow coming next sprint')}
+            style={{
+              padding: '6px 12px', minHeight: 36,
+              background: 'rgba(232,114,42,0.12)', border: '1px solid rgba(232,114,42,0.3)',
+              borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            + Add Scope
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {project.scopes.map(scope => {
+            const tc = getTradeColor(scope.trade);
+            const ssc = statusColor(scope.status);
+            return (
+              <div
+                key={scope.id}
+                onClick={() => onSelectScope(scope)}
+                style={{
+                  background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                  borderLeft: `3px solid ${tc}`, borderRadius: 8, padding: '12px 14px',
+                  cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
+                  overflow: 'hidden',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+                    background: tc + '22', color: tc,
+                    maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>{scope.trade}</span>
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                    background: ssc + '22', color: ssc,
+                    textTransform: 'uppercase', letterSpacing: '0.5px',
+                  }}>{scope.status}</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#22c55e' }}>
+                    {rolePerms?.seeDollars !== false ? fmt(scope.value) : '—'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11, color: '#D1D5DB', flexWrap: 'wrap' }}>
+                  {scope.scheduledDate && <span>📅 {scope.scheduledDate}</span>}
+                  {scope.jobType && scope.currentPhase != null && (
+                    <span>Phase {scope.currentPhase}/{scope.jobType === 'Commercial' ? 7 : 4}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [hovered, setHovered] = useState(null);
@@ -10065,7 +10369,7 @@ function FloatingActionButton({ tab, onAction }) {
   // the sole add entry there.
   const config = useMemo(() => {
     switch (tab) {
-      case 'jobs': return { label: 'Add Job', action: 'addJob' };
+      case 'jobs': return { label: 'Add Project', action: 'addJob' };
       default:     return null;
     }
   }, [tab]);
@@ -10723,12 +11027,12 @@ export default function App() {
           jobs.length === 0
             ? <EmptyState
                 icon="🔨"
-                title="No jobs yet"
-                sub={`Add your first ${userTrade} job to start tracking progress.`}
-                btnLabel="Add your first job"
+                title="No projects yet"
+                sub={`Add your first ${userTrade} project to start tracking progress.`}
+                btnLabel="Add your first project"
                 onAction={isDemo ? null : () => setJobModal(true)}
               />
-            : <JobsTab
+            : <ProjectsTab
                 jobs={jobs}
                 customChecklist={userCustomChecklist}
                 crew={crew}
