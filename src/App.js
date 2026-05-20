@@ -811,6 +811,131 @@ function getProjectsByStage(stage, projects = DEMO_PROJECTS, scopes = DEMO_SCOPE
   return projects.filter(p => getProjectStatus(p.id, scopes) === stage);
 }
 
+// ─── Quotes (one project can have many quotes; one quote can have many sections) ──
+const DEMO_QUOTES = [
+  {
+    id: 'q-1001',
+    quoteNumber: 'RIDGE-2026-0042',
+    projectId: 'p-202',
+    mode: 'residential',
+    status: 'draft',
+    createdDate: '2026-04-12T09:14:00Z',
+    sentDate: null,
+    viewedDate: null,
+    signedDate: null,
+    expirationDate: '2026-05-12',
+    subtotal: 18600,
+    tax: 0,
+    total: 18600,
+    sections: [
+      {
+        id: 'qs-1001-a', scopeId: 202, scopeType: 'Full Replacement',
+        narrative: 'Full tear-off and replacement of the existing 1-layer composition roof. GAF Timberline HDZ Charcoal. New synthetic underlayment, ice & water shield at eaves and valleys, drip edge all sides, ridge cap. Erie Insurance claim — wind damage from 3/14 storm. Farmhouse — no Sunday work.',
+        subtotal: 18600,
+        lineItems: [
+          { id: 'li-1', description: 'Tear-off, 1 layer composition shingles', category: 'Labor', quantity: 38, unit: 'SQ', unitPrice: 50, extension: 1900, notes: null },
+          { id: 'li-2', description: 'Decking inspection + minor patch allowance', category: 'Allowance', quantity: 4, unit: 'EA', unitPrice: 65, extension: 260, notes: 'Per 4x8 OSB sheet replaced — billed only if used' },
+          { id: 'li-3', description: 'Synthetic underlayment', category: 'Material', quantity: 38, unit: 'SQ', unitPrice: 25, extension: 950, notes: null },
+          { id: 'li-4', description: 'Ice & water shield at eaves and valleys', category: 'Material', quantity: 10, unit: 'SQ', unitPrice: 90, extension: 900, notes: '3ft up from eave + valleys' },
+          { id: 'li-5', description: 'Drip edge, aluminum', category: 'Material', quantity: 220, unit: 'LF', unitPrice: 3.5, extension: 770, notes: null },
+          { id: 'li-6', description: 'GAF Timberline HDZ Charcoal shingles', category: 'Material', quantity: 38, unit: 'SQ', unitPrice: 130, extension: 4940, notes: '6/12 pitch — within standard waste factor' },
+          { id: 'li-7', description: 'Shingle installation labor', category: 'Labor', quantity: 38, unit: 'SQ', unitPrice: 185, extension: 7030, notes: null },
+          { id: 'li-8', description: 'Ridge cap shingles', category: 'Material', quantity: 65, unit: 'LF', unitPrice: 9, extension: 585, notes: null },
+          { id: 'li-9', description: 'Dumpster — 20 yard, single haul', category: 'Equipment', quantity: 1, unit: 'EA', unitPrice: 525, extension: 525, notes: null },
+          { id: 'li-10', description: 'Municipal building permit', category: 'Equipment', quantity: 1, unit: 'EA', unitPrice: 200, extension: 200, notes: null },
+          { id: 'li-11', description: 'Magnetic nail sweep + jobsite cleanup', category: 'Labor', quantity: 1, unit: 'LS', unitPrice: 240, extension: 240, notes: null },
+          { id: 'li-12', description: 'GAF System Plus 50-year warranty registration', category: 'Adder', quantity: 1, unit: 'LS', unitPrice: 300, extension: 300, notes: 'Eligible — Master Elite certified' },
+        ],
+      },
+    ],
+    attachments: [],
+    signature: null,
+    depositAmount: 0,
+    depositPaid: false,
+    paymentIntentId: null,
+    shareToken: 'qst_a8f3b2c1d9e4f6a2b8c7d3e1f5a9b4c2',
+    terms: 'Standard residential terms — payment due net 30 from completion. Workmanship warranted 5 years. Materials carry manufacturer warranty per shingle.',
+    exclusions: ['Decking replacement beyond 4-sheet allowance billed at $65/sheet', 'Soffit/fascia repair not included', 'Skylight reflashing not included'],
+    alternates: [],
+    paymentSchedule: [],
+    customerInteractions: [],
+    agentConversation: [
+      { role: 'user', timestamp: '2026-04-12T09:11:00Z', content: 'Stoltzfus farmhouse — 38 squares, GAF Timberline HDZ Charcoal, tear off 1 layer, 6/12 pitch. Erie Insurance claim.' },
+      { role: 'assistant', timestamp: '2026-04-12T09:11:18Z', content: 'Drafted the full replacement scope with HDZ Charcoal — added synthetic underlayment, ice & water at eaves/valleys, ridge cap, dumpster, permit. Decking allowance left at 4 sheets — confirm or correct.' },
+      { role: 'user', timestamp: '2026-04-12T09:13:45Z', content: 'Looks right. Save it for now.' },
+    ],
+  },
+];
+
+// ─── Quote helpers ───────────────────────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
+function getQuotesForProject(projectId, quotes = DEMO_QUOTES) {
+  return quotes.filter(q => q.projectId === projectId);
+}
+// eslint-disable-next-line no-unused-vars
+function getQuoteById(id, quotes = DEMO_QUOTES) {
+  return quotes.find(q => q.id === id);
+}
+function getQuoteTotal(quote) {
+  if (!quote || !Array.isArray(quote.sections)) return 0;
+  return quote.sections.reduce((sum, sec) => {
+    const secTotal = (sec.lineItems || []).reduce((s, li) => s + (Number(li.extension) || 0), 0);
+    return sum + secTotal;
+  }, 0);
+}
+function generateQuoteNumber(existing = DEMO_QUOTES) {
+  const year = new Date().getFullYear();
+  const prefix = `RIDGE-${year}-`;
+  const sameYear = existing.filter(q => q.quoteNumber && q.quoteNumber.startsWith(prefix));
+  const maxN = sameYear.reduce((m, q) => {
+    const n = parseInt(q.quoteNumber.slice(prefix.length), 10);
+    return Number.isFinite(n) ? Math.max(m, n) : m;
+  }, 42);
+  return `${prefix}${String(maxN + 1).padStart(4, '0')}`;
+}
+function generateShareToken() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let token = 'qst_';
+  for (let i = 0; i < 32; i++) token += chars[Math.floor(Math.random() * chars.length)];
+  return token;
+}
+// eslint-disable-next-line no-unused-vars
+function createQuote({ projectId, mode = 'residential', sections = [], terms = '' }) {
+  const now = new Date();
+  const exp = new Date(now); exp.setDate(exp.getDate() + 30);
+  const subtotal = sections.reduce((sum, sec) => sum + (sec.subtotal || (sec.lineItems || []).reduce((s, li) => s + (li.extension || 0), 0)), 0);
+  return {
+    id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    quoteNumber: generateQuoteNumber(),
+    projectId,
+    mode,
+    status: 'draft',
+    createdDate: now.toISOString(),
+    sentDate: null, viewedDate: null, signedDate: null,
+    expirationDate: exp.toISOString().slice(0, 10),
+    subtotal, tax: 0, total: subtotal,
+    sections,
+    attachments: [], signature: null,
+    depositAmount: 0, depositPaid: false, paymentIntentId: null,
+    shareToken: generateShareToken(),
+    terms: terms || 'Standard residential terms — payment due net 30 from completion. Workmanship warranted 5 years.',
+    exclusions: [], alternates: [], paymentSchedule: [],
+    customerInteractions: [], agentConversation: [],
+  };
+}
+// eslint-disable-next-line no-unused-vars
+function updateQuote(quote, patch) {
+  const next = { ...quote, ...patch };
+  const newSubtotal = getQuoteTotal(next);
+  if (next.subtotal !== newSubtotal) next.subtotal = newSubtotal;
+  if (next.total !== newSubtotal + (next.tax || 0)) next.total = newSubtotal + (next.tax || 0);
+  return next;
+}
+// eslint-disable-next-line no-unused-vars
+function deleteQuote(id, quotes) {
+  return (quotes || DEMO_QUOTES).filter(q => q.id !== id);
+}
+
 // ─── Legacy DEMO_JOBS adapter ────────────────────────────────────────────────
 // Derived from DEMO_PROJECTS + DEMO_SCOPES so existing UI keeps working
 // unchanged while subsequent commits rewire individual tabs to the new
@@ -819,6 +944,7 @@ const DEMO_JOBS = DEMO_SCOPES.map(s => {
   const project = getProjectById(s.projectId) || {};
   return {
     id: s.id,
+    projectId: s.projectId,
     customer: project.customerName,
     address: project.address,
     trade: s.scopeType,
