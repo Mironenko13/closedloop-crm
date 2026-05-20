@@ -2550,18 +2550,37 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
         boxShadow: hovered ? '0 4px 12px rgba(0,0,0,0.25)' : '0 1px 3px rgba(0,0,0,0.2)',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6, gap: 6 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
-          <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
-        </div>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', flexShrink: 0, whiteSpace: 'nowrap' }}>{rolePerms?.seeDollars !== false ? fmt(lead.value) : '—'}</span>
-      </div>
+      {(() => {
+        const scopes = [{ trade: lead.trade, value: lead.value }, ...(lead.extraScopes || [])];
+        const totalValue = scopes.reduce((sum, s) => sum + (s.value || 0), 0);
+        const scopeCount = scopes.length;
+        return (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6, gap: 6 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.name}</div>
+                <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.contact}{lead.role ? ` · ${lead.role}` : ''}</div>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', flexShrink: 0, whiteSpace: 'nowrap' }}>{rolePerms?.seeDollars !== false ? fmt(totalValue) : '—'}</span>
+            </div>
 
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4, minWidth: 0 }}>
-        <span style={{ ...S.tradeBadge(lead.trade), marginTop: 0, fontSize: 9, padding: '1px 6px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lead.trade}</span>
-        <span style={{ ...S.statusBadge(lead.status), fontSize: 9 }}>{lead.status}</span>
-      </div>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4, minWidth: 0, alignItems: 'center' }}>
+              {scopeCount > 1 && (
+                <span style={{
+                  fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                  background: 'rgba(232,114,42,0.12)', color: '#E8722A',
+                  border: '1px solid rgba(232,114,42,0.3)',
+                  letterSpacing: '0.3px', whiteSpace: 'nowrap',
+                }}>{scopeCount} scopes</span>
+              )}
+              {scopes.map((s, i) => (
+                <span key={`${s.trade}-${i}`} style={{ ...S.tradeBadge(s.trade), marginTop: 0, fontSize: 9, padding: '1px 6px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.trade}</span>
+              ))}
+              <span style={{ ...S.statusBadge(lead.status), fontSize: 9 }}>{lead.status}</span>
+            </div>
+          </>
+        );
+      })()}
 
       {staleDays > 7 && (
         <div style={{ fontSize: 10, color: staleDays > 14 ? '#ef4444' : '#eab308', marginTop: 3 }}>
@@ -2967,13 +2986,20 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
     return map;
   }, [filteredLeads]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Per-lead total value sums the lead's primary scope (lead.trade/value)
+  // plus any extra scopes attached to multi-scope projects.
+  const leadTotalValue = (lead) => {
+    const extras = (lead.extraScopes || []).reduce((sum, s) => sum + (s.value || 0), 0);
+    return (lead.value || 0) + extras;
+  };
+
   const stageStats = KANBAN_STAGES.map(s => ({
     ...s,
     count: (byStage[s.key] || []).length,
-    value: (byStage[s.key] || []).reduce((sum, l) => sum + l.value, 0),
+    value: (byStage[s.key] || []).reduce((sum, l) => sum + leadTotalValue(l), 0),
   }));
 
-  const totalPipeline = filteredLeads.reduce((s, l) => s + l.value, 0);
+  const totalPipeline = filteredLeads.reduce((s, l) => s + leadTotalValue(l), 0);
 
   const handleDrop = (e, stage) => {
     e.preventDefault();
@@ -3073,7 +3099,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
       >
         {KANBAN_STAGES.map(stg => {
           const cards = byStage[stg.key] || [];
-          const colValue = cards.reduce((s, l) => s + l.value, 0);
+          const colValue = cards.reduce((s, l) => s + leadTotalValue(l), 0);
           const isOver = dragOver === stg.key;
 
           return (
