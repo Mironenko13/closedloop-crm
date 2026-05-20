@@ -5594,11 +5594,15 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
 
   const statuses = ['all', 'Scheduled', 'In Progress', 'Complete'];
 
-  // Group jobs (scopes) into projects by customer+address
+  // Group jobs (scopes) into projects. Prefer the canonical projectId
+  // attached to each scope by the DEMO_JOBS adapter so the project.id we
+  // expose matches DEMO_PROJECTS — that lets Quotes / future entities key
+  // off the same id. For non-demo data (no projectId), fall back to a
+  // customer+address composite key.
   const projects = useMemo(() => {
     const byKey = new Map();
     jobs.forEach(j => {
-      const key = `${j.customer}|${j.address}`;
+      const key = j.projectId || `${j.customer}|${j.address}`;
       if (!byKey.has(key)) {
         byKey.set(key, {
           id: key,
@@ -5772,12 +5776,23 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
 }
 
 // ─── Project Detail Modal (lists scopes inside a project) ────────────────────
-function ProjectDetail({ project, rolePerms, onClose, onSelectScope }) {
+function ProjectDetail({ project, rolePerms, onClose, onSelectScope, onNewQuote, onOpenQuote }) {
   useScrollLock();
   const isMobile = useMobile();
   const showToast = useToast();
   const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#8B95A1');
   const sc = statusColor(project.status);
+
+  const projectQuotes = useMemo(() => getQuotesForProject(project.id), [project.id]);
+
+  const quoteStatusColor = (s) => ({
+    draft: '#9CA3AF', sent: '#3b82f6', viewed: '#06b6d4',
+    signed: '#22c55e', rejected: '#ef4444', expired: '#f59e0b',
+  }[s] || '#9CA3AF');
+  const quoteStatusBg = (s) => ({
+    draft: 'rgba(156,163,175,0.12)', sent: 'rgba(59,130,246,0.15)', viewed: 'rgba(6,182,212,0.15)',
+    signed: 'rgba(34,197,94,0.15)', rejected: 'rgba(239,68,68,0.15)', expired: 'rgba(245,158,11,0.15)',
+  }[s] || 'rgba(156,163,175,0.12)');
 
   const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
   const modal = isMobile
@@ -5877,6 +5892,84 @@ function ProjectDetail({ project, rolePerms, onClose, onSelectScope }) {
             );
           })}
         </div>
+
+        {/* ── Quotes section ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 22, marginBottom: 10 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>Quotes</span>
+            {projectQuotes.length > 0 && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
+                background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
+              }}>{projectQuotes.length}</span>
+            )}
+          </div>
+          <button
+            onClick={() => onNewQuote ? onNewQuote(project) : showToast('Quote Agent connecting in next commit')}
+            style={{
+              padding: '6px 12px', minHeight: 36,
+              background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+              border: 'none', borderRadius: 6, color: '#fff', fontSize: 11, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 8px rgba(45,80,22,0.35)',
+            }}
+          >
+            + New Quote
+          </button>
+        </div>
+
+        {projectQuotes.length === 0 ? (
+          <div style={{
+            padding: '18px 16px', borderRadius: 8,
+            background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.08)',
+            textAlign: 'center', fontSize: 12, color: '#D1D5DB',
+          }}>
+            No quotes yet. Tap <strong style={{ color: '#FFFFFF' }}>+ New Quote</strong> to describe the job and let the agent draft one.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {projectQuotes.map(quote => {
+              const qsc = quoteStatusColor(quote.status);
+              const qsbg = quoteStatusBg(quote.status);
+              return (
+                <div
+                  key={quote.id}
+                  onClick={() => onOpenQuote && onOpenQuote(quote, project)}
+                  style={{
+                    background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                    borderLeft: `3px solid ${qsc}`, borderRadius: 8, padding: '12px 14px',
+                    cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s',
+                    overflow: 'hidden',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap', minWidth: 0 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>{quote.quoteNumber}</span>
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+                      background: qsbg, color: qsc,
+                      textTransform: 'uppercase', letterSpacing: '0.5px',
+                    }}>{quote.status}</span>
+                    <span style={{
+                      fontSize: 9, fontWeight: 600, padding: '1px 7px', borderRadius: 8,
+                      background: 'rgba(255,255,255,0.05)', color: '#D1D5DB',
+                      textTransform: 'uppercase', letterSpacing: '0.4px',
+                    }}>{quote.mode}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>
+                      {rolePerms?.seeDollars !== false ? fmt(quote.total) : '—'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11, color: '#D1D5DB', flexWrap: 'wrap' }}>
+                    <span>{(quote.sections || []).length} {(quote.sections || []).length === 1 ? 'section' : 'sections'}</span>
+                    {quote.expirationDate && <span>Expires {quote.expirationDate}</span>}
+                    {quote.sentDate && <span>Sent {quote.sentDate.slice(0, 10)}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
