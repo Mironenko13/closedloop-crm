@@ -3402,10 +3402,19 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
       return { stage, count: leadCount + jobCount };
     }).filter(s => s.count > 0);
 
-    return { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, avgMargin, jobsByStage };
+    // Avg scopes per project — count unique customer+address pairs across all
+    // jobs (each pair = one project) and divide total scopes by project count.
+    const projectKeys = new Set((jobs || []).map(j => `${j.customer}|${j.address}`));
+    const projectCount = projectKeys.size;
+    const totalScopes = (jobs || []).length;
+    const avgScopesPerProject = projectCount > 0
+      ? Math.round((totalScopes / projectCount) * 10) / 10
+      : 0;
+
+    return { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, avgMargin, jobsByStage, avgScopesPerProject };
   }, [leads, jobs]);
 
-  const { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, avgMargin, jobsByStage } = stats;
+  const { active, stalled, won, lost, totalPipeline, revenueClosed, avgJobValue, winRate, weekHours, stalledValue, avgDealAge, stageFunnel, stallBreakdown, avgMargin, jobsByStage, avgScopesPerProject } = stats;
   const maxStageValue = Math.max(...stageFunnel.map(s => s.value), 1);
   const maxStallCount = stallBreakdown.length ? Math.max(...stallBreakdown.map(s => s[1]), 1) : 1;
 
@@ -3418,9 +3427,10 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
   const kpis = [
     { val: D ? fmt(totalPipeline) : '—', label: 'Total Pipeline Value' },
     { val: D ? fmt(revenueClosed) : '—', label: 'Revenue Closed YTD' },
-    { val: D ? fmt(avgJobValue) : '—', label: 'Avg Job Value' },
+    { val: D ? fmt(avgJobValue) : '—', label: 'Avg Project Value' },
     { val: `${avgMargin}%`, label: 'Avg Margin' },
     { val: `${winRate}%`, label: 'Win / Close Rate' },
+    { val: `${avgScopesPerProject}`, label: 'Avg Scopes / Project' },
     { val: `${weekHours}h`, label: 'Scheduled Hrs This Week' },
     { val: `${avgDealAge}d`, label: 'Avg Deal Age' },
     { val: D ? fmt(stalledValue) : '—', label: 'Value at Risk' },
@@ -3523,7 +3533,7 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
 
         {/* Trade distribution */}
         <div style={S.chartCard}>
-          <div style={S.chartTitle}>Pipeline by Job Type</div>
+          <div style={S.chartTitle}>Pipeline by Scope Type</div>
           {(() => {
             const tradeCounts = leads.reduce((acc, l) => {
               if (!['won', 'lost'].includes(l.status)) {
@@ -3549,10 +3559,10 @@ function AnalyticsTab({ leads, jobs, tier, rolePerms }) {
         </div>
       </div>
 
-      {/* Jobs by Stage funnel */}
+      {/* Projects by Stage funnel */}
       {jobsByStage.length > 0 && (
         <div style={{ ...S.chartCard, marginTop: 20, marginBottom: 20 }}>
-          <div style={S.chartTitle}>Jobs by Stage</div>
+          <div style={S.chartTitle}>Projects by Stage</div>
           {jobsByStage.map(({ stage, count }) => {
             const maxCount = Math.max(...jobsByStage.map(s => s.count), 1);
             return (
@@ -8479,7 +8489,8 @@ function ChatTab({ jobs, demoMessages }) {
 
   const jobName = (jobId) => {
     const j = jobs.find(jb => String(jb.id) === jobId);
-    return j ? j.customer : 'Unknown Job';
+    if (!j) return 'Unknown Job';
+    return j.trade ? `${j.customer} · ${j.trade}` : j.customer;
   };
 
   const formatTs = (ts) => new Date(ts).toLocaleString('en-US', {
@@ -8562,7 +8573,7 @@ function ChatTab({ jobs, demoMessages }) {
           >
             {jobs.length === 0 && <option value="">No jobs available</option>}
             {jobs.map(j => (
-              <option key={j.id} value={String(j.id)}>{j.customer}</option>
+              <option key={j.id} value={String(j.id)}>{j.customer}{j.trade ? ` — ${j.trade}` : ''}</option>
             ))}
           </select>
         </div>
@@ -9315,7 +9326,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
         onMouseLeave={alreadyHere ? undefined : (e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = '#2A3140'; })}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#8B95A1' : '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.description || job.customer}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: alreadyHere ? '#8B95A1' : '#1E2329', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.customer}{job.trade ? ` — ${job.trade}` : ''}</div>
           <div style={{ fontSize: 11, color: '#D1D5DB', marginTop: 1 }}>
             {job.customer && job.description ? `${job.customer} · ` : ''}{job.status || ''}{fmtDate ? ` · ${fmtDate}` : ''}
           </div>
@@ -9604,7 +9615,7 @@ function DayActionModal({ date, allJobs, assignments, crew, existingNote, onSche
                         )}
                         {/* Action buttons */}
                         <div style={{ display: 'flex', gap: 6, marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
-                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Job</button>
+                          <button onClick={() => { onClose(); setTimeout(() => { const sel = (allJobs || []).find(j => String(j.id) === String(job.id)); if (sel) onScheduleExisting(date, null); }, 100); }} style={{ flex: 1, padding: '6px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>View Scope</button>
                           <button style={{ flex: 1, padding: '6px', background: '#10b98118', border: '1px solid #10b98144', borderRadius: 6, color: '#10b981', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Message Crew</button>
                         </div>
                       </div>
