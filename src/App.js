@@ -6078,8 +6078,58 @@ function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
     };
   });
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const convoEndRef = useRef(null);
   const textAreaRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const baseTextRef = useRef('');
+  const speechSupported = typeof window !== 'undefined'
+    && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  // Tear down any active recognition on unmount so the modal closing doesn't
+  // leave the mic hot.
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (_e) { /* noop */ }
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
+
+  const startListening = () => {
+    if (!speechSupported || isListening || sending) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec;
+    try { rec = new SR(); } catch (_e) { return; }
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    baseTextRef.current = input.trim() ? input.trim() + ' ' : '';
+    rec.onresult = (event) => {
+      let interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const r = event.results[i];
+        if (r.isFinal) final += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      setInput(baseTextRef.current + final + interim);
+    };
+    rec.onerror = () => { setIsListening(false); };
+    rec.onend = () => { setIsListening(false); recognitionRef.current = null; };
+    recognitionRef.current = rec;
+    setIsListening(true);
+    try { rec.start(); } catch (_e) { setIsListening(false); recognitionRef.current = null; }
+  };
+
+  const stopListening = () => {
+    if (!recognitionRef.current) {
+      setIsListening(false);
+      return;
+    }
+    try { recognitionRef.current.stop(); } catch (_e) { /* noop */ }
+  };
 
   useEffect(() => {
     if (convoEndRef.current) convoEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -6397,19 +6447,47 @@ function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
               boxSizing: 'border-box',
             }}
           />
-          <button
-            disabled
-            title="Voice input coming next commit"
-            aria-label="Voice input"
-            style={{
-              width: 56, height: 56, padding: 0, flexShrink: 0,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '50%', color: '#D1D5DB',
-              fontSize: 22, lineHeight: 1, cursor: 'not-allowed',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >🎤</button>
+          {speechSupported && (
+            <button
+              type="button"
+              title={isListening ? 'Release to send' : 'Press and hold to record'}
+              aria-label="Voice input — press and hold to record"
+              aria-pressed={isListening}
+              onPointerDown={e => { e.preventDefault(); startListening(); }}
+              onPointerUp={() => stopListening()}
+              onPointerLeave={() => { if (isListening) stopListening(); }}
+              onPointerCancel={() => stopListening()}
+              disabled={sending}
+              style={{
+                width: 56, height: 56, padding: 0, flexShrink: 0,
+                background: isListening
+                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                  : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${isListening ? '#ef4444' : 'rgba(255,255,255,0.12)'}`,
+                borderRadius: '50%',
+                color: isListening ? '#fff' : '#D1D5DB',
+                fontSize: 22, lineHeight: 1,
+                cursor: sending ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                position: 'relative',
+                transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+                boxShadow: isListening ? '0 0 0 4px rgba(239,68,68,0.25)' : 'none',
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'none',
+                userSelect: 'none',
+              }}
+            >
+              {isListening && (
+                <span style={{
+                  position: 'absolute', top: 6, right: 6,
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: '#fff',
+                  animation: 'ri-pulse 1.1s ease-in-out infinite',
+                }} />
+              )}
+              🎤
+            </button>
+          )}
           <button
             onClick={send}
             disabled={!input.trim() || sending}
