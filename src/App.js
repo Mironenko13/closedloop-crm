@@ -627,122 +627,190 @@ function getDefaultPhases(jobType) {
 
 
 // ─── Jobs Data ────────────────────────────────────────────────────────────────
-const DEMO_JOBS = [
-  // ── Completed (March) ──
+// ─── Projects (parent: customer relationship at a property) ──────────────────
+const DEMO_PROJECTS = [
+  { id: 'p-103', customerName: 'Tina & Mark Bowman', address: '227 Market St, Lewisburg PA 17837', customerPhone: '(570) 524-3947', customerEmail: 'tinabowman@hotmail.com', createdDate: '2026-02-22', assignedSalesperson: 'Mark Sensenig', notes: 'Erie Insurance claim — wind damage. Closed out.', recentActivity: [], issues: [] },
+  { id: 'p-108', customerName: 'Joe & Barb Hartman', address: '78 Pine Creek Rd, Watsontown PA 17777', customerPhone: '(570) 538-2189', customerEmail: 'hartman.joe@gmail.com', createdDate: '2026-02-18', assignedSalesperson: 'Mark Sensenig', notes: '', recentActivity: [], issues: [] },
+  { id: 'p-201', customerName: 'Christ Lutheran Church', address: '130 S 5th St, Mifflinburg PA 17844', customerPhone: '(570) 966-1842', customerEmail: 'office@christlutheranmifflinburg.org', createdDate: '2026-03-10', assignedSalesperson: 'Mark Sensenig', notes: 'Historic sanctuary roof. Nationwide claim.', recentActivity: [], issues: [] },
+  { id: 'p-202', customerName: 'Amos Stoltzfus', address: '1240 Strickler Rd, Mifflinburg PA 17844', customerPhone: '(570) 966-2453', customerEmail: '', createdDate: '2026-03-21', assignedSalesperson: 'Mark Sensenig', notes: 'Farmhouse — no Sunday work. Erie Insurance claim.', recentActivity: [], issues: [] },
+  { id: 'p-203', customerName: 'Betty Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844', customerPhone: '(570) 966-4182', customerEmail: 'bettyshumaker@gmail.com', createdDate: '2026-03-22', assignedSalesperson: 'Tara Zimmerman', notes: '', recentActivity: [], issues: [] },
+  { id: 'p-204', customerName: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870', customerPhone: '(570) 374-2891', customerEmail: 'dsensenig@verizon.net', createdDate: '2026-03-15', assignedSalesperson: 'Mark Sensenig', notes: '', recentActivity: [], issues: [] },
+  { id: 'p-205', customerName: 'Hotel Hershey Annex', address: '100 Hotel Rd, Hershey PA 17033', customerPhone: '(717) 533-2171', customerEmail: 'facilities@hotelhershey.com', createdDate: '2026-03-02', assignedSalesperson: 'Mark Sensenig', notes: 'Historic property. Must match existing copper details.', recentActivity: [], issues: [] },
+  { id: 'p-206', customerName: 'Earl Yoder', address: '320 Buffalo Rd, Lewisburg PA 17837', customerPhone: '(570) 524-7218', customerEmail: '', createdDate: '2026-03-28', assignedSalesperson: 'Tara Zimmerman', notes: '', recentActivity: [], issues: [] },
+  { id: 'p-207', customerName: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801', customerPhone: '(570) 286-3940', customerEmail: 'manager@marketstreetcommons.com', createdDate: '2026-03-08', assignedSalesperson: 'Mark Sensenig', notes: '', recentActivity: [], issues: [] },
+  { id: 'p-208', customerName: 'Ray Brubaker', address: '410 N Front St, Milton PA 17847', customerPhone: '(570) 742-3618', customerEmail: 'rbrubaker@windstream.net', createdDate: '2026-03-19', assignedSalesperson: 'Mark Sensenig', notes: 'State Farm claim — storm damage. Harness required.', recentActivity: [], issues: [] },
+  { id: 'p-209', customerName: 'Messiah Village', address: '100 Mt Allen Dr, Mechanicsburg PA 17055', customerPhone: '(717) 591-7400', customerEmail: 'facilities@messiahvillage.org', createdDate: '2026-02-26', assignedSalesperson: 'Mark Sensenig', notes: 'Multi-building campus. Phased installation.', recentActivity: [], issues: [] },
+  { id: 'p-210', customerName: 'Riverwoods HOA — Phase 2', address: '200 Riverwoods Dr, Lewisburg PA 17837', customerPhone: '(570) 524-9182', customerEmail: 'board@riverwoodshoa.com', createdDate: '2026-03-04', assignedSalesperson: 'Mark Sensenig', notes: 'Buildings 5-8. Waiting on HOA board for start date.', recentActivity: [], issues: [] },
+  { id: 'p-211', customerName: 'Eli Beiler', address: '892 Old Turnpike Rd, Mifflinburg PA 17844', customerPhone: '(570) 966-3742', customerEmail: '', createdDate: '2026-04-01', assignedSalesperson: 'Tara Zimmerman', notes: 'Solar reinstall coordinated with homeowner\'s electrician.', recentActivity: [], issues: [] },
+  { id: 'p-212', customerName: 'Wengert Residence', address: '54 Buffalo Cross Rd, Lewisburg PA 17837', customerPhone: '(570) 524-6481', customerEmail: 'mwengert@gmail.com', createdDate: '2026-04-03', assignedSalesperson: 'Tara Zimmerman', notes: 'Persistent leak at upslope side of chimney.', recentActivity: [], issues: [] },
+];
+
+// ─── Scopes (child: one type of work within a project) ───────────────────────
+// scope.id is kept numeric and matches the legacy job id so chats, photos,
+// change orders, and other references that store the id as a string remain
+// stable across the refactor.
+const DEMO_SCOPES = [
   {
-    id: 103, customer: 'Tina & Mark Bowman', address: '227 Market St, Lewisburg PA 17837',
-    trade: 'Storm Damage', value: 18700, status: 'Complete',
+    id: 103, projectId: 'p-103',
+    scopeType: 'Storm Damage', status: 'Complete', value: 18700,
     scheduledDate: '2026-03-14', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     notes: 'Erie Insurance claim — wind damage. 24 sq architectural. Adjuster approved full replacement. Closed out.',
-    jobType: 'Residential', currentPhase: 4, completedPhases: [1, 2, 3, 4],
+    phaseTemplate: 'residential-4-phase', currentPhase: 4, completedPhases: [1, 2, 3, 4],
   },
   {
-    id: 108, customer: 'Joe & Barb Hartman', address: '78 Pine Creek Rd, Watsontown PA 17777',
-    trade: 'Skylight', value: 4800, status: 'Complete',
+    id: 108, projectId: 'p-108',
+    scopeType: 'Skylight', status: 'Complete', value: 4800,
     scheduledDate: '2026-03-11', completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     notes: '2 Velux curb-mount skylights installed. Flashing sealed, interior trim complete.',
-    jobType: 'Residential', currentPhase: 4, completedPhases: [1, 2, 3, 4],
+    phaseTemplate: 'residential-4-phase', currentPhase: 4, completedPhases: [1, 2, 3, 4],
   },
-  // ── Active April schedule ──
   {
-    id: 201, customer: 'Christ Lutheran Church', address: '130 S 5th St, Mifflinburg PA 17844',
-    trade: 'Full Replacement', value: 80828, status: 'In Progress', hours: 9,
+    id: 201, projectId: 'p-201',
+    scopeType: 'Full Replacement', status: 'In Progress', value: 80828, hours: 9,
     scheduledDate: '2026-04-14', completedSteps: [1, 2, 3, 4, 5, 6],
     notes: '118 sq Peach Bottom slate, steep pitch, 2 chimneys. Nationwide claim. Historic sanctuary roof.',
     duration: 5,
-    jobType: 'Commercial', currentPhase: 5, completedPhases: [1, 2, 3, 4],
+    phaseTemplate: 'commercial-7-phase', currentPhase: 5, completedPhases: [1, 2, 3, 4],
     changeOrders: [
       { id: 'co-201-1', title: 'Additional Decking — 14 sheets OSB found rotted', description: 'North slope decking rotted through at eave line. 14 sheets OSB replacement required. Discovered during tear-off.', amount: 588, status: 'Approved', date: '2026-04-15', phase: 3 },
     ],
   },
   {
-    id: 202, customer: 'Amos Stoltzfus', address: '1240 Strickler Rd, Mifflinburg PA 17844',
-    trade: 'Full Replacement', value: 18600, status: 'Scheduled', hours: 8,
+    id: 202, projectId: 'p-202',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 18600, hours: 8,
     scheduledDate: '2026-04-17', completedSteps: [1, 2],
     notes: '38 sq, 6/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off. Storm damage — Erie Insurance claim. Farmhouse — no Sunday work.',
     duration: 2,
-    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 203, customer: 'Betty Shumaker', address: '142 Chestnut St, Mifflinburg PA 17844',
-    trade: 'Gutter Install', value: 3980, status: 'Scheduled', hours: 6,
+    id: 203, projectId: 'p-203',
+    scopeType: 'Gutter Install', status: 'Scheduled', value: 3980, hours: 6,
     scheduledDate: '2026-04-17', completedSteps: [1],
     notes: '180 LF 6" K-style seamless aluminum. 4 downspouts. Old gutter removal included.',
-    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 204, customer: 'Dan Sensenig', address: '85 Penns Creek Rd, Selinsgrove PA 17870',
-    trade: 'Full Replacement', value: 15110, status: 'Scheduled', hours: 4,
+    id: 204, projectId: 'p-204',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 15110, hours: 4,
     scheduledDate: '2026-04-18', completedSteps: [],
     notes: '34 sq, GAF Timberline HDZ. Standard pitch. Currently on punch list stage.',
     duration: 2,
-    jobType: 'Residential', currentPhase: 4, completedPhases: [1, 2, 3],
+    phaseTemplate: 'residential-4-phase', currentPhase: 4, completedPhases: [1, 2, 3],
     changeOrders: [
       { id: 'co-204-1', title: 'Ridge Cap Extension — west gable', description: 'West gable ridge cap 12 LF short of full coverage. Extend to match east side.', amount: 210, status: 'Approved', date: '2026-04-19', phase: 3 },
     ],
   },
   {
-    id: 205, customer: 'Hotel Hershey Annex', address: '100 Hotel Rd, Hershey PA 17033',
-    trade: 'Full Replacement', value: 198000, status: 'Scheduled', hours: 10,
+    id: 205, projectId: 'p-205',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 198000, hours: 10,
     scheduledDate: '2026-04-21', completedSteps: [1, 2],
     notes: '180 sq standing seam metal. Complex roofline, historic property. 4 large chimneys. Must match existing copper details.',
     duration: 8,
-    jobType: 'Commercial', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 206, customer: 'Earl Yoder', address: '320 Buffalo Rd, Lewisburg PA 17837',
-    trade: 'Flashing Repair', value: 1850, status: 'Scheduled', hours: 3,
+    id: 206, projectId: 'p-206',
+    scopeType: 'Flashing Repair', status: 'Scheduled', value: 1850, hours: 3,
     scheduledDate: '2026-04-22', completedSteps: [],
     notes: 'Chimney valley flashing repair. Step + counter flashing replacement. Match existing architectural shingles.',
-    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 207, customer: 'Market Street Commons', address: '118 Market St, Sunbury PA 17801',
-    trade: 'Full Replacement', value: 42800, status: 'Scheduled', hours: 8,
+    id: 207, projectId: 'p-207',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 42800, hours: 8,
     scheduledDate: '2026-04-23', completedSteps: [1, 2],
     notes: '85 sq TPO 60-mil commercial flat roof. Insulation board + cover board. Edge metal perimeter.',
     duration: 4,
-    jobType: 'Commercial', currentPhase: 2, completedPhases: [1],
+    phaseTemplate: 'commercial-7-phase', currentPhase: 2, completedPhases: [1],
   },
   {
-    id: 208, customer: 'Ray Brubaker', address: '410 N Front St, Milton PA 17847',
-    trade: 'Full Replacement', value: 24800, status: 'Scheduled', hours: 7,
+    id: 208, projectId: 'p-208',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 24800, hours: 7,
     scheduledDate: '2026-04-28', completedSteps: [1, 2],
     notes: '52 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. Storm damage — State Farm claim. Harness required.',
     duration: 3,
-    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 211, customer: 'Eli Beiler', address: '892 Old Turnpike Rd, Mifflinburg PA 17844',
-    trade: 'Solar Panel Reinstall', value: 5600, status: 'Scheduled', hours: 6,
+    id: 211, projectId: 'p-211',
+    scopeType: 'Solar Panel Reinstall', status: 'Scheduled', value: 5600, hours: 6,
     scheduledDate: '2026-04-29', completedSteps: [],
     notes: 'Uninstall + reinstall 24-panel grid-tied array for full reroof underneath. Coordinate with homeowner\'s electrician for disconnect/reconnect. Panel removal day 1, shingles days 2-3, panel reinstall day 4.',
     duration: 4,
-    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 212, customer: 'Wengert Residence', address: '54 Buffalo Cross Rd, Lewisburg PA 17837',
-    trade: 'Chimney Cricket', value: 2200, status: 'Scheduled', hours: 4,
+    id: 212, projectId: 'p-212',
+    scopeType: 'Chimney Cricket', status: 'Scheduled', value: 2200, hours: 4,
     scheduledDate: '2026-04-30', completedSteps: [],
     notes: 'Build 36" cricket behind 5\' wide masonry chimney. Persistent leak at upslope side. Frame, deck, ice & water shield, integrate with existing field. Match Owens Corning Duration Onyx Black.',
-    jobType: 'Residential', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
-  // ── Unscheduled pipeline jobs ──
   {
-    id: 209, customer: 'Messiah Village', address: '100 Mt Allen Dr, Mechanicsburg PA 17055',
-    trade: 'Full Replacement', value: 224000, status: 'Scheduled',
+    id: 209, projectId: 'p-209',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 224000,
     completedSteps: [1, 2],
     notes: '240 sq mixed TPO + standing seam metal. Multi-building campus. Phased installation.',
-    jobType: 'Commercial', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
   {
-    id: 210, customer: 'Riverwoods HOA — Phase 2', address: '200 Riverwoods Dr, Lewisburg PA 17837',
-    trade: 'Full Replacement', value: 94000, status: 'Scheduled',
+    id: 210, projectId: 'p-210',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 94000,
     completedSteps: [1],
     notes: 'Phase 2: buildings 5-8. ~96 sq architectural. Waiting on HOA board to approve start date.',
-    jobType: 'Commercial', currentPhase: 1, completedPhases: [],
+    phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
 ];
+
+// ─── Project/Scope helpers ───────────────────────────────────────────────────
+function getProjectById(id, projects = DEMO_PROJECTS) {
+  return projects.find(p => p.id === id);
+}
+function getScopesForProject(projectId, scopes = DEMO_SCOPES) {
+  return scopes.filter(s => s.projectId === projectId);
+}
+// eslint-disable-next-line no-unused-vars
+function getProjectTotalValue(projectId, scopes = DEMO_SCOPES) {
+  return getScopesForProject(projectId, scopes).reduce((sum, s) => sum + (s.value || 0), 0);
+}
+function getProjectStatus(projectId, scopes = DEMO_SCOPES) {
+  const projScopes = getScopesForProject(projectId, scopes);
+  if (projScopes.length === 0) return 'Scheduled';
+  if (projScopes.some(s => s.status === 'In Progress')) return 'In Progress';
+  if (projScopes.every(s => s.status === 'Complete')) return 'Complete';
+  // First non-complete scope's status, falling back to first
+  return (projScopes.find(s => s.status !== 'Complete') || projScopes[0]).status;
+}
+// eslint-disable-next-line no-unused-vars
+function getProjectsByStage(stage, projects = DEMO_PROJECTS, scopes = DEMO_SCOPES) {
+  return projects.filter(p => getProjectStatus(p.id, scopes) === stage);
+}
+
+// ─── Legacy DEMO_JOBS adapter ────────────────────────────────────────────────
+// Derived from DEMO_PROJECTS + DEMO_SCOPES so existing UI keeps working
+// unchanged while subsequent commits rewire individual tabs to the new
+// project-centric model.
+const DEMO_JOBS = DEMO_SCOPES.map(s => {
+  const project = getProjectById(s.projectId) || {};
+  return {
+    id: s.id,
+    customer: project.customerName,
+    address: project.address,
+    trade: s.scopeType,
+    value: s.value,
+    status: s.status,
+    scheduledDate: s.scheduledDate,
+    hours: s.hours,
+    completedSteps: s.completedSteps || [],
+    notes: s.notes || project.notes || '',
+    duration: s.duration,
+    jobType: s.phaseTemplate === 'commercial-7-phase' ? 'Commercial' : 'Residential',
+    currentPhase: s.currentPhase,
+    completedPhases: s.completedPhases || [],
+    changeOrders: s.changeOrders || [],
+  };
+});
 
 const DEMO_CREW = [
   { id: 'dc1', name: 'Jake Stoltzfus', role: 'Foreman', phone: '(570) 555-2341', specialties: ['Full Replacement', 'Storm Damage'] },
