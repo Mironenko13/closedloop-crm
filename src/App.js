@@ -7915,8 +7915,11 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: 320 }}>
-      <div style={{ flex: 1, overflow: 'auto', maxHeight: 380, paddingBottom: 8 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{
+        overflowY: 'auto', maxHeight: '50dvh', minHeight: 200,
+        paddingBottom: 8, WebkitOverflowScrolling: 'touch',
+      }}>
         {messages.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: '#D1D5DB' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💬</div>
@@ -7946,37 +7949,35 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
         <div ref={endRef} />
       </div>
 
-      {!demoMessages && (
-        <div style={{ display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }}>
-          <textarea
-            style={{
-              flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
-              background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7,
-              color: '#D1D5DB', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
-              resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
-              lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
-            }}
-            value={text}
-            onChange={e => setText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Message... (Enter to send)"
-            rows={1}
-          />
-          <button
-            style={{
-              padding: '8px 14px', border: 'none', borderRadius: 7,
-              background: text.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
-              color: text.trim() ? '#fff' : '#D1D5DB',
-              cursor: text.trim() ? 'pointer' : 'default',
-              fontWeight: 600, fontSize: 13, flexShrink: 0,
-              minWidth: 60, WebkitTapHighlightColor: 'transparent',
-            }}
-            onClick={send}
-          >
-            Send
-          </button>
-        </div>
-      )}
+      <div style={{ display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }}>
+        <textarea
+          style={{
+            flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
+            background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7,
+            color: '#D1D5DB', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
+            resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
+            lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
+          }}
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+          rows={1}
+        />
+        <button
+          style={{
+            padding: '8px 14px', border: 'none', borderRadius: 7,
+            background: text.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
+            color: text.trim() ? '#fff' : '#D1D5DB',
+            cursor: text.trim() ? 'pointer' : 'default',
+            fontWeight: 600, fontSize: 13, flexShrink: 0,
+            minWidth: 60, minHeight: 44, WebkitTapHighlightColor: 'transparent',
+          }}
+          onClick={send}
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 }
@@ -7985,6 +7986,9 @@ function JobChatPanel({ jobId, currentUser, demoMessages, onCountChange }) {
 function ChatTab({ jobs, demoMessages }) {
   const [dbMessages, setDbMessages] = useState([]);
   const [jobFilter, setJobFilter] = useState('all');
+  const [composerText, setComposerText] = useState('');
+  const [localMessages, setLocalMessages] = useState([]);
+  const isMobile = useMobile();
 
   useEffect(() => {
     if (!demoMessages) {
@@ -7994,9 +7998,10 @@ function ChatTab({ jobs, demoMessages }) {
     }
   }, [demoMessages]);
 
-  const allMessages = demoMessages
-    ? [...demoMessages].sort((a, b) => b.timestamp - a.timestamp)
-    : dbMessages;
+  const allMessages = useMemo(() => {
+    const base = demoMessages ? [...demoMessages] : dbMessages;
+    return [...base, ...localMessages].sort((a, b) => b.timestamp - a.timestamp);
+  }, [demoMessages, dbMessages, localMessages]);
 
   const jobsWithMsgs = useMemo(() => {
     const ids = [...new Set(allMessages.map(m => m.jobId))];
@@ -8007,6 +8012,34 @@ function ChatTab({ jobs, demoMessages }) {
     if (jobFilter === 'all') return allMessages;
     return allMessages.filter(m => m.jobId === jobFilter);
   }, [allMessages, jobFilter]);
+
+  // Target job for the composer: the filtered job if a filter is active,
+  // otherwise default to the first job with messages, then any job.
+  const targetJob = useMemo(() => {
+    if (jobFilter !== 'all') return jobs.find(j => String(j.id) === jobFilter) || null;
+    return jobsWithMsgs[0] || jobs[0] || null;
+  }, [jobFilter, jobs, jobsWithMsgs]);
+
+  const sendMessage = () => {
+    const t = composerText.trim();
+    if (!t || !targetJob) return;
+    const msg = {
+      id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      jobId: String(targetJob.id),
+      senderId: 'owner',
+      senderName: 'Demo Owner',
+      text: t,
+      timestamp: Date.now(),
+      type: 'user',
+    };
+    setLocalMessages(prev => [...prev, msg]);
+    if (!demoMessages) chatDB.add(msg).catch(() => {});
+    setComposerText('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  };
 
   const jobName = (jobId) => {
     const j = jobs.find(jb => String(jb.id) === jobId);
@@ -8072,6 +8105,63 @@ function ChatTab({ jobs, demoMessages }) {
           ))}
         </div>
       )}
+
+      {/* Composer */}
+      <div style={{
+        marginTop: 16, paddingTop: 12,
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: 11, color: '#D1D5DB' }}>
+          <span>Sending to:</span>
+          <select
+            value={targetJob ? String(targetJob.id) : ''}
+            onChange={e => setJobFilter(e.target.value)}
+            style={{
+              flex: 1, minWidth: 0, background: '#2A3140',
+              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6,
+              color: '#E8722A', fontSize: 12, fontWeight: 600,
+              padding: '6px 8px', minHeight: 32, outline: 'none',
+              maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis',
+            }}
+          >
+            {jobs.length === 0 && <option value="">No jobs available</option>}
+            {jobs.map(j => (
+              <option key={j.id} value={String(j.id)}>{j.customer}</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <textarea
+            value={composerText}
+            onChange={e => setComposerText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message..."
+            rows={1}
+            disabled={!targetJob}
+            style={{
+              flex: 1, padding: isMobile ? '11px 12px' : '8px 12px',
+              background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7,
+              color: '#D1D5DB', fontSize: isMobile ? 16 : 13, fontFamily: "'Inter', -apple-system, sans-serif",
+              resize: 'none', minHeight: isMobile ? 44 : 38, maxHeight: 100,
+              lineHeight: 1.4, outline: 'none', boxSizing: 'border-box',
+            }}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={!composerText.trim() || !targetJob}
+            style={{
+              padding: '8px 14px', border: 'none', borderRadius: 7,
+              background: composerText.trim() && targetJob ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
+              color: composerText.trim() && targetJob ? '#fff' : '#D1D5DB',
+              cursor: composerText.trim() && targetJob ? 'pointer' : 'not-allowed',
+              fontWeight: 600, fontSize: 13, flexShrink: 0,
+              minWidth: 60, minHeight: 44, WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
