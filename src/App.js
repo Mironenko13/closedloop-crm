@@ -2823,6 +2823,36 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   const showToast = useToast();
   const isMobile = useMobile();
 
+  // Sync horizontal scroll between the stats summary row and the kanban
+  // columns row. Proportional sync (scrollLeft / scrollMax) so the last
+  // stat tile aligns with the last kanban column even though the two
+  // rows have different total widths.
+  const statsRef = useRef(null);
+  const kanbanRef = useRef(null);
+  const syncingRef = useRef(false);
+  const handleStatsScroll = () => {
+    if (syncingRef.current) return;
+    const s = statsRef.current, k = kanbanRef.current;
+    if (!s || !k) return;
+    const sMax = s.scrollWidth - s.clientWidth;
+    const kMax = k.scrollWidth - k.clientWidth;
+    if (sMax <= 0 || kMax <= 0) return;
+    syncingRef.current = true;
+    k.scrollLeft = (s.scrollLeft / sMax) * kMax;
+    requestAnimationFrame(() => { syncingRef.current = false; });
+  };
+  const handleKanbanScroll = () => {
+    if (syncingRef.current) return;
+    const s = statsRef.current, k = kanbanRef.current;
+    if (!s || !k) return;
+    const sMax = s.scrollWidth - s.clientWidth;
+    const kMax = k.scrollWidth - k.clientWidth;
+    if (sMax <= 0 || kMax <= 0) return;
+    syncingRef.current = true;
+    s.scrollLeft = (k.scrollLeft / kMax) * sMax;
+    requestAnimationFrame(() => { syncingRef.current = false; });
+  };
+
   const KANBAN_STAGES = [
     { key: 'lead', label: 'Lead' },
     { key: 'inspection_scheduled', label: 'Insp Scheduled' },
@@ -2896,17 +2926,21 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
 
   return (
     <div>
-      {/* Summary bar */}
+      {/* Summary bar — scrolls in sync with kanban below */}
       <div style={{ position: 'relative', marginBottom: 14 }}>
-        <div style={{ display: 'flex', gap: 0, background: '#2A3140', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
-          {stageStats.map((s, i) => (
-            <div key={s.key} style={{ flex: '0 0 auto', minWidth: 96, padding: '10px 8px', borderRight: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+        <div
+          ref={statsRef}
+          onScroll={handleStatsScroll}
+          style={{ display: 'flex', gap: 0, background: '#2A3140', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+        >
+          {stageStats.map((s) => (
+            <div key={s.key} style={{ flex: '0 0 auto', minWidth: 96, padding: '10px 8px', borderRight: '1px solid rgba(255,255,255,0.08)', textAlign: 'center', overflow: 'hidden' }}>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>{s.count}</div>
-              <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{s.label}</div>
-              {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2, whiteSpace: 'nowrap' }}>{fmt(s.value)}</div>}
+              <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
+              {s.value > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fmt(s.value)}</div>}
             </div>
           ))}
-          <div style={{ flex: '0 0 auto', minWidth: 96, padding: '10px 12px', textAlign: 'center', borderBottom: '2px solid #E8722A' }}>
+          <div style={{ flex: '0 0 auto', minWidth: 96, padding: '10px 12px', textAlign: 'center', borderBottom: '2px solid #E8722A', overflow: 'hidden' }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: '#E8722A', whiteSpace: 'nowrap' }}>{rolePerms?.seeDollars !== false ? fmt(totalPipeline) : '—'}</div>
             <div style={{ fontSize: 11, color: '#D1D5DB', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Pipeline</div>
           </div>
@@ -2964,7 +2998,11 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             ← Swipe to see all stages →
           </div>
         )}
-      <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, WebkitOverflowScrolling: 'touch', alignItems: 'flex-start' }}>
+      <div
+        ref={kanbanRef}
+        onScroll={handleKanbanScroll}
+        style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, WebkitOverflowScrolling: 'touch', alignItems: 'flex-start' }}
+      >
         {KANBAN_STAGES.map(stg => {
           const cards = byStage[stg.key] || [];
           const colValue = cards.reduce((s, l) => s + l.value, 0);
