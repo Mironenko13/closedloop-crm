@@ -1305,22 +1305,13 @@ function GlobalStyles() {
 
 function BottomNav({ tab, setTab, tabs }) {
   const tabList = tabs || NAV_TABS;
-  // Show right-edge fade gradient when tabs may overflow the viewport.
-  // 6+ tabs at flex-basis 56 = 336px+, which can overflow at 360-390px.
-  const showFade = tabList.length > 5;
   return (
     <div style={{
       flexShrink: 0,
-      position: 'relative',
       background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
-      zIndex: 200,
+      display: 'flex', height: 64, zIndex: 200,
       boxShadow: '0 -4px 12px rgba(0,0,0,0.3)',
     }}>
-      <div style={{
-        display: 'flex', height: 64,
-        overflowX: 'auto', scrollbarWidth: 'none',
-        WebkitOverflowScrolling: 'touch',
-      }}>
       {tabList.map(({ key, label, icon, locked }) => {
         const c = SECTION_COLORS[key] || '#E8722A';
         const isActive = tab === key && !locked;
@@ -1330,33 +1321,32 @@ function BottomNav({ tab, setTab, tabs }) {
             className={isActive ? '' : 'ri-bnav-btn'}
             onClick={() => !locked && setTab(key)}
             style={{
-              flex: '1 0 56px', display: 'flex', flexDirection: 'column',
+              flex: '1 1 42px', minWidth: 0,
+              display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               background: isActive ? c + '10' : 'transparent', border: 'none',
               color: locked ? 'rgba(255,255,255,0.12)' : isActive ? '#E8722A' : '#D1D5DB',
-              fontSize: 10, fontWeight: isActive ? 700 : 500,
+              fontWeight: isActive ? 700 : 500,
               cursor: locked ? 'not-allowed' : 'pointer',
-              gap: 3, minHeight: 64, padding: 0,
+              gap: 2, minHeight: 64, padding: '0 2px',
               borderTop: isActive ? `2px solid ${c}` : '2px solid transparent',
               transition: 'color 0.15s, background 0.15s',
               WebkitTapHighlightColor: 'transparent',
+              overflow: 'hidden',
             }}
           >
-            <span style={{ fontSize: isActive ? 22 : 18, lineHeight: 1, transition: 'font-size 0.15s' }}>
+            <span style={{ fontSize: isActive ? 20 : 18, lineHeight: 1, transition: 'font-size 0.15s' }}>
               {locked ? '🔒' : icon}
             </span>
-            {label}
+            <span style={{
+              fontSize: 10, lineHeight: 1.1, maxWidth: '100%',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {label}
+            </span>
           </button>
         );
       })}
-      </div>
-      {showFade && (
-        <div style={{
-          position: 'absolute', top: 0, right: 0, bottom: 0, width: 32,
-          background: 'linear-gradient(to right, rgba(22,27,34,0), #161B22 85%)',
-          pointerEvents: 'none',
-        }} />
-      )}
     </div>
   );
 }
