@@ -1508,6 +1508,7 @@ function GlobalStyles() {
       .ri-skel { animation:ri-pulse 1.5s ease-in-out infinite; background:#2A3140; border-radius:6px; }
       @keyframes ri-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
       @keyframes coSlideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+      @keyframes ri-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       .ri-fadein { animation:ri-fadein 0.2s ease-out; }
       ::-webkit-scrollbar { width:5px; height:5px; }
       ::-webkit-scrollbar-track { background:transparent; }
@@ -5586,9 +5587,10 @@ function deriveProjectStatusFromJobs(scopes) {
   return scopes.find(s => s.status !== 'Complete')?.status || 'Scheduled';
 }
 
-function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
+function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, quotes, onSaveQuote }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [quoteAgentProject, setQuoteAgentProject] = useState(null);
   const [filter, setFilter] = useState('all');
   const [tradeFilter, setTradeFilter] = useState('all');
 
@@ -5747,8 +5749,10 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
         <ProjectDetail
           project={selectedProject}
           rolePerms={rolePerms}
+          quotes={quotes}
           onClose={() => setSelectedProject(null)}
           onSelectScope={(scope) => { setSelectedJob(scope); }}
+          onNewQuote={(project) => setQuoteAgentProject(project)}
         />
       )}
 
@@ -5771,19 +5775,31 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
           isDemo={!!demoMessages}
         />
       )}
+
+      {quoteAgentProject && (
+        <QuoteAgent
+          project={quoteAgentProject}
+          initialQuote={null}
+          onSaveDraft={(quote) => { if (onSaveQuote) onSaveQuote(quote); setQuoteAgentProject(null); }}
+          onClose={() => setQuoteAgentProject(null)}
+        />
+      )}
     </div>
   );
 }
 
 // ─── Project Detail Modal (lists scopes inside a project) ────────────────────
-function ProjectDetail({ project, rolePerms, onClose, onSelectScope, onNewQuote, onOpenQuote }) {
+function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onNewQuote, onOpenQuote }) {
   useScrollLock();
   const isMobile = useMobile();
   const showToast = useToast();
   const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#8B95A1');
   const sc = statusColor(project.status);
 
-  const projectQuotes = useMemo(() => getQuotesForProject(project.id), [project.id]);
+  const projectQuotes = useMemo(
+    () => getQuotesForProject(project.id, quotes || DEMO_QUOTES),
+    [project.id, quotes]
+  );
 
   const quoteStatusColor = (s) => ({
     draft: '#9CA3AF', sent: '#3b82f6', viewed: '#06b6d4',
@@ -5970,6 +5986,445 @@ function ProjectDetail({ project, rolePerms, onClose, onSelectScope, onNewQuote,
             })}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Quote draft normalization helpers ───────────────────────────────────────
+function normalizeQuoteDraft(draft) {
+  if (!draft || typeof draft !== 'object') return null;
+  const sections = Array.isArray(draft.sections) ? draft.sections.map((sec, i) => {
+    const lineItems = Array.isArray(sec.lineItems) ? sec.lineItems.map((li, j) => {
+      const qty = Number(li.quantity) || 0;
+      const price = Number(li.unitPrice) || 0;
+      const ext = li.extension != null ? Number(li.extension) : Math.round(qty * price * 100) / 100;
+      return {
+        id: li.id || `li-${i}-${j}-${Math.random().toString(36).slice(2, 6)}`,
+        description: String(li.description || ''),
+        category: li.category || 'Material',
+        quantity: qty, unit: li.unit || 'EA', unitPrice: price,
+        extension: ext, notes: li.notes || null,
+      };
+    }) : [];
+    const secTotal = lineItems.reduce((s, li) => s + (li.extension || 0), 0);
+    return {
+      id: sec.id || `qs-${i}-${Math.random().toString(36).slice(2, 6)}`,
+      scopeId: sec.scopeId || null,
+      scopeType: sec.scopeType || 'Full Replacement',
+      narrative: sec.narrative || '',
+      lineItems,
+      subtotal: Math.round(secTotal * 100) / 100,
+    };
+  }) : [];
+  const subtotal = sections.reduce((s, sec) => s + sec.subtotal, 0);
+  const tax = Number(draft.tax) || 0;
+  return {
+    mode: draft.mode === 'commercial' ? 'commercial' : 'residential',
+    sections,
+    subtotal: Math.round(subtotal * 100) / 100,
+    tax,
+    total: Math.round((subtotal + tax) * 100) / 100,
+    terms: draft.terms || '',
+    exclusions: Array.isArray(draft.exclusions) ? draft.exclusions : [],
+    alternates: Array.isArray(draft.alternates) ? draft.alternates : [],
+    paymentSchedule: Array.isArray(draft.paymentSchedule) ? draft.paymentSchedule : [],
+  };
+}
+
+function mergeQuoteDraft(existing, fromAgent) {
+  if (!fromAgent) return existing;
+  if (!existing) return fromAgent;
+  return {
+    ...existing,
+    mode: fromAgent.mode,
+    sections: fromAgent.sections,
+    subtotal: fromAgent.subtotal,
+    tax: fromAgent.tax,
+    total: fromAgent.total,
+    terms: fromAgent.terms,
+    exclusions: fromAgent.exclusions,
+    alternates: fromAgent.alternates,
+    paymentSchedule: fromAgent.paymentSchedule,
+  };
+}
+
+// ─── Quote Agent (Claude-powered quote generation) ───────────────────────────
+function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const showToast = useToast();
+
+  const [conversation, setConversation] = useState(
+    Array.isArray(initialQuote?.agentConversation) ? initialQuote.agentConversation : []
+  );
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [quoteDraft, setQuoteDraft] = useState(() => {
+    if (!initialQuote) return null;
+    // Strip persistent quote-level fields (id, quoteNumber, status, etc.)
+    // and keep the agent-editable shape so re-merge is clean
+    return {
+      mode: initialQuote.mode,
+      sections: initialQuote.sections || [],
+      subtotal: initialQuote.subtotal || 0,
+      tax: initialQuote.tax || 0,
+      total: initialQuote.total || 0,
+      terms: initialQuote.terms || '',
+      exclusions: initialQuote.exclusions || [],
+      alternates: initialQuote.alternates || [],
+      paymentSchedule: initialQuote.paymentSchedule || [],
+    };
+  });
+  const [previewCollapsed, setPreviewCollapsed] = useState(false);
+  const convoEndRef = useRef(null);
+  const textAreaRef = useRef(null);
+
+  useEffect(() => {
+    if (convoEndRef.current) convoEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [conversation]);
+
+  const send = async () => {
+    const text = input.trim();
+    if (!text || sending) return;
+    const userTurn = { role: 'user', timestamp: new Date().toISOString(), content: text };
+    setConversation(prev => [...prev, userTurn]);
+    setInput('');
+    setSending(true);
+    setError('');
+    try {
+      const res = await fetch('/api/quote-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectContext: {
+            customerName: project.customerName,
+            address: project.address,
+          },
+          mode: quoteDraft?.mode || 'residential',
+          userMessage: text,
+          conversationHistory: conversation,
+          currentQuoteDraft: quoteDraft,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || 'AI service is temporarily unavailable.');
+        setConversation(prev => prev.slice(0, -1)); // pop the user turn so they can retry
+        setInput(text);
+        return;
+      }
+      const assistantTurn = {
+        role: 'assistant',
+        timestamp: new Date().toISOString(),
+        content: data.agentMessage || '',
+      };
+      setConversation(prev => [...prev, assistantTurn]);
+      if (data.updatedQuoteDraft) {
+        const normalized = normalizeQuoteDraft(data.updatedQuoteDraft);
+        setQuoteDraft(prev => mergeQuoteDraft(prev, normalized));
+      }
+    } catch (_e) {
+      setError("Couldn't reach the AI service. Try again.");
+      setConversation(prev => prev.slice(0, -1));
+      setInput(text);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  };
+
+  const handleSaveDraft = () => {
+    if (!quoteDraft || !quoteDraft.sections || quoteDraft.sections.length === 0) {
+      showToast('Describe the job first — the agent needs something to quote.');
+      return;
+    }
+    if (initialQuote && initialQuote.id) {
+      onSaveDraft({
+        ...initialQuote,
+        ...quoteDraft,
+        agentConversation: conversation,
+      });
+    } else {
+      onSaveDraft({
+        id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        quoteNumber: generateQuoteNumber(),
+        projectId: project.id,
+        mode: quoteDraft.mode,
+        status: 'draft',
+        createdDate: new Date().toISOString(),
+        sentDate: null, viewedDate: null, signedDate: null,
+        expirationDate: (() => { const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10); })(),
+        subtotal: quoteDraft.subtotal, tax: quoteDraft.tax, total: quoteDraft.total,
+        sections: quoteDraft.sections,
+        attachments: [], signature: null,
+        depositAmount: 0, depositPaid: false, paymentIntentId: null,
+        shareToken: generateShareToken(),
+        terms: quoteDraft.terms,
+        exclusions: quoteDraft.exclusions,
+        alternates: quoteDraft.alternates,
+        paymentSchedule: quoteDraft.paymentSchedule,
+        customerInteractions: [],
+        agentConversation: conversation,
+      });
+    }
+    showToast('Draft saved.');
+  };
+
+  const overlay = { ...S.overlay, padding: 0, alignItems: 'stretch', justifyContent: 'stretch' };
+  const modal = {
+    background: '#1E2329', border: 'none', borderRadius: 0,
+    width: '100%', height: '100dvh', maxWidth: '100vw', maxHeight: '100dvh',
+    margin: 0, padding: 0, position: 'relative',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+  };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{
+          flexShrink: 0, padding: '12px 14px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0, flexShrink: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF',
+              fontSize: 18, lineHeight: 1, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quoting for</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.customerName}</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.address}</div>
+          </div>
+          <button
+            onClick={handleSaveDraft}
+            style={{
+              padding: '8px 12px', minHeight: 36, flexShrink: 0,
+              background: quoteDraft && quoteDraft.sections.length > 0
+                ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'rgba(255,255,255,0.06)',
+              border: 'none', borderRadius: 8,
+              color: quoteDraft && quoteDraft.sections.length > 0 ? '#fff' : '#D1D5DB',
+              fontWeight: 700, fontSize: 12, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Save Draft</button>
+        </div>
+
+        {/* Live quote preview (collapsible) */}
+        {quoteDraft && quoteDraft.sections && quoteDraft.sections.length > 0 && (
+          <div style={{ flexShrink: 0, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div
+              onClick={() => setPreviewCollapsed(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+                padding: '10px 14px', cursor: 'pointer', background: '#252b36',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                <span style={{ fontSize: 10, color: '#9CA3AF' }}>{previewCollapsed ? '▶' : '▼'}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Quote</span>
+                <span style={{
+                  fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
+                  background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
+                  textTransform: 'uppercase', letterSpacing: '0.4px',
+                }}>{quoteDraft.mode}</span>
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>{fmt(quoteDraft.total || quoteDraft.subtotal || 0)}</div>
+            </div>
+            {!previewCollapsed && (
+              <div style={{
+                padding: '10px 14px 14px', maxHeight: '32dvh', overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+              }}>
+                {quoteDraft.sections.map((sec) => (
+                  <div key={sec.id} style={{
+                    background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 8, padding: '10px 12px', marginBottom: 8,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sec.scopeType}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>{fmt(sec.subtotal || 0)}</div>
+                    </div>
+                    {sec.narrative && (
+                      <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 8, lineHeight: 1.45 }}>{sec.narrative}</div>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      {sec.lineItems.map(li => (
+                        <div key={li.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 11, color: '#D1D5DB' }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis' }}>{li.description}</div>
+                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{li.quantity} {li.unit} × {fmt(li.unitPrice)} · {li.category}</div>
+                          </div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>{fmt(li.extension)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px 0', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }}>
+                  <span style={{ fontSize: 11, color: '#D1D5DB' }}>Subtotal</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{fmt(quoteDraft.subtotal || 0)}</span>
+                </div>
+                {quoteDraft.tax > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 4px 0' }}>
+                    <span style={{ fontSize: 11, color: '#D1D5DB' }}>Tax</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{fmt(quoteDraft.tax)}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 4px 0' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>Total</span>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: '#22c55e' }}>{fmt(quoteDraft.total || quoteDraft.subtotal || 0)}</span>
+                </div>
+
+                {/* Placeholder actions for later sessions */}
+                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                  <button
+                    onClick={() => showToast('Manual editor coming next session')}
+                    style={{
+                      flex: 1, padding: '8px 10px', minHeight: 36,
+                      background: 'transparent', border: '1px solid rgba(255,255,255,0.15)',
+                      borderRadius: 7, color: '#D1D5DB', fontSize: 12, fontWeight: 600,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >Edit manually</button>
+                  <button
+                    onClick={() => showToast('Review & send coming next session')}
+                    style={{
+                      flex: 1, padding: '8px 10px', minHeight: 36,
+                      background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                      border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontWeight: 700,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >Looks good — review & send</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Conversation */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: 'auto',
+          padding: '12px 14px', WebkitOverflowScrolling: 'touch',
+        }}>
+          {conversation.length === 0 && (
+            <div style={{
+              padding: '32px 16px', textAlign: 'center',
+              color: '#D1D5DB', fontSize: 13, lineHeight: 1.5,
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>✦</div>
+              <div style={{ fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>Describe the job</div>
+              <div>Tap the mic or just type. Tell me layers, squares, pitch, materials, anything else worth pricing in — I'll draft the quote.</div>
+            </div>
+          )}
+          {conversation.map((m, i) => (
+            <div key={i} style={{
+              display: 'flex', flexDirection: 'column',
+              alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
+              marginBottom: 12,
+            }}>
+              <div style={{
+                maxWidth: '88%',
+                padding: '10px 14px', borderRadius: 12,
+                background: m.role === 'user' ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
+                border: m.role === 'assistant' ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                color: '#FFFFFF', fontSize: 13, lineHeight: 1.5,
+                overflowWrap: 'anywhere', wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap',
+              }}>{m.content}</div>
+              <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 3 }}>
+                {m.role === 'user' ? 'You' : 'Quote Agent'}
+              </div>
+            </div>
+          ))}
+          {sending && (
+            <div style={{
+              maxWidth: '88%', padding: '10px 14px', borderRadius: 12,
+              background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
+              color: '#D1D5DB', fontSize: 13, lineHeight: 1.5,
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#E8722A', animation: 'ri-spin 0.8s linear infinite' }} />
+              Drafting…
+            </div>
+          )}
+          {error && (
+            <div style={{
+              padding: '10px 14px', borderRadius: 8,
+              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+              color: '#f87171', fontSize: 12, marginTop: 6,
+            }}>{error}</div>
+          )}
+          <div ref={convoEndRef} />
+        </div>
+
+        {/* Composer */}
+        <div style={{
+          flexShrink: 0, padding: '10px 12px 12px',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          background: '#161B22',
+          display: 'flex', alignItems: 'flex-end', gap: 8,
+        }}>
+          <textarea
+            ref={textAreaRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Describe the job…"
+            rows={1}
+            disabled={sending}
+            style={{
+              flex: 1, minHeight: 44, maxHeight: 120,
+              padding: isMobile ? '11px 12px' : '8px 12px',
+              background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+              color: '#FFFFFF', fontSize: isMobile ? 16 : 13,
+              fontFamily: "'Inter', -apple-system, sans-serif",
+              lineHeight: 1.4, outline: 'none', resize: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+          <button
+            disabled
+            title="Voice input coming next commit"
+            aria-label="Voice input"
+            style={{
+              width: 56, height: 56, padding: 0, flexShrink: 0,
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '50%', color: '#D1D5DB',
+              fontSize: 22, lineHeight: 1, cursor: 'not-allowed',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >🎤</button>
+          <button
+            onClick={send}
+            disabled={!input.trim() || sending}
+            style={{
+              minWidth: 64, minHeight: 44, padding: '0 14px', flexShrink: 0,
+              background: input.trim() && !sending
+                ? 'linear-gradient(135deg, #E8722A, #e8640c)' : 'rgba(255,255,255,0.06)',
+              border: 'none', borderRadius: 10,
+              color: input.trim() && !sending ? '#fff' : '#D1D5DB',
+              fontSize: 13, fontWeight: 700,
+              cursor: input.trim() && !sending ? 'pointer' : 'not-allowed',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Send</button>
+        </div>
       </div>
     </div>
   );
@@ -10850,6 +11305,9 @@ export default function App() {
   const [assignments, setAssignments] = useState(() => {
     try { const s = localStorage.getItem('cl_assignments'); return s ? JSON.parse(s) : {}; } catch { return {}; }
   });
+  const [userQuotes, setUserQuotes] = useState(() => {
+    try { const s = localStorage.getItem('cl_quotes'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
   const [jobModal, setJobModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
@@ -10892,6 +11350,20 @@ export default function App() {
   useEffect(() => {
     if (session && !session.isDemo) localStorage.setItem('cl_assignments', JSON.stringify(assignments));
   }, [assignments, session]);
+  useEffect(() => {
+    if (session && !session.isDemo) localStorage.setItem('cl_quotes', JSON.stringify(userQuotes));
+  }, [userQuotes, session]);
+
+  const handleSaveQuote = (quote) => {
+    setUserQuotes(prev => {
+      const idx = prev.findIndex(q => q.id === quote.id);
+      if (idx >= 0) {
+        const next = [...prev]; next[idx] = quote; return next;
+      }
+      return [...prev, quote];
+    });
+  };
+  const allQuotes = [...DEMO_QUOTES, ...userQuotes];
 
   const handleAddCrew = (member) => setUserCrew(prev => [member, ...prev]);
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
@@ -11326,6 +11798,8 @@ export default function App() {
                 onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
                 onUpdateSchedule={isDemo ? null : handleScheduleJob}
                 rolePerms={rolePerms}
+                quotes={allQuotes}
+                onSaveQuote={handleSaveQuote}
               />
         )}
         {tab === 'calendar' && (
