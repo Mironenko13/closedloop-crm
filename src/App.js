@@ -226,8 +226,9 @@ const DEMO_LEADS = [
     phone: '(570) 524-7200', email: 'syoder@riverwoodshoa.org',
     trade: 'Full Replacement', status: 'active', value: 94000, stage: 'inspection_scheduled',
     callbackDate: '2026-03-27', lastContact: '2026-03-18',
-    stallReason: null, notes: '12-building townhome complex, ~280 sq total. Phased replacement. Board vote 3/28. Architectural shingles, color TBD by HOA. Ice & water shield required at eaves.',
+    stallReason: null, notes: '12-building townhome complex, ~280 sq total. Phased replacement. Board vote 3/28. Architectural shingles, color TBD by HOA. Ice & water shield required at eaves. Soffit/fascia repair added to scope after walk-through.',
     industry: 'HOA', dealAge: 18, address: '200 Riverwoods Dr, Lewisburg PA 17837',
+    extraScopes: [{ trade: 'Soffit/Fascia Repair', value: 12400 }],
   },
   {
     id: 8, name: 'Market Street Commons', contact: 'Tom Brubaker', role: 'Property Manager',
@@ -250,8 +251,9 @@ const DEMO_LEADS = [
     phone: '(570) 966-1544', email: 'pezimmerman@christlutheran.org',
     trade: 'Storm Damage', status: 'won', value: 9400, stage: 'paid',
     callbackDate: null, lastContact: '2026-03-17',
-    stallReason: null, notes: 'Closed! Wind damage to ridge cap + 3 sq of shingles on sanctuary. Nationwide Insurance covered. CertainTeed Landmark, Weathered Wood.',
+    stallReason: null, notes: 'Closed! Wind damage to ridge cap + 3 sq of shingles on sanctuary. Nationwide Insurance covered. CertainTeed Landmark, Weathered Wood. Chimney flashing added during inspection.',
     industry: 'Institutional', dealAge: 55, address: '130 S 5th St, Mifflinburg PA 17844',
+    extraScopes: [{ trade: 'Flashing Repair', value: 3200 }],
   },
   {
     id: 11, name: 'Hartman Residence', contact: 'Joe Hartman', role: 'Homeowner',
@@ -759,6 +761,28 @@ const DEMO_SCOPES = [
     scopeType: 'Full Replacement', status: 'Scheduled', value: 94000,
     completedSteps: [1],
     notes: 'Phase 2: buildings 5-8. ~96 sq architectural. Waiting on HOA board to approve start date.',
+    phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
+  },
+  // ── Multi-scope showcase: secondary scopes on three projects ──
+  {
+    id: 1001, projectId: 'p-202',
+    scopeType: 'Gutter Install', status: 'Scheduled', value: 4800, hours: 5,
+    scheduledDate: '2026-05-02', completedSteps: [],
+    notes: '210 LF 6" K-style seamless aluminum. 5 downspouts. Coordinate same-week as roof replacement so scaffolding is shared.',
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
+  },
+  {
+    id: 1002, projectId: 'p-210',
+    scopeType: 'Soffit/Fascia Repair', status: 'Scheduled', value: 12400, hours: 14,
+    scheduledDate: '2026-05-12', completedSteps: [],
+    notes: 'Buildings 5-8: replace ~340 LF of damaged soffit + 220 LF aluminum fascia wrap. Coordinated with re-roof phase.',
+    phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
+  },
+  {
+    id: 1003, projectId: 'p-201',
+    scopeType: 'Flashing Repair', status: 'Scheduled', value: 3200, hours: 6,
+    scheduledDate: '2026-04-22', completedSteps: [],
+    notes: 'Re-flash both chimneys (north and south transepts). New step + counter flashing in copper to match existing details. Tie in with completed slate field.',
     phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
 ];
