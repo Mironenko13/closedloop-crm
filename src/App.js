@@ -2260,12 +2260,12 @@ function CoachPanel({ lead, onClose, demoMode, tier, onStageChange }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Error contacting AI coach.');
+        setError('AI advice is temporarily unavailable. Please try again in a moment.');
       } else {
         setAiText(data.text);
       }
     } catch (e) {
-      setError('Error: ' + (e.message || 'Unknown error occurred'));
+      setError('AI advice is temporarily unavailable. Please try again in a moment.');
     } finally {
       setLoading(false);
     }
