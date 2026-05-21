@@ -728,7 +728,7 @@ const DEMO_SCOPES = [
   {
     id: 202, projectId: 'p-202',
     scopeType: 'Full Replacement', status: 'Scheduled', value: 18600, hours: 8,
-    scheduledDate: '2026-04-17', completedSteps: [1, 2],
+    scheduledDate: '2026-05-23', completedSteps: [1, 2],
     notes: '38 sq, 6/12 pitch. GAF Timberline HDZ Charcoal. 1 layer tear-off. Storm damage — Erie Insurance claim. Farmhouse — no Sunday work.',
     duration: 2,
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
@@ -736,14 +736,14 @@ const DEMO_SCOPES = [
   {
     id: 203, projectId: 'p-203',
     scopeType: 'Gutter Install', status: 'Scheduled', value: 3980, hours: 6,
-    scheduledDate: '2026-04-17', completedSteps: [1],
+    scheduledDate: '2026-05-26', completedSteps: [1],
     notes: '180 LF 6" K-style seamless aluminum. 4 downspouts. Old gutter removal included.',
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
     id: 204, projectId: 'p-204',
     scopeType: 'Full Replacement', status: 'Scheduled', value: 15110, hours: 4,
-    scheduledDate: '2026-04-18', completedSteps: [],
+    scheduledDate: '2026-06-03', completedSteps: [],
     notes: '34 sq, GAF Timberline HDZ. Standard pitch. Currently on punch list stage.',
     duration: 2,
     phaseTemplate: 'residential-4-phase', currentPhase: 4, completedPhases: [1, 2, 3],
@@ -754,7 +754,7 @@ const DEMO_SCOPES = [
   {
     id: 205, projectId: 'p-205',
     scopeType: 'Full Replacement', status: 'Scheduled', value: 198000, hours: 10,
-    scheduledDate: '2026-04-21', completedSteps: [1, 2],
+    scheduledDate: '2026-06-08', completedSteps: [1, 2],
     notes: '180 sq standing seam metal. Complex roofline, historic property. 4 large chimneys. Must match existing copper details.',
     duration: 8,
     phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
@@ -762,14 +762,14 @@ const DEMO_SCOPES = [
   {
     id: 206, projectId: 'p-206',
     scopeType: 'Flashing Repair', status: 'Scheduled', value: 1850, hours: 3,
-    scheduledDate: '2026-04-22', completedSteps: [],
+    scheduledDate: '2026-05-29', completedSteps: [],
     notes: 'Chimney valley flashing repair. Step + counter flashing replacement. Match existing architectural shingles.',
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
     id: 207, projectId: 'p-207',
     scopeType: 'Full Replacement', status: 'Scheduled', value: 42800, hours: 8,
-    scheduledDate: '2026-04-23', completedSteps: [1, 2],
+    scheduledDate: '2026-06-05', completedSteps: [1, 2],
     notes: '85 sq TPO 60-mil commercial flat roof. Insulation board + cover board. Edge metal perimeter.',
     duration: 4,
     phaseTemplate: 'commercial-7-phase', currentPhase: 2, completedPhases: [1],
@@ -777,7 +777,7 @@ const DEMO_SCOPES = [
   {
     id: 208, projectId: 'p-208',
     scopeType: 'Full Replacement', status: 'Scheduled', value: 24800, hours: 7,
-    scheduledDate: '2026-04-28', completedSteps: [1, 2],
+    scheduledDate: '2026-05-30', completedSteps: [1, 2],
     notes: '52 sq, 8/12 steep pitch. CertainTeed Landmark Pro Moire Black. Storm damage — State Farm claim. Harness required.',
     duration: 3,
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
@@ -785,7 +785,7 @@ const DEMO_SCOPES = [
   {
     id: 211, projectId: 'p-211',
     scopeType: 'Solar Panel Reinstall', status: 'Scheduled', value: 5600, hours: 6,
-    scheduledDate: '2026-04-29', completedSteps: [],
+    scheduledDate: '2026-06-10', completedSteps: [],
     notes: 'Uninstall + reinstall 24-panel grid-tied array for full reroof underneath. Coordinate with homeowner\'s electrician for disconnect/reconnect. Panel removal day 1, shingles days 2-3, panel reinstall day 4.',
     duration: 4,
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
@@ -793,7 +793,7 @@ const DEMO_SCOPES = [
   {
     id: 212, projectId: 'p-212',
     scopeType: 'Chimney Cricket', status: 'Scheduled', value: 2200, hours: 4,
-    scheduledDate: '2026-04-30', completedSteps: [],
+    scheduledDate: '2026-05-27', completedSteps: [],
     notes: 'Build 36" cricket behind 5\' wide masonry chimney. Persistent leak at upslope side. Frame, deck, ice & water shield, integrate with existing field. Match Owens Corning Duration Onyx Black.',
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
@@ -815,7 +815,7 @@ const DEMO_SCOPES = [
   {
     id: 2001, projectId: 'p-yutzy-2026-04',
     scopeType: 'Full Replacement', status: 'Scheduled', value: 23400, hours: 9,
-    scheduledDate: '2026-05-19', completedSteps: [],
+    scheduledDate: '2026-05-22', completedSteps: [],
     notes: '48 sq, 7/12 pitch. CertainTeed Landmark Pro Weathered Wood. 1 layer tear-off. Erie Insurance claim — wind damage. Created from signed quote.',
     duration: 3,
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
@@ -824,21 +824,21 @@ const DEMO_SCOPES = [
   {
     id: 1001, projectId: 'p-202',
     scopeType: 'Gutter Install', status: 'Scheduled', value: 4800, hours: 5,
-    scheduledDate: '2026-05-02', completedSteps: [],
+    scheduledDate: '2026-05-31', completedSteps: [],
     notes: '210 LF 6" K-style seamless aluminum. 5 downspouts. Coordinate same-week as roof replacement so scaffolding is shared.',
     phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
   },
   {
     id: 1002, projectId: 'p-210',
     scopeType: 'Soffit/Fascia Repair', status: 'Scheduled', value: 12400, hours: 14,
-    scheduledDate: '2026-05-12', completedSteps: [],
+    scheduledDate: '2026-06-09', completedSteps: [],
     notes: 'Buildings 5-8: replace ~340 LF of damaged soffit + 220 LF aluminum fascia wrap. Coordinated with re-roof phase.',
     phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
   {
     id: 1003, projectId: 'p-201',
     scopeType: 'Flashing Repair', status: 'Scheduled', value: 3200, hours: 6,
-    scheduledDate: '2026-04-22', completedSteps: [],
+    scheduledDate: '2026-06-01', completedSteps: [],
     notes: 'Re-flash both chimneys (north and south transepts). New step + counter flashing in copper to match existing details. Tie in with completed slate field.',
     phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
@@ -873,15 +873,15 @@ const DEMO_QUOTES = [
   {
     id: 'q-1001',
     quoteNumber: 'RIDGE-2026-0042',
-    leadId: 37, // Amos Stoltzfus lead
-    projectId: null,
+    leadId: null,
+    projectId: 'p-202', // Amos Stoltzfus — change-order on an existing project
     mode: 'residential',
     status: 'draft',
     createdDate: '2026-04-12T09:14:00Z',
     sentDate: null,
     viewedDate: null,
     signedDate: null,
-    expirationDate: '2026-05-12',
+    expirationDate: '2026-06-20',
     subtotal: 18600,
     tax: 0,
     total: 18600,
@@ -985,7 +985,7 @@ const DEMO_QUOTES = [
     status: 'draft',
     createdDate: '2026-04-18T10:45:00Z',
     sentDate: null, viewedDate: null, signedDate: null,
-    expirationDate: '2026-05-18',
+    expirationDate: '2026-06-20',
     subtotal: 5260, tax: 0, total: 5260,
     sections: [
       {
@@ -1192,12 +1192,15 @@ const DEMO_JOBS = DEMO_SCOPES.map(s => {
 });
 
 const DEMO_CREW = [
-  { id: 'dc1', name: 'Jake Stoltzfus', role: 'Foreman', phone: '(570) 555-2341', specialties: ['Full Replacement', 'Storm Damage'] },
-  { id: 'dc2', name: 'Tom Bricker', role: 'Install Crew', phone: '(570) 555-3456', specialties: ['Full Replacement', 'Gutter Install', 'Skylight'] },
-  { id: 'dc3', name: 'Luis Ortiz', role: 'Tear-off Crew', phone: '(570) 555-4567', specialties: ['Full Replacement', 'Repair'] },
-  { id: 'dc4', name: 'Ryan Hess', role: 'Ground Support', phone: '(570) 555-5678', specialties: ['Full Replacement', 'Emergency Tarp'] },
-  { id: 'dc5', name: 'Mark Sensenig', role: 'Estimator', phone: '(570) 555-6789', specialties: ['Full Replacement', 'Storm Damage', 'Inspection'] },
-  { id: 'dc6', name: 'Tara Zimmerman', role: 'Sales Rep', phone: '(570) 555-7890', specialties: ['Full Replacement', 'Storm Damage', 'Gutter Install'] },
+  // seedHoursThisWeek / seedHoursAllTime drive the CrewTab cards when there
+  // are no live time entries (the demo never has any). User accounts leave the
+  // seed fields undefined and the live entry computation drives the display.
+  { id: 'dc1', name: 'Jake Stoltzfus', role: 'Foreman', phone: '(570) 555-2341', specialties: ['Full Replacement', 'Storm Damage'], seedHoursThisWeek: 42, seedHoursAllTime: 1847 },
+  { id: 'dc2', name: 'Tom Bricker', role: 'Install Crew', phone: '(570) 555-3456', specialties: ['Full Replacement', 'Gutter Install', 'Skylight'], seedHoursThisWeek: 38, seedHoursAllTime: 2103 },
+  { id: 'dc3', name: 'Luis Ortiz', role: 'Tear-off Crew', phone: '(570) 555-4567', specialties: ['Full Replacement', 'Repair'], seedHoursThisWeek: 40, seedHoursAllTime: 1512 },
+  { id: 'dc4', name: 'Ryan Hess', role: 'Ground Support', phone: '(570) 555-5678', specialties: ['Full Replacement', 'Emergency Tarp'], seedHoursThisWeek: 22, seedHoursAllTime: 968 },
+  { id: 'dc5', name: 'Mark Sensenig', role: 'Estimator', phone: '(570) 555-6789', specialties: ['Full Replacement', 'Storm Damage', 'Inspection'], seedHoursThisWeek: 8, seedHoursAllTime: 234 },
+  { id: 'dc6', name: 'Tara Zimmerman', role: 'Sales Rep', phone: '(570) 555-7890', specialties: ['Full Replacement', 'Storm Damage', 'Gutter Install'], seedHoursThisWeek: 0, seedHoursAllTime: 1289, offThisWeek: true },
 ];
 
 const DEMO_MESSAGES = [
@@ -3595,22 +3598,20 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
-        {(onAddLead || demoMode) && (
-          <DisabledTooltip active={demoMode} label="Sign up to add leads">
-            <button
-              style={{
-                padding: '10px 16px', minHeight: 44,
-                background: demoMode ? 'transparent' : 'linear-gradient(135deg, #E8722A, #e8640c)',
-                border: demoMode ? '1px solid rgba(255,255,255,0.12)' : 'none', borderRadius: 8,
-                color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 14,
-                cursor: demoMode ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
-                boxShadow: demoMode ? 'none' : '0 2px 10px rgba(249,115,22,0.3)',
-              }}
-              onClick={demoMode ? undefined : onAddLead}
-            >
-              + Add Lead
-            </button>
-          </DisabledTooltip>
+        {onAddLead && (
+          <button
+            style={{
+              padding: '10px 16px', minHeight: 44,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontWeight: 700, fontSize: 14,
+              cursor: 'pointer', whiteSpace: 'nowrap',
+              boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+            }}
+            onClick={onAddLead}
+          >
+            + Add Lead
+          </button>
         )}
       </div>
 
@@ -3661,21 +3662,19 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                   <span style={{ fontSize: 11, color: '#D1D5DB', marginLeft: 6 }}>{cards.length}</span>
                   {colValue > 0 && rolePerms?.seeDollars !== false && <div style={{ fontSize: 10, color: '#D1D5DB' }}>{fmt(colValue)}</div>}
                 </div>
-                {stg.key === 'lead' && (onAddLead || demoMode) && (
-                  <DisabledTooltip active={demoMode} label="Sign up to add leads">
-                    <button
-                      style={{
-                        padding: '6px 12px', minHeight: 44,
-                        background: demoMode ? 'transparent' : 'linear-gradient(135deg, #E8722A, #e8640c)',
-                        border: demoMode ? '1px solid rgba(255,255,255,0.12)' : 'none', borderRadius: 8,
-                        color: demoMode ? '#3d4f63' : '#fff', fontWeight: 700, fontSize: 12,
-                        cursor: demoMode ? 'not-allowed' : 'pointer', flexShrink: 0,
-                      }}
-                      onClick={demoMode ? undefined : onAddLead}
-                    >
-                      + New
-                    </button>
-                  </DisabledTooltip>
+                {stg.key === 'lead' && onAddLead && (
+                  <button
+                    style={{
+                      padding: '6px 12px', minHeight: 44,
+                      background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                      border: 'none', borderRadius: 8,
+                      color: '#fff', fontWeight: 700, fontSize: 12,
+                      cursor: 'pointer', flexShrink: 0,
+                    }}
+                    onClick={onAddLead}
+                  >
+                    + New
+                  </button>
                 )}
               </div>
 
@@ -6017,10 +6016,16 @@ function JobModal({ job, onClose, customChecklist, crew, assignments, onAssign, 
 // ─── Jobs Tab ─────────────────────────────────────────────────────────────────
 // ─── Projects Tab (project-centric view; scopes live inside) ─────────────────
 function deriveProjectStatusFromJobs(scopes) {
-  if (!scopes || scopes.length === 0) return 'Scheduled';
-  if (scopes.some(s => s.status === 'In Progress')) return 'In Progress';
+  if (!scopes || scopes.length === 0) return 'Not Started';
+  // Precedence (highest → lowest):
+  // 1. Complete — only if EVERY scope is Complete
+  // 2. In Progress — if ANY scope is In Progress
+  // 3. Scheduled — if ANY scope is Scheduled (and none In Progress)
+  // 4. Not Started — fallback
   if (scopes.every(s => s.status === 'Complete')) return 'Complete';
-  return scopes.find(s => s.status !== 'Complete')?.status || 'Scheduled';
+  if (scopes.some(s => s.status === 'In Progress')) return 'In Progress';
+  if (scopes.some(s => s.status === 'Scheduled')) return 'Scheduled';
+  return 'Not Started';
 }
 
 function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, quotes, onSaveQuote }) {
@@ -9304,9 +9309,24 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
     return ago(daysSince(q.lastEditedDate || q.createdDate), 'Updated');
   };
 
+  // Effective status: a draft/sent quote whose validThrough has passed is
+  // treated as expired regardless of its stored status. This way nobody sees
+  // "Sent · 30 days ago" on a quote that's actually unreachable.
+  const effectiveStatus = (q) => {
+    if (!q) return 'draft';
+    if (q.status === 'signed' || q.status === 'rejected' || q.status === 'expired') return q.status;
+    if (q.expirationDate) {
+      const d = daysUntil(q.expirationDate);
+      if (d != null && d < 0 && (q.status === 'draft' || q.status === 'sent' || q.status === 'viewed')) {
+        return 'expired';
+      }
+    }
+    return q.status || 'draft';
+  };
+
   const filtered = quotes.filter(q => {
     if (modeFilter !== 'all' && q.mode !== modeFilter) return false;
-    if (statusFilter !== 'all' && q.status !== statusFilter) return false;
+    if (statusFilter !== 'all' && effectiveStatus(q) !== statusFilter) return false;
     if (search.trim()) {
       const s = search.toLowerCase();
       const cust = customerOf(q);
@@ -9331,7 +9351,8 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
     const map = { needsAction: [], draft: [], sent: [], viewed: [], signed: [], rejected: [], expired: [] };
     filtered.forEach(q => {
       if (isNeedsAction(q)) map.needsAction.push(q);
-      const key = map[q.status] ? q.status : 'draft';
+      const eff = effectiveStatus(q);
+      const key = map[eff] ? eff : 'draft';
       // Always also include in status group so user can locate it where expected
       if (!isNeedsAction(q) || statusFilter !== 'all') map[key].push(q);
     });
@@ -9482,18 +9503,21 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
                 <span style={{ fontSize: 10, color: '#9CA3AF' }}>({items.length})</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {items.map(q => (
-                  <QuoteRow
-                    key={q.id}
-                    quote={q}
-                    customer={customerOf(q)}
-                    statusColor={statusColor(q.status)}
-                    lastActivity={lastActivity(q)}
-                    needsAction={isNeedsAction(q)}
-                    onTap={() => openEditor(q)}
-                    onLongPress={() => setActionSheet({ quote: q })}
-                  />
-                ))}
+                {items.map(q => {
+                  const eff = effectiveStatus(q);
+                  return (
+                    <QuoteRow
+                      key={q.id}
+                      quote={{ ...q, status: eff }}
+                      customer={customerOf(q)}
+                      statusColor={statusColor(eff)}
+                      lastActivity={lastActivity(q)}
+                      needsAction={isNeedsAction(q)}
+                      onTap={() => openEditor(q)}
+                      onLongPress={() => setActionSheet({ quote: q })}
+                    />
+                  );
+                })}
               </div>
             </div>
           );
@@ -12579,7 +12603,7 @@ function AddJobModal({ onSave, onClose }) {
     <div style={mobOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={mobModal}>
         <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add New Job</div>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add New Project</div>
         <div style={S.modalSub}>Required fields marked with *</div>
 
         <label style={FLbl}>Customer Name *</label>
@@ -12637,7 +12661,7 @@ function AddJobModal({ onSave, onClose }) {
 
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
           <button className="ri-btn ri-btn-secondary" style={{ flex: 1, padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#D1D5DB', cursor: 'pointer', fontSize: 13, fontWeight: 500 }} onClick={onClose}>Cancel</button>
-          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>Add Job</button>
+          <button className="ri-btn ri-btn-primary" style={{ flex: 2, padding: '10px 16px', background: 'linear-gradient(135deg, #E8722A, #e8640c)', border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 10px rgba(249,115,22,0.3)' }} onClick={handleSave}>Add Project</button>
         </div>
       </div>
     </div>
@@ -12920,10 +12944,16 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
 
   const memberWeekMs = (member) => {
     const we = allEntries.filter(e => e.crewMemberId === member.id && e.clockIn >= weekMs);
-    return computeTotalMs(we);
+    const live = computeTotalMs(we);
+    const seed = (member.seedHoursThisWeek || 0) * 3600000;
+    return live + seed;
   };
 
-  const memberTotalMs = (member) => computeTotalMs(allEntries.filter(e => e.crewMemberId === member.id));
+  const memberTotalMs = (member) => {
+    const live = computeTotalMs(allEntries.filter(e => e.crewMemberId === member.id));
+    const seed = (member.seedHoursAllTime || 0) * 3600000;
+    return live + seed;
+  };
 
   const handleSaveMember = (data) => {
     if (crewModal === 'add') onAddMember(data);
@@ -12994,6 +13024,9 @@ function CrewTab({ crew, jobs, assignments, onAddMember, onEditMember, onDeleteM
                   <div style={{ background: '#2A3140', borderRadius: 7, padding: '10px 12px' }}>
                     <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 4 }}>This Week</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#E8722A' }}>{fmtDuration(wMs + sessionMs)}</div>
+                    {member.offThisWeek && (
+                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>Off this week</div>
+                    )}
                   </div>
                   <div style={{ background: '#2A3140', borderRadius: 7, padding: '10px 12px' }}>
                     <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 4 }}>All Time</div>
