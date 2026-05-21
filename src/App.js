@@ -6767,6 +6767,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
   const [showSectionPicker, setShowSectionPicker] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [termsCollapsed, setTermsCollapsed] = useState(true);
+  const [showAIDraft, setShowAIDraft] = useState(false);
   const saveTimerRef = useRef(null);
   const initialMountRef = useRef(true);
 
@@ -6935,6 +6936,23 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             </div>
           </div>
           <button
+            onClick={() => setShowAIDraft(true)}
+            aria-label="AI Draft"
+            title="AI Draft"
+            style={{
+              height: 36, padding: '0 10px', flexShrink: 0,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#FFFFFF', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 4,
+              WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 8px rgba(249,115,22,0.25)',
+            }}
+          >
+            <span style={{ fontSize: 14 }}>✦</span>
+            <span>AI Draft</span>
+          </button>
+          <button
             onClick={() => setShowMenu(v => !v)}
             aria-label="Menu"
             style={{
@@ -6954,6 +6972,10 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
               boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
               display: 'flex', flexDirection: 'column', gap: 2,
             }}>
+              <button
+                onClick={() => { setShowMenu(false); setShowAIDraft(true); }}
+                style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#E8722A', fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
+              >✦ Open AI Draft</button>
               <button
                 onClick={() => { setShowMenu(false); onSave(quote); showToast('Draft saved.'); }}
                 style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
@@ -7046,11 +7068,36 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             {/* Sections */}
             {quote.sections.length === 0 && (
               <div style={{
-                padding: '32px 16px', textAlign: 'center',
+                padding: '24px 16px', textAlign: 'center',
                 background: '#FFFFFF', border: '1px dashed rgba(30,35,41,0.2)',
                 borderRadius: 6, color: '#4A5568', fontSize: 13, marginBottom: 16,
               }}>
-                No sections yet. Tap <strong>+ Add Section</strong> below to start.
+                <div style={{ fontSize: 13, marginBottom: 14, color: '#4A5568' }}>
+                  This quote is empty. Start by describing the job and let AI draft it for you, or build from scratch.
+                </div>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => setShowAIDraft(true)}
+                    style={{
+                      padding: '10px 16px', minHeight: 40,
+                      background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                      border: 'none', borderRadius: 8,
+                      color: '#fff', fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                      boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                    }}
+                  >✦ AI Draft</button>
+                  <button
+                    onClick={() => setShowSectionPicker(true)}
+                    style={{
+                      padding: '10px 16px', minHeight: 40,
+                      background: '#FFFFFF', border: '2px solid #1E2329',
+                      borderRadius: 8, color: '#1E2329', fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >+ Add Section</button>
+                </div>
               </div>
             )}
 
@@ -7276,6 +7323,45 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             onClose={() => setShowSectionPicker(false)}
           />
         )}
+        {showAIDraft && (
+          <AIDraftPanel
+            target={target}
+            currentQuote={quote}
+            onApply={({ kind, preview }) => {
+              if (!preview || !Array.isArray(preview.sections)) return;
+              // Re-key incoming sections + line items to avoid id collisions
+              const stamp = (sec) => {
+                const id = `qs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+                const lineItems = (sec.lineItems || []).map(li => ({
+                  ...li,
+                  id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                  extension: Math.round((Number(li.quantity) || 0) * (Number(li.unitPrice) || 0) * 100) / 100,
+                }));
+                const subtotal = lineItems.reduce((s, li) => s + (li.extension || 0), 0);
+                return { ...sec, id, lineItems, subtotal: Math.round(subtotal * 100) / 100 };
+              };
+              const incoming = preview.sections.map(stamp);
+              setQuote(prev => {
+                const sections = kind === 'replace' ? incoming : [...prev.sections, ...incoming];
+                const subtotal = sections.reduce((s, sec) => s + (sec.subtotal || 0), 0);
+                const tax = prev.tax || 0;
+                return {
+                  ...prev,
+                  sections,
+                  subtotal: Math.round(subtotal * 100) / 100,
+                  tax,
+                  total: Math.round((subtotal + tax) * 100) / 100,
+                  // Carry over AI-suggested mode-level fields only when replacing
+                  ...(kind === 'replace' && preview.terms ? { terms: preview.terms } : {}),
+                  ...(kind === 'replace' && Array.isArray(preview.exclusions) && preview.exclusions.length ? { exclusions: preview.exclusions } : {}),
+                };
+              });
+              setShowAIDraft(false);
+              showToast(kind === 'replace' ? 'Quote replaced with AI draft.' : 'AI sections added to quote.');
+            }}
+            onClose={() => setShowAIDraft(false)}
+          />
+        )}
       </div>
     </div>
   );
@@ -7460,6 +7546,403 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
             fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box',
           }}
         />
+      </div>
+    </div>
+  );
+}
+
+// ─── AI Draft Panel — repositioned agent as document-editor tool ─────────────
+// Opens as a right-side drawer on desktop, bottom sheet on mobile. Calls the
+// existing /api/quote-agent endpoint with current quote context, parses the
+// returned <quote> JSON, and shows a PREVIEW that the user explicitly applies
+// (or cancels) — never auto-overwrites the document.
+function AIDraftPanel({ target, currentQuote, onApply, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+
+  const [mode, setMode] = useState('describe'); // 'describe' | 'append'
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [conversation, setConversation] = useState([]);
+  const [aiPreview, setAiPreview] = useState(null);
+  const [error, setError] = useState('');
+
+  // ── Voice input (Web Speech API), same pattern as Session 1 ──
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+  const baseTextRef = useRef('');
+  const speechSupported = typeof window !== 'undefined'
+    && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  useEffect(() => () => {
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (_e) { /* noop */ }
+      recognitionRef.current = null;
+    }
+  }, []);
+
+  const startListening = () => {
+    if (!speechSupported || isListening || sending) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec;
+    try { rec = new SR(); } catch (_e) { return; }
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    baseTextRef.current = input.trim() ? input.trim() + ' ' : '';
+    rec.onresult = (event) => {
+      let interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const r = event.results[i];
+        if (r.isFinal) final += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      setInput(baseTextRef.current + final + interim);
+    };
+    rec.onerror = () => setIsListening(false);
+    rec.onend = () => { setIsListening(false); recognitionRef.current = null; };
+    recognitionRef.current = rec;
+    setIsListening(true);
+    try { rec.start(); } catch (_e) { setIsListening(false); recognitionRef.current = null; }
+  };
+  const stopListening = () => {
+    if (!recognitionRef.current) { setIsListening(false); return; }
+    try { recognitionRef.current.stop(); } catch (_e) { /* noop */ }
+  };
+
+  const send = async () => {
+    const text = input.trim();
+    if (!text || sending) return;
+    const userTurn = { role: 'user', timestamp: new Date().toISOString(), content: text };
+    setConversation(prev => [...prev, userTurn]);
+    setInput('');
+    setSending(true);
+    setError('');
+    try {
+      const res = await fetch('/api/quote-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectContext: {
+            customerName: target.customerName,
+            address: target.address,
+            parentKind: target.kind,
+            intent: mode === 'append' ? 'append_sections' : 'fresh_draft',
+          },
+          mode: currentQuote?.mode || 'residential',
+          userMessage: text,
+          conversationHistory: conversation,
+          currentQuoteDraft: currentQuote,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || 'AI service is temporarily unavailable.');
+        setConversation(prev => prev.slice(0, -1));
+        setInput(text);
+        return;
+      }
+      const assistantTurn = {
+        role: 'assistant', timestamp: new Date().toISOString(),
+        content: data.agentMessage || '',
+      };
+      setConversation(prev => [...prev, assistantTurn]);
+      if (data.updatedQuoteDraft) {
+        setAiPreview(normalizeQuoteDraft(data.updatedQuoteDraft));
+      }
+    } catch (_e) {
+      setError("Couldn't reach the AI service. Try again.");
+      setConversation(prev => prev.slice(0, -1));
+      setInput(text);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  };
+
+  const applyReplace = () => {
+    if (!aiPreview) return;
+    onApply({ kind: 'replace', preview: aiPreview });
+  };
+  const applyAppend = () => {
+    if (!aiPreview) return;
+    onApply({ kind: 'append', preview: aiPreview });
+  };
+  const cancelPreview = () => setAiPreview(null);
+
+  // ── Layout: right drawer on desktop, bottom sheet on mobile ──
+  const overlay = {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+    display: 'flex', alignItems: isMobile ? 'flex-end' : 'stretch', justifyContent: isMobile ? 'center' : 'flex-end',
+    zIndex: 1100, padding: 0, overscrollBehavior: 'contain',
+  };
+  const panel = isMobile
+    ? { background: '#1E2329', width: '100vw', maxWidth: '100vw', height: '88dvh', borderRadius: '16px 16px 0 0',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxShadow: '0 -8px 24px rgba(0,0,0,0.5)', position: 'relative' }
+    : { background: '#1E2329', width: 460, height: '100dvh', borderLeft: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxShadow: '-8px 0 24px rgba(0,0,0,0.4)', position: 'relative' };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={panel} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{
+          flexShrink: 0, padding: '12px 14px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <span style={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 16, color: '#fff', flexShrink: 0,
+          }}>✦</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>AI Draft Assistant</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>{target.customerName}</div>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+        </div>
+
+        {/* Mode toggle */}
+        <div style={{ flexShrink: 0, padding: '10px 12px', background: '#1E2329' }}>
+          <div style={{ display: 'flex', gap: 6, background: '#161B22', borderRadius: 8, padding: 4 }}>
+            <button
+              onClick={() => setMode('describe')}
+              style={{
+                flex: 1, padding: '8px', minHeight: 36,
+                background: mode === 'describe' ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'transparent',
+                border: 'none', borderRadius: 6,
+                color: mode === 'describe' ? '#fff' : '#D1D5DB',
+                fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >Describe a job</button>
+            <button
+              onClick={() => setMode('append')}
+              style={{
+                flex: 1, padding: '8px', minHeight: 36,
+                background: mode === 'append' ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'transparent',
+                border: 'none', borderRadius: 6,
+                color: mode === 'append' ? '#fff' : '#D1D5DB',
+                fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >Add to current quote</button>
+          </div>
+        </div>
+
+        {/* Conversation history + preview */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: 'auto',
+          padding: '8px 12px',
+          WebkitOverflowScrolling: 'touch',
+        }}>
+          {conversation.length === 0 && !aiPreview && (
+            <div style={{ padding: '20px 8px', textAlign: 'center', color: '#D1D5DB', fontSize: 12, lineHeight: 1.55 }}>
+              {mode === 'describe'
+                ? 'Tell me about the job. Layers, squares, pitch, materials, anything else worth pricing — I\'ll draft the full quote.'
+                : 'Tell me what to add to this quote. New section, extra line items, additional scope — I\'ll write it up.'}
+            </div>
+          )}
+          {conversation.map((m, i) => (
+            <div key={i} style={{
+              display: 'flex', flexDirection: 'column',
+              alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
+              marginBottom: 10,
+            }}>
+              <div style={{
+                maxWidth: '92%', padding: '8px 12px', borderRadius: 10,
+                background: m.role === 'user' ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
+                border: m.role === 'assistant' ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                color: '#FFFFFF', fontSize: 12, lineHeight: 1.5,
+                overflowWrap: 'anywhere', whiteSpace: 'pre-wrap',
+              }}>{m.content}</div>
+            </div>
+          ))}
+          {sending && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 10,
+              background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
+              color: '#D1D5DB', fontSize: 12,
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10,
+            }}>
+              <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#E8722A', animation: 'ri-spin 0.8s linear infinite' }} />
+              Drafting…
+            </div>
+          )}
+          {error && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 8,
+              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+              color: '#f87171', fontSize: 11, marginBottom: 8,
+            }}>{error}</div>
+          )}
+
+          {/* AI Preview */}
+          {aiPreview && (
+            <div style={{
+              marginTop: 8, padding: 10,
+              background: '#2A3140', border: '1px solid rgba(232,114,42,0.4)', borderRadius: 10,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#E8722A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>AI Preview</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#22c55e' }}>{fmtCurrency(aiPreview.total || aiPreview.subtotal || 0)}</div>
+              </div>
+              {(aiPreview.sections || []).map(sec => (
+                <div key={sec.id} style={{
+                  padding: 8, marginBottom: 6,
+                  background: '#1E2329', borderRadius: 6,
+                  border: '1px solid rgba(255,255,255,0.05)',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{sec.scopeType}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e' }}>{fmtCurrency(sec.subtotal || 0)}</span>
+                  </div>
+                  {(sec.lineItems || []).slice(0, 4).map(li => (
+                    <div key={li.id} style={{ fontSize: 11, color: '#D1D5DB', display: 'flex', justifyContent: 'space-between', gap: 6 }}>
+                      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {li.description}
+                      </span>
+                      <span style={{ flexShrink: 0, color: '#9CA3AF' }}>{li.quantity} {li.unit} · {fmtCurrency(li.extension)}</span>
+                    </div>
+                  ))}
+                  {(sec.lineItems || []).length > 4 && (
+                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4, fontStyle: 'italic' }}>
+                      +{sec.lineItems.length - 4} more line item{sec.lineItems.length - 4 === 1 ? '' : 's'}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                <button
+                  onClick={cancelPreview}
+                  style={{
+                    flex: 1, padding: '8px', minHeight: 36,
+                    background: 'transparent', border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 600,
+                    cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                  }}
+                >Cancel</button>
+                {mode === 'describe' ? (
+                  <>
+                    <button
+                      onClick={applyAppend}
+                      style={{
+                        flex: 1, padding: '8px', minHeight: 36,
+                        background: 'rgba(232,114,42,0.12)', border: '1px solid rgba(232,114,42,0.4)',
+                        borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700,
+                        cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >Add to quote</button>
+                    <button
+                      onClick={applyReplace}
+                      style={{
+                        flex: 1, padding: '8px', minHeight: 36,
+                        background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                        border: 'none', borderRadius: 6,
+                        color: '#fff', fontSize: 11, fontWeight: 700,
+                        cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >Replace quote</button>
+                  </>
+                ) : (
+                  <button
+                    onClick={applyAppend}
+                    style={{
+                      flex: 2, padding: '8px', minHeight: 36,
+                      background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                      border: 'none', borderRadius: 6,
+                      color: '#fff', fontSize: 12, fontWeight: 700,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >Add to quote</button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Composer */}
+        <div style={{
+          flexShrink: 0, padding: '10px 12px',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          background: '#161B22',
+          display: 'flex', alignItems: 'flex-end', gap: 6,
+        }}>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={mode === 'describe'
+              ? 'Tear off existing roof, 2 layers, 32 squares, 7/12 pitch, two story, Timberline HDZ weathered wood, full ice & water, gutter run 60ft, dumpster + permit…'
+              : 'Add gutter installation, 5 inch, 100 ft of run, white K-style…'}
+            rows={1}
+            disabled={sending}
+            style={{
+              flex: 1, minHeight: 44, maxHeight: 100,
+              padding: isMobile ? '11px 12px' : '8px 12px',
+              background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+              color: '#FFFFFF', fontSize: isMobile ? 16 : 13,
+              fontFamily: "'Inter', -apple-system, sans-serif",
+              lineHeight: 1.4, outline: 'none', resize: 'none', boxSizing: 'border-box',
+            }}
+          />
+          {speechSupported && (
+            <button
+              type="button"
+              onPointerDown={e => { e.preventDefault(); startListening(); }}
+              onPointerUp={() => stopListening()}
+              onPointerLeave={() => { if (isListening) stopListening(); }}
+              onPointerCancel={() => stopListening()}
+              aria-label="Voice input — press and hold"
+              disabled={sending}
+              style={{
+                width: 44, height: 44, padding: 0, flexShrink: 0,
+                background: isListening ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${isListening ? '#ef4444' : 'rgba(255,255,255,0.12)'}`,
+                borderRadius: '50%',
+                color: isListening ? '#fff' : '#D1D5DB',
+                fontSize: 18, lineHeight: 1, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                position: 'relative',
+                boxShadow: isListening ? '0 0 0 3px rgba(239,68,68,0.25)' : 'none',
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'none', userSelect: 'none',
+              }}
+            >🎤</button>
+          )}
+          <button
+            onClick={send}
+            disabled={!input.trim() || sending}
+            style={{
+              minWidth: 60, minHeight: 44, padding: '0 12px', flexShrink: 0,
+              background: input.trim() && !sending
+                ? 'linear-gradient(135deg, #E8722A, #e8640c)' : 'rgba(255,255,255,0.06)',
+              border: 'none', borderRadius: 10,
+              color: input.trim() && !sending ? '#fff' : '#D1D5DB',
+              fontSize: 12, fontWeight: 700,
+              cursor: input.trim() && !sending ? 'pointer' : 'not-allowed',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Generate</button>
+        </div>
       </div>
     </div>
   );
