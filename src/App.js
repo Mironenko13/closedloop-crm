@@ -6949,10 +6949,12 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
     signed: '#22c55e', rejected: '#ef4444', expired: '#f59e0b',
   }[s] || '#9CA3AF');
 
+  // iOS bumps the page zoom on focus when input fontSize <16px. Mobile must use
+  // 16+. Desktop keeps the denser 13px for table density.
   const cellInput = {
     width: '100%', minHeight: 36, padding: '6px 8px',
     background: 'transparent', border: '1px solid transparent', borderRadius: 4,
-    color: '#1E2329', fontSize: 13, fontFamily: 'inherit',
+    color: '#1E2329', fontSize: isMobile ? 16 : 13, fontFamily: 'inherit',
     outline: 'none', boxSizing: 'border-box',
   };
   const cellInputFocus = {
@@ -7210,6 +7212,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                   Tax
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={Math.round(((quote.tax || 0) / Math.max(1, quote.subtotal || 1)) * 100 * 100) / 100}
                     onChange={e => {
                       const pct = Number(e.target.value) || 0;
@@ -7217,9 +7220,9 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                       setQuote(prev => ({ ...prev, tax, total: Math.round(((prev.subtotal || 0) + tax) * 100) / 100 }));
                     }}
                     style={{
-                      width: 56, marginLeft: 8, padding: '4px 6px',
+                      width: isMobile ? 70 : 56, marginLeft: 8, padding: isMobile ? '6px 8px' : '4px 6px',
                       background: '#F8F4EC', border: '1px solid #1E2329', borderRadius: 4,
-                      color: '#1E2329', fontSize: 12, fontFamily: 'inherit',
+                      color: '#1E2329', fontSize: isMobile ? 16 : 12, fontFamily: 'inherit',
                       textAlign: 'right',
                     }}
                   />
@@ -7276,7 +7279,12 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                   <button
                     onClick={() => setQuote(prev => ({ ...prev, exclusions: (prev.exclusions || []).filter((_, j) => j !== i) }))}
                     aria-label="Remove"
-                    style={{ width: 28, height: 28, padding: 0, background: 'transparent', border: 'none', color: '#9CA3AF', fontSize: 18, cursor: 'pointer' }}
+                    style={{
+                      width: isMobile ? 36 : 28, height: isMobile ? 36 : 28,
+                      padding: 0, background: 'transparent', border: 'none',
+                      color: '#9CA3AF', fontSize: 18, cursor: 'pointer',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
                   >×</button>
                 </div>
               ))}
@@ -7580,7 +7588,12 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
                   <button
                     onClick={() => onRemoveLineItem(li.id)}
                     aria-label="Remove line item"
-                    style={{ width: 28, height: 28, padding: 0, background: 'transparent', border: 'none', color: '#9CA3AF', fontSize: 16, cursor: 'pointer' }}
+                    style={{
+                      width: isMobile ? 36 : 28, height: isMobile ? 36 : 28,
+                      padding: 0, background: 'transparent', border: 'none',
+                      color: '#9CA3AF', fontSize: 18, cursor: 'pointer',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
                   >×</button>
                 </td>
               </tr>
@@ -7592,10 +7605,11 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
       <button
         onClick={onAddLineItem}
         style={{
-          padding: '6px 12px', minHeight: 32, marginTop: 4, marginBottom: 8,
+          padding: isMobile ? '10px 16px' : '6px 12px',
+          minHeight: isMobile ? 40 : 32, marginTop: 4, marginBottom: 8,
           background: 'transparent', border: '1px dashed rgba(30,35,41,0.3)',
-          borderRadius: 4, color: '#1E2329', fontSize: 12, fontWeight: 700,
-          cursor: 'pointer',
+          borderRadius: 4, color: '#1E2329', fontSize: isMobile ? 13 : 12, fontWeight: 700,
+          cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
         }}
       >+ Add Line</button>
 
