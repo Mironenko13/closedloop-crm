@@ -6481,8 +6481,10 @@ function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
   useScrollLock();
   const isMobile = useMobile();
   const [modeTab, setModeTab] = useState('residential');
-  const quoteTemplates = useMemo(() => getAllQuoteTemplates(), []);
-  const sectionTemplates = useMemo(() => getAllSectionTemplates(), []);
+  const [showMgr, setShowMgr] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const quoteTemplates = useMemo(() => getAllQuoteTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
+  const sectionTemplates = useMemo(() => getAllSectionTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = quoteTemplates.filter(t => t.mode === modeTab);
   const sectionNamesFor = (t) => (t.defaultSections || []).map(refSec => {
@@ -6596,12 +6598,16 @@ function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
 
         <div style={{ marginTop: 14, fontSize: 11, color: '#9CA3AF', textAlign: 'center' }}>
           <button
-            onClick={() => { if (onManageTemplates) onManageTemplates(); }}
+            onClick={() => { if (onManageTemplates) onManageTemplates(); else setShowMgr(true); }}
             style={{ background: 'transparent', border: 'none', color: '#D1D5DB', textDecoration: 'underline', cursor: 'pointer', fontSize: 11 }}
           >
             Manage Templates →
           </button>
         </div>
+
+        {showMgr && (
+          <QuoteTemplateManager onClose={() => { setShowMgr(false); setRefreshTick(t => t + 1); }} />
+        )}
       </div>
     </div>
   );
@@ -6768,6 +6774,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
   const [showMenu, setShowMenu] = useState(false);
   const [termsCollapsed, setTermsCollapsed] = useState(true);
   const [showAIDraft, setShowAIDraft] = useState(false);
+  const [showTemplateMgr, setShowTemplateMgr] = useState(false);
   const saveTimerRef = useRef(null);
   const initialMountRef = useRef(true);
 
@@ -6976,6 +6983,10 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                 onClick={() => { setShowMenu(false); setShowAIDraft(true); }}
                 style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#E8722A', fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
               >✦ Open AI Draft</button>
+              <button
+                onClick={() => { setShowMenu(false); setShowTemplateMgr(true); }}
+                style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+              >Manage Templates</button>
               <button
                 onClick={() => { setShowMenu(false); onSave(quote); showToast('Draft saved.'); }}
                 style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
@@ -7322,6 +7333,9 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             }}
             onClose={() => setShowSectionPicker(false)}
           />
+        )}
+        {showTemplateMgr && (
+          <QuoteTemplateManager onClose={() => setShowTemplateMgr(false)} />
         )}
         {showAIDraft && (
           <AIDraftPanel
@@ -7942,6 +7956,872 @@ function AIDraftPanel({ target, currentQuote, onApply, onClose }) {
               WebkitTapHighlightColor: 'transparent',
             }}
           >Generate</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Quote Template Manager (Phase 4) ───────────────────────────────────────
+// Three-tab modal for managing user-saved templates: Quote Templates, Section
+// Templates, Line Item Catalog. Seeded items are read-only with a "Duplicate"
+// action that clones into the user namespace for editing.
+function QuoteTemplateManager({ onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const showToast = useToast();
+
+  const [tab, setTab] = useState('quote'); // 'quote' | 'section' | 'lineItem'
+  const [refreshTick, setRefreshTick] = useState(0);
+  const bump = () => setRefreshTick(t => t + 1);
+
+  // Re-pull data on every refresh tick so edits land immediately.
+  const seededQuoteIds = useMemo(() => new Set(QUOTE_TEMPLATES.map(t => t.id)), []);
+  const seededSectionIds = useMemo(() => new Set(SECTION_TEMPLATES.map(t => t.id)), []);
+  const seededLineIds = useMemo(() => new Set(LINE_ITEM_CATALOG.map(t => t.id)), []);
+
+  const allQuoteTemplates = useMemo(() => getAllQuoteTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
+  const allSectionTemplates = useMemo(() => getAllSectionTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
+  const allLineItems = useMemo(() => getAllLineItems(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Editor state: null when list is shown, an object when editing
+  const [editing, setEditing] = useState(null); // { kind, item, isNew }
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'stretch' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '100dvh', height: '100dvh', borderRadius: 0, margin: 0, padding: 0, display: 'flex', flexDirection: 'column' }
+    : { ...S.modal, maxWidth: 880, width: '100%', maxHeight: '90vh', padding: 0, display: 'flex', flexDirection: 'column' };
+
+  // ── CRUD helpers (operate on user-saved arrays only) ──
+  const deleteUserItem = (kind, id) => {
+    if (kind === 'quote') {
+      const next = loadUserQuoteTemplates().filter(t => t.id !== id);
+      saveUserQuoteTemplates(next);
+    } else if (kind === 'section') {
+      const next = loadUserSectionTemplates().filter(t => t.id !== id);
+      saveUserSectionTemplates(next);
+    } else if (kind === 'lineItem') {
+      const next = loadUserLineItems().filter(t => t.id !== id);
+      saveUserLineItems(next);
+    }
+    bump();
+    showToast('Deleted.');
+  };
+
+  const upsertUserItem = (kind, item) => {
+    if (kind === 'quote') {
+      const cur = loadUserQuoteTemplates().filter(t => t.id !== item.id);
+      saveUserQuoteTemplates([...cur, item]);
+    } else if (kind === 'section') {
+      const cur = loadUserSectionTemplates().filter(t => t.id !== item.id);
+      saveUserSectionTemplates([...cur, item]);
+    } else if (kind === 'lineItem') {
+      const cur = loadUserLineItems().filter(t => t.id !== item.id);
+      saveUserLineItems([...cur, item]);
+    }
+    bump();
+    showToast('Saved.');
+  };
+
+  const duplicateSeeded = (kind, original) => {
+    const stamp = `${kind.slice(0, 2)}-usr-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
+    const copy = JSON.parse(JSON.stringify(original));
+    copy.id = stamp;
+    copy.name = `${copy.name || copy.description || 'Custom'} (copy)`;
+    if (kind === 'lineItem') copy.description = `${copy.description || 'Custom item'} (copy)`;
+    upsertUserItem(kind, copy);
+    setEditing({ kind, item: copy, isNew: false });
+  };
+
+  const newBlank = (kind) => {
+    const stamp = `${kind.slice(0, 2)}-usr-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
+    if (kind === 'quote') {
+      setEditing({
+        kind, isNew: true,
+        item: {
+          id: stamp, name: 'New Quote Template', mode: 'residential',
+          defaultSections: [],
+          defaultTerms: DEFAULT_TERMS_RESIDENTIAL,
+          defaultExclusions: [...DEFAULT_EXCLUSIONS_RESIDENTIAL],
+          defaultIncluded: DEFAULT_INCLUDED_RESIDENTIAL,
+        },
+      });
+    } else if (kind === 'section') {
+      setEditing({
+        kind, isNew: true,
+        item: {
+          id: stamp, name: 'New Section Template', mode: 'residential',
+          scopeType: 'custom', defaultLineItems: [], defaultNotes: '',
+        },
+      });
+    } else if (kind === 'lineItem') {
+      setEditing({
+        kind, isNew: true,
+        item: {
+          id: stamp, description: 'New line item',
+          category: 'Material', unit: 'EA', unitPrice: 0, defaultQuantity: 1, notes: '',
+        },
+      });
+    }
+  };
+
+  // ── Header + tabs ──
+  const tabs = [
+    { key: 'quote', label: 'Quote Templates', count: allQuoteTemplates.length },
+    { key: 'section', label: 'Sections', count: allSectionTemplates.length },
+    { key: 'lineItem', label: 'Line Items', count: allLineItems.length },
+  ];
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{
+          flexShrink: 0, padding: '14px 16px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 10,
+          borderRadius: isMobile ? 0 : '12px 12px 0 0',
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF' }}>Template Library</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>Customize quote templates, sections, and the line-item catalog</div>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+        </div>
+
+        {!editing && (
+          <>
+            {/* Tabs */}
+            <div style={{
+              flexShrink: 0, padding: '10px 12px', background: '#1E2329',
+              borderBottom: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <div style={{ display: 'flex', gap: 4, background: '#161B22', borderRadius: 8, padding: 4 }}>
+                {tabs.map(t => (
+                  <button
+                    key={t.key}
+                    onClick={() => setTab(t.key)}
+                    style={{
+                      flex: 1, padding: '8px', minHeight: 36,
+                      background: tab === t.key ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'transparent',
+                      border: 'none', borderRadius: 6,
+                      color: tab === t.key ? '#fff' : '#D1D5DB',
+                      fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                      WebkitTapHighlightColor: 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    }}
+                  >
+                    <span>{t.label}</span>
+                    <span style={{
+                      fontSize: 9, padding: '1px 6px', borderRadius: 8,
+                      background: tab === t.key ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)',
+                      color: tab === t.key ? '#fff' : '#9CA3AF',
+                    }}>{t.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* List body (scrollable) */}
+            <div style={{
+              flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+              padding: '12px', background: '#1E2329',
+            }}>
+              {tab === 'quote' && (
+                <TemplateList
+                  kind="quote"
+                  items={allQuoteTemplates}
+                  isSeeded={(it) => seededQuoteIds.has(it.id)}
+                  primaryLabel={(it) => it.name}
+                  secondaryLabel={(it) => `${it.mode} · ${(it.defaultSections || []).length} section${(it.defaultSections || []).length === 1 ? '' : 's'}`}
+                  onNew={() => newBlank('quote')}
+                  onEdit={(it) => setEditing({ kind: 'quote', item: it, isNew: false })}
+                  onDuplicate={(it) => duplicateSeeded('quote', it)}
+                  onDelete={(it) => deleteUserItem('quote', it.id)}
+                />
+              )}
+              {tab === 'section' && (
+                <TemplateList
+                  kind="section"
+                  items={allSectionTemplates}
+                  isSeeded={(it) => seededSectionIds.has(it.id)}
+                  primaryLabel={(it) => it.name}
+                  secondaryLabel={(it) => `${it.mode} · ${(it.defaultLineItems || []).length} line item${(it.defaultLineItems || []).length === 1 ? '' : 's'}`}
+                  onNew={() => newBlank('section')}
+                  onEdit={(it) => setEditing({ kind: 'section', item: it, isNew: false })}
+                  onDuplicate={(it) => duplicateSeeded('section', it)}
+                  onDelete={(it) => deleteUserItem('section', it.id)}
+                />
+              )}
+              {tab === 'lineItem' && (
+                <TemplateList
+                  kind="lineItem"
+                  items={allLineItems}
+                  isSeeded={(it) => seededLineIds.has(it.id)}
+                  primaryLabel={(it) => it.description}
+                  secondaryLabel={(it) => `${it.category} · ${it.unit} · ${fmtCurrency(it.unitPrice || 0)}`}
+                  onNew={() => newBlank('lineItem')}
+                  onEdit={(it) => setEditing({ kind: 'lineItem', item: it, isNew: false })}
+                  onDuplicate={(it) => duplicateSeeded('lineItem', it)}
+                  onDelete={(it) => deleteUserItem('lineItem', it.id)}
+                />
+              )}
+            </div>
+          </>
+        )}
+
+        {editing && (
+          <div style={{
+            flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+            padding: '14px 16px', background: '#1E2329',
+          }}>
+            {editing.kind === 'lineItem' && (
+              <LineItemEditor
+                initial={editing.item}
+                onCancel={() => setEditing(null)}
+                onSave={(item) => { upsertUserItem('lineItem', item); setEditing(null); }}
+              />
+            )}
+            {editing.kind === 'section' && (
+              <SectionTemplateEditor
+                initial={editing.item}
+                allLineItems={allLineItems}
+                onCancel={() => setEditing(null)}
+                onSave={(item) => { upsertUserItem('section', item); setEditing(null); }}
+              />
+            )}
+            {editing.kind === 'quote' && (
+              <QuoteTemplateEditor
+                initial={editing.item}
+                allSectionTemplates={allSectionTemplates}
+                onCancel={() => setEditing(null)}
+                onSave={(item) => { upsertUserItem('quote', item); setEditing(null); }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TemplateList({ kind, items, isSeeded, primaryLabel, secondaryLabel, onNew, onEdit, onDuplicate, onDelete }) {
+  const [filter, setFilter] = useState('');
+  const isMobile = useMobile();
+  const filtered = items.filter(it => {
+    if (!filter.trim()) return true;
+    const q = filter.toLowerCase();
+    return (primaryLabel(it) || '').toLowerCase().includes(q)
+      || (secondaryLabel(it) || '').toLowerCase().includes(q);
+  });
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <input
+          type="text"
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          placeholder={`Search ${kind === 'lineItem' ? 'line items' : kind === 'section' ? 'section templates' : 'quote templates'}…`}
+          style={{
+            flex: 1, minWidth: 180, padding: '10px 12px', minHeight: 40,
+            background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+            color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
+        <button
+          onClick={onNew}
+          style={{
+            padding: '10px 14px', minHeight: 40,
+            background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+            border: 'none', borderRadius: 8,
+            color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            WebkitTapHighlightColor: 'transparent', whiteSpace: 'nowrap',
+          }}
+        >+ New</button>
+      </div>
+
+      {filtered.length === 0 && (
+        <div style={{ padding: 28, textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
+          {filter.trim() ? 'No matches.' : 'No templates yet.'}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {filtered.map(it => {
+          const seeded = isSeeded(it);
+          return (
+            <div
+              key={it.id}
+              style={{
+                padding: 12, background: '#161B22',
+                border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
+                display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>{primaryLabel(it)}</span>
+                  {seeded ? (
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                      background: 'rgba(156,163,175,0.18)', color: '#9CA3AF',
+                      textTransform: 'uppercase', letterSpacing: '0.4px',
+                    }}>System</span>
+                  ) : (
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                      background: 'rgba(232,114,42,0.18)', color: '#E8722A',
+                      textTransform: 'uppercase', letterSpacing: '0.4px',
+                    }}>Custom</span>
+                  )}
+                </div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{secondaryLabel(it)}</div>
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                {seeded ? (
+                  <button
+                    onClick={() => onDuplicate(it)}
+                    style={{
+                      padding: '8px 12px', minHeight: 36,
+                      background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+                      borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 700,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >Duplicate</button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onEdit(it)}
+                      style={{
+                        padding: '8px 12px', minHeight: 36,
+                        background: 'rgba(232,114,42,0.15)', border: '1px solid rgba(232,114,42,0.35)',
+                        borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700,
+                        cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >Edit</button>
+                    <button
+                      onClick={() => {
+                        // eslint-disable-next-line no-restricted-globals
+                        if (window.confirm('Delete this template?')) onDelete(it);
+                      }}
+                      style={{
+                        padding: '8px 10px', minHeight: 36,
+                        background: 'transparent', border: '1px solid rgba(239,68,68,0.3)',
+                        borderRadius: 6, color: '#f87171', fontSize: 11, fontWeight: 700,
+                        cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >×</button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function FieldRow({ label, children }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{
+        fontSize: 10, fontWeight: 700, color: '#9CA3AF',
+        textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4,
+      }}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function LineItemEditor({ initial, onCancel, onSave }) {
+  const isMobile = useMobile();
+  const [item, setItem] = useState(initial);
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', minHeight: 40,
+    background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+    color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box',
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 12 }}>
+        {initial.description ? 'Edit Line Item' : 'New Line Item'}
+      </div>
+
+      <FieldRow label="Description">
+        <input
+          value={item.description || ''}
+          onChange={e => setItem(p => ({ ...p, description: e.target.value }))}
+          style={inputStyle}
+        />
+      </FieldRow>
+
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
+        <FieldRow label="Category">
+          <select
+            value={item.category || 'Material'}
+            onChange={e => setItem(p => ({ ...p, category: e.target.value }))}
+            style={inputStyle}
+          >
+            {LINE_ITEM_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </FieldRow>
+        <FieldRow label="Unit">
+          <select
+            value={item.unit || 'EA'}
+            onChange={e => setItem(p => ({ ...p, unit: e.target.value }))}
+            style={inputStyle}
+          >
+            {['EA', 'SF', 'LF', 'SQ', 'CY', 'TON', 'HR', 'LS', 'DAY'].map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </FieldRow>
+        <FieldRow label="Unit Price ($)">
+          <input
+            type="number"
+            value={item.unitPrice ?? 0}
+            onChange={e => setItem(p => ({ ...p, unitPrice: Number(e.target.value) || 0 }))}
+            style={inputStyle}
+          />
+        </FieldRow>
+        <FieldRow label="Default Quantity">
+          <input
+            type="number"
+            value={item.defaultQuantity ?? 1}
+            onChange={e => setItem(p => ({ ...p, defaultQuantity: Number(e.target.value) || 0 }))}
+            style={inputStyle}
+          />
+        </FieldRow>
+      </div>
+
+      <FieldRow label="Notes (optional)">
+        <textarea
+          value={item.notes || ''}
+          onChange={e => setItem(p => ({ ...p, notes: e.target.value }))}
+          rows={3}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      </FieldRow>
+
+      <EditorActions onCancel={onCancel} onSave={() => onSave(item)} disabled={!item.description?.trim()} />
+    </div>
+  );
+}
+
+function SectionTemplateEditor({ initial, allLineItems, onCancel, onSave }) {
+  const isMobile = useMobile();
+  const [item, setItem] = useState(initial);
+  const [showPicker, setShowPicker] = useState(false);
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', minHeight: 40,
+    background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+    color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box',
+  };
+
+  const removeLi = (idx) => setItem(p => ({ ...p, defaultLineItems: p.defaultLineItems.filter((_, i) => i !== idx) }));
+  const updateLi = (idx, patch) => setItem(p => {
+    const next = [...p.defaultLineItems];
+    next[idx] = { ...next[idx], ...patch };
+    return { ...p, defaultLineItems: next };
+  });
+  const addLiFromCatalog = (catalogEntry) => {
+    const li = {
+      id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
+      description: catalogEntry.description,
+      category: catalogEntry.category,
+      unit: catalogEntry.unit,
+      unitPrice: catalogEntry.unitPrice,
+      quantity: catalogEntry.defaultQuantity || 0,
+      extension: 0,
+      notes: catalogEntry.notes || null,
+    };
+    setItem(p => ({ ...p, defaultLineItems: [...(p.defaultLineItems || []), li] }));
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 12 }}>
+        {initial.name ? 'Edit Section Template' : 'New Section Template'}
+      </div>
+
+      <FieldRow label="Name">
+        <input
+          value={item.name || ''}
+          onChange={e => setItem(p => ({ ...p, name: e.target.value }))}
+          style={inputStyle}
+        />
+      </FieldRow>
+
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
+        <FieldRow label="Mode">
+          <select
+            value={item.mode || 'residential'}
+            onChange={e => setItem(p => ({ ...p, mode: e.target.value }))}
+            style={inputStyle}
+          >
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </FieldRow>
+        <FieldRow label="Scope Type (slug)">
+          <input
+            value={item.scopeType || ''}
+            onChange={e => setItem(p => ({ ...p, scopeType: e.target.value }))}
+            placeholder="full_replacement"
+            style={inputStyle}
+          />
+        </FieldRow>
+      </div>
+
+      <FieldRow label="Default Notes (shown as narrative)">
+        <textarea
+          value={item.defaultNotes || ''}
+          onChange={e => setItem(p => ({ ...p, defaultNotes: e.target.value }))}
+          rows={2}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      </FieldRow>
+
+      <FieldRow label={`Line Items (${(item.defaultLineItems || []).length})`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+          {(item.defaultLineItems || []).map((li, idx) => (
+            <div key={idx} style={{
+              padding: 8, background: '#161B22',
+              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6,
+              display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
+            }}>
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis' }}>{li.description}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF' }}>{li.category} · {li.unit} · {fmtCurrency(li.unitPrice || 0)}</div>
+              </div>
+              <input
+                type="number"
+                value={li.quantity ?? 0}
+                onChange={e => updateLi(idx, { quantity: Number(e.target.value) || 0 })}
+                style={{
+                  width: 70, padding: '6px 8px', minHeight: 32,
+                  background: '#1E2329', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6,
+                  color: '#FFFFFF', fontSize: isMobile ? 16 : 12, outline: 'none', textAlign: 'right',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <button
+                onClick={() => removeLi(idx)}
+                aria-label="Remove"
+                style={{
+                  width: 32, height: 32, padding: 0, flexShrink: 0,
+                  background: 'transparent', border: '1px solid rgba(239,68,68,0.3)',
+                  borderRadius: 6, color: '#f87171', fontSize: 14, cursor: 'pointer',
+                }}
+              >×</button>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={() => setShowPicker(true)}
+          style={{
+            width: '100%', padding: '10px', minHeight: 40,
+            background: 'transparent', border: '1px dashed rgba(255,255,255,0.2)',
+            borderRadius: 8, color: '#D1D5DB', fontSize: 12, fontWeight: 700,
+            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+          }}
+        >+ Add line item from catalog</button>
+      </FieldRow>
+
+      <EditorActions onCancel={onCancel} onSave={() => onSave(item)} disabled={!item.name?.trim() || !item.scopeType?.trim()} />
+
+      {showPicker && (
+        <CatalogPickerInline
+          allLineItems={allLineItems}
+          onPick={(entry) => { addLiFromCatalog(entry); setShowPicker(false); }}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function QuoteTemplateEditor({ initial, allSectionTemplates, onCancel, onSave }) {
+  const isMobile = useMobile();
+  const [item, setItem] = useState(initial);
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', minHeight: 40,
+    background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+    color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box',
+  };
+
+  const sectionsForMode = allSectionTemplates.filter(s => s.mode === item.mode);
+
+  const addSectionRef = (sectionTemplate) => {
+    setItem(p => ({
+      ...p,
+      defaultSections: [...(p.defaultSections || []), {
+        scopeType: sectionTemplate.scopeType,
+        sectionTemplateId: sectionTemplate.id,
+      }],
+    }));
+  };
+  const removeSectionRef = (idx) => {
+    setItem(p => ({ ...p, defaultSections: p.defaultSections.filter((_, i) => i !== idx) }));
+  };
+  const moveSectionRef = (idx, delta) => {
+    setItem(p => {
+      const next = [...(p.defaultSections || [])];
+      const target = idx + delta;
+      if (target < 0 || target >= next.length) return p;
+      const [m] = next.splice(idx, 1);
+      next.splice(target, 0, m);
+      return { ...p, defaultSections: next };
+    });
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 12 }}>
+        {initial.name ? 'Edit Quote Template' : 'New Quote Template'}
+      </div>
+
+      <FieldRow label="Name">
+        <input
+          value={item.name || ''}
+          onChange={e => setItem(p => ({ ...p, name: e.target.value }))}
+          style={inputStyle}
+        />
+      </FieldRow>
+
+      <FieldRow label="Mode">
+        <select
+          value={item.mode || 'residential'}
+          onChange={e => setItem(p => ({ ...p, mode: e.target.value, defaultSections: [] }))}
+          style={inputStyle}
+        >
+          <option value="residential">Residential</option>
+          <option value="commercial">Commercial</option>
+        </select>
+      </FieldRow>
+
+      <FieldRow label={`Default Sections (${(item.defaultSections || []).length})`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+          {(item.defaultSections || []).map((ref, idx) => {
+            const st = allSectionTemplates.find(s => s.id === ref.sectionTemplateId);
+            return (
+              <div key={idx} style={{
+                padding: 8, background: '#161B22',
+                border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6,
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{st ? st.name : ref.scopeType}</div>
+                  <div style={{ fontSize: 10, color: '#9CA3AF' }}>{ref.scopeType}</div>
+                </div>
+                <button
+                  onClick={() => moveSectionRef(idx, -1)}
+                  disabled={idx === 0}
+                  aria-label="Move up"
+                  style={{
+                    width: 32, height: 32, padding: 0,
+                    background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 6, color: idx === 0 ? '#4A5568' : '#D1D5DB',
+                    fontSize: 12, cursor: idx === 0 ? 'not-allowed' : 'pointer',
+                  }}
+                >↑</button>
+                <button
+                  onClick={() => moveSectionRef(idx, +1)}
+                  disabled={idx === (item.defaultSections || []).length - 1}
+                  aria-label="Move down"
+                  style={{
+                    width: 32, height: 32, padding: 0,
+                    background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 6, color: idx === (item.defaultSections || []).length - 1 ? '#4A5568' : '#D1D5DB',
+                    fontSize: 12, cursor: idx === (item.defaultSections || []).length - 1 ? 'not-allowed' : 'pointer',
+                  }}
+                >↓</button>
+                <button
+                  onClick={() => removeSectionRef(idx)}
+                  aria-label="Remove"
+                  style={{
+                    width: 32, height: 32, padding: 0,
+                    background: 'transparent', border: '1px solid rgba(239,68,68,0.3)',
+                    borderRadius: 6, color: '#f87171', fontSize: 14, cursor: 'pointer',
+                  }}
+                >×</button>
+              </div>
+            );
+          })}
+        </div>
+        <select
+          value=""
+          onChange={e => {
+            const id = e.target.value;
+            if (!id) return;
+            const st = sectionsForMode.find(s => s.id === id);
+            if (st) addSectionRef(st);
+            e.target.value = '';
+          }}
+          style={{
+            ...inputStyle,
+            background: 'transparent', border: '1px dashed rgba(255,255,255,0.2)',
+            color: '#D1D5DB', fontWeight: 700, cursor: 'pointer',
+          }}
+        >
+          <option value="">+ Add section template…</option>
+          {sectionsForMode.map(s => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+      </FieldRow>
+
+      <FieldRow label="What's Included (default)">
+        <textarea
+          value={item.defaultIncluded || ''}
+          onChange={e => setItem(p => ({ ...p, defaultIncluded: e.target.value }))}
+          rows={3}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      </FieldRow>
+
+      <FieldRow label="Exclusions (one per line)">
+        <textarea
+          value={(item.defaultExclusions || []).join('\n')}
+          onChange={e => setItem(p => ({ ...p, defaultExclusions: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) }))}
+          rows={4}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      </FieldRow>
+
+      <FieldRow label="Terms (default)">
+        <textarea
+          value={item.defaultTerms || ''}
+          onChange={e => setItem(p => ({ ...p, defaultTerms: e.target.value }))}
+          rows={6}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      </FieldRow>
+
+      <EditorActions onCancel={onCancel} onSave={() => onSave(item)} disabled={!item.name?.trim()} />
+    </div>
+  );
+}
+
+function EditorActions({ onCancel, onSave, disabled }) {
+  return (
+    <div style={{
+      display: 'flex', gap: 8, marginTop: 16, paddingTop: 14,
+      borderTop: '1px solid rgba(255,255,255,0.08)',
+    }}>
+      <button
+        onClick={onCancel}
+        style={{
+          flex: 1, padding: '12px', minHeight: 44,
+          background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+          borderRadius: 8, color: '#D1D5DB', fontSize: 13, fontWeight: 700,
+          cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+        }}
+      >Cancel</button>
+      <button
+        onClick={onSave}
+        disabled={disabled}
+        style={{
+          flex: 2, padding: '12px', minHeight: 44,
+          background: disabled ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg, #E8722A, #e8640c)',
+          border: 'none', borderRadius: 8,
+          color: disabled ? '#9CA3AF' : '#fff', fontSize: 13, fontWeight: 700,
+          cursor: disabled ? 'not-allowed' : 'pointer', WebkitTapHighlightColor: 'transparent',
+        }}
+      >Save Template</button>
+    </div>
+  );
+}
+
+function CatalogPickerInline({ allLineItems, onPick, onClose }) {
+  const isMobile = useMobile();
+  const [filter, setFilter] = useState('');
+  const filtered = allLineItems.filter(li => {
+    if (!filter.trim()) return true;
+    const q = filter.toLowerCase();
+    return (li.description || '').toLowerCase().includes(q)
+      || (li.category || '').toLowerCase().includes(q);
+  });
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1200,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? 0 : 16,
+      }}
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        style={{
+          background: '#1E2329', borderRadius: isMobile ? '16px 16px 0 0' : 12,
+          width: '100%', maxWidth: 520, maxHeight: '86dvh',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          position: isMobile ? 'fixed' : 'relative', bottom: isMobile ? 0 : 'auto',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div style={{
+          padding: '12px 14px', background: '#161B22',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <div style={{ flex: 1, fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>Pick a line item</div>
+          <button
+            onClick={onClose}
+            style={{
+              width: 32, height: 32, padding: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 6, color: '#FFFFFF', fontSize: 16, cursor: 'pointer',
+            }}
+          >×</button>
+        </div>
+        <div style={{ padding: 10, background: '#1E2329', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <input
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            placeholder="Search catalog…"
+            style={{
+              width: '100%', padding: '10px 12px', minHeight: 40,
+              background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+              color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 8 }}>
+          {filtered.map(li => (
+            <button
+              key={li.id}
+              onClick={() => onPick(li)}
+              style={{
+                width: '100%', textAlign: 'left', padding: 10, marginBottom: 4,
+                background: '#161B22', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 6, color: '#FFFFFF', cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{li.description}</div>
+              <div style={{ fontSize: 10, color: '#9CA3AF' }}>{li.category} · {li.unit} · {fmtCurrency(li.unitPrice || 0)}</div>
+            </button>
+          ))}
         </div>
       </div>
     </div>
