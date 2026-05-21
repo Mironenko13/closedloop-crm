@@ -1624,6 +1624,7 @@ function useScrollLock(active = true) {
 // Shared tab definitions for bottom nav
 const NAV_TABS = [
   { key: 'pipeline',  label: 'Pipeline',  icon: '📋' },
+  { key: 'quotes',    label: 'Quotes',    icon: '📄' },
   { key: 'callbacks', label: 'Callbacks', icon: '📞' },
   { key: 'analytics', label: 'Analytics', icon: '📊' },
   { key: 'jobs',      label: 'Projects',  icon: '🔨' },
@@ -1639,6 +1640,7 @@ const NAV_TABS = [
 const SECTION_COLORS = {
   // Main nav tabs
   pipeline:  '#E8722A',  // orange
+  quotes:    '#E8722A',  // orange (same hue as pipeline — quotes live in the sales surface)
   callbacks: '#ef4444',  // red
   analytics: '#8b5cf6',  // purple
   jobs:      '#3b82f6',  // blue
@@ -1664,14 +1666,14 @@ const CM_SUB_COLORS = {
 const DEMO_ROLES = {
   owner: {
     label: 'Owner/Admin', color: '#22c55e',
-    tabs: ['pipeline','callbacks','analytics','jobs','calendar','crew','chat','photos','team'],
+    tabs: ['pipeline','quotes','callbacks','analytics','jobs','calendar','crew','chat','photos','team'],
     seeDollars: true, seeRates: true, seeProfitability: true,
     seeCostManager: true, seeCrewPay: true, seeAnalyticsRevenue: true,
     seeChangeOrders: true, seeTeamMgmt: true,
   },
   sales: {
     label: 'Sales/Estimator', color: '#6366f1',
-    tabs: ['pipeline','callbacks','jobs','analytics','chat'],
+    tabs: ['pipeline','quotes','callbacks','jobs','analytics','chat'],
     seeDollars: true, seeRates: false, seeProfitability: false,
     seeCostManager: false, seeCrewPay: false, seeAnalyticsRevenue: true,
     seeChangeOrders: false, seeTeamMgmt: false,
@@ -1741,6 +1743,9 @@ function GlobalStyles() {
 
 function BottomNav({ tab, setTab, tabs }) {
   const tabList = tabs || NAV_TABS;
+  // 10 visible tabs (Owner role) ÷ 390px viewport = ~39px per tab. Shrink the
+  // basis + label font + horizontal padding so labels stay legible.
+  const tight = tabList.length >= 10;
   return (
     <div style={{
       flexShrink: 0,
@@ -1757,25 +1762,28 @@ function BottomNav({ tab, setTab, tabs }) {
             className={isActive ? '' : 'ri-bnav-btn'}
             onClick={() => !locked && setTab(key)}
             style={{
-              flex: '1 1 42px', minWidth: 0,
+              flex: tight ? '1 1 38px' : '1 1 42px', minWidth: 0,
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               background: isActive ? c + '10' : 'transparent', border: 'none',
               color: locked ? 'rgba(255,255,255,0.12)' : isActive ? '#E8722A' : '#D1D5DB',
               fontWeight: isActive ? 700 : 500,
               cursor: locked ? 'not-allowed' : 'pointer',
-              gap: 2, minHeight: 64, padding: '0 2px',
+              gap: 2, minHeight: 64, padding: tight ? '0 1px' : '0 2px',
               borderTop: isActive ? `2px solid ${c}` : '2px solid transparent',
               transition: 'color 0.15s, background 0.15s',
               WebkitTapHighlightColor: 'transparent',
               overflow: 'hidden',
             }}
           >
-            <span style={{ fontSize: isActive ? 20 : 18, lineHeight: 1, transition: 'font-size 0.15s' }}>
+            <span style={{
+              fontSize: isActive ? (tight ? 18 : 20) : (tight ? 16 : 18),
+              lineHeight: 1, transition: 'font-size 0.15s',
+            }}>
               {locked ? '🔒' : icon}
             </span>
             <span style={{
-              fontSize: 10, lineHeight: 1.1, maxWidth: '100%',
+              fontSize: tight ? 9 : 10, lineHeight: 1.1, maxWidth: '100%',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {label}
@@ -8828,6 +8836,711 @@ function CatalogPickerInline({ allLineItems, onPick, onClose }) {
   );
 }
 
+// ─── Quotes Tab (Phase 1 of morning batch) ──────────────────────────────────
+// Dedicated quote-management surface accessible from the main bottom nav.
+// Lists every quote across all customers, grouped by status with a "Needs
+// action" group at the top, with mode/status filters and search. Tap a row
+// to open the editor; long-press for the action sheet.
+function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead, isDemo, rolePerms, currentUser }) {
+  const isMobile = useMobile();
+  const showToast = useToast();
+
+  const [modeFilter, setModeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [search, setSearch] = useState('');
+
+  // newQuoteFlow: null | { step: 'customer' | 'newCustomer' | 'template' | 'editor', target?, quote? }
+  const [newQuoteFlow, setNewQuoteFlow] = useState(null);
+  const [openQuote, setOpenQuote] = useState(null); // { quote, target }
+  const [actionSheet, setActionSheet] = useState(null); // { quote }
+
+  const todayMs = Date.now();
+  const daysSince = (iso) => {
+    if (!iso) return null;
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t)) return null;
+    return Math.max(0, Math.round((todayMs - t) / 86400000));
+  };
+  const daysUntil = (iso) => {
+    if (!iso) return null;
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t)) return null;
+    return Math.round((t - todayMs) / 86400000);
+  };
+  const ago = (n, noun) => {
+    if (n == null) return '';
+    if (n === 0) return `${noun} today`;
+    if (n === 1) return `${noun} yesterday`;
+    return `${noun} ${n} day${n === 1 ? '' : 's'} ago`;
+  };
+
+  const customerOf = (q) => {
+    if (q.leadId != null) {
+      const l = leads.find(x => String(x.id) === String(q.leadId));
+      return l ? { kind: 'lead', name: l.name, address: l.address || '', source: l } : null;
+    }
+    if (q.projectId != null) {
+      const j = jobs.find(x => String(x.id) === String(q.projectId));
+      if (j) return { kind: 'project', name: j.customer || j.customerName || '(project)', address: j.address || '', source: j };
+    }
+    return null;
+  };
+
+  const isNeedsAction = (q) => {
+    if (!q) return false;
+    if (q.status === 'draft' && (daysSince(q.createdDate) || 0) > 3) return true;
+    if (q.status === 'sent' && (daysSince(q.sentDate || q.createdDate) || 0) > 5) return true;
+    if (q.expirationDate) {
+      const d = daysUntil(q.expirationDate);
+      if (d != null && d >= 0 && d <= 7 && q.status !== 'signed' && q.status !== 'rejected') return true;
+    }
+    return false;
+  };
+
+  const statusColor = (s) => ({
+    draft: '#9CA3AF', sent: '#3b82f6', viewed: '#06b6d4',
+    signed: '#22c55e', rejected: '#ef4444', expired: '#f59e0b',
+  }[s] || '#9CA3AF');
+
+  const lastActivity = (q) => {
+    if (q.status === 'signed' && q.signedDate) return ago(daysSince(q.signedDate), 'Signed');
+    if (q.status === 'rejected' && q.rejectedDate) return ago(daysSince(q.rejectedDate), 'Rejected');
+    if (q.status === 'viewed' && q.viewedDate) return ago(daysSince(q.viewedDate), 'Viewed by customer');
+    if (q.status === 'sent' && q.sentDate) return ago(daysSince(q.sentDate), 'Sent');
+    if (q.status === 'expired') return ago(daysSince(q.expirationDate), 'Expired');
+    return ago(daysSince(q.lastEditedDate || q.createdDate), 'Updated');
+  };
+
+  const filtered = quotes.filter(q => {
+    if (modeFilter !== 'all' && q.mode !== modeFilter) return false;
+    if (statusFilter !== 'all' && q.status !== statusFilter) return false;
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      const cust = customerOf(q);
+      const haystack = [
+        q.quoteNumber || '',
+        cust?.name || '',
+        cust?.address || '',
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(s)) return false;
+    }
+    return true;
+  });
+
+  // Group ordering
+  const groupOrder = ['needsAction', 'draft', 'sent', 'viewed', 'signed', 'rejected', 'expired'];
+  const groupLabels = {
+    needsAction: '⚠ Needs Action', draft: 'Draft', sent: 'Sent', viewed: 'Viewed',
+    signed: 'Signed', rejected: 'Rejected', expired: 'Expired',
+  };
+
+  const grouped = useMemo(() => {
+    const map = { needsAction: [], draft: [], sent: [], viewed: [], signed: [], rejected: [], expired: [] };
+    filtered.forEach(q => {
+      if (isNeedsAction(q)) map.needsAction.push(q);
+      const key = map[q.status] ? q.status : 'draft';
+      // Always also include in status group so user can locate it where expected
+      if (!isNeedsAction(q) || statusFilter !== 'all') map[key].push(q);
+    });
+    Object.values(map).forEach(arr => arr.sort((a, b) => {
+      const ad = new Date(a.lastEditedDate || a.createdDate || 0).getTime();
+      const bd = new Date(b.lastEditedDate || b.createdDate || 0).getTime();
+      return bd - ad;
+    }));
+    return map;
+  }, [filtered, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openEditor = (q) => {
+    const cust = customerOf(q);
+    if (!cust) { showToast('Customer record not found for this quote.', 'error'); return; }
+    setOpenQuote({
+      quote: q,
+      target: {
+        kind: cust.kind,
+        id: cust.source.id,
+        customerName: cust.name,
+        address: cust.address,
+        [cust.kind]: cust.source,
+      },
+    });
+  };
+
+  const duplicateQuote = (q) => {
+    const stamp = Date.now().toString(36);
+    const dup = {
+      ...JSON.parse(JSON.stringify(q)),
+      id: `q-${stamp}`,
+      quoteNumber: `${q.quoteNumber || 'QUOTE'}-COPY`,
+      status: 'draft',
+      sentDate: null, viewedDate: null, signedDate: null, rejectedDate: null,
+      createdDate: new Date().toISOString(),
+      shareToken: `qst_${Math.random().toString(36).slice(2, 18)}`,
+    };
+    onSaveQuote(dup);
+    showToast('Quote duplicated as draft.');
+  };
+
+  const deleteQuote = (q) => {
+    // Soft delete via status flip; the renderer hides status='archived'.
+    // (No backend yet — keep state honest by writing the new status through.)
+    onSaveQuote({ ...q, status: 'archived' });
+    showToast('Quote deleted.');
+  };
+
+  // ── Layout ──
+  const containerPad = isMobile ? 12 : 16;
+  const chipRow = { display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 };
+  const chipBase = (active, color = '#E8722A') => ({
+    padding: '6px 12px', minHeight: 32,
+    background: active ? color : 'transparent',
+    border: `1px solid ${active ? color : 'rgba(255,255,255,0.15)'}`,
+    borderRadius: 999, color: active ? '#fff' : '#D1D5DB',
+    fontSize: 11, fontWeight: 700, cursor: 'pointer',
+    WebkitTapHighlightColor: 'transparent',
+  });
+
+  return (
+    <div style={{ padding: containerPad, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Sticky header */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 5,
+        background: '#1E2329', marginLeft: -containerPad, marginRight: -containerPad,
+        padding: `8px ${containerPad}px 6px`,
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 140 }}>
+            <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.3px' }}>Quotes</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>{quotes.filter(q => q.status !== 'archived').length} total · {grouped.needsAction.length} needs action</div>
+          </div>
+          <button
+            onClick={() => setNewQuoteFlow({ step: 'customer' })}
+            style={{
+              padding: '10px 14px', minHeight: 40, flexShrink: 0,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 10,
+              color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+            }}
+          >+ New Quote</button>
+        </div>
+
+        <div style={chipRow}>
+          {['all', 'residential', 'commercial'].map(m => (
+            <button key={m} onClick={() => setModeFilter(m)} style={chipBase(modeFilter === m, '#2D5016')}>
+              {m === 'all' ? 'All' : m === 'residential' ? 'Residential' : 'Commercial'}
+            </button>
+          ))}
+        </div>
+        <div style={chipRow}>
+          {['all', 'draft', 'sent', 'viewed', 'signed', 'rejected', 'expired'].map(s => (
+            <button key={s} onClick={() => setStatusFilter(s)} style={chipBase(statusFilter === s, s === 'all' ? '#E8722A' : statusColor(s))}>
+              {s === 'all' ? 'All Statuses' : s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search customer, address, quote #"
+          style={{
+            width: '100%', padding: '10px 12px', minHeight: 40,
+            background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+            color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none', boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      {quotes.filter(q => q.status !== 'archived').length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '64px 16px' }}>
+          <div style={{ fontSize: 56, marginBottom: 12 }}>📄</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', marginBottom: 6 }}>No quotes yet</div>
+          <div style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 18 }}>Start your first quote and it'll show up here.</div>
+          <button
+            onClick={() => setNewQuoteFlow({ step: 'customer' })}
+            style={{
+              padding: '12px 22px', minHeight: 44,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 10,
+              color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+            }}
+          >Start your first quote</button>
+        </div>
+      ) : (
+        groupOrder.map(group => {
+          const items = grouped[group].filter(q => q.status !== 'archived');
+          if (items.length === 0) return null;
+          if (group === 'needsAction' && statusFilter !== 'all') return null;
+          return (
+            <div key={group} style={{ marginBottom: 4 }}>
+              <div style={{
+                fontSize: 11, fontWeight: 700,
+                color: group === 'needsAction' ? '#f59e0b' : '#D1D5DB',
+                textTransform: 'uppercase', letterSpacing: '0.5px',
+                padding: '8px 4px 6px',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <span>{groupLabels[group]}</span>
+                <span style={{ fontSize: 10, color: '#9CA3AF' }}>({items.length})</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {items.map(q => (
+                  <QuoteRow
+                    key={q.id}
+                    quote={q}
+                    customer={customerOf(q)}
+                    statusColor={statusColor(q.status)}
+                    lastActivity={lastActivity(q)}
+                    needsAction={isNeedsAction(q)}
+                    onTap={() => openEditor(q)}
+                    onLongPress={() => setActionSheet({ quote: q })}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })
+      )}
+
+      {/* Action sheet for long-press */}
+      {actionSheet && (
+        <ActionSheet
+          title={actionSheet.quote.quoteNumber || 'Quote'}
+          onClose={() => setActionSheet(null)}
+          actions={[
+            { label: 'Open', onClick: () => { openEditor(actionSheet.quote); setActionSheet(null); } },
+            { label: 'Duplicate as draft', onClick: () => { duplicateQuote(actionSheet.quote); setActionSheet(null); } },
+            { label: 'Send reminder', onClick: () => { showToast('Send reminder coming next session.'); setActionSheet(null); }, disabled: actionSheet.quote.status !== 'sent' && actionSheet.quote.status !== 'viewed' },
+            { label: 'Mark Lost', onClick: () => { showToast('Mark Lost coming next session.'); setActionSheet(null); }, danger: true },
+            { label: 'Delete', onClick: () => { /* eslint-disable-next-line no-restricted-globals */ if (window.confirm('Delete this quote?')) { deleteQuote(actionSheet.quote); setActionSheet(null); } }, danger: true },
+          ]}
+        />
+      )}
+
+      {/* New quote flow */}
+      {newQuoteFlow?.step === 'customer' && (
+        <NewQuoteCustomerPicker
+          leads={leads.filter(l => l.stage !== 'lost' && l.stage !== 'converted_to_project')}
+          projects={jobs}
+          onPickLead={(lead) => {
+            const target = {
+              kind: 'lead', id: lead.id, customerName: lead.name,
+              address: lead.address || '', lead,
+            };
+            setNewQuoteFlow({ step: 'template', target });
+          }}
+          onPickProject={(p) => {
+            const target = {
+              kind: 'project', id: p.id, customerName: p.customer || p.customerName,
+              address: p.address || '', project: p,
+            };
+            setNewQuoteFlow({ step: 'template', target });
+          }}
+          onPickNewCustomer={() => setNewQuoteFlow({ step: 'newCustomer' })}
+          onClose={() => setNewQuoteFlow(null)}
+        />
+      )}
+      {newQuoteFlow?.step === 'newCustomer' && (
+        <NewCustomerQuickForm
+          onCancel={() => setNewQuoteFlow({ step: 'customer' })}
+          onCreate={(formData) => {
+            if (!onAddLead) {
+              showToast('New-customer flow is read-only in demo mode.');
+              setNewQuoteFlow(null);
+              return;
+            }
+            const newLead = onAddLead({
+              name: formData.name,
+              address: formData.address || '',
+              phone: formData.phone || '',
+              email: formData.email || '',
+              stage: 'lead',
+              trade: 'roofing',
+              value: 0,
+              createdDate: new Date().toISOString(),
+            });
+            if (!newLead) {
+              showToast('Could not create lead.', 'error');
+              setNewQuoteFlow(null);
+              return;
+            }
+            const target = {
+              kind: 'lead', id: newLead.id, customerName: newLead.name,
+              address: newLead.address || '', lead: newLead,
+            };
+            setNewQuoteFlow({ step: 'template', target });
+          }}
+        />
+      )}
+      {newQuoteFlow?.step === 'template' && newQuoteFlow.target && (
+        <QuoteTemplatePicker
+          target={newQuoteFlow.target}
+          onPick={(quote) => setNewQuoteFlow({ ...newQuoteFlow, step: 'editor', quote })}
+          onClose={() => setNewQuoteFlow(null)}
+        />
+      )}
+      {newQuoteFlow?.step === 'editor' && newQuoteFlow.target && newQuoteFlow.quote && (
+        <QuoteDocumentEditor
+          target={newQuoteFlow.target}
+          initialQuote={newQuoteFlow.quote}
+          onSave={(q) => { onSaveQuote(q); setNewQuoteFlow(prev => prev ? { ...prev, quote: q } : prev); }}
+          onMarkSigned={(q) => onSaveQuote(q)}
+          onConvertToProject={(lead, signedQuote) => {
+            if (onConvertLead) { onConvertLead(lead, signedQuote); setNewQuoteFlow(null); }
+          }}
+          onClose={() => setNewQuoteFlow(null)}
+        />
+      )}
+
+      {/* Existing-quote editor */}
+      {openQuote && (
+        <QuoteDocumentEditor
+          target={openQuote.target}
+          initialQuote={openQuote.quote}
+          onSave={(q) => { onSaveQuote(q); setOpenQuote(prev => prev ? { ...prev, quote: q } : prev); }}
+          onMarkSigned={(q) => onSaveQuote(q)}
+          onConvertToProject={(lead, signedQuote) => {
+            if (onConvertLead) { onConvertLead(lead, signedQuote); setOpenQuote(null); }
+          }}
+          onClose={() => setOpenQuote(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function QuoteRow({ quote, customer, statusColor, lastActivity, needsAction, onTap, onLongPress }) {
+  const pressTimerRef = useRef(null);
+  const longFiredRef = useRef(false);
+
+  const startPress = () => {
+    longFiredRef.current = false;
+    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+    pressTimerRef.current = setTimeout(() => {
+      longFiredRef.current = true;
+      onLongPress();
+    }, 500);
+  };
+  const cancelPress = () => {
+    if (pressTimerRef.current) { clearTimeout(pressTimerRef.current); pressTimerRef.current = null; }
+  };
+  const onClick = () => {
+    if (longFiredRef.current) { longFiredRef.current = false; return; }
+    onTap();
+  };
+
+  return (
+    <div
+      onClick={onClick}
+      onPointerDown={startPress}
+      onPointerUp={cancelPress}
+      onPointerLeave={cancelPress}
+      onPointerCancel={cancelPress}
+      onContextMenu={e => { e.preventDefault(); onLongPress(); }}
+      style={{
+        padding: 12, background: '#161B22',
+        border: `1px solid ${needsAction ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.08)'}`,
+        borderRadius: 10, cursor: 'pointer',
+        WebkitTapHighlightColor: 'transparent', userSelect: 'none',
+        display: 'flex', flexDirection: 'column', gap: 6,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', fontFamily: 'ui-monospace, monospace' }}>
+          {quote.quoteNumber || quote.id}
+        </span>
+        <span style={{
+          fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+          background: statusColor + '22', color: statusColor,
+          textTransform: 'uppercase', letterSpacing: '0.4px',
+        }}>{quote.status}</span>
+        <span style={{
+          fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+          background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
+          textTransform: 'uppercase', letterSpacing: '0.4px',
+        }}>{quote.mode}</span>
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>
+          ${(quote.total || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+        </span>
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+        {customer ? customer.name : '(no customer)'}
+      </div>
+      {customer?.address && (
+        <div style={{ fontSize: 11, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {customer.address}
+        </div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 2 }}>
+        <span style={{
+          fontSize: 10, padding: '2px 6px', borderRadius: 4,
+          background: customer?.kind === 'project' ? 'rgba(59,130,246,0.15)' : 'rgba(232,114,42,0.15)',
+          color: customer?.kind === 'project' ? '#60a5fa' : '#E8722A',
+          fontWeight: 700,
+        }}>
+          {customer ? (customer.kind === 'lead' ? '→ Lead' : '→ Project') : '— Unanchored'}
+        </span>
+        <span style={{ fontSize: 11, color: '#9CA3AF' }}>{lastActivity}</span>
+      </div>
+    </div>
+  );
+}
+
+function ActionSheet({ title, actions, onClose }) {
+  const isMobile = useMobile();
+  useScrollLock();
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1100,
+        display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center',
+        padding: isMobile ? 0 : 16,
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#1E2329', borderRadius: isMobile ? '16px 16px 0 0' : 12,
+          width: '100%', maxWidth: 380,
+          padding: 10, display: 'flex', flexDirection: 'column', gap: 4,
+        }}
+      >
+        <div style={{ padding: '8px 12px', color: '#9CA3AF', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 700 }}>{title}</div>
+        {actions.map((a, i) => (
+          <button
+            key={i}
+            onClick={a.onClick}
+            disabled={a.disabled}
+            style={{
+              padding: '12px 14px', minHeight: 44,
+              background: a.disabled ? 'transparent' : '#2A3140',
+              border: 'none', borderRadius: 8,
+              color: a.disabled ? '#4A5568' : a.danger ? '#f87171' : '#FFFFFF',
+              fontSize: 13, fontWeight: 700, textAlign: 'left',
+              cursor: a.disabled ? 'not-allowed' : 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >{a.label}</button>
+        ))}
+        <button
+          onClick={onClose}
+          style={{
+            padding: '12px 14px', minHeight: 44, marginTop: 4,
+            background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 8, color: '#D1D5DB', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function NewQuoteCustomerPicker({ leads, projects, onPickLead, onPickProject, onPickNewCustomer, onClose }) {
+  const isMobile = useMobile();
+  useScrollLock();
+  const [tab, setTab] = useState('lead'); // 'lead' | 'project'
+  const [filter, setFilter] = useState('');
+
+  const filtered = (tab === 'lead' ? leads : projects).filter(item => {
+    if (!filter.trim()) return true;
+    const q = filter.toLowerCase();
+    const name = tab === 'lead' ? item.name : (item.customer || item.customerName || '');
+    const addr = item.address || '';
+    return name.toLowerCase().includes(q) || addr.toLowerCase().includes(q);
+  });
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '92dvh', borderRadius: '16px 16px 0 0', margin: 0, display: 'flex', flexDirection: 'column' }
+    : { ...S.modal, maxWidth: 520, display: 'flex', flexDirection: 'column', maxHeight: '85vh' };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Quote for whom?</div>
+        <div style={{ ...S.modalSub, marginBottom: 12 }}>Pick an existing customer or create a new one.</div>
+
+        <button
+          onClick={onPickNewCustomer}
+          style={{
+            width: '100%', padding: '14px', marginBottom: 12, minHeight: 48,
+            background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+            border: 'none', borderRadius: 10,
+            color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+            WebkitTapHighlightColor: 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          }}
+        >+ New Customer</button>
+
+        <div style={{ display: 'flex', gap: 4, background: '#161B22', borderRadius: 8, padding: 4, marginBottom: 10 }}>
+          <button
+            onClick={() => setTab('lead')}
+            style={{
+              flex: 1, padding: '8px', minHeight: 36,
+              background: tab === 'lead' ? 'linear-gradient(135deg, #E8722A, #e8640c)' : 'transparent',
+              border: 'none', borderRadius: 6,
+              color: tab === 'lead' ? '#fff' : '#D1D5DB',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Existing Lead ({leads.length})</button>
+          <button
+            onClick={() => setTab('project')}
+            style={{
+              flex: 1, padding: '8px', minHeight: 36,
+              background: tab === 'project' ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : 'transparent',
+              border: 'none', borderRadius: 6,
+              color: tab === 'project' ? '#fff' : '#D1D5DB',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Existing Project ({projects.length})</button>
+        </div>
+
+        <input
+          type="text"
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          placeholder={`Search ${tab === 'lead' ? 'leads' : 'projects'}…`}
+          style={{
+            width: '100%', padding: '10px 12px', marginBottom: 10, minHeight: 40,
+            background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+            color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none', boxSizing: 'border-box',
+          }}
+        />
+
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {filtered.length === 0 && (
+            <div style={{ padding: 20, textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
+              {filter.trim() ? 'No matches.' : `No ${tab === 'lead' ? 'leads' : 'projects'} yet.`}
+            </div>
+          )}
+          {filtered.map(item => {
+            const name = tab === 'lead' ? item.name : (item.customer || item.customerName || '(unnamed)');
+            const addr = item.address || '';
+            return (
+              <button
+                key={item.id}
+                onClick={() => tab === 'lead' ? onPickLead(item) : onPickProject(item)}
+                style={{
+                  textAlign: 'left', padding: 12,
+                  background: '#161B22', border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 8, color: '#FFFFFF', cursor: 'pointer',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>{name}</div>
+                {addr && <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{addr}</div>}
+                {tab === 'lead' && item.stage && (
+                  <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                    Stage: {String(item.stage).replace(/_/g, ' ')}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NewCustomerQuickForm({ onCancel, onCreate }) {
+  const isMobile = useMobile();
+  useScrollLock();
+  const [form, setForm] = useState({ name: '', address: '', phone: '', email: '' });
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', minHeight: 40,
+    background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+    color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box',
+  };
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '92dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 460 };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onCancel()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onCancel}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>New Customer</div>
+        <div style={{ ...S.modalSub, marginBottom: 14 }}>Creates a lead in the pipeline at "Lead" stage so you can quote them now.</div>
+
+        <FieldRow label="Name *">
+          <input
+            value={form.name}
+            onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+            placeholder="Allen Yoder"
+            style={inputStyle}
+          />
+        </FieldRow>
+        <FieldRow label="Address">
+          <input
+            value={form.address}
+            onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+            placeholder="1234 Main St, Mifflinburg PA 17844"
+            style={inputStyle}
+          />
+        </FieldRow>
+        <FieldRow label="Phone">
+          <input
+            value={form.phone}
+            onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+            placeholder="(570) 555-0142"
+            style={inputStyle}
+            inputMode="tel"
+          />
+        </FieldRow>
+        <FieldRow label="Email">
+          <input
+            value={form.email}
+            onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+            placeholder="allen@example.com"
+            style={inputStyle}
+            inputMode="email"
+          />
+        </FieldRow>
+
+        <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+          <button
+            onClick={onCancel}
+            style={{
+              flex: 1, padding: '12px', minHeight: 44,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: 8, color: '#D1D5DB', fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >Back</button>
+          <button
+            onClick={() => onCreate(form)}
+            disabled={!form.name.trim()}
+            style={{
+              flex: 2, padding: '12px', minHeight: 44,
+              background: form.name.trim() ? 'linear-gradient(135deg, #E8722A, #e8640c)' : 'rgba(255,255,255,0.06)',
+              border: 'none', borderRadius: 8,
+              color: form.name.trim() ? '#fff' : '#9CA3AF', fontSize: 13, fontWeight: 700,
+              cursor: form.name.trim() ? 'pointer' : 'not-allowed',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Create &amp; Start Quote</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Quote Agent (Claude-powered quote generation) ───────────────────────────
 // Retained here from Session 1; Phase 3 of the editor sprint repositions it
 // as the AI Draft side-panel tool inside QuoteDocumentEditor.
@@ -14769,6 +15482,24 @@ export default function App() {
                 onSaveQuote={handleSaveQuote}
                 onConvertLead={handleConvertLead}
               />
+        )}
+        {tab === 'quotes' && (
+          <QuotesTab
+            quotes={allQuotes}
+            leads={leads}
+            jobs={jobs}
+            onSaveQuote={handleSaveQuote}
+            onConvertLead={handleConvertLead}
+            onAddLead={isDemo ? null : (leadData) => {
+              const id = leadData.id || Date.now();
+              const newLead = { id, completedSteps: [], notes: '', ...leadData };
+              setUserLeads(prev => [newLead, ...prev]);
+              return newLead;
+            }}
+            isDemo={isDemo}
+            rolePerms={rolePerms}
+            currentUser={currentUser}
+          />
         )}
         {tab === 'callbacks' && (
           <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={isDemo ? null : handleUpdateLead} rolePerms={rolePerms} />
