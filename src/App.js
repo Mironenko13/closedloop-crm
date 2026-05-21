@@ -816,6 +816,7 @@ const DEMO_QUOTES = [
   {
     id: 'q-1001',
     quoteNumber: 'RIDGE-2026-0042',
+    leadId: null,
     projectId: 'p-202',
     mode: 'residential',
     status: 'draft',
@@ -868,9 +869,16 @@ const DEMO_QUOTES = [
 ];
 
 // ─── Quote helpers ───────────────────────────────────────────────────────────
+// A Quote belongs to EXACTLY ONE of: a Lead (pre-signature) or a Project
+// (post-conversion change order, or quote created against an existing
+// project). Never both, never neither. createQuote enforces this.
 // eslint-disable-next-line no-unused-vars
 function getQuotesForProject(projectId, quotes = DEMO_QUOTES) {
   return quotes.filter(q => q.projectId === projectId);
+}
+// eslint-disable-next-line no-unused-vars
+function getQuotesForLead(leadId, quotes = DEMO_QUOTES) {
+  return quotes.filter(q => q.leadId === leadId);
 }
 // eslint-disable-next-line no-unused-vars
 function getQuoteById(id, quotes = DEMO_QUOTES) {
@@ -900,14 +908,20 @@ function generateShareToken() {
   return token;
 }
 // eslint-disable-next-line no-unused-vars
-function createQuote({ projectId, mode = 'residential', sections = [], terms = '' }) {
+function createQuote({ leadId = null, projectId = null, mode = 'residential', sections = [], terms = '' }) {
+  // Enforce exactly-one-parent invariant. A quote is anchored either to a
+  // pre-conversion lead or to a project (post-conversion change order /
+  // additional scope sold to an existing customer). Never both, never neither.
+  if ((leadId && projectId) || (!leadId && !projectId)) {
+    throw new Error('createQuote: a quote must have exactly one of leadId or projectId set.');
+  }
   const now = new Date();
   const exp = new Date(now); exp.setDate(exp.getDate() + 30);
   const subtotal = sections.reduce((sum, sec) => sum + (sec.subtotal || (sec.lineItems || []).reduce((s, li) => s + (li.extension || 0), 0)), 0);
   return {
     id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     quoteNumber: generateQuoteNumber(),
-    projectId,
+    leadId, projectId,
     mode,
     status: 'draft',
     createdDate: now.toISOString(),
@@ -934,6 +948,56 @@ function updateQuote(quote, patch) {
 // eslint-disable-next-line no-unused-vars
 function deleteQuote(id, quotes) {
   return (quotes || DEMO_QUOTES).filter(q => q.id !== id);
+}
+
+// ─── Lead → Project conversion ───────────────────────────────────────────────
+// Called when a quote is signed. Creates a Project from the lead's customer
+// info, materialises one Scope per signed-quote section, re-anchors the quote
+// from leadId → projectId, and marks the lead as converted (preserved in the
+// system with convertedToProjectId set; never deleted, so historical pipeline
+// reporting still works).
+// eslint-disable-next-line no-unused-vars
+function convertLeadToProject(lead, signedQuote) {
+  if (!lead || !signedQuote) throw new Error('convertLeadToProject: lead and signedQuote required.');
+  if (signedQuote.status !== 'signed') {
+    throw new Error('convertLeadToProject: quote must be in signed status to convert.');
+  }
+  if (!signedQuote.leadId || String(signedQuote.leadId) !== String(lead.id)) {
+    throw new Error('convertLeadToProject: quote.leadId must match lead.id.');
+  }
+  const projectId = `p-l${lead.id}-${Date.now().toString(36)}`;
+  const project = {
+    id: projectId,
+    customerName: lead.name,
+    address: lead.address || '',
+    customerPhone: lead.phone || '',
+    customerEmail: lead.email || '',
+    createdDate: new Date().toISOString().slice(0, 10),
+    assignedSalesperson: lead.assignedSalesperson || '',
+    notes: lead.notes || '',
+    recentActivity: [],
+    issues: [],
+  };
+  const scopes = (signedQuote.sections || []).map((sec, i) => ({
+    id: Date.now() + i,
+    projectId,
+    scopeType: sec.scopeType || 'Full Replacement',
+    status: 'Scheduled',
+    value: sec.subtotal || 0,
+    completedSteps: [],
+    notes: sec.narrative || '',
+    phaseTemplate: 'residential-4-phase',
+    currentPhase: 1,
+    completedPhases: [],
+  }));
+  const updatedQuote = { ...signedQuote, leadId: null, projectId };
+  const updatedLead = {
+    ...lead,
+    stage: 'contract_signed',
+    convertedToProjectId: projectId,
+    convertedAt: new Date().toISOString(),
+  };
+  return { project, scopes, updatedQuote, updatedLead };
 }
 
 // ─── Legacy DEMO_JOBS adapter ────────────────────────────────────────────────
