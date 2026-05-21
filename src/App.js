@@ -464,6 +464,26 @@ const DEMO_LEADS = [
     stallReason: null, notes: '4 school buildings, mixed TPO + architectural. Summer 2026 installation. Board presentation scheduled.',
     industry: 'Institutional', dealAge: 20, address: '200 Island Blvd, Sunbury PA 17801',
   },
+  // ── Stoltzfus: active lead with a draft quote attached (Session 1 demo target) ──
+  {
+    id: 37, name: 'Amos Stoltzfus', contact: 'Amos Stoltzfus', role: 'Homeowner',
+    phone: '(570) 966-2453', email: '',
+    trade: 'Full Replacement', status: 'active', value: 18600, stage: 'estimate_sent',
+    callbackDate: '2026-04-25', lastContact: '2026-04-12',
+    stallReason: null, notes: 'Farmhouse — no Sunday work. Erie Insurance claim. 38 sq, GAF Timberline HDZ Charcoal. Draft quote out.',
+    industry: 'Residential', dealAge: 22, address: '1240 Strickler Rd, Mifflinburg PA 17844',
+  },
+  // ── Yutzy: signed, converted to project (post-conversion demo state) ──
+  {
+    id: 38, name: 'James & Karen Yutzy', contact: 'James Yutzy', role: 'Homeowner',
+    phone: '(570) 524-1962', email: 'kyutzy@frontiernet.net',
+    trade: 'Full Replacement', status: 'won', value: 23400, stage: 'contract_signed',
+    callbackDate: null, lastContact: '2026-04-08',
+    stallReason: null, notes: 'Signed contract 4/8/2026. Erie Insurance claim — wind damage from late winter storm. Project created from signed quote.',
+    industry: 'Residential', dealAge: 31, address: '88 Furnace Rd, Lewisburg PA 17837',
+    convertedToProjectId: 'p-yutzy-2026-04',
+    convertedAt: '2026-04-08T16:32:00Z',
+  },
 ];
 
 const STALL_LABELS = {
@@ -645,6 +665,8 @@ const DEMO_PROJECTS = [
   { id: 'p-210', customerName: 'Riverwoods HOA — Phase 2', address: '200 Riverwoods Dr, Lewisburg PA 17837', customerPhone: '(570) 524-9182', customerEmail: 'board@riverwoodshoa.com', createdDate: '2026-03-04', assignedSalesperson: 'Mark Sensenig', notes: 'Buildings 5-8. Waiting on HOA board for start date.', recentActivity: [], issues: [] },
   { id: 'p-211', customerName: 'Eli Beiler', address: '892 Old Turnpike Rd, Mifflinburg PA 17844', customerPhone: '(570) 966-3742', customerEmail: '', createdDate: '2026-04-01', assignedSalesperson: 'Tara Zimmerman', notes: 'Solar reinstall coordinated with homeowner\'s electrician.', recentActivity: [], issues: [] },
   { id: 'p-212', customerName: 'Wengert Residence', address: '54 Buffalo Cross Rd, Lewisburg PA 17837', customerPhone: '(570) 524-6481', customerEmail: 'mwengert@gmail.com', createdDate: '2026-04-03', assignedSalesperson: 'Tara Zimmerman', notes: 'Persistent leak at upslope side of chimney.', recentActivity: [], issues: [] },
+  // ── Yutzy: project created by lead→project conversion when their quote signed ──
+  { id: 'p-yutzy-2026-04', customerName: 'James & Karen Yutzy', address: '88 Furnace Rd, Lewisburg PA 17837', customerPhone: '(570) 524-1962', customerEmail: 'kyutzy@frontiernet.net', createdDate: '2026-04-08', assignedSalesperson: 'Mark Sensenig', notes: 'Created from signed quote RIDGE-2026-0043. Erie Insurance claim — wind damage.', recentActivity: [{ timestamp: '2026-04-08T16:32:00Z', type: 'conversion', message: 'Lead converted to project from signed quote' }], issues: [] },
 ];
 
 // ─── Scopes (child: one type of work within a project) ───────────────────────
@@ -763,6 +785,15 @@ const DEMO_SCOPES = [
     notes: 'Phase 2: buildings 5-8. ~96 sq architectural. Waiting on HOA board to approve start date.',
     phaseTemplate: 'commercial-7-phase', currentPhase: 1, completedPhases: [],
   },
+  // ── Yutzy scopes: materialised from signed quote at lead-to-project conversion ──
+  {
+    id: 2001, projectId: 'p-yutzy-2026-04',
+    scopeType: 'Full Replacement', status: 'Scheduled', value: 23400, hours: 9,
+    scheduledDate: '2026-05-19', completedSteps: [],
+    notes: '48 sq, 7/12 pitch. CertainTeed Landmark Pro Weathered Wood. 1 layer tear-off. Erie Insurance claim — wind damage. Created from signed quote.',
+    duration: 3,
+    phaseTemplate: 'residential-4-phase', currentPhase: 1, completedPhases: [],
+  },
   // ── Multi-scope showcase: secondary scopes on three projects ──
   {
     id: 1001, projectId: 'p-202',
@@ -816,8 +847,8 @@ const DEMO_QUOTES = [
   {
     id: 'q-1001',
     quoteNumber: 'RIDGE-2026-0042',
-    leadId: null,
-    projectId: 'p-202',
+    leadId: 37, // Amos Stoltzfus lead
+    projectId: null,
     mode: 'residential',
     status: 'draft',
     createdDate: '2026-04-12T09:14:00Z',
@@ -864,6 +895,102 @@ const DEMO_QUOTES = [
       { role: 'user', timestamp: '2026-04-12T09:11:00Z', content: 'Stoltzfus farmhouse — 38 squares, GAF Timberline HDZ Charcoal, tear off 1 layer, 6/12 pitch. Erie Insurance claim.' },
       { role: 'assistant', timestamp: '2026-04-12T09:11:18Z', content: 'Drafted the full replacement scope with HDZ Charcoal — added synthetic underlayment, ice & water at eaves/valleys, ridge cap, dumpster, permit. Decking allowance left at 4 sheets — confirm or correct.' },
       { role: 'user', timestamp: '2026-04-12T09:13:45Z', content: 'Looks right. Save it for now.' },
+    ],
+  },
+  // ── Yutzy: signed quote that converted the lead to a project ──
+  {
+    id: 'q-1002',
+    quoteNumber: 'RIDGE-2026-0043',
+    leadId: null,
+    projectId: 'p-yutzy-2026-04',
+    mode: 'residential',
+    status: 'signed',
+    createdDate: '2026-04-05T11:20:00Z',
+    sentDate: '2026-04-05T13:40:00Z',
+    viewedDate: '2026-04-06T08:14:00Z',
+    signedDate: '2026-04-08T16:32:00Z',
+    expirationDate: '2026-05-05',
+    subtotal: 23400, tax: 0, total: 23400,
+    sections: [
+      {
+        id: 'qs-1002-a', scopeId: 2001, scopeType: 'Full Replacement',
+        narrative: 'Full tear-off and replacement, 48 sq, 7/12 pitch. CertainTeed Landmark Pro Weathered Wood. 1 layer tear-off. Erie Insurance claim — wind damage. Two-story access included.',
+        subtotal: 23400,
+        lineItems: [
+          { id: 'li-y1', description: 'Tear-off, 1 layer composition shingles', category: 'Labor', quantity: 48, unit: 'SQ', unitPrice: 55, extension: 2640, notes: '2nd story access adder' },
+          { id: 'li-y2', description: 'Decking inspection + 4-sheet OSB allowance', category: 'Allowance', quantity: 4, unit: 'EA', unitPrice: 65, extension: 260, notes: 'Billed only if used' },
+          { id: 'li-y3', description: 'Synthetic underlayment', category: 'Material', quantity: 48, unit: 'SQ', unitPrice: 25, extension: 1200, notes: null },
+          { id: 'li-y4', description: 'Ice & water shield at eaves and valleys', category: 'Material', quantity: 12, unit: 'SQ', unitPrice: 90, extension: 1080, notes: null },
+          { id: 'li-y5', description: 'Drip edge, aluminum', category: 'Material', quantity: 260, unit: 'LF', unitPrice: 3.5, extension: 910, notes: null },
+          { id: 'li-y6', description: 'CertainTeed Landmark Pro Weathered Wood shingles', category: 'Material', quantity: 48, unit: 'SQ', unitPrice: 145, extension: 6960, notes: 'SBS-modified architectural' },
+          { id: 'li-y7', description: 'Shingle installation labor, 2-story', category: 'Labor', quantity: 48, unit: 'SQ', unitPrice: 200, extension: 9600, notes: '+10% 2-story adder applied' },
+          { id: 'li-y8', description: 'Ridge cap shingles', category: 'Material', quantity: 80, unit: 'LF', unitPrice: 9, extension: 720, notes: null },
+          { id: 'li-y9', description: 'Dumpster — 30 yard, single haul', category: 'Equipment', quantity: 1, unit: 'EA', unitPrice: 650, extension: 650, notes: 'Larger dumpster for 48 sq tear-off' },
+          { id: 'li-y10', description: 'Municipal building permit', category: 'Equipment', quantity: 1, unit: 'EA', unitPrice: 250, extension: 250, notes: null },
+          { id: 'li-y11', description: 'Magnetic nail sweep + jobsite cleanup', category: 'Labor', quantity: 1, unit: 'LS', unitPrice: 280, extension: 280, notes: null },
+          { id: 'li-y12', description: 'CertainTeed Integrity Roof System warranty', category: 'Adder', quantity: 1, unit: 'LS', unitPrice: 350, extension: 350, notes: 'SureStart Plus' },
+        ],
+      },
+    ],
+    attachments: [],
+    signature: { name: 'James Yutzy', timestamp: '2026-04-08T16:32:00Z', method: 'typed' },
+    depositAmount: 7020,
+    depositPaid: false,
+    paymentIntentId: null,
+    shareToken: 'qst_b9e4c3d2a1f0e5b7c8d4f3a9b2c7d1e6',
+    terms: 'Standard residential terms — 30% deposit at signing, 30% at material delivery, balance net 15 days from completion. Workmanship warranted 5 years.',
+    exclusions: ['Decking replacement beyond 4-sheet allowance billed at $65/sheet', 'Soffit/fascia repair not included', 'Skylight reflashing not included'],
+    alternates: [],
+    paymentSchedule: [],
+    customerInteractions: [
+      { timestamp: '2026-04-06T08:14:00Z', type: 'viewed', message: 'Quote opened' },
+      { timestamp: '2026-04-06T08:16:30Z', type: 'expanded', message: 'Roof System section expanded' },
+      { timestamp: '2026-04-08T16:32:00Z', type: 'signed', message: 'Quote signed' },
+    ],
+    agentConversation: [],
+  },
+  // ── Christ Lutheran change order: draft attached to existing project ──
+  {
+    id: 'q-1003',
+    quoteNumber: 'RIDGE-2026-0044',
+    leadId: null,
+    projectId: 'p-201',
+    mode: 'commercial',
+    status: 'draft',
+    createdDate: '2026-04-18T10:45:00Z',
+    sentDate: null, viewedDate: null, signedDate: null,
+    expirationDate: '2026-05-18',
+    subtotal: 5260, tax: 0, total: 5260,
+    sections: [
+      {
+        id: 'qs-1003-a', scopeId: null, scopeType: 'Flashing Repair',
+        narrative: 'Additional chimney flashing work uncovered during tear-off. Re-flash south transept chimney with new copper step + counter flashing. Tie in with completed slate field. Discovered during in-progress slate replacement.',
+        subtotal: 5260,
+        lineItems: [
+          { id: 'li-cl1', description: 'Copper step flashing fabrication', category: 'Material', quantity: 28, unit: 'LF', unitPrice: 38, extension: 1064, notes: 'Match existing detail' },
+          { id: 'li-cl2', description: 'Copper counter flashing fabrication', category: 'Material', quantity: 28, unit: 'LF', unitPrice: 42, extension: 1176, notes: null },
+          { id: 'li-cl3', description: 'Lead wedge anchors', category: 'Material', quantity: 56, unit: 'EA', unitPrice: 6, extension: 336, notes: null },
+          { id: 'li-cl4', description: 'Mason cuts and grinding', category: 'Labor', quantity: 6, unit: 'HR', unitPrice: 95, extension: 570, notes: null },
+          { id: 'li-cl5', description: 'Flashing installation labor', category: 'Labor', quantity: 14, unit: 'HR', unitPrice: 110, extension: 1540, notes: 'Includes harness setup + steep-pitch surcharge' },
+          { id: 'li-cl6', description: 'Sealant + counter-flashing reglet cement', category: 'Material', quantity: 1, unit: 'LS', unitPrice: 240, extension: 240, notes: null },
+          { id: 'li-cl7', description: 'Sealing / cleanup', category: 'Labor', quantity: 1, unit: 'LS', unitPrice: 334, extension: 334, notes: null },
+        ],
+      },
+    ],
+    attachments: [],
+    signature: null,
+    depositAmount: 0,
+    depositPaid: false,
+    paymentIntentId: null,
+    shareToken: 'qst_c0d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9',
+    terms: 'Commercial change order — net 30 from completion, ties into existing master agreement.',
+    exclusions: ['Chimney repointing not included', 'Chimney cap replacement not included'],
+    alternates: [],
+    paymentSchedule: [],
+    customerInteractions: [],
+    agentConversation: [
+      { role: 'user', timestamp: '2026-04-18T10:43:00Z', content: 'Christ Lutheran — found the south transept chimney flashing is shot. Need a change order: 28 LF copper step + counter, mason cuts, install.' },
+      { role: 'assistant', timestamp: '2026-04-18T10:43:22Z', content: 'Drafted the change order — 28 LF of copper step and counter flashing, lead wedge anchors, mason cuts at 6 hours, install labor at 14 hours with steep-pitch and harness already factored in.' },
     ],
   },
 ];
@@ -3140,12 +3267,19 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {leadQuotes.map(q => (
-                      <div key={q.id} style={{
-                        background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
-                        borderLeft: `3px solid ${qsColor(q.status)}`,
-                        borderRadius: 8, padding: '10px 12px',
-                        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-                      }}>
+                      <div
+                        key={q.id}
+                        onClick={() => onNewQuote && onNewQuote(lead, q)}
+                        style={{
+                          background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                          borderLeft: `3px solid ${qsColor(q.status)}`,
+                          borderRadius: 8, padding: '10px 12px',
+                          display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                          cursor: 'pointer', transition: 'background 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; }}
+                      >
                         <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>{q.quoteNumber}</span>
                         <span style={{
                           fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
@@ -3200,7 +3334,7 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
 }
 
 // ─── Pipeline Tab (Kanban) ─────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser, rolePerms, quotes, onSaveQuote }) {
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser, rolePerms, quotes, onSaveQuote, onConvertLead }) {
   const [search, setSearch] = useState('');
   const [tradeFilter, setTradeFilter] = useState('all');
   const [dragOver, setDragOver] = useState(null);
@@ -3482,15 +3616,22 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           currentUser={currentUser}
           rolePerms={rolePerms}
           quotes={quotes}
-          onNewQuote={(lead) => { setQuickEditLead(null); setQuoteAgentLead(lead); }}
+          onNewQuote={(lead, existingQuote) => { setQuickEditLead(null); setQuoteAgentLead({ lead, quote: existingQuote || null }); }}
         />
       )}
 
       {quoteAgentLead && (
         <QuoteAgent
-          lead={quoteAgentLead}
-          initialQuote={null}
+          lead={quoteAgentLead.lead}
+          initialQuote={quoteAgentLead.quote}
           onSaveDraft={(quote) => { if (onSaveQuote) onSaveQuote(quote); setQuoteAgentLead(null); }}
+          onMarkSigned={(quote) => { if (onSaveQuote) onSaveQuote({ ...quote, status: 'signed', signedDate: new Date().toISOString() }); }}
+          onConvertToProject={(lead, signedQuote) => {
+            if (onConvertLead) {
+              onConvertLead(lead, signedQuote);
+              setQuoteAgentLead(null);
+            }
+          }}
           onClose={() => setQuoteAgentLead(null)}
         />
       )}
@@ -6210,7 +6351,7 @@ function mergeQuoteDraft(existing, fromAgent) {
 }
 
 // ─── Quote Agent (Claude-powered quote generation) ───────────────────────────
-function QuoteAgent({ project, lead, initialQuote, onSaveDraft, onClose }) {
+function QuoteAgent({ project, lead, initialQuote, onSaveDraft, onMarkSigned, onConvertToProject, onClose }) {
   useScrollLock();
   const isMobile = useMobile();
   const showToast = useToast();
@@ -6538,6 +6679,56 @@ function QuoteAgent({ project, lead, initialQuote, onSaveDraft, onClose }) {
                     }}
                   >Looks good — review & send</button>
                 </div>
+
+                {/* Lead → Project conversion testing path (replaced in Session 2
+                   by the real customer-signature trigger on the share page) */}
+                {target.kind === 'lead' && initialQuote && initialQuote.id && (
+                  <div style={{
+                    marginTop: 12, paddingTop: 10,
+                    borderTop: '1px dashed rgba(255,255,255,0.1)',
+                    display: 'flex', flexDirection: 'column', gap: 6,
+                  }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Debug — Lead → Project conversion
+                    </div>
+                    {initialQuote.status === 'draft' && (
+                      <button
+                        onClick={() => {
+                          if (onMarkSigned) {
+                            onMarkSigned({ ...initialQuote, sections: quoteDraft?.sections || initialQuote.sections, subtotal: quoteDraft?.subtotal || initialQuote.subtotal, total: quoteDraft?.total || initialQuote.total });
+                            showToast('Quote marked as signed — reopen to convert.');
+                            onClose();
+                          }
+                        }}
+                        style={{
+                          padding: '8px 12px', minHeight: 36,
+                          background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.4)',
+                          borderRadius: 7, color: '#22c55e', fontSize: 12, fontWeight: 700,
+                          cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                        }}
+                      >✓ Mark as Signed (debug)</button>
+                    )}
+                    {initialQuote.status === 'signed' && (
+                      <button
+                        onClick={() => {
+                          // eslint-disable-next-line no-restricted-globals
+                          const ok = window.confirm(
+                            'This will create a new Project from this signed quote and move the lead out of the pipeline. Proceed?'
+                          );
+                          if (!ok) return;
+                          if (onConvertToProject) onConvertToProject(lead, initialQuote);
+                        }}
+                        style={{
+                          padding: '8px 12px', minHeight: 36,
+                          background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+                          border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontWeight: 700,
+                          cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                          boxShadow: '0 2px 8px rgba(45,80,22,0.35)',
+                        }}
+                      >→ Convert Lead to Project</button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -11563,6 +11754,12 @@ export default function App() {
   const [userQuotes, setUserQuotes] = useState(() => {
     try { const s = localStorage.getItem('cl_quotes'); return s ? JSON.parse(s) : []; } catch { return []; }
   });
+  const [userProjects, setUserProjects] = useState(() => {
+    try { const s = localStorage.getItem('cl_projects'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [userScopes, setUserScopes] = useState(() => {
+    try { const s = localStorage.getItem('cl_scopes'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
   const [jobModal, setJobModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
@@ -11608,9 +11805,18 @@ export default function App() {
   useEffect(() => {
     if (session && !session.isDemo) localStorage.setItem('cl_quotes', JSON.stringify(userQuotes));
   }, [userQuotes, session]);
+  useEffect(() => {
+    if (session && !session.isDemo) localStorage.setItem('cl_projects', JSON.stringify(userProjects));
+  }, [userProjects, session]);
+  useEffect(() => {
+    if (session && !session.isDemo) localStorage.setItem('cl_scopes', JSON.stringify(userScopes));
+  }, [userScopes, session]);
 
   const handleSaveQuote = (quote) => {
     setUserQuotes(prev => {
+      // userQuotes may store a draft created from a DEMO_QUOTE (Mark as Signed
+      // on a demo quote). Upsert by id whether it already exists in DEMO_QUOTES
+      // or only here.
       const idx = prev.findIndex(q => q.id === quote.id);
       if (idx >= 0) {
         const next = [...prev]; next[idx] = quote; return next;
@@ -11618,7 +11824,38 @@ export default function App() {
       return [...prev, quote];
     });
   };
-  const allQuotes = [...DEMO_QUOTES, ...userQuotes];
+  // Merge DEMO_QUOTES with userQuotes, letting userQuotes override (so a demo
+  // quote that got Marked as Signed reflects the new status).
+  const allQuotes = (() => {
+    const byId = new Map();
+    DEMO_QUOTES.forEach(q => byId.set(q.id, q));
+    userQuotes.forEach(q => byId.set(q.id, q));
+    return Array.from(byId.values());
+  })();
+
+  // Lead → Project conversion handler. Called from the QuoteAgent's Convert
+  // button when a quote is in signed status and anchored to a lead. Persists
+  // the new project + scopes + updated quote + updated lead across the
+  // appropriate stores (demo overrides or user-state, depending on session).
+  const handleConvertLead = (lead, signedQuote) => {
+    let bundle;
+    try {
+      bundle = convertLeadToProject(lead, signedQuote);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Convert failed:', err);
+      return;
+    }
+    const { project, scopes, updatedQuote, updatedLead } = bundle;
+    setUserProjects(prev => [...prev, project]);
+    setUserScopes(prev => [...prev, ...scopes]);
+    handleSaveQuote(updatedQuote);
+    if (session?.isDemo) {
+      setDemoLeadOverrides(prev => ({ ...prev, [String(lead.id)]: updatedLead }));
+    } else {
+      setUserLeads(prev => prev.map(l => l.id === lead.id ? updatedLead : l));
+    }
+  };
 
   const handleAddCrew = (member) => setUserCrew(prev => [member, ...prev]);
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
@@ -11789,9 +12026,34 @@ export default function App() {
     .map(leadToJob);
   const derivedIds = new Set(derivedJobs.map(j => String(j.id)));
   const standaloneJobs = userJobs.filter(j => !derivedIds.has(String(j.id)));
+  // Synthesise jobs from user-created scopes (e.g., scopes materialised by a
+  // lead→project conversion). Each becomes a job-shaped row with the legacy
+  // fields populated from the parent project so ProjectsTab can group it.
+  const allProjectsCombined = [...DEMO_PROJECTS, ...userProjects];
+  const userScopesAsJobs = userScopes.map(s => {
+    const project = allProjectsCombined.find(p => p.id === s.projectId) || {};
+    return {
+      id: s.id,
+      projectId: s.projectId,
+      customer: project.customerName,
+      address: project.address,
+      trade: s.scopeType,
+      value: s.value,
+      status: s.status,
+      scheduledDate: s.scheduledDate,
+      hours: s.hours,
+      completedSteps: s.completedSteps || [],
+      notes: s.notes || project.notes || '',
+      duration: s.duration,
+      jobType: s.phaseTemplate === 'commercial-7-phase' ? 'Commercial' : 'Residential',
+      currentPhase: s.currentPhase,
+      completedPhases: s.completedPhases || [],
+      changeOrders: s.changeOrders || [],
+    };
+  });
   const jobs = isDemo
-    ? [...DEMO_JOBS.map(j => demoJobOverrides[String(j.id)] ? { ...j, ...demoJobOverrides[String(j.id)] } : j), ...demoNewJobs]
-    : [...derivedJobs, ...standaloneJobs];
+    ? [...DEMO_JOBS.map(j => demoJobOverrides[String(j.id)] ? { ...j, ...demoJobOverrides[String(j.id)] } : j), ...demoNewJobs, ...userScopesAsJobs]
+    : [...derivedJobs, ...standaloneJobs, ...userScopesAsJobs];
   const effectiveAssignments = isDemo ? DEMO_ASSIGNMENTS : assignments;
   const userTrade = session?.trade || 'Full Replacement';
   const companyName = session?.companyName || 'RidgeOS';
@@ -12024,6 +12286,7 @@ export default function App() {
                 rolePerms={rolePerms}
                 quotes={allQuotes}
                 onSaveQuote={handleSaveQuote}
+                onConvertLead={handleConvertLead}
               />
         )}
         {tab === 'callbacks' && (
