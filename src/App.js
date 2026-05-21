@@ -1,4 +1,30 @@
 import { useState, useMemo, useEffect, useRef, useCallback, useContext, createContext } from 'react';
+/* eslint-disable no-unused-vars */
+// Imports consumed across Phases 2-5 (template picker, document editor, AI
+// draft panel, settings UI). Surfaced now in Phase 1 so the file references
+// the new library and the build verifies the path is correct.
+import {
+  LINE_ITEM_CATALOG,
+  SECTION_TEMPLATES,
+  QUOTE_TEMPLATES,
+  LINE_ITEM_CATEGORIES,
+  DEFAULT_TERMS_RESIDENTIAL,
+  DEFAULT_TERMS_COMMERCIAL,
+  DEFAULT_EXCLUSIONS_RESIDENTIAL,
+  DEFAULT_EXCLUSIONS_COMMERCIAL,
+  DEFAULT_INCLUDED_RESIDENTIAL,
+  DEFAULT_INCLUDED_COMMERCIAL,
+  getAllLineItems,
+  getAllSectionTemplates,
+  getAllQuoteTemplates,
+  loadUserLineItems, saveUserLineItems,
+  loadUserSectionTemplates, saveUserSectionTemplates,
+  loadUserQuoteTemplates, saveUserQuoteTemplates,
+  instantiateSectionFromTemplate,
+  instantiateQuoteFromTemplate,
+  instantiateLineItemFromCatalog,
+} from './data/quoteLibraries';
+/* eslint-enable no-unused-vars */
 
 // ─── Toast System ─────────────────────────────────────────────────────────────
 const ToastCtx = createContext(null);
