@@ -8933,14 +8933,35 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
     return `${noun} ${n} day${n === 1 ? '' : 's'} ago`;
   };
 
+  // Build a project lookup from `jobs` the same way ProjectsTab does — jobs
+  // are scopes (id = scope id, projectId = the actual project id), so we group
+  // by projectId to get a project-shaped record that quote.projectId can match.
+  const projectsById = useMemo(() => {
+    const m = new Map();
+    jobs.forEach(j => {
+      const pid = String(j.projectId || `${j.customer}|${j.address}`);
+      if (!m.has(pid)) {
+        m.set(pid, {
+          id: pid,
+          customer: j.customer || j.customerName,
+          customerName: j.customer || j.customerName,
+          address: j.address || '',
+          scopes: [],
+        });
+      }
+      m.get(pid).scopes.push(j);
+    });
+    return m;
+  }, [jobs]);
+
   const customerOf = (q) => {
     if (q.leadId != null) {
       const l = leads.find(x => String(x.id) === String(q.leadId));
       return l ? { kind: 'lead', name: l.name, address: l.address || '', source: l } : null;
     }
     if (q.projectId != null) {
-      const j = jobs.find(x => String(x.id) === String(q.projectId));
-      if (j) return { kind: 'project', name: j.customer || j.customerName || '(project)', address: j.address || '', source: j };
+      const p = projectsById.get(String(q.projectId));
+      if (p) return { kind: 'project', name: p.customer || p.customerName || '(project)', address: p.address || '', source: p };
     }
     return null;
   };
@@ -9185,7 +9206,7 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
       {newQuoteFlow?.step === 'customer' && (
         <NewQuoteCustomerPicker
           leads={leads.filter(l => l.stage !== 'lost' && l.stage !== 'converted_to_project')}
-          projects={jobs}
+          projects={Array.from(projectsById.values())}
           onPickLead={(lead) => {
             const target = {
               kind: 'lead', id: lead.id, customerName: lead.name,
