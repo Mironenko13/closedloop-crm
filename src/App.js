@@ -6860,6 +6860,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
   const [termsCollapsed, setTermsCollapsed] = useState(true);
   const [showAIDraft, setShowAIDraft] = useState(false);
   const [showTemplateMgr, setShowTemplateMgr] = useState(false);
+  const [showSendPreview, setShowSendPreview] = useState(false);
   const saveTimerRef = useRef(null);
   const initialMountRef = useRef(true);
 
@@ -7408,7 +7409,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             }}
           >Save Draft</button>
           <button
-            onClick={() => showToast('Send to Customer coming next session.')}
+            onClick={() => setShowSendPreview(true)}
             style={{
               flex: 2, padding: '12px', minHeight: 44,
               background: 'linear-gradient(135deg, #E8722A, #e8640c)',
@@ -7491,6 +7492,291 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             onClose={() => setShowAIDraft(false)}
           />
         )}
+        {showSendPreview && (
+          <CustomerSendPreview
+            quote={quote}
+            target={target}
+            onClose={() => setShowSendPreview(false)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Customer Send Preview ──────────────────────────────────────────────────
+// Stands in for the "Send to Customer" production flow that ships later. Walks
+// the prospect through every step of what their customer would see: email →
+// share link → signature & deposit → lead-to-project conversion. Does not
+// actually send anything; ends with a "Close Preview" CTA.
+function CustomerSendPreview({ quote, target, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+
+  const companyName = 'Equity Roofing';
+  const companyDomain = 'equityroofing.com';
+  const companyPhone = '(570) 966-7300';
+  const salesperson = (target.lead && target.lead.assignedSalesperson)
+    || (target.project && target.project.assignedSalesperson)
+    || 'Mark Sensenig';
+  const customer = target.lead || target.project || {};
+  const customerName = target.customerName || customer.name || customer.customerName || 'Customer';
+  const customerFirstName = customerName.split(/\s+/)[0];
+  const customerEmail = customer.email || customer.customerEmail || 'customer@example.com';
+  const address = target.address || customer.address || '';
+  const total = (quote.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const validThrough = quote.expirationDate || '—';
+  const shareToken = quote.shareToken || 'qst_preview';
+  const depositAmount = quote.depositAmount || Math.round((quote.total || 0) * 0.30);
+  const depositDisplay = depositAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const overlay = {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1200,
+    display: 'flex', alignItems: 'stretch', justifyContent: 'center', padding: 0,
+  };
+  const modal = {
+    background: '#1E2329', width: '100%', maxWidth: 640,
+    height: '100dvh', maxHeight: '100dvh',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+    boxShadow: '0 0 40px rgba(0,0,0,0.6)',
+  };
+
+  const StepHeader = ({ n, label }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+      <div style={{
+        width: 28, height: 28, borderRadius: '50%',
+        background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: '#fff', fontSize: 12, fontWeight: 800, flexShrink: 0,
+      }}>{n}</div>
+      <div style={{ fontSize: 12, fontWeight: 700, color: '#D1D5DB', letterSpacing: '0.3px' }}>{label}</div>
+    </div>
+  );
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        {/* Top bar */}
+        <div style={{
+          flexShrink: 0, padding: '12px 14px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>Customer Send Preview</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>Here's what would happen in your production environment</div>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+          padding: isMobile ? '14px 12px' : '20px 24px',
+          background: '#1E2329',
+        }}>
+
+          {/* Step 1 — Email */}
+          <div style={{ marginBottom: 18 }}>
+            <StepHeader n="1" label={`We'd send this email to ${customerEmail}:`} />
+            <div style={{
+              background: '#FFFFFF', borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
+              overflow: 'hidden',
+            }}>
+              <div style={{ padding: '12px 14px', background: '#F8F4EC', borderBottom: '1px solid rgba(30,35,41,0.12)' }}>
+                <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.6 }}>
+                  <div><strong>From:</strong> {companyName} &lt;quotes@{companyDomain}&gt;</div>
+                  <div><strong>To:</strong> {customerEmail}</div>
+                  <div><strong>Subject:</strong> Your roofing quote — {quote.quoteNumber}</div>
+                </div>
+              </div>
+              <div style={{ padding: '14px 16px', fontSize: 13, color: '#1E2329', lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>
+{`Hi ${customerFirstName},
+
+Attached is your quote for the roofing work we discussed at ${address || 'your property'}. Total: $${total}. Valid through ${validThrough}.
+
+Review and sign your quote here: ridgeos.app/q/${shareToken.slice(0, 14)}
+
+Questions? Reply to this email or call ${companyPhone}.
+
+— ${salesperson}
+${companyName}`}
+              </div>
+            </div>
+          </div>
+
+          {/* Step 2 — Share Page */}
+          <div style={{ marginBottom: 18 }}>
+            <StepHeader n="2" label="Customer clicks the link and sees this:" />
+            <div style={{
+              background: '#FFFFFF', borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
+              overflow: 'hidden',
+            }}>
+              <div style={{ padding: '14px 16px', background: '#1E2329', textAlign: 'center' }}>
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#E8722A', letterSpacing: '-0.3px' }}>{companyName.toUpperCase()}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>Mifflinburg, PA · {companyPhone}</div>
+              </div>
+              <div style={{ padding: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Quote for</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#1E2329' }}>{customerName}</div>
+                {address && <div style={{ fontSize: 12, color: '#4A5568', marginTop: 2 }}>{address}</div>}
+                <hr style={{ border: 'none', borderTop: '1px solid rgba(30,35,41,0.12)', margin: '12px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: '#4A5568' }}>Quote #</span>
+                  <span style={{ fontSize: 12, color: '#1E2329', fontWeight: 700, fontFamily: 'ui-monospace, monospace' }}>{quote.quoteNumber}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: '#4A5568' }}>Sections</span>
+                  <span style={{ fontSize: 12, color: '#1E2329', fontWeight: 700 }}>{(quote.sections || []).length}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: '#4A5568' }}>Line items</span>
+                  <span style={{ fontSize: 12, color: '#1E2329', fontWeight: 700 }}>
+                    {(quote.sections || []).reduce((s, sec) => s + (sec.lineItems || []).length, 0)}
+                  </span>
+                </div>
+                <hr style={{ border: 'none', borderTop: '1px solid rgba(30,35,41,0.12)', margin: '10px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontSize: 12, color: '#4A5568' }}>Total</span>
+                  <span style={{ fontSize: 24, fontWeight: 800, color: '#1E2329' }}>${total}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                  <button
+                    disabled
+                    style={{
+                      flex: 1, padding: '12px', minHeight: 44,
+                      background: 'transparent', border: '1px solid rgba(30,35,41,0.2)',
+                      borderRadius: 8, color: '#1E2329', fontSize: 12, fontWeight: 700,
+                      cursor: 'not-allowed',
+                    }}
+                  >Review Full Quote</button>
+                  <button
+                    disabled
+                    style={{
+                      flex: 1, padding: '12px', minHeight: 44,
+                      background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                      border: 'none', borderRadius: 8,
+                      color: '#fff', fontSize: 12, fontWeight: 800,
+                      cursor: 'not-allowed', opacity: 0.95,
+                    }}
+                  >Sign &amp; Accept</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 3 — Sign + Pay */}
+          <div style={{ marginBottom: 18 }}>
+            <StepHeader n="3" label="Customer signs and pays deposit:" />
+            <div style={{
+              background: '#FFFFFF', borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
+              padding: 16,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Sign here</div>
+              <div style={{
+                height: 72, background: '#F8F4EC',
+                border: '2px dashed rgba(30,35,41,0.2)', borderRadius: 6,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: '"Brush Script MT", cursive', fontSize: 28,
+                color: '#1E2329', fontStyle: 'italic',
+              }}>
+                {customerName}
+              </div>
+              <div style={{ fontSize: 10, color: '#4A5568', marginTop: 4, textAlign: 'center' }}>
+                Customer signature
+              </div>
+              <hr style={{ border: 'none', borderTop: '1px solid rgba(30,35,41,0.12)', margin: '14px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 12, color: '#4A5568' }}>Deposit (30%)</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: '#1E2329' }}>${depositDisplay}</span>
+              </div>
+              <button
+                disabled
+                style={{
+                  width: '100%', padding: '12px', minHeight: 48,
+                  background: '#635BFF', border: 'none', borderRadius: 8,
+                  color: '#fff', fontSize: 14, fontWeight: 700,
+                  cursor: 'not-allowed', opacity: 0.95,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                }}
+              >
+                <span>Pay ${depositDisplay}</span>
+                <span style={{ fontSize: 10, opacity: 0.7 }}>powered by Stripe</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Step 4 — Lead → Project */}
+          <div style={{ marginBottom: 18 }}>
+            <StepHeader n="4" label="Quote becomes a project:" />
+            <div style={{
+              background: '#2A3140', borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.08)',
+              padding: 16,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 14 }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: '6px 12px', borderRadius: 999,
+                  background: 'rgba(232,114,42,0.18)', color: '#E8722A',
+                  textTransform: 'uppercase', letterSpacing: '0.4px',
+                }}>Lead</span>
+                <span style={{ fontSize: 18, color: '#9CA3AF' }}>→</span>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: '6px 12px', borderRadius: 999,
+                  background: 'rgba(59,130,246,0.18)', color: '#60a5fa',
+                  textTransform: 'uppercase', letterSpacing: '0.4px',
+                }}>Project</span>
+              </div>
+              <div style={{ fontSize: 12, color: '#D1D5DB', lineHeight: 1.55 }}>
+                The signed quote automatically converts this lead to a project.
+                The new project appears in your Projects tab with scopes ready
+                to schedule, crew assignments ready to make, and the signed
+                contract on file.
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            fontSize: 11, fontStyle: 'italic', color: '#9CA3AF',
+            textAlign: 'center', padding: '12px 8px', lineHeight: 1.5,
+          }}>
+            Customer Send launches with the next product update. Reach out if you want early access for your team.
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          flexShrink: 0, padding: 12,
+          background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: '100%', padding: '14px', minHeight: 48,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontSize: 14, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+            }}
+          >Close Preview</button>
+        </div>
       </div>
     </div>
   );
