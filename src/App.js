@@ -2733,7 +2733,7 @@ function DisabledTooltip({ active, label, children }) {
 
 // ─── Pipeline Tab ─────────────────────────────────────────────────────────────
 // ─── Kanban Card ──────────────────────────────────────────────────────────────
-function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDelete, demoMode, rolePerms }) {
+function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDelete, demoMode, rolePerms, quotes }) {
   const [hovered, setHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -2792,6 +2792,21 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
                 <span key={`${s.trade}-${i}`} style={{ ...S.tradeBadge(s.trade), marginTop: 0, fontSize: 9, padding: '1px 6px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.trade}</span>
               ))}
               <span style={{ ...S.statusBadge(lead.status), fontSize: 9 }}>{lead.status}</span>
+              {(() => {
+                const leadQuotes = getQuotesForLead(lead.id, quotes || DEMO_QUOTES);
+                if (leadQuotes.length === 0) return null;
+                // Pick the most advanced quote status to display (signed > viewed > sent > draft).
+                const order = { signed: 4, viewed: 3, sent: 2, draft: 1, rejected: 0, expired: 0 };
+                const best = leadQuotes.slice().sort((a, b) => (order[b.status] || 0) - (order[a.status] || 0))[0];
+                const c = { draft: '#9CA3AF', sent: '#3b82f6', viewed: '#eab308', signed: '#22c55e', rejected: '#ef4444', expired: '#f59e0b' }[best.status] || '#9CA3AF';
+                return (
+                  <span style={{
+                    fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                    background: c + '22', color: c, border: `1px solid ${c}44`,
+                    letterSpacing: '0.3px', whiteSpace: 'nowrap',
+                  }}>Quote · {best.status}</span>
+                );
+              })()}
             </div>
           </>
         );
@@ -2850,7 +2865,7 @@ function KanbanCard({ lead, urgencyBorder, staleDays, onQuickEdit, onEdit, onDel
 }
 
 // ─── Card Quick Edit Modal ─────────────────────────────────────────────────────
-function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rolePerms }) {
+function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rolePerms, quotes, onNewQuote }) {
   useScrollLock();
   const [stage, setStage] = useState(lead.stage);
   const [status, setStatus] = useState(lead.status || 'active');
@@ -3080,6 +3095,74 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
             </div>
           </div>
 
+          {/* ── Quotes ── */}
+          {(() => {
+            const leadQuotes = getQuotesForLead(lead.id, quotes || DEMO_QUOTES);
+            const qsColor = (s) => ({
+              draft: '#9CA3AF', sent: '#3b82f6', viewed: '#06b6d4',
+              signed: '#22c55e', rejected: '#ef4444', expired: '#f59e0b',
+            }[s] || '#9CA3AF');
+            const qsBg = (s) => ({
+              draft: 'rgba(156,163,175,0.12)', sent: 'rgba(59,130,246,0.15)', viewed: 'rgba(6,182,212,0.15)',
+              signed: 'rgba(34,197,94,0.15)', rejected: 'rgba(239,68,68,0.15)', expired: 'rgba(245,158,11,0.15)',
+            }[s] || 'rgba(156,163,175,0.12)');
+            return (
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span>Quotes</span>
+                    {leadQuotes.length > 0 && (
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
+                        background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
+                      }}>{leadQuotes.length}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => onNewQuote && onNewQuote(lead)}
+                    style={{
+                      padding: '6px 12px', minHeight: 36,
+                      background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
+                      border: 'none', borderRadius: 6, color: '#fff', fontSize: 11, fontWeight: 700,
+                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                      boxShadow: '0 2px 8px rgba(45,80,22,0.35)',
+                    }}
+                  >+ New Quote</button>
+                </div>
+                {leadQuotes.length === 0 ? (
+                  <div style={{
+                    padding: '14px 14px', borderRadius: 8,
+                    background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.08)',
+                    fontSize: 12, color: '#D1D5DB', textAlign: 'center',
+                  }}>
+                    No quotes yet. Tap <strong style={{ color: '#FFFFFF' }}>+ New Quote</strong> to describe the job — the agent will draft it.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {leadQuotes.map(q => (
+                      <div key={q.id} style={{
+                        background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                        borderLeft: `3px solid ${qsColor(q.status)}`,
+                        borderRadius: 8, padding: '10px 12px',
+                        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                      }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>{q.quoteNumber}</span>
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+                          background: qsBg(q.status), color: qsColor(q.status),
+                          textTransform: 'uppercase', letterSpacing: '0.5px',
+                        }}>{q.status}</span>
+                        <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>
+                          {rolePerms?.seeDollars !== false ? fmt(q.total || 0) : '—'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
           {/* ── Recent Activity ── */}
           {recentActivity.length > 0 && (
             <div>
@@ -3117,11 +3200,12 @@ function CardQuickEdit({ lead, onClose, onUpdate, onOpenDetail, currentUser, rol
 }
 
 // ─── Pipeline Tab (Kanban) ─────────────────────────────────────────────────────
-function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser, rolePerms }) {
+function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead, demoMode, onStageChange, onUpdateLead, currentUser, rolePerms, quotes, onSaveQuote }) {
   const [search, setSearch] = useState('');
   const [tradeFilter, setTradeFilter] = useState('all');
   const [dragOver, setDragOver] = useState(null);
   const [quickEditLead, setQuickEditLead] = useState(null);
+  const [quoteAgentLead, setQuoteAgentLead] = useState(null);
   const showToast = useToast();
   const isMobile = useMobile();
 
@@ -3374,6 +3458,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
                     onDelete={onDeleteLead}
                     demoMode={demoMode}
                     rolePerms={rolePerms}
+                    quotes={quotes}
                   />
                 ))}
               </div>
@@ -3396,6 +3481,17 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           onOpenDetail={onSelectLead ? () => { setQuickEditLead(null); onSelectLead(quickEditLead); } : null}
           currentUser={currentUser}
           rolePerms={rolePerms}
+          quotes={quotes}
+          onNewQuote={(lead) => { setQuickEditLead(null); setQuoteAgentLead(lead); }}
+        />
+      )}
+
+      {quoteAgentLead && (
+        <QuoteAgent
+          lead={quoteAgentLead}
+          initialQuote={null}
+          onSaveDraft={(quote) => { if (onSaveQuote) onSaveQuote(quote); setQuoteAgentLead(null); }}
+          onClose={() => setQuoteAgentLead(null)}
         />
       )}
     </div>
@@ -6114,10 +6210,17 @@ function mergeQuoteDraft(existing, fromAgent) {
 }
 
 // ─── Quote Agent (Claude-powered quote generation) ───────────────────────────
-function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
+function QuoteAgent({ project, lead, initialQuote, onSaveDraft, onClose }) {
   useScrollLock();
   const isMobile = useMobile();
   const showToast = useToast();
+
+  // Normalize whichever parent was passed into a single `target` shape so the
+  // rest of the component is agnostic to lead vs project. The Save Draft path
+  // re-anchors to the right id field based on target.kind.
+  const target = lead
+    ? { kind: 'lead', id: lead.id, customerName: lead.name, address: lead.address || '' }
+    : { kind: 'project', id: project.id, customerName: project.customerName, address: project.address || '' };
 
   const [conversation, setConversation] = useState(
     Array.isArray(initialQuote?.agentConversation) ? initialQuote.agentConversation : []
@@ -6213,8 +6316,9 @@ function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectContext: {
-            customerName: project.customerName,
-            address: project.address,
+            customerName: target.customerName,
+            address: target.address,
+            parentKind: target.kind,
           },
           mode: quoteDraft?.mode || 'residential',
           userMessage: text,
@@ -6267,7 +6371,8 @@ function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
       onSaveDraft({
         id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         quoteNumber: generateQuoteNumber(),
-        projectId: project.id,
+        leadId: target.kind === 'lead' ? target.id : null,
+        projectId: target.kind === 'project' ? target.id : null,
         mode: quoteDraft.mode,
         status: 'draft',
         createdDate: new Date().toISOString(),
@@ -6320,9 +6425,17 @@ function QuoteAgent({ project, initialQuote, onSaveDraft, onClose }) {
             }}
           >×</button>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quoting for</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.customerName}</div>
-            <div style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.address}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>Quoting for</span>
+              <span style={{
+                fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                background: target.kind === 'lead' ? 'rgba(232,114,42,0.18)' : 'rgba(45,80,22,0.25)',
+                color: target.kind === 'lead' ? '#E8722A' : '#7cb342',
+                letterSpacing: '0.5px',
+              }}>{target.kind.toUpperCase()}</span>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.customerName}</div>
+            <div style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.address}</div>
           </div>
           <button
             onClick={handleSaveDraft}
@@ -11909,6 +12022,8 @@ export default function App() {
                 onUpdateLead={handleUpdateLead}
                 currentUser={currentUser}
                 rolePerms={rolePerms}
+                quotes={allQuotes}
+                onSaveQuote={handleSaveQuote}
               />
         )}
         {tab === 'callbacks' && (
