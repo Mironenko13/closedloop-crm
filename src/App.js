@@ -1044,14 +1044,26 @@ function getQuoteTotal(quote) {
     return sum + secTotal;
   }, 0);
 }
-function generateQuoteNumber(existing = DEMO_QUOTES) {
+function generateQuoteNumber(existing) {
   const year = new Date().getFullYear();
   const prefix = `RIDGE-${year}-`;
-  const sameYear = existing.filter(q => q.quoteNumber && q.quoteNumber.startsWith(prefix));
+  // Merge: seeded DEMO_QUOTES + any user-saved quotes from localStorage so
+  // sequential numbers across the merged set are unique. The caller may also
+  // pass in-flight quotes that haven't been persisted yet.
+  const pool = [...DEMO_QUOTES];
+  try {
+    const raw = localStorage.getItem('cl_quotes');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) pool.push(...parsed);
+    }
+  } catch (_e) { /* ignore */ }
+  if (Array.isArray(existing)) pool.push(...existing);
+  const sameYear = pool.filter(q => q && q.quoteNumber && q.quoteNumber.startsWith(prefix));
   const maxN = sameYear.reduce((m, q) => {
     const n = parseInt(q.quoteNumber.slice(prefix.length), 10);
     return Number.isFinite(n) ? Math.max(m, n) : m;
-  }, 42);
+  }, 0);
   return `${prefix}${String(maxN + 1).padStart(4, '0')}`;
 }
 function generateShareToken() {
@@ -1593,6 +1605,19 @@ function useMobile() {
     return () => window.removeEventListener('resize', h);
   }, []);
   return isMobile;
+}
+
+// True at phone-sized viewports where a 5-column table can't fit. Stacked-card
+// layouts trigger from this; useMobile (<768) still drives broader responsive
+// decisions like bottom-sheet vs modal.
+function useNarrowMobile() {
+  const [narrow, setNarrow] = useState(() => window.innerWidth < 480);
+  useEffect(() => {
+    const h = () => setNarrow(window.innerWidth < 480);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return narrow;
 }
 
 // Lock background scroll while a modal is open WITHOUT perturbing
@@ -6596,7 +6621,9 @@ function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+          // Single column under 480px so cards fit + are scannable. 2 columns
+          // at small tablet, 3 at desktop.
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
           gap: 10, marginBottom: 14,
         }}>
           {filtered.map(t => {
@@ -7058,12 +7085,31 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                 <button
                   onClick={() => {
                     setShowMenu(false);
-                    onMarkSigned({ ...quote, status: 'signed', signedDate: new Date().toISOString() });
-                    showToast('Marked signed. Reopen to convert.');
+                    const signed = { ...quote, status: 'signed', signedDate: new Date().toISOString() };
+                    onMarkSigned(signed);
+                    // If anchored to a lead and the conversion callback is wired,
+                    // convert in a single atomic action — that's the real
+                    // wow-moment of the product.
+                    if (onConvertToProject && target.lead) {
+                      onConvertToProject(target.lead, signed);
+                      showToast('Lead converted to project. Find it in the Projects tab.');
+                    } else {
+                      showToast('Quote marked as signed.');
+                    }
                     onClose();
                   }}
-                  style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#22c55e', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
-                >✓ Mark as Signed (debug)</button>
+                  style={{
+                    padding: '10px 12px', minHeight: 44, background: 'transparent',
+                    border: 'none', borderRadius: 6, color: '#22c55e',
+                    fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'left',
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2,
+                  }}
+                >
+                  <span>✓ Mark as Signed (preview)</span>
+                  <span style={{ fontSize: 10, fontWeight: 500, color: '#9CA3AF' }}>
+                    Simulates customer e-signature for demo purposes
+                  </span>
+                </button>
               )}
               {target.kind === 'lead' && quote.status === 'signed' && onConvertToProject && (
                 <button
@@ -7071,7 +7117,10 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                     setShowMenu(false);
                     // eslint-disable-next-line no-restricted-globals
                     const ok = window.confirm('This will create a new Project from this signed quote and move the lead out of the pipeline. Proceed?');
-                    if (ok) onConvertToProject(target.lead, quote);
+                    if (ok) {
+                      onConvertToProject(target.lead, quote);
+                      showToast('Lead converted to project. Find it in the Projects tab.');
+                    }
                   }}
                   style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#E8722A', fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
                 >→ Convert Lead to Project</button>
@@ -7446,6 +7495,8 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
 function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput, cellInputFocus, onRename, onUpdateNarrative, onUpdateLineItem, onRemoveLineItem, onAddLineItem, onRemoveSection, onMoveUp, onMoveDown }) {
   const [secMenuOpen, setSecMenuOpen] = useState(false);
   const [focusedCell, setFocusedCell] = useState(null);
+  const [editingLi, setEditingLi] = useState(null); // line-item being edited in card drawer
+  const narrow = useNarrowMobile();
 
   const cellStyleFor = (cellKey) => focusedCell === cellKey
     ? { ...cellInput, ...cellInputFocus }
@@ -7515,92 +7566,110 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
         </div>
       </div>
 
-      {/* Line items table */}
-      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 8 }}>
-        <table style={{
-          width: '100%', minWidth: 520,
-          borderCollapse: 'collapse', fontSize: 12,
-        }}>
-          <thead>
-            <tr style={{ background: '#F8F4EC', borderBottom: '1.5px solid #1E2329' }}>
-              <th style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Description</th>
-              <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 60 }}>Qty</th>
-              <th style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 50 }}>Unit</th>
-              <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 90 }}>Unit Price</th>
-              <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 100 }}>Extension</th>
-              <th style={{ width: 36 }} />
-            </tr>
-          </thead>
-          <tbody>
-            {section.lineItems.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ padding: '20px 12px', textAlign: 'center', fontSize: 12, color: '#4A5568' }}>
-                  Add line items to this section.
-                </td>
+      {/* Line items — stacked cards under 480px, table at 480px+ */}
+      {narrow ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+          {section.lineItems.length === 0 && (
+            <div style={{ padding: '16px 12px', textAlign: 'center', fontSize: 12, color: '#4A5568', background: '#F8F4EC', borderRadius: 6 }}>
+              Add line items to this section.
+            </div>
+          )}
+          {section.lineItems.map(li => (
+            <LineItemCard
+              key={li.id}
+              item={li}
+              onTap={() => setEditingLi(li.id)}
+              onRemove={() => onRemoveLineItem(li.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 8 }}>
+          <table style={{
+            width: '100%', minWidth: 520,
+            borderCollapse: 'collapse', fontSize: 12,
+          }}>
+            <thead>
+              <tr style={{ background: '#F8F4EC', borderBottom: '1.5px solid #1E2329' }}>
+                <th style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Description</th>
+                <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 60 }}>Qty</th>
+                <th style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 50 }}>Unit</th>
+                <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 90 }}>Unit Price</th>
+                <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 100 }}>Extension</th>
+                <th style={{ width: 36 }} />
               </tr>
-            )}
-            {section.lineItems.map(li => (
-              <tr key={li.id} style={{ borderBottom: '1px solid rgba(30,35,41,0.08)' }}>
-                <td style={{ padding: '4px 4px' }}>
-                  <input
-                    value={li.description}
-                    onChange={e => onUpdateLineItem(li.id, { description: e.target.value })}
-                    style={cellStyleFor(`${li.id}-desc`)}
-                    onFocus={() => setFocusedCell(`${li.id}-desc`)}
-                    onBlur={() => setFocusedCell(null)}
-                  />
-                </td>
-                <td style={{ padding: '4px 4px' }}>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    value={li.quantity}
-                    onChange={e => onUpdateLineItem(li.id, { quantity: e.target.value })}
-                    style={{ ...cellStyleFor(`${li.id}-qty`), textAlign: 'right' }}
-                    onFocus={() => setFocusedCell(`${li.id}-qty`)}
-                    onBlur={() => setFocusedCell(null)}
-                  />
-                </td>
-                <td style={{ padding: '4px 4px' }}>
-                  <input
-                    value={li.unit}
-                    onChange={e => onUpdateLineItem(li.id, { unit: e.target.value })}
-                    style={cellStyleFor(`${li.id}-unit`)}
-                    onFocus={() => setFocusedCell(`${li.id}-unit`)}
-                    onBlur={() => setFocusedCell(null)}
-                  />
-                </td>
-                <td style={{ padding: '4px 4px' }}>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    value={li.unitPrice}
-                    onChange={e => onUpdateLineItem(li.id, { unitPrice: e.target.value })}
-                    style={{ ...cellStyleFor(`${li.id}-price`), textAlign: 'right' }}
-                    onFocus={() => setFocusedCell(`${li.id}-price`)}
-                    onBlur={() => setFocusedCell(null)}
-                  />
-                </td>
-                <td style={{ padding: '4px 8px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#1E2329', whiteSpace: 'nowrap' }}>
-                  {fmtCurrency(li.extension || 0)}
-                </td>
-                <td style={{ padding: '4px 4px', textAlign: 'center' }}>
-                  <button
-                    onClick={() => onRemoveLineItem(li.id)}
-                    aria-label="Remove line item"
-                    style={{
-                      width: isMobile ? 36 : 28, height: isMobile ? 36 : 28,
-                      padding: 0, background: 'transparent', border: 'none',
-                      color: '#9CA3AF', fontSize: 18, cursor: 'pointer',
-                      WebkitTapHighlightColor: 'transparent',
-                    }}
-                  >×</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {section.lineItems.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ padding: '20px 12px', textAlign: 'center', fontSize: 12, color: '#4A5568' }}>
+                    Add line items to this section.
+                  </td>
+                </tr>
+              )}
+              {section.lineItems.map(li => (
+                <tr key={li.id} style={{ borderBottom: '1px solid rgba(30,35,41,0.08)' }}>
+                  <td style={{ padding: '4px 4px' }}>
+                    <input
+                      value={li.description}
+                      onChange={e => onUpdateLineItem(li.id, { description: e.target.value })}
+                      style={cellStyleFor(`${li.id}-desc`)}
+                      onFocus={() => setFocusedCell(`${li.id}-desc`)}
+                      onBlur={() => setFocusedCell(null)}
+                    />
+                  </td>
+                  <td style={{ padding: '4px 4px' }}>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={li.quantity}
+                      onChange={e => onUpdateLineItem(li.id, { quantity: e.target.value })}
+                      style={{ ...cellStyleFor(`${li.id}-qty`), textAlign: 'right' }}
+                      onFocus={() => setFocusedCell(`${li.id}-qty`)}
+                      onBlur={() => setFocusedCell(null)}
+                    />
+                  </td>
+                  <td style={{ padding: '4px 4px' }}>
+                    <input
+                      value={li.unit}
+                      onChange={e => onUpdateLineItem(li.id, { unit: e.target.value })}
+                      style={cellStyleFor(`${li.id}-unit`)}
+                      onFocus={() => setFocusedCell(`${li.id}-unit`)}
+                      onBlur={() => setFocusedCell(null)}
+                    />
+                  </td>
+                  <td style={{ padding: '4px 4px' }}>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={li.unitPrice}
+                      onChange={e => onUpdateLineItem(li.id, { unitPrice: e.target.value })}
+                      style={{ ...cellStyleFor(`${li.id}-price`), textAlign: 'right' }}
+                      onFocus={() => setFocusedCell(`${li.id}-price`)}
+                      onBlur={() => setFocusedCell(null)}
+                    />
+                  </td>
+                  <td style={{ padding: '4px 8px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#1E2329', whiteSpace: 'nowrap' }}>
+                    {fmtCurrency(li.extension || 0)}
+                  </td>
+                  <td style={{ padding: '4px 4px', textAlign: 'center' }}>
+                    <button
+                      onClick={() => onRemoveLineItem(li.id)}
+                      aria-label="Remove line item"
+                      style={{
+                        width: isMobile ? 36 : 28, height: isMobile ? 36 : 28,
+                        padding: 0, background: 'transparent', border: 'none',
+                        color: '#9CA3AF', fontSize: 18, cursor: 'pointer',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >×</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <button
         onClick={onAddLineItem}
@@ -7627,6 +7696,250 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
             fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box',
           }}
         />
+      </div>
+
+      {editingLi && (
+        <LineItemEditDrawer
+          item={section.lineItems.find(li => li.id === editingLi)}
+          onSave={(patch) => { onUpdateLineItem(editingLi, patch); setEditingLi(null); }}
+          onClose={() => setEditingLi(null)}
+          onRemove={() => { onRemoveLineItem(editingLi); setEditingLi(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Card row for narrow-mobile line items. Tap → opens edit drawer; swipe left →
+// reveals delete button.
+function LineItemCard({ item, onTap, onRemove }) {
+  const [dragX, setDragX] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startXRef = useRef(0);
+  const movedRef = useRef(false);
+
+  const REVEAL = 76;
+  const onPointerDown = (e) => {
+    setDragging(true);
+    movedRef.current = false;
+    startXRef.current = e.clientX;
+  };
+  const onPointerMove = (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - startXRef.current;
+    if (Math.abs(dx) > 4) movedRef.current = true;
+    // Only allow left-swipe (negative dx) to reveal delete; clamp.
+    setDragX(Math.min(0, Math.max(-REVEAL, dx)));
+  };
+  const onPointerUp = () => {
+    setDragging(false);
+    setDragX(prev => (prev < -REVEAL / 2 ? -REVEAL : 0));
+  };
+  const handleClick = () => {
+    if (movedRef.current) { movedRef.current = false; return; }
+    if (dragX < 0) { setDragX(0); return; }
+    onTap();
+  };
+
+  return (
+    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 6 }}>
+      {/* Delete button revealed on swipe left */}
+      <button
+        onClick={onRemove}
+        aria-label="Delete line item"
+        style={{
+          position: 'absolute', right: 0, top: 0, bottom: 0, width: REVEAL,
+          background: '#ef4444', border: 'none', color: '#fff',
+          fontSize: 13, fontWeight: 700, cursor: 'pointer',
+          WebkitTapHighlightColor: 'transparent',
+        }}
+      >Delete</button>
+      {/* Card */}
+      <div
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onClick={handleClick}
+        style={{
+          padding: '10px 12px', background: '#FFFFFF',
+          border: '1px solid rgba(30,35,41,0.12)', borderRadius: 6,
+          cursor: 'pointer', userSelect: 'none', touchAction: 'pan-y',
+          transform: `translateX(${dragX}px)`,
+          transition: dragging ? 'none' : 'transform 0.18s ease',
+          position: 'relative', zIndex: 1,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, color: '#1E2329', fontWeight: 600, lineHeight: 1.35, overflowWrap: 'anywhere' }}>
+              {item.description || '(no description)'}
+            </div>
+            <div style={{ fontSize: 11, color: '#4A5568', marginTop: 4 }}>
+              {Number(item.quantity) || 0} × ${(Number(item.unitPrice) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · {item.unit}
+            </div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#1E2329', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            {fmtCurrency(item.extension || 0)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Bottom-sheet edit drawer for a single line item on narrow-mobile.
+function LineItemEditDrawer({ item, onSave, onClose, onRemove }) {
+  useScrollLock();
+  const [draft, setDraft] = useState({
+    description: item?.description || '',
+    quantity: item?.quantity ?? 0,
+    unit: item?.unit || 'EA',
+    unitPrice: item?.unitPrice ?? 0,
+    notes: item?.notes || '',
+  });
+
+  const inputStyle = {
+    width: '100%', padding: '12px 14px', minHeight: 44,
+    background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.18)', borderRadius: 6,
+    color: '#1E2329', fontSize: 16, fontFamily: 'inherit',
+    outline: 'none', boxSizing: 'border-box',
+  };
+  const label = { fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1100,
+        display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#F8F4EC', width: '100%', maxWidth: 520,
+          borderRadius: '16px 16px 0 0', maxHeight: '86dvh',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          boxShadow: '0 -8px 24px rgba(0,0,0,0.4)',
+        }}
+      >
+        <div style={{
+          flexShrink: 0, padding: '14px 16px',
+          background: '#FFFFFF', borderBottom: '1px solid rgba(30,35,41,0.12)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <div style={{ flex: 1, fontSize: 14, fontWeight: 800, color: '#1E2329' }}>Edit Line Item</div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0,
+              background: 'transparent', border: '1px solid rgba(30,35,41,0.18)',
+              borderRadius: 8, color: '#1E2329', fontSize: 18, cursor: 'pointer',
+            }}
+          >×</button>
+        </div>
+
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div>
+            <div style={label}>Description</div>
+            <textarea
+              value={draft.description}
+              onChange={e => setDraft(p => ({ ...p, description: e.target.value }))}
+              rows={2}
+              style={{ ...inputStyle, resize: 'vertical' }}
+            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div>
+              <div style={label}>Qty</div>
+              <input
+                type="number"
+                inputMode="decimal"
+                value={draft.quantity}
+                onChange={e => setDraft(p => ({ ...p, quantity: e.target.value }))}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <div style={label}>Unit</div>
+              <select
+                value={draft.unit}
+                onChange={e => setDraft(p => ({ ...p, unit: e.target.value }))}
+                style={inputStyle}
+              >
+                {['EA', 'SF', 'LF', 'SQ', 'CY', 'TON', 'HR', 'LS', 'DAY'].map(u => (
+                  <option key={u} value={u}>{u}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <div style={label}>Unit Price ($)</div>
+            <input
+              type="number"
+              inputMode="decimal"
+              value={draft.unitPrice}
+              onChange={e => setDraft(p => ({ ...p, unitPrice: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <div style={label}>Notes (optional)</div>
+            <textarea
+              value={draft.notes}
+              onChange={e => setDraft(p => ({ ...p, notes: e.target.value }))}
+              rows={2}
+              style={{ ...inputStyle, resize: 'vertical' }}
+            />
+          </div>
+          <div style={{
+            padding: 10, background: '#FFFFFF',
+            border: '1px solid rgba(30,35,41,0.12)', borderRadius: 6,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 11, color: '#4A5568', fontWeight: 700 }}>Extension</span>
+            <span style={{ fontSize: 16, color: '#1E2329', fontWeight: 800 }}>
+              {fmtCurrency((Number(draft.quantity) || 0) * (Number(draft.unitPrice) || 0))}
+            </span>
+          </div>
+        </div>
+
+        <div style={{
+          flexShrink: 0, padding: 12,
+          borderTop: '1px solid rgba(30,35,41,0.12)', background: '#FFFFFF',
+          display: 'flex', gap: 8,
+        }}>
+          <button
+            onClick={onRemove}
+            style={{
+              padding: '12px 14px', minHeight: 44,
+              background: 'transparent', border: '1px solid rgba(239,68,68,0.4)',
+              borderRadius: 8, color: '#ef4444', fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >Delete</button>
+          <button
+            onClick={onClose}
+            style={{
+              flex: 1, padding: '12px', minHeight: 44,
+              background: 'transparent', border: '1px solid rgba(30,35,41,0.18)',
+              borderRadius: 8, color: '#1E2329', fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >Cancel</button>
+          <button
+            onClick={() => onSave(draft)}
+            style={{
+              flex: 2, padding: '12px', minHeight: 44,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >Save</button>
+        </div>
       </div>
     </div>
   );
@@ -15127,9 +15440,15 @@ export default function App() {
     handleSaveQuote(updatedQuote);
     if (session?.isDemo) {
       setDemoLeadOverrides(prev => ({ ...prev, [String(lead.id)]: updatedLead }));
+      // demoNewLeads also needs the convertedToProjectId flag if the lead was
+      // a session-local one rather than a seeded DEMO_LEAD.
+      setDemoNewLeads(prev => prev.map(l => l.id === lead.id ? updatedLead : l));
     } else {
       setUserLeads(prev => prev.map(l => l.id === lead.id ? updatedLead : l));
     }
+    // Move the user to the Projects tab so they can see the newly-materialised
+    // project + scopes immediately — this is the wow-moment of the workflow.
+    setTab('jobs');
   };
 
   const handleAddCrew = (member) => setUserCrew(prev => [member, ...prev]);
