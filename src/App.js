@@ -9229,12 +9229,7 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
         <NewCustomerQuickForm
           onCancel={() => setNewQuoteFlow({ step: 'customer' })}
           onCreate={(formData) => {
-            if (!onAddLead) {
-              showToast('New-customer flow is read-only in demo mode.');
-              setNewQuoteFlow(null);
-              return;
-            }
-            const newLead = onAddLead({
+            const newLead = onAddLead && onAddLead({
               name: formData.name,
               address: formData.address || '',
               phone: formData.phone || '',
@@ -14454,7 +14449,9 @@ function CalendarTab({ jobs, crew, assignments, onSchedule, onComplete, onUpdate
           assignments={assignments}
           onAssign={isDemo ? null : onAssign}
           onUnassign={isDemo ? null : onUnassign}
-          onAddCrew={isDemo ? null : onAddCrew}
+          // Crew creation is demo-safe — parent routes to handleDemoAddCrew
+          // in demo and to handleAddCrew otherwise.
+          onAddCrew={onAddCrew}
           currentUser={currentUser}
           demoMessages={demoMessages ? demoMessages.filter(m => String(m.jobId) === String(selectedJob.id)) : null}
           onComplete={isDemo ? null : id => handleCompleteJob(id)}
@@ -15008,6 +15005,10 @@ export default function App() {
   const [demoJobOverrides, setDemoJobOverrides] = useState({});
   const [demoCrew, setDemoCrew] = useState(DEMO_CREW);
   const [demoNewJobs, setDemoNewJobs] = useState([]);
+  // Net-new leads added during a demo session. Stored alongside (not on top of)
+  // DEMO_LEADS so they show up in the pipeline + quotes lookup. Cleared on
+  // Reset Demo. Never persisted — demos start fresh on reload.
+  const [demoNewLeads, setDemoNewLeads] = useState([]);
 
   // Persist to localStorage whenever userLeads changes (non-demo only)
   useEffect(() => {
@@ -15137,7 +15138,32 @@ export default function App() {
   const handleDemoAddCrew = (member) => setDemoCrew(prev => [member, ...prev]);
   const handleDemoEditCrew = (member) => setDemoCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDemoDeleteCrew = (id) => setDemoCrew(prev => prev.filter(m => m.id !== id));
-  const handleAddJob = (job) => { setUserJobs(prev => [job, ...prev]); setJobModal(false); };
+  const handleAddJob = (job) => {
+    if (session?.isDemo) {
+      const id = job.id || `demo-j-${Date.now()}`;
+      setDemoNewJobs(prev => [{
+        id,
+        customer: job.customer || '',
+        description: job.description || '',
+        taskList: job.taskList || [],
+        address: job.address || '',
+        trade: job.trade || 'Full Replacement',
+        value: job.value || 0,
+        status: job.status || 'Scheduled',
+        scheduledDate: job.scheduledDate,
+        duration: job.duration || 1,
+        notes: job.notes || '',
+        completedSteps: [],
+        explicitlyScheduled: true,
+        jobType: job.jobType || 'Residential',
+        currentPhase: 1,
+        completedPhases: [],
+      }, ...prev]);
+    } else {
+      setUserJobs(prev => [job, ...prev]);
+    }
+    setJobModal(false);
+  };
   const handleCreateAndScheduleJob = (jobData) => {
     const id = `j-${Date.now()}`;
     const newJob = {
@@ -15225,17 +15251,45 @@ export default function App() {
   };
 
   const handleAddLead = (leadData) => {
-    setUserLeads(prev => [leadData, ...prev]);
+    const withId = { id: leadData.id || Date.now(), completedSteps: [], notes: '', ...leadData };
+    if (session?.isDemo) {
+      setDemoNewLeads(prev => [withId, ...prev]);
+    } else {
+      setUserLeads(prev => [withId, ...prev]);
+    }
     setLeadModal(null);
+    return withId;
   };
 
   const handleEditLead = (leadData) => {
-    setUserLeads(prev => prev.map(l => l.id === leadData.id ? leadData : l));
+    if (session?.isDemo) {
+      // If this is a demo-session-local lead, update it in place; if it's a
+      // seeded lead, layer the edit via demoLeadOverrides so the diff persists
+      // through the session.
+      setDemoNewLeads(prev => {
+        const idx = prev.findIndex(l => l.id === leadData.id);
+        if (idx < 0) return prev;
+        const next = [...prev]; next[idx] = leadData; return next;
+      });
+      const isSeeded = DEMO_LEADS.some(l => String(l.id) === String(leadData.id));
+      if (isSeeded) {
+        setDemoLeadOverrides(prev => ({ ...prev, [String(leadData.id)]: leadData }));
+      }
+    } else {
+      setUserLeads(prev => prev.map(l => l.id === leadData.id ? leadData : l));
+    }
     setLeadModal(null);
   };
 
   const handleDeleteLead = (id) => {
-    setUserLeads(prev => prev.filter(l => l.id !== id));
+    if (session?.isDemo) {
+      // Only let demo users delete leads they created during the session —
+      // seeded leads stay put so resetting the demo always returns to a known
+      // state.
+      setDemoNewLeads(prev => prev.filter(l => l.id !== id));
+    } else {
+      setUserLeads(prev => prev.filter(l => l.id !== id));
+    }
   };
 
   const handleLeadStageChange = (leadId, stage) => {
@@ -15289,7 +15343,10 @@ export default function App() {
   const visibleTabs = isDemo ? NAV_TABS.filter(t => DEMO_ROLES[demoRole].tabs.includes(t.key)) : NAV_TABS;
 
   const leads = isDemo
-    ? DEMO_LEADS.map(l => demoLeadOverrides[String(l.id)] ? { ...l, ...demoLeadOverrides[String(l.id)] } : l)
+    ? [
+        ...demoNewLeads,
+        ...DEMO_LEADS.map(l => demoLeadOverrides[String(l.id)] ? { ...l, ...demoLeadOverrides[String(l.id)] } : l),
+      ]
     : userLeads;
   const crew = isDemo ? demoCrew : userCrew;
 
@@ -15334,10 +15391,12 @@ export default function App() {
   const userCustomChecklist = session?.customTradeConfig?.checklist || null;
   const currentUser = session?.name || session?.companyName || 'You';
 
-  // Only expose mutators for non-demo accounts
-  const addLeadHandler = isDemo ? null : () => setLeadModal('add');
-  const editLeadHandler = isDemo ? null : (lead) => setLeadModal(lead);
-  const deleteLeadHandler = isDemo ? null : handleDeleteLead;
+  // Lead create/edit/delete are demo-safe — they write to demo-session-local
+  // state when isDemo and to user state otherwise. New leads created in demo
+  // disappear on Reset Demo or page reload.
+  const addLeadHandler = () => setLeadModal('add');
+  const editLeadHandler = (lead) => setLeadModal(lead);
+  const deleteLeadHandler = handleDeleteLead;
 
   return (
     <ToastProvider>
@@ -15421,6 +15480,7 @@ export default function App() {
                   setDemoLeadOverrides({});
                   setDemoJobOverrides({});
                   setDemoNewJobs([]);
+                  setDemoNewLeads([]);
                   setDemoCrew(DEMO_CREW);
                 }}
                 className="ri-btn ri-btn-secondary"
@@ -15498,6 +15558,7 @@ export default function App() {
                       setDemoLeadOverrides({});
                       setDemoJobOverrides({});
                       setDemoNewJobs([]);
+                      setDemoNewLeads([]);
                       setDemoCrew(DEMO_CREW);
                       setShowHeaderMenu(false);
                     }}
@@ -15570,19 +15631,16 @@ export default function App() {
             jobs={jobs}
             onSaveQuote={handleSaveQuote}
             onConvertLead={handleConvertLead}
-            onAddLead={isDemo ? null : (leadData) => {
-              const id = leadData.id || Date.now();
-              const newLead = { id, completedSteps: [], notes: '', ...leadData };
-              setUserLeads(prev => [newLead, ...prev]);
-              return newLead;
-            }}
+            // handleAddLead is demo-safe — writes to demoNewLeads in demo, to
+            // userLeads otherwise — and returns the materialised lead.
+            onAddLead={handleAddLead}
             isDemo={isDemo}
             rolePerms={rolePerms}
             currentUser={currentUser}
           />
         )}
         {tab === 'callbacks' && (
-          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={isDemo ? null : handleUpdateLead} rolePerms={rolePerms} />
+          <CallbacksTab leads={leads} onSelectLead={setSelectedLead} onUpdateLead={handleUpdateLead} rolePerms={rolePerms} />
         )}
         {tab === 'analytics' && (
           <AnalyticsTab leads={leads} jobs={jobs} rolePerms={rolePerms} />
@@ -15594,7 +15652,7 @@ export default function App() {
                 title="No projects yet"
                 sub={`Add your first ${userTrade} project to start tracking progress.`}
                 btnLabel="Add your first project"
-                onAction={isDemo ? null : () => setJobModal(true)}
+                onAction={() => setJobModal(true)}
               />
             : <ProjectsTab
                 jobs={jobs}
@@ -15603,7 +15661,7 @@ export default function App() {
                 assignments={effectiveAssignments}
                 onAssign={isDemo ? null : handleAssign}
                 onUnassign={isDemo ? null : handleUnassign}
-                onAddCrew={isDemo ? null : handleAddCrew}
+                onAddCrew={isDemo ? handleDemoAddCrew : handleAddCrew}
                 currentUser={currentUser}
                 demoMessages={isDemo ? DEMO_MESSAGES : null}
                 onComplete={isDemo ? null : handleCompleteJob}
@@ -15624,7 +15682,7 @@ export default function App() {
             onUpdateSteps={isDemo ? null : handleUpdateJobSteps}
             onAssign={isDemo ? null : handleAssign}
             onUnassign={isDemo ? null : handleUnassign}
-            onAddCrew={isDemo ? null : handleAddCrew}
+            onAddCrew={isDemo ? handleDemoAddCrew : handleAddCrew}
             currentUser={currentUser}
             demoMessages={isDemo ? DEMO_MESSAGES : null}
             customChecklist={userCustomChecklist}
