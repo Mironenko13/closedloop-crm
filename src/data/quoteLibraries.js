@@ -484,10 +484,153 @@ General:
   },
 ];
 
+// ─── Quick Bundles ──────────────────────────────────────────────────────────
+// Sub-templates inside a section. Tapping a bundle pill drops the listed line
+// items into the current section in one shot. Bundles are scoped to a parent
+// section's scopeType so the right bundles surface in the right context.
+//
+// Quantities default to 0 — measurement context (see useQuoteMeasurements)
+// populates square / LF values, and LS / EA items default to 1 when added.
+function bundle(id, name, parentScopeType, descriptions) {
+  return {
+    id, name, parentScopeType,
+    lineItems: descriptions.map(d => {
+      if (Array.isArray(d)) return liFromCatalog(d[0], d[1]);
+      return liFromCatalog(d, 0);
+    }),
+  };
+}
+
+export const BUNDLES = [
+  // ── Full Tear-Off + Architectural ──
+  bundle('bd-res-fr-tearoff', 'Standard Tear-Off', 'full_replacement', [
+    'Tear-off, 1 layer asphalt',
+    ['Dumpster (20 yd)', 1],
+    ['Permit (typical residential)', 1],
+    ['Magnetic Sweep / Final Cleanup', 1],
+  ]),
+  bundle('bd-res-fr-underlayment', 'Underlayment Package', 'full_replacement', [
+    'Synthetic Underlayment',
+    'Ice & Water Shield (eaves + valleys, 6\')',
+    'Drip Edge (standard)',
+    'Starter Strip',
+  ]),
+  bundle('bd-res-fr-hdz', 'GAF Timberline HDZ', 'full_replacement', [
+    'GAF Timberline HDZ Architectural',
+    'Ridge Cap (matched)',
+    'Ridge Vent (rolled, w/ shingle cover)',
+    'Hip & Ridge Premium Accessory',
+  ]),
+  bundle('bd-res-fr-ultra-hdz', 'GAF Timberline Ultra HDZ', 'full_replacement', [
+    'GAF Timberline Ultra HDZ',
+    'Ridge Cap (matched)',
+    'Ridge Vent (rolled, w/ shingle cover)',
+    'Hip & Ridge Premium Accessory',
+  ]),
+  bundle('bd-res-fr-labor', 'Standard Labor', 'full_replacement', [
+    'Architectural Shingle Install',
+    ['2nd Story Access', 1],
+  ]),
+  bundle('bd-res-fr-adders', 'Standard Adders', 'full_replacement', [
+    ['Magnetic Sweep / Final Cleanup', 1],
+    ['Pipe Boot (lead)', 4],
+  ]),
+
+  // ── Roof Repair ──
+  bundle('bd-res-rep-patch', 'Repair Patch', 'repair', [
+    'Tear-off, 1 layer asphalt',
+    'Synthetic Underlayment',
+    'Ice & Water Shield (eaves + valleys, 6\')',
+    'GAF Timberline HDZ Architectural',
+  ]),
+  bundle('bd-res-rep-flashing', 'Flashing Tie-In', 'repair', [
+    'Roof-to-Wall Flashing',
+    ['Step Flashing', 0],
+  ]),
+  bundle('bd-res-rep-labor', 'Repair Labor', 'repair', [
+    'Architectural Shingle Install',
+    ['Magnetic Sweep / Final Cleanup', 1],
+  ]),
+  bundle('bd-res-rep-pipe', 'Pipe Boot Replacement', 'repair', [
+    ['Pipe Boot (lead)', 2],
+  ]),
+
+  // ── Gutter Installation ──
+  bundle('bd-res-gut-standard', 'Standard 5" K-Style', 'gutter_installation', [
+    'Gutter Run (5")',
+    'Gutter Apron',
+  ]),
+  bundle('bd-res-gut-protection', 'Gutter Protection', 'gutter_installation', [
+    'Gutter Guards',
+  ]),
+
+  // ── Soffit/Fascia ──
+  bundle('bd-res-sf-wrap', 'Aluminum Wrap', 'soffit_fascia', [
+    'Soffit/Fascia Wrap',
+  ]),
+
+  // ── Chimney Flashing ──
+  bundle('bd-res-ch-flash', 'Chimney Re-Flash', 'chimney_flashing', [
+    ['Chimney Flashing Replacement', 1],
+    ['Step Flashing', 0],
+    ['Ice & Water Shield (eaves + valleys, 6\')', 1],
+  ]),
+
+  // ── Commercial TPO ──
+  bundle('bd-com-tpo-demo', 'Demo Package', 'commercial_tpo', [
+    'Tear-off Membrane (single ply)',
+    'Tear-off Insulation',
+  ]),
+  bundle('bd-com-tpo-insul', 'Insulation Package', 'commercial_tpo', [
+    'Polyiso 3.5" (R-20)',
+    'Cover Board (DensDeck 1/4")',
+  ]),
+  bundle('bd-com-tpo-membrane', 'TPO 60mil Mech-Attached', 'commercial_tpo', [
+    'TPO 60mil Field',
+    'Mechanically Attached (fasteners + plates)',
+    'TPO Membrane Flashing (walls/curbs)',
+  ]),
+  bundle('bd-com-tpo-edge', 'Edge + Coping', 'commercial_tpo', [
+    'Edge Metal Detail',
+    'Coping Metal (24ga, std color)',
+  ]),
+  bundle('bd-com-tpo-access', 'Crane Access', 'commercial_tpo', [
+    ['Crane Day Rate', 1],
+  ]),
+
+  // ── Commercial EPDM ──
+  bundle('bd-com-epdm-demo', 'Demo Package', 'commercial_epdm', [
+    'Tear-off Membrane (single ply)',
+    'Tear-off Insulation',
+  ]),
+  bundle('bd-com-epdm-insul', 'Insulation Package', 'commercial_epdm', [
+    'Polyiso 3.5" (R-20)',
+    'Cover Board (DensDeck 1/4")',
+  ]),
+  bundle('bd-com-epdm-membrane', 'EPDM 60mil Fully Adhered', 'commercial_epdm', [
+    'EPDM 60mil Field',
+    'Fully Adhered (bonding adhesive)',
+    'TPO Membrane Flashing (walls/curbs)',
+    'Termination Bar',
+  ]),
+  bundle('bd-com-epdm-edge', 'Edge + Coping', 'commercial_epdm', [
+    'Edge Metal Detail',
+    'Coping Metal (24ga, std color)',
+  ]),
+
+  // ── Commercial Flashing Repair ──
+  bundle('bd-com-flash-repair', 'Membrane Flashing Repair', 'commercial_flashing_repair', [
+    'TPO Membrane Flashing (walls/curbs)',
+    ['Pitch Pan', 0],
+    'Termination Bar',
+  ]),
+];
+
 // ─── localStorage persistence for user customizations ───────────────────────
 const LS_USER_LINE_ITEMS = 'cl_user_line_items';
 const LS_USER_SECTION_TEMPLATES = 'cl_user_section_templates';
 const LS_USER_QUOTE_TEMPLATES = 'cl_user_quote_templates';
+const LS_USER_BUNDLES = 'cl_user_bundles';
 
 function readLS(key) {
   try {
@@ -507,6 +650,9 @@ export function loadUserSectionTemplates() { return readLS(LS_USER_SECTION_TEMPL
 export function saveUserSectionTemplates(items) { writeLS(LS_USER_SECTION_TEMPLATES, items); }
 export function loadUserQuoteTemplates() { return readLS(LS_USER_QUOTE_TEMPLATES); }
 export function saveUserQuoteTemplates(items) { writeLS(LS_USER_QUOTE_TEMPLATES, items); }
+export function loadUserBundles() { return readLS(LS_USER_BUNDLES); }
+export function saveUserBundles(items) { writeLS(LS_USER_BUNDLES, items); }
+export function getAllBundles() { return mergeById(BUNDLES, loadUserBundles()); }
 
 // Merge seeded defaults with user-saved customisations; user-saved wins on
 // id collisions so editing a seeded item creates a user-namespaced override.
@@ -619,3 +765,59 @@ export function instantiateLineItemFromCatalog(catalogEntry, quantity = 1) {
 
 // Distinct categories across the catalog (for filter dropdowns).
 export const LINE_ITEM_CATEGORIES = Array.from(new Set(LINE_ITEM_CATALOG.map(c => c.category))).sort();
+
+// Expand a bundle into fresh LineItem records. Measurement context can pass a
+// `getDefaultQty(item)` callback to populate qty from quote-level roof
+// measurements; defaults to using the bundle's stored qty.
+export function instantiateBundle(bundleDef, getDefaultQty) {
+  if (!bundleDef || !Array.isArray(bundleDef.lineItems)) return [];
+  return bundleDef.lineItems.map(b => {
+    const baseQty = Number(b.quantity) || 0;
+    const smartQty = getDefaultQty ? getDefaultQty(b, baseQty) : baseQty;
+    const qty = Number(smartQty) || baseQty || 0;
+    const price = Number(b.unitPrice) || 0;
+    return {
+      id: freshLineItemId(),
+      description: b.description,
+      category: b.category,
+      quantity: qty,
+      unit: b.unit,
+      unitPrice: price,
+      extension: Math.round(qty * price * 100) / 100,
+      notes: b.notes || null,
+    };
+  });
+}
+
+// Roofing-native category groupings for the picker drawer. Each group is a
+// flat array of catalog categories that should appear together. The picker
+// shows them as collapsible accordions in this order.
+export const PICKER_GROUPS_RESIDENTIAL = [
+  { id: 'tearoff', label: 'Tear-Off & Demo', categories: ['Labor — Tear-off'] },
+  { id: 'underlayment', label: 'Underlayment', categories: ['Underlayment'] },
+  { id: 'iw', label: 'Ice & Water Shield', categories: ['Ice & Water'] },
+  { id: 'shg-gaf', label: 'Shingles — GAF', categories: ['Shingles'], match: (li) => /GAF/i.test(li.description) },
+  { id: 'shg-ct', label: 'Shingles — CertainTeed', categories: ['Shingles'], match: (li) => /CertainTeed/i.test(li.description) },
+  { id: 'shg-oc', label: 'Shingles — Owens Corning', categories: ['Shingles'], match: (li) => /Owens Corning/i.test(li.description) },
+  { id: 'shg-designer', label: 'Shingles — Designer / Specialty', categories: ['Shingles'], match: (li) => /Designer|Camelot|Sequoia|Glenwood|Presidential|Slateline|AS II/i.test(li.description) },
+  { id: 'edge', label: 'Edge Metal & Trim', categories: ['Edge Metal'] },
+  { id: 'vents', label: 'Vents', categories: ['Ridge / Vent'] },
+  { id: 'flashing', label: 'Flashing', categories: ['Flashing'] },
+  { id: 'labor-install', label: 'Labor — Install', categories: ['Labor — Install'] },
+  { id: 'labor-access', label: 'Labor — Access & Pitch', categories: ['Labor — Access'] },
+  { id: 'adders', label: 'Adders', categories: ['Adders', 'Equipment'] },
+  { id: 'addons', label: 'Add-ons (gutters, soffit, skylights, solar)', categories: ['Gutters', 'Soffit / Fascia', 'Skylight', 'Solar'] },
+];
+
+export const PICKER_GROUPS_COMMERCIAL = [
+  { id: 'demo', label: 'Demolition', categories: ['Labor — Tear-off (Commercial)', 'Demolition'] },
+  { id: 'membrane', label: 'Membrane (TPO / EPDM / PVC)', categories: ['Membrane'] },
+  { id: 'insulation', label: 'Insulation', categories: ['Insulation'] },
+  { id: 'coverboard', label: 'Cover Board / Substrate', categories: ['Cover Board'] },
+  { id: 'attachment', label: 'Attachment Method', categories: ['Attachment'] },
+  { id: 'flash-com', label: 'Flashing & Details', categories: ['Flashing (Commercial)'] },
+  { id: 'edge-com', label: 'Edge Metal & Coping', categories: ['Edge Metal (Commercial)'] },
+  { id: 'drainage', label: 'Drainage', categories: ['Drainage'] },
+  { id: 'accessories', label: 'Accessories', categories: ['Accessories'] },
+  { id: 'access', label: 'Access & Equipment', categories: ['Equipment', 'Labor — Access'] },
+];

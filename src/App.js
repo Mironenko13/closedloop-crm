@@ -7,7 +7,10 @@ import {
   LINE_ITEM_CATALOG,
   SECTION_TEMPLATES,
   QUOTE_TEMPLATES,
+  BUNDLES,
   LINE_ITEM_CATEGORIES,
+  PICKER_GROUPS_RESIDENTIAL,
+  PICKER_GROUPS_COMMERCIAL,
   DEFAULT_TERMS_RESIDENTIAL,
   DEFAULT_TERMS_COMMERCIAL,
   DEFAULT_EXCLUSIONS_RESIDENTIAL,
@@ -17,12 +20,15 @@ import {
   getAllLineItems,
   getAllSectionTemplates,
   getAllQuoteTemplates,
+  getAllBundles,
   loadUserLineItems, saveUserLineItems,
   loadUserSectionTemplates, saveUserSectionTemplates,
   loadUserQuoteTemplates, saveUserQuoteTemplates,
+  loadUserBundles, saveUserBundles,
   instantiateSectionFromTemplate,
   instantiateQuoteFromTemplate,
   instantiateLineItemFromCatalog,
+  instantiateBundle,
 } from './data/quoteLibraries';
 /* eslint-enable no-unused-vars */
 
@@ -6556,7 +6562,148 @@ function buildQuoteFromTemplate(template, target) {
     alternates: partial.alternates || [],
     paymentSchedule: partial.paymentSchedule || [],
     customerInteractions: [], agentConversation: [],
+    measurements: null,
   };
+}
+
+// Smart default quantity for a line item given roof measurements. Maps
+// catalog units → measurement fields by both unit and description keywords.
+// When measurements are absent or the unit isn't measurement-driven, falls
+// back to 1 for LS/EA and 0 for everything else (the user gets a Set
+// Quantity prompt on the card).
+function getSmartDefaultQty(item, m) {
+  if (!item) return 0;
+  const unit = item.unit;
+  const desc = (item.description || '').toLowerCase();
+  if (unit === 'LS') return 1;
+  if (!m) {
+    if (unit === 'EA') return 1;
+    return 0;
+  }
+  if (unit === 'SQ') return Number(m.squares) || 0;
+  if (unit === 'EA') {
+    if (/pipe boot/.test(desc)) return Number(m.pipes) || 1;
+    if (/(box|power|off-ridge|ridge)\s*vent/.test(desc) && !/ridge cap/.test(desc)) return Number(m.vents) || 1;
+    if (/skylight/.test(desc)) return Number(m.skylights) || 1;
+    if (/chimney/.test(desc)) return Number(m.chimneys) || 1;
+    return 1;
+  }
+  if (unit === 'LF') {
+    if (/ridge/.test(desc)) return Number(m.ridgeLF) || 0;
+    if (/hip/.test(desc)) return Number(m.hipLF) || 0;
+    if (/valley/.test(desc)) return Number(m.valleyLF) || 0;
+    if (/drip edge|gutter apron|starter/.test(desc)) return (Number(m.eaveLF) || 0) + (Number(m.rakeLF) || 0);
+    if (/gutter/.test(desc)) return Number(m.eaveLF) || 0;
+    return 0;
+  }
+  return 0;
+}
+
+// ── Measurements bar (collapsible, above first section) ──
+function MeasurementsBar({ measurements, onChange, isMobile }) {
+  const [open, setOpen] = useState(false);
+  const m = measurements || {};
+  const setField = (key, val) => onChange({ ...m, [key]: val });
+  const completedCount = Object.values(m).filter(v => v !== null && v !== undefined && v !== '' && v !== 0).length;
+
+  const input = {
+    width: '100%', padding: '8px 10px', minHeight: 38,
+    background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.18)', borderRadius: 6,
+    color: '#1E2329', fontSize: isMobile ? 16 : 13, fontFamily: 'inherit',
+    outline: 'none', boxSizing: 'border-box',
+  };
+  const label = { fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 };
+
+  return (
+    <div style={{
+      background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.15)', borderRadius: 6,
+      marginBottom: 12, overflow: 'hidden',
+    }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          width: '100%', padding: '12px 14px',
+          background: open ? '#F8F4EC' : 'transparent', border: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+          cursor: 'pointer', color: '#1E2329',
+          WebkitTapHighlightColor: 'transparent',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📐 Roof Measurements</span>
+          {completedCount > 0 && !open && (
+            <span style={{
+              fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+              background: 'rgba(34,197,94,0.18)', color: '#16a34a',
+            }}>{completedCount} set</span>
+          )}
+        </span>
+        <span style={{ fontSize: 12, color: '#4A5568' }}>{open ? '▼' : '▶'}</span>
+      </button>
+      {open && (
+        <div style={{ padding: 14, background: '#F8F4EC', borderTop: '1px solid rgba(30,35,41,0.08)' }}>
+          <div style={{ fontSize: 11, color: '#4A5568', marginBottom: 12, lineHeight: 1.5 }}>
+            Set measurements once and they'll auto-populate quantities when you add line items from the picker or bundles.
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
+            <div>
+              <div style={label}>Total Squares</div>
+              <input type="number" inputMode="decimal" value={m.squares || ''} onChange={e => setField('squares', Number(e.target.value) || 0)} style={input} placeholder="0" />
+            </div>
+            <div>
+              <div style={label}>Avg Pitch</div>
+              <select value={m.pitch || ''} onChange={e => setField('pitch', e.target.value)} style={input}>
+                <option value="">—</option>
+                {['2/12', '3/12', '4/12', '5/12', '6/12', '7/12', '8/12', '9/12', '10/12', '11/12', '12/12+'].map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <div style={label}>Stories</div>
+              <select value={m.stories || ''} onChange={e => setField('stories', e.target.value)} style={input}>
+                <option value="">—</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3+">3+</option>
+              </select>
+            </div>
+            <div>
+              <div style={label}>Layers</div>
+              <select value={m.layersToTearOff != null ? String(m.layersToTearOff) : ''} onChange={e => setField('layersToTearOff', e.target.value === '' ? null : Number(e.target.value))} style={input}>
+                <option value="">—</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>Linear feet</div>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 10, marginBottom: 12 }}>
+            {[['ridgeLF', 'Ridge'], ['hipLF', 'Hip'], ['valleyLF', 'Valley'], ['eaveLF', 'Eave'], ['rakeLF', 'Rake']].map(([k, lab]) => (
+              <div key={k}>
+                <div style={label}>{lab}</div>
+                <input type="number" inputMode="decimal" value={m[k] || ''} onChange={e => setField(k, Number(e.target.value) || 0)} style={input} placeholder="0" />
+              </div>
+            ))}
+          </div>
+
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>Penetrations</div>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 10 }}>
+            {[['vents', 'Vents'], ['pipes', 'Pipes'], ['skylights', 'Skylights'], ['chimneys', 'Chimneys']].map(([k, lab]) => (
+              <div key={k}>
+                <div style={label}>{lab}</div>
+                <input type="number" inputMode="numeric" value={m[k] || ''} onChange={e => setField(k, Number(e.target.value) || 0)} style={input} placeholder="0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ── Template picker shown when "+ New Quote" is tapped ──
@@ -6698,7 +6845,10 @@ function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
   );
 }
 
-// ── Line item catalog picker (modal) ──
+// ── Legacy line item catalog picker (modal) ──
+// Superseded by LineItemPickerDrawer in Session 4 of the picker-driven build.
+// Kept here in case anything else in the file still references it.
+// eslint-disable-next-line no-unused-vars
 function LineItemCatalogPicker({ mode, onPick, onClose }) {
   useScrollLock();
   const isMobile = useMobile();
@@ -6784,6 +6934,371 @@ function LineItemCatalogPicker({ mode, onPick, onClose }) {
               </div>
             </button>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Line Item Picker Drawer ────────────────────────────────────────────────
+// Replaces the old catalog modal. Bottom sheet on mobile, right drawer on
+// desktop. Items grouped by roofing-native categories (residential vs
+// commercial); search across description + category; multi-select for batch
+// adding; "+ Custom line item" form at the bottom.
+function LineItemPickerDrawer({ mode, sectionName, onPick, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const [search, setSearch] = useState('');
+  const [multiSelect, setMultiSelect] = useState(false);
+  const [selected, setSelected] = useState({}); // id → true
+  const [openGroups, setOpenGroups] = useState(new Set());
+  const [showCustom, setShowCustom] = useState(false);
+
+  const allItems = useMemo(() => getAllLineItems().filter(c => c.mode === 'both' || c.mode === mode), [mode]);
+  const groups = mode === 'commercial' ? PICKER_GROUPS_COMMERCIAL : PICKER_GROUPS_RESIDENTIAL;
+
+  // Build grouped items respecting either category match or the optional
+  // group.match predicate (used for shingle brand sub-buckets).
+  const groupedItems = useMemo(() => {
+    const result = [];
+    const taken = new Set();
+    groups.forEach(g => {
+      const inGroup = allItems.filter(li => {
+        if (taken.has(li.id)) return false;
+        const catMatch = g.categories.includes(li.category);
+        if (!catMatch) return false;
+        if (g.match && !g.match(li)) return false;
+        return true;
+      });
+      inGroup.forEach(li => taken.add(li.id));
+      result.push({ ...g, items: inGroup });
+    });
+    // Anything left over (catalog category we didn't pre-group) gets an
+    // "Other" bucket so nothing is unreachable.
+    const leftovers = allItems.filter(li => !taken.has(li.id));
+    if (leftovers.length) {
+      result.push({ id: 'other', label: 'Other', categories: [], items: leftovers });
+    }
+    return result;
+  }, [groups, allItems]);
+
+  // Search across all items, flat.
+  const searchResults = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return null;
+    return allItems.filter(li =>
+      (li.description || '').toLowerCase().includes(q)
+      || (li.category || '').toLowerCase().includes(q)
+    );
+  }, [search, allItems]);
+
+  const toggleGroup = (id) => {
+    setOpenGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const handlePick = (li) => {
+    if (multiSelect) {
+      setSelected(s => ({ ...s, [li.id]: !s[li.id] }));
+    } else {
+      onPick([li]);
+    }
+  };
+
+  const applyMulti = () => {
+    const items = allItems.filter(li => selected[li.id]);
+    if (items.length === 0) return;
+    onPick(items);
+    setSelected({});
+  };
+
+  // Drawer chrome
+  const overlay = {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1100,
+    display: 'flex',
+    alignItems: isMobile ? 'flex-end' : 'stretch',
+    justifyContent: isMobile ? 'center' : 'flex-end',
+  };
+  const drawer = isMobile
+    ? { background: '#1E2329', width: '100vw', maxWidth: '100vw', height: '88dvh',
+        borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', overflow: 'hidden' }
+    : { background: '#1E2329', width: 460, height: '100dvh',
+        borderLeft: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden' };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={drawer} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{
+          flexShrink: 0, padding: '12px 14px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>Add to {sectionName || 'Section'}</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>{mode === 'commercial' ? 'Commercial' : 'Residential'} catalog</div>
+          </div>
+          <button
+            onClick={() => setMultiSelect(v => !v)}
+            style={{
+              padding: '6px 10px', minHeight: 32,
+              background: multiSelect ? 'rgba(232,114,42,0.18)' : 'transparent',
+              border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: 6, color: multiSelect ? '#E8722A' : '#D1D5DB',
+              fontSize: 11, fontWeight: 700, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >{multiSelect ? '✓ Multi' : 'Pick multiple'}</button>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+        </div>
+
+        {/* Search */}
+        <div style={{ flexShrink: 0, padding: 10, background: '#1E2329' }}>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search line items…"
+            style={{
+              width: '100%', padding: '10px 12px', minHeight: 40,
+              background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+              color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        {/* Body */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+          padding: '6px 10px',
+        }}>
+          {searchResults ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {searchResults.length === 0 && (
+                <div style={{ padding: 20, textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
+                  No matches. Add a custom line item below.
+                </div>
+              )}
+              {searchResults.map(li => (
+                <PickerRow key={li.id} item={li} selected={!!selected[li.id]} multi={multiSelect} onPick={() => handlePick(li)} />
+              ))}
+            </div>
+          ) : (
+            groupedItems.map(g => (
+              g.items.length === 0 ? null : (
+                <div key={g.id} style={{ marginBottom: 4 }}>
+                  <button
+                    onClick={() => toggleGroup(g.id)}
+                    style={{
+                      width: '100%', padding: '10px 12px', minHeight: 40,
+                      background: openGroups.has(g.id) ? '#2A3140' : 'transparent',
+                      border: 'none', borderRadius: 6,
+                      color: '#D1D5DB', fontSize: 12, fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      cursor: 'pointer', textAlign: 'left',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >
+                    <span>{g.label}</span>
+                    <span style={{ fontSize: 11, color: '#9CA3AF', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span>{g.items.length}</span>
+                      <span>{openGroups.has(g.id) ? '▼' : '▶'}</span>
+                    </span>
+                  </button>
+                  {openGroups.has(g.id) && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 0 8px 0' }}>
+                      {g.items.map(li => (
+                        <PickerRow key={li.id} item={li} selected={!!selected[li.id]} multi={multiSelect} onPick={() => handlePick(li)} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            ))
+          )}
+
+          {/* Add custom line item */}
+          <button
+            onClick={() => setShowCustom(true)}
+            style={{
+              width: '100%', padding: '12px', minHeight: 44, marginTop: 8,
+              background: 'transparent', border: '1px dashed rgba(255,255,255,0.18)',
+              borderRadius: 8, color: '#D1D5DB', fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >+ Add custom line item</button>
+        </div>
+
+        {/* Multi-select action bar */}
+        {multiSelect && (
+          <div style={{
+            flexShrink: 0, padding: 12,
+            background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex', gap: 8, alignItems: 'center',
+          }}>
+            <div style={{ flex: 1, fontSize: 11, color: '#D1D5DB' }}>
+              {Object.values(selected).filter(Boolean).length} selected
+            </div>
+            <button
+              onClick={() => setSelected({})}
+              style={{
+                padding: '8px 12px', minHeight: 36,
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+                borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 700,
+                cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              }}
+            >Clear</button>
+            <button
+              onClick={applyMulti}
+              disabled={Object.values(selected).filter(Boolean).length === 0}
+              style={{
+                padding: '8px 14px', minHeight: 36,
+                background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                border: 'none', borderRadius: 6,
+                color: '#fff', fontSize: 11, fontWeight: 700,
+                cursor: Object.values(selected).filter(Boolean).length === 0 ? 'not-allowed' : 'pointer',
+                opacity: Object.values(selected).filter(Boolean).length === 0 ? 0.5 : 1,
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >Add Selected</button>
+          </div>
+        )}
+
+        {showCustom && (
+          <CustomLineItemForm
+            onCancel={() => setShowCustom(false)}
+            onAdd={(li) => { onPick([li]); setShowCustom(false); }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PickerRow({ item, selected, multi, onPick }) {
+  return (
+    <button
+      onClick={onPick}
+      style={{
+        width: '100%', textAlign: 'left', padding: '10px 12px',
+        background: selected ? 'rgba(232,114,42,0.12)' : '#161B22',
+        border: `1px solid ${selected ? 'rgba(232,114,42,0.35)' : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: 6, color: '#FFFFFF', cursor: 'pointer',
+        WebkitTapHighlightColor: 'transparent',
+        display: 'flex', alignItems: 'center', gap: 10,
+      }}
+    >
+      {multi && (
+        <span style={{
+          width: 18, height: 18, flexShrink: 0,
+          borderRadius: 4, border: `1.5px solid ${selected ? '#E8722A' : 'rgba(255,255,255,0.25)'}`,
+          background: selected ? '#E8722A' : 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#fff', fontSize: 11, fontWeight: 800,
+        }}>{selected ? '✓' : ''}</span>
+      )}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.description}</div>
+        <div style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+          {item.category} · {item.unit}
+        </div>
+      </div>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap', flexShrink: 0 }}>
+        ${item.unitPrice.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+        <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 500 }}> /{item.unit}</span>
+      </div>
+    </button>
+  );
+}
+
+function CustomLineItemForm({ onCancel, onAdd }) {
+  const isMobile = useMobile();
+  const [draft, setDraft] = useState({
+    description: '', quantity: 1, unit: 'EA', unitPrice: 0,
+  });
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', minHeight: 40,
+    background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6,
+    color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none', boxSizing: 'border-box',
+  };
+  return (
+    <div
+      onClick={onCancel}
+      style={{
+        position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, zIndex: 10,
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#1E2329', borderRadius: 12, padding: 16,
+          width: '100%', maxWidth: 360,
+          border: '1px solid rgba(255,255,255,0.1)',
+          display: 'flex', flexDirection: 'column', gap: 10,
+        }}
+      >
+        <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 4 }}>Custom Line Item</div>
+        <input
+          value={draft.description}
+          onChange={e => setDraft(p => ({ ...p, description: e.target.value }))}
+          placeholder="Description"
+          style={inputStyle}
+        />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <input type="number" inputMode="decimal" value={draft.quantity} onChange={e => setDraft(p => ({ ...p, quantity: e.target.value }))} placeholder="Qty" style={inputStyle} />
+          <select value={draft.unit} onChange={e => setDraft(p => ({ ...p, unit: e.target.value }))} style={inputStyle}>
+            {['EA', 'SF', 'LF', 'SQ', 'CY', 'TON', 'HR', 'LS', 'DAY'].map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </div>
+        <input type="number" inputMode="decimal" value={draft.unitPrice} onChange={e => setDraft(p => ({ ...p, unitPrice: e.target.value }))} placeholder="Unit price" style={inputStyle} />
+        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+          <button
+            onClick={onCancel}
+            style={{
+              flex: 1, padding: '10px', minHeight: 40,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: 8, color: '#D1D5DB', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >Cancel</button>
+          <button
+            onClick={() => {
+              if (!draft.description.trim()) return;
+              const qty = Number(draft.quantity) || 0;
+              const price = Number(draft.unitPrice) || 0;
+              onAdd({
+                id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                description: draft.description,
+                category: 'Custom',
+                quantity: qty, unit: draft.unit, unitPrice: price,
+                extension: Math.round(qty * price * 100) / 100,
+                notes: null,
+              });
+            }}
+            style={{
+              flex: 2, padding: '10px', minHeight: 40,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >Add Item</button>
         </div>
       </div>
     </div>
@@ -7222,6 +7737,14 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
               </div>
             )}
 
+            {quote.sections.length > 0 && (
+              <MeasurementsBar
+                measurements={quote.measurements}
+                onChange={(m) => setQuote(prev => ({ ...prev, measurements: m }))}
+                isMobile={isMobile}
+              />
+            )}
+
             {quote.sections.map((sec, idx) => (
               <QuoteSectionBlock
                 key={sec.id}
@@ -7231,11 +7754,19 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                 isMobile={isMobile}
                 cellInput={cellInput}
                 cellInputFocus={cellInputFocus}
+                measurements={quote.measurements}
+                quoteMode={quote.mode}
                 onRename={(name) => updateSection(sec.id, { sectionName: name })}
                 onUpdateNarrative={(n) => updateSection(sec.id, { narrative: n })}
                 onUpdateLineItem={(liId, patch) => updateLineItem(sec.id, liId, patch)}
                 onRemoveLineItem={(liId) => removeLineItem(sec.id, liId)}
                 onAddLineItem={() => setShowCatalogPicker({ sectionId: sec.id, mode: quote.mode })}
+                onAddBundle={(bundleDef) => {
+                  const items = instantiateBundle(bundleDef, (b) => getSmartDefaultQty(b, quote.measurements));
+                  items.forEach(li => addLineItemToSection(sec.id, li));
+                  showToast(`Added ${items.length} item${items.length === 1 ? '' : 's'} from "${bundleDef.name}".`);
+                }}
+                onOpenAIDraft={() => setShowAIDraft(true)}
                 onRemoveSection={() => removeSection(sec.id)}
                 onMoveUp={() => moveSection(sec.id, -1)}
                 onMoveDown={() => moveSection(sec.id, +1)}
@@ -7422,16 +7953,30 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
         </div>
 
         {/* Pickers */}
-        {showCatalogPicker && (
-          <LineItemCatalogPicker
-            mode={showCatalogPicker.mode}
-            onPick={(catalogEntry) => {
-              const newLi = instantiateLineItemFromCatalog(catalogEntry, 1);
-              addLineItemToSection(showCatalogPicker.sectionId, newLi);
-            }}
-            onClose={() => setShowCatalogPicker(null)}
-          />
-        )}
+        {showCatalogPicker && (() => {
+          const sec = quote.sections.find(s => s.id === showCatalogPicker.sectionId);
+          return (
+            <LineItemPickerDrawer
+              mode={showCatalogPicker.mode}
+              sectionName={sec?.sectionName || sec?.scopeType || 'section'}
+              onPick={(items) => {
+                items.forEach(entry => {
+                  // entry is either a catalog row (no `id` shape compatible with
+                  // line items) or a fully-formed line item from the custom form.
+                  // Detect by presence of `extension`.
+                  if (entry && Object.prototype.hasOwnProperty.call(entry, 'extension')) {
+                    addLineItemToSection(showCatalogPicker.sectionId, entry);
+                  } else {
+                    const qty = getSmartDefaultQty(entry, quote.measurements);
+                    const newLi = instantiateLineItemFromCatalog(entry, qty);
+                    addLineItemToSection(showCatalogPicker.sectionId, newLi);
+                  }
+                });
+              }}
+              onClose={() => setShowCatalogPicker(null)}
+            />
+          );
+        })()}
         {showSectionPicker && (
           <SectionTemplatePicker
             mode={quote.mode}
@@ -7782,12 +8327,18 @@ ${companyName}`}
   );
 }
 
-// ── Section block (header + line-items table + notes) ──
-function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput, cellInputFocus, onRename, onUpdateNarrative, onUpdateLineItem, onRemoveLineItem, onAddLineItem, onRemoveSection, onMoveUp, onMoveDown }) {
+// ── Section block (header + bundle pills + line-items + notes) ──
+function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput, cellInputFocus, measurements, quoteMode, onRename, onUpdateNarrative, onUpdateLineItem, onRemoveLineItem, onAddLineItem, onAddBundle, onOpenAIDraft, onRemoveSection, onMoveUp, onMoveDown }) {
   const [secMenuOpen, setSecMenuOpen] = useState(false);
   const [focusedCell, setFocusedCell] = useState(null);
   const [editingLi, setEditingLi] = useState(null); // line-item being edited in card drawer
   const narrow = useNarrowMobile();
+
+  // Bundles that target this section's scopeType. Merged seeded + user-saved.
+  const sectionBundles = useMemo(() => {
+    const all = getAllBundles();
+    return all.filter(b => b.parentScopeType === section.scopeType);
+  }, [section.scopeType]);
 
   const cellStyleFor = (cellKey) => focusedCell === cellKey
     ? { ...cellInput, ...cellInputFocus }
@@ -7857,14 +8408,87 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
         </div>
       </div>
 
+      {/* Quick Bundle pills — single-tap drops a packaged set of items in */}
+      {sectionBundles.length > 0 && (
+        <div style={{
+          display: 'flex', gap: 6, marginBottom: 10,
+          overflowX: 'auto', WebkitOverflowScrolling: 'touch',
+          paddingBottom: 4,
+        }}>
+          {sectionBundles.map(b => (
+            <button
+              key={b.id}
+              onClick={() => onAddBundle && onAddBundle(b)}
+              style={{
+                flexShrink: 0,
+                padding: '8px 12px', minHeight: 36,
+                background: 'rgba(232,114,42,0.08)',
+                border: '1px solid rgba(232,114,42,0.35)',
+                borderRadius: 999,
+                color: '#1E2329', fontSize: 12, fontWeight: 700,
+                cursor: 'pointer', whiteSpace: 'nowrap',
+                WebkitTapHighlightColor: 'transparent',
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+              }}
+              title={`Adds ${b.lineItems.length} line items`}
+            >
+              <span style={{ color: '#E8722A', fontWeight: 800 }}>+</span>
+              <span>{b.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Empty section state when no line items — friendly 3-way CTA */}
+      {section.lineItems.length === 0 && (
+        <div style={{
+          padding: '20px 12px', marginBottom: 10,
+          background: '#F8F4EC', border: '1px dashed rgba(30,35,41,0.2)', borderRadius: 6,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#4A5568', marginBottom: 12, textAlign: 'center' }}>
+            This section is empty. Get started:
+          </div>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 8 }}>
+            <button
+              onClick={onAddLineItem}
+              style={{
+                flex: 1, padding: '12px', minHeight: 44,
+                background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 8,
+                color: '#1E2329', fontSize: 12, fontWeight: 700,
+                cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              }}
+            >📚 Pick from Library</button>
+            {sectionBundles.length > 0 && (
+              <button
+                onClick={() => onAddBundle && onAddBundle(sectionBundles[0])}
+                style={{
+                  flex: 1, padding: '12px', minHeight: 44,
+                  background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 8,
+                  color: '#1E2329', fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                }}
+                title={`Adds ${sectionBundles[0].name}`}
+              >⚡ Use a Quick Bundle</button>
+            )}
+            {onOpenAIDraft && (
+              <button
+                onClick={onOpenAIDraft}
+                style={{
+                  flex: 1, padding: '12px', minHeight: 44,
+                  background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+                  border: 'none', borderRadius: 8,
+                  color: '#fff', fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                }}
+              >✦ Describe the Job</button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Line items — stacked cards under 480px, table at 480px+ */}
       {narrow ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
-          {section.lineItems.length === 0 && (
-            <div style={{ padding: '16px 12px', textAlign: 'center', fontSize: 12, color: '#4A5568', background: '#F8F4EC', borderRadius: 6 }}>
-              Add line items to this section.
-            </div>
-          )}
           {section.lineItems.map(li => (
             <LineItemCard
               key={li.id}
@@ -7874,7 +8498,7 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
             />
           ))}
         </div>
-      ) : (
+      ) : section.lineItems.length === 0 ? null : (
         <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 8 }}>
           <table style={{
             width: '100%', minWidth: 520,
@@ -8650,10 +9274,12 @@ function QuoteTemplateManager({ onClose }) {
   const seededQuoteIds = useMemo(() => new Set(QUOTE_TEMPLATES.map(t => t.id)), []);
   const seededSectionIds = useMemo(() => new Set(SECTION_TEMPLATES.map(t => t.id)), []);
   const seededLineIds = useMemo(() => new Set(LINE_ITEM_CATALOG.map(t => t.id)), []);
+  const seededBundleIds = useMemo(() => new Set(BUNDLES.map(b => b.id)), []);
 
   const allQuoteTemplates = useMemo(() => getAllQuoteTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
   const allSectionTemplates = useMemo(() => getAllSectionTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
   const allLineItems = useMemo(() => getAllLineItems(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
+  const allBundlesList = useMemo(() => getAllBundles(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Editor state: null when list is shown, an object when editing
   const [editing, setEditing] = useState(null); // { kind, item, isNew }
@@ -8674,6 +9300,9 @@ function QuoteTemplateManager({ onClose }) {
     } else if (kind === 'lineItem') {
       const next = loadUserLineItems().filter(t => t.id !== id);
       saveUserLineItems(next);
+    } else if (kind === 'bundle') {
+      const next = loadUserBundles().filter(t => t.id !== id);
+      saveUserBundles(next);
     }
     bump();
     showToast('Deleted.');
@@ -8689,6 +9318,9 @@ function QuoteTemplateManager({ onClose }) {
     } else if (kind === 'lineItem') {
       const cur = loadUserLineItems().filter(t => t.id !== item.id);
       saveUserLineItems([...cur, item]);
+    } else if (kind === 'bundle') {
+      const cur = loadUserBundles().filter(t => t.id !== item.id);
+      saveUserBundles([...cur, item]);
     }
     bump();
     showToast('Saved.');
@@ -8733,6 +9365,15 @@ function QuoteTemplateManager({ onClose }) {
           category: 'Material', unit: 'EA', unitPrice: 0, defaultQuantity: 1, notes: '',
         },
       });
+    } else if (kind === 'bundle') {
+      setEditing({
+        kind, isNew: true,
+        item: {
+          id: stamp, name: 'New Bundle',
+          parentScopeType: 'full_replacement',
+          lineItems: [],
+        },
+      });
     }
   };
 
@@ -8741,6 +9382,7 @@ function QuoteTemplateManager({ onClose }) {
     { key: 'quote', label: 'Quote Templates', count: allQuoteTemplates.length },
     { key: 'section', label: 'Sections', count: allSectionTemplates.length },
     { key: 'lineItem', label: 'Line Items', count: allLineItems.length },
+    { key: 'bundle', label: 'Bundles', count: allBundlesList.length },
   ];
 
   return (
@@ -8847,6 +9489,19 @@ function QuoteTemplateManager({ onClose }) {
                   onDelete={(it) => deleteUserItem('lineItem', it.id)}
                 />
               )}
+              {tab === 'bundle' && (
+                <TemplateList
+                  kind="bundle"
+                  items={allBundlesList}
+                  isSeeded={(it) => seededBundleIds.has(it.id)}
+                  primaryLabel={(it) => it.name}
+                  secondaryLabel={(it) => `${it.parentScopeType} · ${(it.lineItems || []).length} line item${(it.lineItems || []).length === 1 ? '' : 's'}`}
+                  onNew={() => newBlank('bundle')}
+                  onEdit={(it) => setEditing({ kind: 'bundle', item: it, isNew: false })}
+                  onDuplicate={(it) => duplicateSeeded('bundle', it)}
+                  onDelete={(it) => deleteUserItem('bundle', it.id)}
+                />
+              )}
             </div>
           </>
         )}
@@ -8879,9 +9534,146 @@ function QuoteTemplateManager({ onClose }) {
                 onSave={(item) => { upsertUserItem('quote', item); setEditing(null); }}
               />
             )}
+            {editing.kind === 'bundle' && (
+              <BundleEditor
+                initial={editing.item}
+                allLineItems={allLineItems}
+                allSectionTemplates={allSectionTemplates}
+                onCancel={() => setEditing(null)}
+                onSave={(item) => { upsertUserItem('bundle', item); setEditing(null); }}
+              />
+            )}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function BundleEditor({ initial, allLineItems, allSectionTemplates, onCancel, onSave }) {
+  const isMobile = useMobile();
+  const [item, setItem] = useState(initial);
+  const [showPicker, setShowPicker] = useState(false);
+
+  // Unique scopeTypes that any section template exposes — bundle attaches to
+  // one of these so the right bundles surface in the right context.
+  const scopeTypes = useMemo(() => {
+    const set = new Set(allSectionTemplates.map(s => s.scopeType).filter(Boolean));
+    return Array.from(set);
+  }, [allSectionTemplates]);
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', minHeight: 40,
+    background: '#161B22', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+    color: '#FFFFFF', fontSize: isMobile ? 16 : 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box',
+  };
+
+  const removeLi = (idx) => setItem(p => ({ ...p, lineItems: p.lineItems.filter((_, i) => i !== idx) }));
+  const updateLi = (idx, patch) => setItem(p => {
+    const next = [...p.lineItems];
+    next[idx] = { ...next[idx], ...patch };
+    return { ...p, lineItems: next };
+  });
+  const addFromCatalog = (entry) => {
+    setItem(p => ({
+      ...p,
+      lineItems: [...(p.lineItems || []), {
+        description: entry.description,
+        category: entry.category,
+        unit: entry.unit,
+        unitPrice: entry.unitPrice,
+        quantity: entry.defaultQuantity || 0,
+        notes: entry.notes || null,
+      }],
+    }));
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 12 }}>
+        {initial.name ? 'Edit Bundle' : 'New Bundle'}
+      </div>
+
+      <FieldRow label="Bundle Name">
+        <input
+          value={item.name || ''}
+          onChange={e => setItem(p => ({ ...p, name: e.target.value }))}
+          style={inputStyle}
+          placeholder="GAF Timberline HDZ"
+        />
+      </FieldRow>
+
+      <FieldRow label="Parent Section Type">
+        <select
+          value={item.parentScopeType || ''}
+          onChange={e => setItem(p => ({ ...p, parentScopeType: e.target.value }))}
+          style={inputStyle}
+        >
+          <option value="">—</option>
+          {scopeTypes.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </FieldRow>
+
+      <FieldRow label={`Line Items (${(item.lineItems || []).length})`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+          {(item.lineItems || []).map((li, idx) => (
+            <div key={idx} style={{
+              padding: 8, background: '#161B22',
+              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6,
+              display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
+            }}>
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis' }}>{li.description}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF' }}>{li.category} · {li.unit} · {fmtCurrency(li.unitPrice || 0)}</div>
+              </div>
+              <input
+                type="number"
+                value={li.quantity ?? 0}
+                onChange={e => updateLi(idx, { quantity: Number(e.target.value) || 0 })}
+                style={{
+                  width: 70, padding: '6px 8px', minHeight: 32,
+                  background: '#1E2329', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6,
+                  color: '#FFFFFF', fontSize: isMobile ? 16 : 12, outline: 'none', textAlign: 'right',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <button
+                onClick={() => removeLi(idx)}
+                aria-label="Remove"
+                style={{
+                  width: 32, height: 32, padding: 0, flexShrink: 0,
+                  background: 'transparent', border: '1px solid rgba(239,68,68,0.3)',
+                  borderRadius: 6, color: '#f87171', fontSize: 14, cursor: 'pointer',
+                }}
+              >×</button>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={() => setShowPicker(true)}
+          style={{
+            width: '100%', padding: '10px', minHeight: 40,
+            background: 'transparent', border: '1px dashed rgba(255,255,255,0.2)',
+            borderRadius: 8, color: '#D1D5DB', fontSize: 12, fontWeight: 700,
+            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+          }}
+        >+ Add line item from catalog</button>
+      </FieldRow>
+
+      <EditorActions
+        onCancel={onCancel}
+        onSave={() => onSave(item)}
+        disabled={!item.name?.trim() || !item.parentScopeType?.trim()}
+      />
+
+      {showPicker && (
+        <CatalogPickerInline
+          allLineItems={allLineItems}
+          onPick={(entry) => { addFromCatalog(entry); setShowPicker(false); }}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
     </div>
   );
 }
