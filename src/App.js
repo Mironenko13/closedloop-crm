@@ -3378,33 +3378,68 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   const isMobile = useMobile();
 
   // Sync horizontal scroll between the stats summary row and the kanban
-  // columns row. Proportional sync (scrollLeft / scrollMax) so the last
-  // stat tile aligns with the last kanban column even though the two
-  // rows have different total widths.
+  // columns row. Proportional sync (scrollLeft / scrollMax).
+  //
+  // iOS momentum-scroll bug: assigning `.scrollLeft` while momentum is in
+  // flight aborts the momentum (snap-back to wherever the sync wrote). We
+  // fix this by giving the *user-touched* container exclusive ownership of
+  // the scroll until ~350ms after pointer release (covers the momentum tail).
+  // The passive container is mirrored from the active one, but its synthetic
+  // scroll events never trigger a reverse-sync.
   const statsRef = useRef(null);
   const kanbanRef = useRef(null);
-  const syncingRef = useRef(false);
+  const activeScrollerRef = useRef(null); // 'stats' | 'kanban' | null
+  const releaseTimerRef = useRef(null);
+  const lastKanbanLeftRef = useRef(0);
+  const lastStatsLeftRef = useRef(0);
+
+  const markActive = (which) => {
+    activeScrollerRef.current = which;
+    if (releaseTimerRef.current) { clearTimeout(releaseTimerRef.current); releaseTimerRef.current = null; }
+  };
+  const scheduleRelease = () => {
+    if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current);
+    releaseTimerRef.current = setTimeout(() => {
+      activeScrollerRef.current = null;
+      releaseTimerRef.current = null;
+    }, 350);
+  };
+
+  useEffect(() => () => {
+    if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current);
+  }, []);
+
   const handleStatsScroll = () => {
-    if (syncingRef.current) return;
     const s = statsRef.current, k = kanbanRef.current;
     if (!s || !k) return;
+    const prev = lastStatsLeftRef.current;
+    const cur = s.scrollLeft;
+    lastStatsLeftRef.current = cur;
+    // Defensive: ignore a sudden snap to 0 when we were significantly scrolled —
+    // almost always a layout reset on re-render, not a real user scroll.
+    if (cur === 0 && prev > 50) return;
+    // Only sync when the user is actively driving the stats row. The kanban
+    // row's momentum scroll must not be interrupted by reverse-sync writes.
+    if (activeScrollerRef.current !== 'stats') return;
     const sMax = s.scrollWidth - s.clientWidth;
     const kMax = k.scrollWidth - k.clientWidth;
     if (sMax <= 0 || kMax <= 0) return;
-    syncingRef.current = true;
-    k.scrollLeft = (s.scrollLeft / sMax) * kMax;
-    requestAnimationFrame(() => { syncingRef.current = false; });
+    k.scrollLeft = (cur / sMax) * kMax;
+    lastKanbanLeftRef.current = k.scrollLeft;
   };
   const handleKanbanScroll = () => {
-    if (syncingRef.current) return;
     const s = statsRef.current, k = kanbanRef.current;
     if (!s || !k) return;
+    const prev = lastKanbanLeftRef.current;
+    const cur = k.scrollLeft;
+    lastKanbanLeftRef.current = cur;
+    if (cur === 0 && prev > 50) return;
+    if (activeScrollerRef.current !== 'kanban') return;
     const sMax = s.scrollWidth - s.clientWidth;
     const kMax = k.scrollWidth - k.clientWidth;
     if (sMax <= 0 || kMax <= 0) return;
-    syncingRef.current = true;
-    s.scrollLeft = (k.scrollLeft / kMax) * sMax;
-    requestAnimationFrame(() => { syncingRef.current = false; });
+    s.scrollLeft = (cur / kMax) * sMax;
+    lastStatsLeftRef.current = s.scrollLeft;
   };
 
   const KANBAN_STAGES = [
@@ -3492,6 +3527,11 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
         <div
           ref={statsRef}
           onScroll={handleStatsScroll}
+          onPointerDown={() => markActive('stats')}
+          onPointerUp={scheduleRelease}
+          onPointerCancel={scheduleRelease}
+          onTouchStart={() => markActive('stats')}
+          onTouchEnd={scheduleRelease}
           style={{ display: 'flex', gap: 0, background: '#2A3140', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
         >
           {stageStats.map((s) => (
@@ -3562,6 +3602,11 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
       <div
         ref={kanbanRef}
         onScroll={handleKanbanScroll}
+        onPointerDown={() => markActive('kanban')}
+        onPointerUp={scheduleRelease}
+        onPointerCancel={scheduleRelease}
+        onTouchStart={() => markActive('kanban')}
+        onTouchEnd={scheduleRelease}
         style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, WebkitOverflowScrolling: 'touch', alignItems: 'flex-start' }}
       >
         {KANBAN_STAGES.map(stg => {
