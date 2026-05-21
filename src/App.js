@@ -3642,16 +3642,47 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
           currentUser={currentUser}
           rolePerms={rolePerms}
           quotes={quotes}
-          onNewQuote={(lead, existingQuote) => { setQuickEditLead(null); setQuoteAgentLead({ lead, quote: existingQuote || null }); }}
+          onNewQuote={(lead, existingQuote) => {
+            setQuickEditLead(null);
+            if (existingQuote) {
+              // Opening an existing draft → go straight to the editor
+              setQuoteAgentLead({ lead, quote: existingQuote, picker: false });
+            } else {
+              // New quote → show template picker first
+              setQuoteAgentLead({ lead, quote: null, picker: true });
+            }
+          }}
         />
       )}
 
-      {quoteAgentLead && (
-        <QuoteAgent
-          lead={quoteAgentLead.lead}
+      {quoteAgentLead && quoteAgentLead.picker && (
+        <QuoteTemplatePicker
+          target={{
+            kind: 'lead', id: quoteAgentLead.lead.id,
+            customerName: quoteAgentLead.lead.name,
+            address: quoteAgentLead.lead.address || '',
+            lead: quoteAgentLead.lead,
+          }}
+          onPick={(quote) => setQuoteAgentLead({ ...quoteAgentLead, quote, picker: false })}
+          onClose={() => setQuoteAgentLead(null)}
+        />
+      )}
+
+      {quoteAgentLead && !quoteAgentLead.picker && quoteAgentLead.quote && (
+        <QuoteDocumentEditor
+          target={{
+            kind: 'lead', id: quoteAgentLead.lead.id,
+            customerName: quoteAgentLead.lead.name,
+            address: quoteAgentLead.lead.address || '',
+            lead: quoteAgentLead.lead,
+          }}
           initialQuote={quoteAgentLead.quote}
-          onSaveDraft={(quote) => { if (onSaveQuote) onSaveQuote(quote); setQuoteAgentLead(null); }}
-          onMarkSigned={(quote) => { if (onSaveQuote) onSaveQuote({ ...quote, status: 'signed', signedDate: new Date().toISOString() }); }}
+          onSave={(quote) => {
+            if (onSaveQuote) onSaveQuote(quote);
+            // Keep editor open after auto-save; just refresh local quote
+            setQuoteAgentLead(prev => prev ? { ...prev, quote } : prev);
+          }}
+          onMarkSigned={(quote) => { if (onSaveQuote) onSaveQuote(quote); }}
           onConvertToProject={(lead, signedQuote) => {
             if (onConvertLead) {
               onConvertLead(lead, signedQuote);
@@ -6079,7 +6110,8 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
           quotes={quotes}
           onClose={() => setSelectedProject(null)}
           onSelectScope={(scope) => { setSelectedJob(scope); }}
-          onNewQuote={(project) => setQuoteAgentProject(project)}
+          onNewQuote={(project) => setQuoteAgentProject({ project, quote: null, picker: true })}
+          onOpenQuote={(quote, project) => setQuoteAgentProject({ project, quote, picker: false })}
         />
       )}
 
@@ -6103,11 +6135,32 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
         />
       )}
 
-      {quoteAgentProject && (
-        <QuoteAgent
-          project={quoteAgentProject}
-          initialQuote={null}
-          onSaveDraft={(quote) => { if (onSaveQuote) onSaveQuote(quote); setQuoteAgentProject(null); }}
+      {quoteAgentProject && quoteAgentProject.picker && (
+        <QuoteTemplatePicker
+          target={{
+            kind: 'project', id: quoteAgentProject.project.id,
+            customerName: quoteAgentProject.project.customerName,
+            address: quoteAgentProject.project.address,
+            project: quoteAgentProject.project,
+          }}
+          onPick={(quote) => setQuoteAgentProject({ ...quoteAgentProject, quote, picker: false })}
+          onClose={() => setQuoteAgentProject(null)}
+        />
+      )}
+
+      {quoteAgentProject && !quoteAgentProject.picker && quoteAgentProject.quote && (
+        <QuoteDocumentEditor
+          target={{
+            kind: 'project', id: quoteAgentProject.project.id,
+            customerName: quoteAgentProject.project.customerName,
+            address: quoteAgentProject.project.address,
+            project: quoteAgentProject.project,
+          }}
+          initialQuote={quoteAgentProject.quote}
+          onSave={(quote) => {
+            if (onSaveQuote) onSaveQuote(quote);
+            setQuoteAgentProject(prev => prev ? { ...prev, quote } : prev);
+          }}
           onClose={() => setQuoteAgentProject(null)}
         />
       )}
@@ -6376,7 +6429,1046 @@ function mergeQuoteDraft(existing, fromAgent) {
   };
 }
 
+// ─── Quote Document Editor — primary "New Quote" surface ────────────────────
+// Document-style editor. Replaces the QuoteAgent chat as the entry path for
+// "+ New Quote" (the chat agent moves to a side-panel tool in Phase 3).
+// Mobile-first; the document body scrolls vertically while the top/bottom
+// bars stay sticky.
+
+const COMPANY_PROFILE = {
+  name: 'EQUITY ROOFING',
+  address: '218 Industrial Pkwy, Mifflinburg, PA 17844',
+  license: 'PA HIC #PA-029847',
+  phone: '(570) 966-7300',
+  email: 'office@equityroofing.com',
+};
+
+function fmtCurrency(n) {
+  const v = Number(n) || 0;
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function buildQuoteFromTemplate(template, target) {
+  const partial = instantiateQuoteFromTemplate(template, getAllSectionTemplates());
+  const now = new Date();
+  const exp = new Date(now); exp.setDate(exp.getDate() + 30);
+  return {
+    id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    quoteNumber: generateQuoteNumber(),
+    leadId: target.kind === 'lead' ? target.id : null,
+    projectId: target.kind === 'project' ? target.id : null,
+    mode: partial.mode || 'residential',
+    status: 'draft',
+    createdDate: now.toISOString(),
+    sentDate: null, viewedDate: null, signedDate: null,
+    expirationDate: exp.toISOString().slice(0, 10),
+    subtotal: partial.subtotal, tax: partial.tax || 0, total: partial.total,
+    sections: partial.sections,
+    attachments: [], signature: null,
+    depositAmount: 0, depositPaid: false, paymentIntentId: null,
+    shareToken: generateShareToken(),
+    terms: partial.terms,
+    exclusions: partial.exclusions,
+    included: partial.included,
+    alternates: partial.alternates || [],
+    paymentSchedule: partial.paymentSchedule || [],
+    customerInteractions: [], agentConversation: [],
+  };
+}
+
+// ── Template picker shown when "+ New Quote" is tapped ──
+function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const [modeTab, setModeTab] = useState('residential');
+  const quoteTemplates = useMemo(() => getAllQuoteTemplates(), []);
+  const sectionTemplates = useMemo(() => getAllSectionTemplates(), []);
+
+  const filtered = quoteTemplates.filter(t => t.mode === modeTab);
+  const sectionNamesFor = (t) => (t.defaultSections || []).map(refSec => {
+    const st = sectionTemplates.find(s => s.id === refSec.sectionTemplateId);
+    return st ? st.name : refSec.scopeType;
+  });
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 720 };
+
+  const pickTemplate = (template) => {
+    const quote = buildQuoteFromTemplate(template, target);
+    onPick(quote);
+  };
+  const pickBlank = () => {
+    const quote = buildQuoteFromTemplate({
+      id: 'blank',
+      name: 'Blank Quote',
+      mode: modeTab,
+      defaultSections: [],
+      defaultTerms: modeTab === 'commercial' ? DEFAULT_TERMS_COMMERCIAL : DEFAULT_TERMS_RESIDENTIAL,
+      defaultExclusions: modeTab === 'commercial' ? DEFAULT_EXCLUSIONS_COMMERCIAL : DEFAULT_EXCLUSIONS_RESIDENTIAL,
+      defaultIncluded: modeTab === 'commercial' ? DEFAULT_INCLUDED_COMMERCIAL : DEFAULT_INCLUDED_RESIDENTIAL,
+    }, target);
+    onPick(quote);
+  };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Start from template</div>
+        <div style={{ ...S.modalSub, marginBottom: 14 }}>
+          Quoting for <strong style={{ color: '#FFFFFF' }}>{target.customerName}</strong> · {target.address}
+        </div>
+
+        <div style={{ display: 'flex', gap: 6, marginBottom: 14, background: '#1E2329', borderRadius: 8, padding: 4 }}>
+          {['residential', 'commercial'].map(m => (
+            <button
+              key={m}
+              onClick={() => setModeTab(m)}
+              style={{
+                flex: 1, padding: '10px', minHeight: 40,
+                background: modeTab === m ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'transparent',
+                border: 'none', borderRadius: 6,
+                color: modeTab === m ? '#fff' : '#D1D5DB',
+                fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                textTransform: 'capitalize',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >{m}</button>
+          ))}
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+          gap: 10, marginBottom: 14,
+        }}>
+          {filtered.map(t => {
+            const names = sectionNamesFor(t);
+            return (
+              <button
+                key={t.id}
+                onClick={() => pickTemplate(t)}
+                style={{
+                  textAlign: 'left', padding: 12,
+                  background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 10, cursor: 'pointer',
+                  transition: 'border-color 0.15s, background 0.15s',
+                  WebkitTapHighlightColor: 'transparent',
+                  color: '#FFFFFF',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#E8722A'; e.currentTarget.style.background = '#252b36'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = '#1E2329'; }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 6, lineHeight: 1.3 }}>{t.name}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
+                  {(t.defaultSections || []).length} section{(t.defaultSections || []).length === 1 ? '' : 's'}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  {names.slice(0, 3).map((n, i) => (
+                    <div key={i} style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>• {n}</div>
+                  ))}
+                </div>
+                <div style={{
+                  marginTop: 10, padding: '6px 10px',
+                  background: 'rgba(232,114,42,0.12)', border: '1px solid rgba(232,114,42,0.3)',
+                  borderRadius: 6, fontSize: 11, fontWeight: 700, color: '#E8722A',
+                  textAlign: 'center',
+                }}>Use this</div>
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={pickBlank}
+          style={{
+            width: '100%', padding: '12px', minHeight: 48,
+            background: 'transparent', border: '1px dashed rgba(255,255,255,0.18)',
+            borderRadius: 8, color: '#D1D5DB',
+            fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          + Blank Quote (start from scratch)
+        </button>
+
+        <div style={{ marginTop: 14, fontSize: 11, color: '#9CA3AF', textAlign: 'center' }}>
+          <button
+            onClick={() => { if (onManageTemplates) onManageTemplates(); }}
+            style={{ background: 'transparent', border: 'none', color: '#D1D5DB', textDecoration: 'underline', cursor: 'pointer', fontSize: 11 }}
+          >
+            Manage Templates →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Line item catalog picker (modal) ──
+function LineItemCatalogPicker({ mode, onPick, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
+  const allItems = useMemo(() => getAllLineItems(), []);
+
+  const filtered = useMemo(() => {
+    let result = allItems.filter(c => c.mode === 'both' || c.mode === mode);
+    if (category !== 'all') result = result.filter(c => c.category === category);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(c => c.description.toLowerCase().includes(q) || (c.category || '').toLowerCase().includes(q));
+    }
+    return result;
+  }, [allItems, mode, category, search]);
+
+  // Categories that exist in the current mode
+  const availableCategories = useMemo(() => {
+    const set = new Set();
+    allItems.forEach(c => { if (c.mode === 'both' || c.mode === mode) set.add(c.category); });
+    return Array.from(set).sort();
+  }, [allItems, mode]);
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 640 };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add line item</div>
+        <div style={S.modalSub}>Pick from the catalog or type to search.</div>
+
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search…"
+            style={{ ...FI, flex: '1 1 200px', padding: isMobile ? '11px 12px' : '9px 12px', fontSize: isMobile ? 16 : 13, minHeight: 44 }}
+            autoFocus
+          />
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            style={{ ...FI, flex: '0 0 auto', padding: '9px 12px', fontSize: 13, minHeight: 44 }}
+          >
+            <option value="all">All categories</option>
+            {availableCategories.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+
+        <div style={{ maxHeight: isMobile ? '56dvh' : 420, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {filtered.length === 0 && (
+            <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#D1D5DB' }}>
+              No matches. Try clearing the filter or search.
+            </div>
+          )}
+          {filtered.map(item => (
+            <button
+              key={item.id}
+              onClick={() => { onPick(item); onClose(); }}
+              style={{
+                textAlign: 'left', padding: '10px 12px',
+                background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 8, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 10,
+                WebkitTapHighlightColor: 'transparent',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, color: '#FFFFFF', fontWeight: 600, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.description}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  {item.category} · {item.unit}
+                </div>
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {fmtCurrency(item.unitPrice)}<span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 500 }}> /{item.unit}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Section template picker (modal) ──
+function SectionTemplatePicker({ mode, onPick, onPickBlank, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const templates = useMemo(() => getAllSectionTemplates().filter(t => t.mode === mode), [mode]);
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 560 };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add section</div>
+        <div style={S.modalSub}>Pick a section template or start blank.</div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {templates.map(t => (
+            <button
+              key={t.id}
+              onClick={() => { onPick(t); onClose(); }}
+              style={{
+                textAlign: 'left', padding: 14,
+                background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 10, cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent', color: '#FFFFFF',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; e.currentTarget.style.borderColor = '#E8722A'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>{t.name}</div>
+              <div style={{ fontSize: 11, color: '#D1D5DB' }}>
+                {(t.defaultLineItems || []).length} line item{(t.defaultLineItems || []).length === 1 ? '' : 's'} · {t.scopeType}
+              </div>
+            </button>
+          ))}
+
+          <button
+            onClick={() => { onPickBlank(); onClose(); }}
+            style={{
+              padding: 14, background: 'transparent',
+              border: '1px dashed rgba(255,255,255,0.18)', borderRadius: 10,
+              color: '#D1D5DB', fontSize: 13, fontWeight: 600,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            + Blank Section (start from scratch)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── The document editor itself ──
+function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSigned, onConvertToProject }) {
+  useScrollLock();
+  const isMobile = useMobile();
+  const showToast = useToast();
+
+  const [quote, setQuote] = useState(initialQuote);
+  const [savedIndicator, setSavedIndicator] = useState(false);
+  const [showCatalogPicker, setShowCatalogPicker] = useState(null); // { sectionId } | null
+  const [showSectionPicker, setShowSectionPicker] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [termsCollapsed, setTermsCollapsed] = useState(true);
+  const saveTimerRef = useRef(null);
+  const initialMountRef = useRef(true);
+
+  // Debounced auto-save: any change to `quote` triggers a save 1s later.
+  useEffect(() => {
+    if (!quote) return undefined;
+    if (initialMountRef.current) { initialMountRef.current = false; return undefined; }
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      onSave(quote);
+      setSavedIndicator(true);
+      const t = setTimeout(() => setSavedIndicator(false), 1600);
+      return () => clearTimeout(t);
+    }, 1000);
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [quote, onSave]);
+
+  if (!quote) return null;
+
+  // ── State mutators ──
+  const recomputeTotals = (sections, tax = quote.tax || 0) => {
+    const subtotal = sections.reduce((sum, sec) => sum + (sec.subtotal || 0), 0);
+    return { subtotal: Math.round(subtotal * 100) / 100, tax, total: Math.round((subtotal + tax) * 100) / 100 };
+  };
+  const recomputeSection = (sec) => {
+    const subtotal = (sec.lineItems || []).reduce((s, li) => s + (Number(li.extension) || 0), 0);
+    return { ...sec, subtotal: Math.round(subtotal * 100) / 100 };
+  };
+
+  const updateSection = (sectionId, patch) => {
+    setQuote(prev => {
+      const sections = prev.sections.map(s => s.id === sectionId ? recomputeSection({ ...s, ...patch }) : s);
+      const totals = recomputeTotals(sections);
+      return { ...prev, sections, ...totals };
+    });
+  };
+  const updateLineItem = (sectionId, lineItemId, patch) => {
+    setQuote(prev => {
+      const sections = prev.sections.map(sec => {
+        if (sec.id !== sectionId) return sec;
+        const lineItems = sec.lineItems.map(li => {
+          if (li.id !== lineItemId) return li;
+          const next = { ...li, ...patch };
+          const qty = Number(next.quantity) || 0;
+          const price = Number(next.unitPrice) || 0;
+          next.extension = Math.round(qty * price * 100) / 100;
+          return next;
+        });
+        return recomputeSection({ ...sec, lineItems });
+      });
+      const totals = recomputeTotals(sections);
+      return { ...prev, sections, ...totals };
+    });
+  };
+  const removeLineItem = (sectionId, lineItemId) => {
+    setQuote(prev => {
+      const sections = prev.sections.map(sec => {
+        if (sec.id !== sectionId) return sec;
+        return recomputeSection({ ...sec, lineItems: sec.lineItems.filter(li => li.id !== lineItemId) });
+      });
+      const totals = recomputeTotals(sections);
+      return { ...prev, sections, ...totals };
+    });
+  };
+  const addLineItemToSection = (sectionId, item) => {
+    setQuote(prev => {
+      const sections = prev.sections.map(sec => {
+        if (sec.id !== sectionId) return sec;
+        return recomputeSection({ ...sec, lineItems: [...sec.lineItems, item] });
+      });
+      const totals = recomputeTotals(sections);
+      return { ...prev, sections, ...totals };
+    });
+  };
+  const addSection = (section) => {
+    setQuote(prev => {
+      const sections = [...prev.sections, section];
+      const totals = recomputeTotals(sections);
+      return { ...prev, sections, ...totals };
+    });
+  };
+  const removeSection = (sectionId) => {
+    setQuote(prev => {
+      const sections = prev.sections.filter(s => s.id !== sectionId);
+      const totals = recomputeTotals(sections);
+      return { ...prev, sections, ...totals };
+    });
+  };
+  const moveSection = (sectionId, delta) => {
+    setQuote(prev => {
+      const idx = prev.sections.findIndex(s => s.id === sectionId);
+      if (idx < 0) return prev;
+      const target = idx + delta;
+      if (target < 0 || target >= prev.sections.length) return prev;
+      const next = [...prev.sections];
+      const [moved] = next.splice(idx, 1);
+      next.splice(target, 0, moved);
+      return { ...prev, sections: next };
+    });
+  };
+
+  // ── Bill-to derived from target ──
+  const billToName = target.kind === 'lead' ? (target.lead?.name || target.customerName) : target.customerName;
+  const billToAddress = target.address || '';
+  const billToPhone = target.kind === 'lead' ? (target.lead?.phone || '') : (target.project?.customerPhone || '');
+  const billToEmail = target.kind === 'lead' ? (target.lead?.email || '') : (target.project?.customerEmail || '');
+
+  // ── Mobile-first styles ──
+  const overlay = { ...S.overlay, padding: 0, alignItems: 'stretch', justifyContent: 'stretch' };
+  const modal = {
+    background: '#1E2329', border: 'none', borderRadius: 0,
+    width: '100%', height: '100dvh', maxWidth: '100vw', maxHeight: '100dvh',
+    margin: 0, padding: 0, position: 'relative',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+  };
+
+  const statusColor = (s) => ({
+    draft: '#9CA3AF', sent: '#3b82f6', viewed: '#06b6d4',
+    signed: '#22c55e', rejected: '#ef4444', expired: '#f59e0b',
+  }[s] || '#9CA3AF');
+
+  const cellInput = {
+    width: '100%', minHeight: 36, padding: '6px 8px',
+    background: 'transparent', border: '1px solid transparent', borderRadius: 4,
+    color: '#1E2329', fontSize: 13, fontFamily: 'inherit',
+    outline: 'none', boxSizing: 'border-box',
+  };
+  const cellInputFocus = {
+    background: '#FFFFFF', border: '1px solid #E8722A',
+  };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+
+        {/* Top sticky bar */}
+        <div style={{
+          flexShrink: 0, padding: '10px 12px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 8, position: 'relative',
+        }}>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0, flexShrink: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {quote.quoteNumber} · {billToName}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+              <span style={{
+                fontSize: 9, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
+                background: statusColor(quote.status) + '22', color: statusColor(quote.status),
+                textTransform: 'uppercase', letterSpacing: '0.4px',
+              }}>{quote.status}</span>
+              {savedIndicator && (
+                <span style={{ fontSize: 10, color: '#22c55e' }}>✓ Saved</span>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => setShowMenu(v => !v)}
+            aria-label="Menu"
+            style={{
+              width: 36, height: 36, padding: 0, flexShrink: 0,
+              background: showMenu ? 'rgba(255,255,255,0.08)' : 'transparent',
+              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
+              color: '#FFFFFF', fontSize: 20, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >⋯</button>
+          {showMenu && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 4px)', right: 10,
+              background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 10, padding: 6, minWidth: 200, zIndex: 5,
+              boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+              display: 'flex', flexDirection: 'column', gap: 2,
+            }}>
+              <button
+                onClick={() => { setShowMenu(false); onSave(quote); showToast('Draft saved.'); }}
+                style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+              >Save now</button>
+              <button
+                onClick={() => { setShowMenu(false); showToast('PDF preview coming next session.'); }}
+                style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+              >Preview PDF</button>
+              <button
+                onClick={() => { setShowMenu(false); showToast('Duplicate coming next session.'); }}
+                style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+              >Duplicate</button>
+              {target.kind === 'lead' && quote.status === 'draft' && onMarkSigned && (
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    onMarkSigned({ ...quote, status: 'signed', signedDate: new Date().toISOString() });
+                    showToast('Marked signed. Reopen to convert.');
+                    onClose();
+                  }}
+                  style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#22c55e', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+                >✓ Mark as Signed (debug)</button>
+              )}
+              {target.kind === 'lead' && quote.status === 'signed' && onConvertToProject && (
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    // eslint-disable-next-line no-restricted-globals
+                    const ok = window.confirm('This will create a new Project from this signed quote and move the lead out of the pipeline. Proceed?');
+                    if (ok) onConvertToProject(target.lead, quote);
+                  }}
+                  style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#E8722A', fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
+                >→ Convert Lead to Project</button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Document body (scrollable) */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          background: '#2A2E36',
+        }}>
+          <div style={{
+            background: '#F8F4EC', color: '#1E2329',
+            margin: isMobile ? '12px 8px' : '20px auto',
+            maxWidth: 820, padding: isMobile ? '18px 14px' : '32px 36px',
+            borderRadius: 6,
+            boxShadow: '0 6px 24px rgba(0,0,0,0.35)',
+          }}>
+
+            {/* Company header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 800, letterSpacing: '-0.5px', color: '#1E2329', marginBottom: 4 }}>
+                  {COMPANY_PROFILE.name}
+                </div>
+                <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.5 }}>
+                  {COMPANY_PROFILE.address}<br />
+                  {COMPANY_PROFILE.phone} · {COMPANY_PROFILE.email}<br />
+                  {COMPANY_PROFILE.license}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quote</div>
+                <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 800, color: '#1E2329' }}>{quote.quoteNumber}</div>
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', borderTop: '2px solid #1E2329', margin: '14px 0' }} />
+
+            {/* Bill To + metadata */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 18, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Bill To</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329' }}>{billToName}</div>
+                <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.5 }}>{billToAddress}</div>
+                {billToPhone && <div style={{ fontSize: 11, color: '#4A5568' }}>{billToPhone}</div>}
+                {billToEmail && <div style={{ fontSize: 11, color: '#4A5568' }}>{billToEmail}</div>}
+              </div>
+              <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>Date</div>
+                <div style={{ fontSize: 12, color: '#1E2329', marginBottom: 6 }}>{quote.createdDate ? quote.createdDate.slice(0, 10) : ''}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>Valid Through</div>
+                <div style={{ fontSize: 12, color: '#1E2329' }}>{quote.expirationDate}</div>
+              </div>
+            </div>
+
+            {/* Sections */}
+            {quote.sections.length === 0 && (
+              <div style={{
+                padding: '32px 16px', textAlign: 'center',
+                background: '#FFFFFF', border: '1px dashed rgba(30,35,41,0.2)',
+                borderRadius: 6, color: '#4A5568', fontSize: 13, marginBottom: 16,
+              }}>
+                No sections yet. Tap <strong>+ Add Section</strong> below to start.
+              </div>
+            )}
+
+            {quote.sections.map((sec, idx) => (
+              <QuoteSectionBlock
+                key={sec.id}
+                section={sec}
+                index={idx}
+                totalSections={quote.sections.length}
+                isMobile={isMobile}
+                cellInput={cellInput}
+                cellInputFocus={cellInputFocus}
+                onRename={(name) => updateSection(sec.id, { sectionName: name })}
+                onUpdateNarrative={(n) => updateSection(sec.id, { narrative: n })}
+                onUpdateLineItem={(liId, patch) => updateLineItem(sec.id, liId, patch)}
+                onRemoveLineItem={(liId) => removeLineItem(sec.id, liId)}
+                onAddLineItem={() => setShowCatalogPicker({ sectionId: sec.id, mode: quote.mode })}
+                onRemoveSection={() => removeSection(sec.id)}
+                onMoveUp={() => moveSection(sec.id, -1)}
+                onMoveDown={() => moveSection(sec.id, +1)}
+              />
+            ))}
+
+            <button
+              onClick={() => setShowSectionPicker(true)}
+              style={{
+                width: '100%', padding: '14px', marginTop: 8, marginBottom: 18,
+                background: '#FFFFFF', border: '2px dashed #1E2329',
+                borderRadius: 6, color: '#1E2329',
+                fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >+ Add Section</button>
+
+            {/* Totals */}
+            <div style={{
+              background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 6,
+              padding: '14px 16px', marginBottom: 18,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: '#4A5568' }}>Subtotal</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#1E2329' }}>{fmtCurrency(quote.subtotal)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: '#4A5568' }}>
+                  Tax
+                  <input
+                    type="number"
+                    value={Math.round(((quote.tax || 0) / Math.max(1, quote.subtotal || 1)) * 100 * 100) / 100}
+                    onChange={e => {
+                      const pct = Number(e.target.value) || 0;
+                      const tax = Math.round((quote.subtotal || 0) * pct) / 100;
+                      setQuote(prev => ({ ...prev, tax, total: Math.round(((prev.subtotal || 0) + tax) * 100) / 100 }));
+                    }}
+                    style={{
+                      width: 56, marginLeft: 8, padding: '4px 6px',
+                      background: '#F8F4EC', border: '1px solid #1E2329', borderRadius: 4,
+                      color: '#1E2329', fontSize: 12, fontFamily: 'inherit',
+                      textAlign: 'right',
+                    }}
+                  />
+                  <span style={{ fontSize: 11, marginLeft: 4 }}>%</span>
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#1E2329' }}>{fmtCurrency(quote.tax || 0)}</span>
+              </div>
+              <hr style={{ border: 'none', borderTop: '1px solid #1E2329', margin: '6px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: '#1E2329' }}>Total</span>
+                <span style={{ fontSize: 18, fontWeight: 800, color: '#1E2329' }}>{fmtCurrency(quote.total)}</span>
+              </div>
+            </div>
+
+            {/* What's Included */}
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>What's Included</div>
+              <textarea
+                value={quote.included || ''}
+                onChange={e => setQuote(prev => ({ ...prev, included: e.target.value }))}
+                rows={5}
+                style={{
+                  width: '100%', padding: '10px 12px',
+                  background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.2)', borderRadius: 6,
+                  color: '#1E2329', fontSize: isMobile ? 16 : 12, lineHeight: 1.5,
+                  fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            {/* Exclusions */}
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px' }}>What's Not Included</div>
+                <button
+                  onClick={() => setQuote(prev => ({ ...prev, exclusions: [...(prev.exclusions || []), 'New exclusion'] }))}
+                  style={{ padding: '4px 10px', background: '#1E2329', border: 'none', borderRadius: 4, color: '#FFFFFF', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                >+ Add</button>
+              </div>
+              {(quote.exclusions || []).map((ex, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: 12, color: '#4A5568' }}>•</span>
+                  <input
+                    value={ex}
+                    onChange={e => setQuote(prev => {
+                      const next = [...(prev.exclusions || [])]; next[i] = e.target.value; return { ...prev, exclusions: next };
+                    })}
+                    style={{
+                      flex: 1, padding: '6px 8px',
+                      background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.15)', borderRadius: 4,
+                      color: '#1E2329', fontSize: isMobile ? 16 : 12, fontFamily: 'inherit', outline: 'none',
+                    }}
+                  />
+                  <button
+                    onClick={() => setQuote(prev => ({ ...prev, exclusions: (prev.exclusions || []).filter((_, j) => j !== i) }))}
+                    aria-label="Remove"
+                    style={{ width: 28, height: 28, padding: 0, background: 'transparent', border: 'none', color: '#9CA3AF', fontSize: 18, cursor: 'pointer' }}
+                  >×</button>
+                </div>
+              ))}
+            </div>
+
+            {/* Terms */}
+            <div style={{ marginBottom: 18 }}>
+              <button
+                onClick={() => setTermsCollapsed(v => !v)}
+                style={{
+                  width: '100%', padding: '8px 10px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.15)', borderRadius: 6,
+                  color: '#1E2329', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px',
+                  cursor: 'pointer', textAlign: 'left',
+                }}
+              >
+                <span>Terms &amp; Conditions</span>
+                <span style={{ fontSize: 12 }}>{termsCollapsed ? '▶' : '▼'}</span>
+              </button>
+              {!termsCollapsed && (
+                <textarea
+                  value={quote.terms || ''}
+                  onChange={e => setQuote(prev => ({ ...prev, terms: e.target.value }))}
+                  rows={10}
+                  style={{
+                    width: '100%', marginTop: 6, padding: '10px 12px',
+                    background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.2)', borderRadius: 6,
+                    color: '#1E2329', fontSize: isMobile ? 16 : 12, lineHeight: 1.5,
+                    fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Signature block */}
+            <div style={{
+              borderTop: '1px dashed rgba(30,35,41,0.3)',
+              paddingTop: 18, marginTop: 18,
+              display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
+            }}>
+              <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 28 }}>Customer Signature</div>
+                <div style={{ borderTop: '1px solid #1E2329', paddingTop: 4, fontSize: 10, color: '#4A5568' }}>Sign on file</div>
+              </div>
+              <div style={{ flex: '1 1 120px', minWidth: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 28 }}>Date</div>
+                <div style={{ borderTop: '1px solid #1E2329', paddingTop: 4, fontSize: 10, color: '#4A5568' }}>{quote.signedDate ? quote.signedDate.slice(0, 10) : ''}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom sticky bar */}
+        <div style={{
+          flexShrink: 0, padding: '10px 12px',
+          background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <button
+            onClick={() => { onSave(quote); showToast('Draft saved.'); }}
+            style={{
+              flex: 1, padding: '12px', minHeight: 44,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: 8, color: '#D1D5DB', fontWeight: 700, fontSize: 13,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            }}
+          >Save Draft</button>
+          <button
+            onClick={() => showToast('Send to Customer coming next session.')}
+            style={{
+              flex: 2, padding: '12px', minHeight: 44,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontWeight: 700, fontSize: 14,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+            }}
+          >Send to Customer →</button>
+        </div>
+
+        {/* Pickers */}
+        {showCatalogPicker && (
+          <LineItemCatalogPicker
+            mode={showCatalogPicker.mode}
+            onPick={(catalogEntry) => {
+              const newLi = instantiateLineItemFromCatalog(catalogEntry, 1);
+              addLineItemToSection(showCatalogPicker.sectionId, newLi);
+            }}
+            onClose={() => setShowCatalogPicker(null)}
+          />
+        )}
+        {showSectionPicker && (
+          <SectionTemplatePicker
+            mode={quote.mode}
+            onPick={(template) => {
+              const sec = instantiateSectionFromTemplate(template);
+              if (sec) addSection(sec);
+            }}
+            onPickBlank={() => {
+              const id = `qs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+              addSection({
+                id, scopeId: null, scopeType: 'custom',
+                sectionName: 'New Section', narrative: '',
+                lineItems: [], subtotal: 0,
+              });
+            }}
+            onClose={() => setShowSectionPicker(false)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Section block (header + line-items table + notes) ──
+function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput, cellInputFocus, onRename, onUpdateNarrative, onUpdateLineItem, onRemoveLineItem, onAddLineItem, onRemoveSection, onMoveUp, onMoveDown }) {
+  const [secMenuOpen, setSecMenuOpen] = useState(false);
+  const [focusedCell, setFocusedCell] = useState(null);
+
+  const cellStyleFor = (cellKey) => focusedCell === cellKey
+    ? { ...cellInput, ...cellInputFocus }
+    : cellInput;
+
+  return (
+    <div style={{
+      background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 6,
+      padding: isMobile ? 10 : 14, marginBottom: 12,
+      position: 'relative',
+    }}>
+      {/* Section header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        <input
+          value={section.sectionName || section.scopeType || 'Section'}
+          onChange={e => onRename(e.target.value)}
+          style={{
+            flex: 1, minWidth: 140, padding: '6px 8px',
+            background: 'transparent', border: '1px solid transparent', borderRadius: 4,
+            color: '#1E2329', fontSize: 15, fontWeight: 800, fontFamily: 'inherit',
+            outline: 'none',
+          }}
+          onFocus={e => { e.target.style.background = '#F8F4EC'; e.target.style.border = '1px solid #E8722A'; }}
+          onBlur={e => { e.target.style.background = 'transparent'; e.target.style.border = '1px solid transparent'; }}
+        />
+        <div style={{ fontSize: 13, fontWeight: 800, color: '#1E2329', whiteSpace: 'nowrap' }}>{fmtCurrency(section.subtotal || 0)}</div>
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setSecMenuOpen(v => !v)}
+            aria-label="Section menu"
+            style={{
+              width: 32, height: 32, padding: 0,
+              background: secMenuOpen ? 'rgba(30,35,41,0.08)' : 'transparent',
+              border: '1px solid rgba(30,35,41,0.15)', borderRadius: 6,
+              color: '#1E2329', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >⋯</button>
+          {secMenuOpen && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 4px)', right: 0,
+              background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 8,
+              padding: 4, minWidth: 160, zIndex: 6,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', gap: 2,
+            }}>
+              <button
+                disabled={index === 0}
+                onClick={() => { setSecMenuOpen(false); onMoveUp(); }}
+                style={{ padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: 4, color: index === 0 ? '#9CA3AF' : '#1E2329', fontSize: 12, fontWeight: 600, cursor: index === 0 ? 'not-allowed' : 'pointer', textAlign: 'left' }}
+              >↑ Move up</button>
+              <button
+                disabled={index === totalSections - 1}
+                onClick={() => { setSecMenuOpen(false); onMoveDown(); }}
+                style={{ padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: 4, color: index === totalSections - 1 ? '#9CA3AF' : '#1E2329', fontSize: 12, fontWeight: 600, cursor: index === totalSections - 1 ? 'not-allowed' : 'pointer', textAlign: 'left' }}
+              >↓ Move down</button>
+              <button
+                onClick={() => {
+                  setSecMenuOpen(false);
+                  // eslint-disable-next-line no-restricted-globals
+                  if (window.confirm('Delete this section?')) onRemoveSection();
+                }}
+                style={{ padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: 4, color: '#ef4444', fontSize: 12, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
+              >× Delete section</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Line items table */}
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 8 }}>
+        <table style={{
+          width: '100%', minWidth: 520,
+          borderCollapse: 'collapse', fontSize: 12,
+        }}>
+          <thead>
+            <tr style={{ background: '#F8F4EC', borderBottom: '1.5px solid #1E2329' }}>
+              <th style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Description</th>
+              <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 60 }}>Qty</th>
+              <th style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 50 }}>Unit</th>
+              <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 90 }}>Unit Price</th>
+              <th style={{ padding: '6px 8px', textAlign: 'right', fontSize: 10, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '0.4px', width: 100 }}>Extension</th>
+              <th style={{ width: 36 }} />
+            </tr>
+          </thead>
+          <tbody>
+            {section.lineItems.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ padding: '20px 12px', textAlign: 'center', fontSize: 12, color: '#4A5568' }}>
+                  Add line items to this section.
+                </td>
+              </tr>
+            )}
+            {section.lineItems.map(li => (
+              <tr key={li.id} style={{ borderBottom: '1px solid rgba(30,35,41,0.08)' }}>
+                <td style={{ padding: '4px 4px' }}>
+                  <input
+                    value={li.description}
+                    onChange={e => onUpdateLineItem(li.id, { description: e.target.value })}
+                    style={cellStyleFor(`${li.id}-desc`)}
+                    onFocus={() => setFocusedCell(`${li.id}-desc`)}
+                    onBlur={() => setFocusedCell(null)}
+                  />
+                </td>
+                <td style={{ padding: '4px 4px' }}>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={li.quantity}
+                    onChange={e => onUpdateLineItem(li.id, { quantity: e.target.value })}
+                    style={{ ...cellStyleFor(`${li.id}-qty`), textAlign: 'right' }}
+                    onFocus={() => setFocusedCell(`${li.id}-qty`)}
+                    onBlur={() => setFocusedCell(null)}
+                  />
+                </td>
+                <td style={{ padding: '4px 4px' }}>
+                  <input
+                    value={li.unit}
+                    onChange={e => onUpdateLineItem(li.id, { unit: e.target.value })}
+                    style={cellStyleFor(`${li.id}-unit`)}
+                    onFocus={() => setFocusedCell(`${li.id}-unit`)}
+                    onBlur={() => setFocusedCell(null)}
+                  />
+                </td>
+                <td style={{ padding: '4px 4px' }}>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={li.unitPrice}
+                    onChange={e => onUpdateLineItem(li.id, { unitPrice: e.target.value })}
+                    style={{ ...cellStyleFor(`${li.id}-price`), textAlign: 'right' }}
+                    onFocus={() => setFocusedCell(`${li.id}-price`)}
+                    onBlur={() => setFocusedCell(null)}
+                  />
+                </td>
+                <td style={{ padding: '4px 8px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#1E2329', whiteSpace: 'nowrap' }}>
+                  {fmtCurrency(li.extension || 0)}
+                </td>
+                <td style={{ padding: '4px 4px', textAlign: 'center' }}>
+                  <button
+                    onClick={() => onRemoveLineItem(li.id)}
+                    aria-label="Remove line item"
+                    style={{ width: 28, height: 28, padding: 0, background: 'transparent', border: 'none', color: '#9CA3AF', fontSize: 16, cursor: 'pointer' }}
+                  >×</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <button
+        onClick={onAddLineItem}
+        style={{
+          padding: '6px 12px', minHeight: 32, marginTop: 4, marginBottom: 8,
+          background: 'transparent', border: '1px dashed rgba(30,35,41,0.3)',
+          borderRadius: 4, color: '#1E2329', fontSize: 12, fontWeight: 700,
+          cursor: 'pointer',
+        }}
+      >+ Add Line</button>
+
+      <div style={{ marginTop: 4 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 4 }}>Section Notes</div>
+        <textarea
+          value={section.narrative || ''}
+          onChange={e => onUpdateNarrative(e.target.value)}
+          rows={2}
+          placeholder="What's included in this scope…"
+          style={{
+            width: '100%', padding: '8px 10px',
+            background: '#FFFFFF', border: '1px solid rgba(30,35,41,0.15)', borderRadius: 4,
+            color: '#1E2329', fontSize: isMobile ? 16 : 12, lineHeight: 1.4,
+            fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 // ─── Quote Agent (Claude-powered quote generation) ───────────────────────────
+// Retained here from Session 1; Phase 3 of the editor sprint repositions it
+// as the AI Draft side-panel tool inside QuoteDocumentEditor.
+// eslint-disable-next-line no-unused-vars
 function QuoteAgent({ project, lead, initialQuote, onSaveDraft, onMarkSigned, onConvertToProject, onClose }) {
   useScrollLock();
   const isMobile = useMobile();
