@@ -3739,7 +3739,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
       )}
 
       {quoteAgentLead && quoteAgentLead.picker && (
-        <QuoteTemplatePicker
+        <QuoteModePickerModal
           target={{
             kind: 'lead', id: quoteAgentLead.lead.id,
             customerName: quoteAgentLead.lead.name,
@@ -6225,7 +6225,7 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
       )}
 
       {quoteAgentProject && quoteAgentProject.picker && (
-        <QuoteTemplatePicker
+        <QuoteModePickerModal
           target={{
             kind: 'project', id: quoteAgentProject.project.id,
             customerName: quoteAgentProject.project.customerName,
@@ -6501,6 +6501,7 @@ function normalizeQuoteDraft(draft) {
   };
 }
 
+// eslint-disable-next-line no-unused-vars
 function mergeQuoteDraft(existing, fromAgent) {
   if (!fromAgent) return existing;
   if (!existing) return fromAgent;
@@ -6535,6 +6536,600 @@ const COMPANY_PROFILE = {
 function fmtCurrency(n) {
   const v = Number(n) || 0;
   return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ─── Template-first quote builder ───────────────────────────────────────────
+// Two fully-scaffolded templates with realistic 2026 central PA pricing.
+// The picker drawer reads from the per-template CATALOG; the editor opens
+// pre-populated with the TEMPLATE sections. Templates and catalogs are
+// strictly separated by mode — residential quotes never see commercial items
+// in the picker and vice versa.
+//
+// Line item shape: { description, category, unit, unitPrice, quantity,
+//   margin, notes?, isAllowance? }. `margin` is internal-only (35% default).
+
+const DEFAULT_MARGIN = 35;
+
+// ── RESIDENTIAL catalog (picker drawer source) ──
+const RESIDENTIAL_CATALOG = [
+  // Tear-off & Disposal
+  { id: 'rc-to-labor', description: 'Tear-off labor', category: 'Tear-off & Disposal', unit: 'SQ', unitPrice: 65 },
+  { id: 'rc-to-dump20', description: 'Dumpster (20yd)', category: 'Tear-off & Disposal', unit: 'EA', unitPrice: 450 },
+  { id: 'rc-to-dumpfees', description: 'Dump fees', category: 'Tear-off & Disposal', unit: 'TON', unitPrice: 85 },
+  { id: 'rc-to-tarps', description: 'Tarps & site protection', category: 'Tear-off & Disposal', unit: 'LS', unitPrice: 125 },
+  { id: 'rc-to-extra-layer', description: 'Extra layer tear-off surcharge', category: 'Tear-off & Disposal', unit: 'SQ', unitPrice: 25 },
+
+  // Decking & Repair
+  { id: 'rc-dk-sheet', description: 'Sheathing replacement (allowance)', category: 'Decking & Repair', unit: 'EA', unitPrice: 85, isAllowance: true },
+  { id: 'rc-dk-fasteners', description: 'Fasteners (re-nail deck)', category: 'Decking & Repair', unit: 'LS', unitPrice: 85 },
+  { id: 'rc-dk-repair', description: 'Structural repair labor (allowance)', category: 'Decking & Repair', unit: 'HR', unitPrice: 95, isAllowance: true },
+
+  // Underlayment
+  { id: 'rc-un-synthetic', description: 'Synthetic underlayment', category: 'Underlayment', unit: 'SQ', unitPrice: 35 },
+  { id: 'rc-un-iwshield', description: 'Ice & water shield (eaves + valleys)', category: 'Underlayment', unit: 'SQ', unitPrice: 95 },
+  { id: 'rc-un-dripedge', description: 'Drip edge', category: 'Underlayment', unit: 'LF', unitPrice: 2.25 },
+
+  // Roofing Material
+  { id: 'rc-rm-shingles-arch', description: 'Architectural shingles installed', category: 'Roofing Material', unit: 'SQ', unitPrice: 385 },
+  { id: 'rc-rm-shingles-designer', description: 'Designer shingles installed', category: 'Roofing Material', unit: 'SQ', unitPrice: 525 },
+  { id: 'rc-rm-shingles-impact', description: 'Impact-resistant shingles installed', category: 'Roofing Material', unit: 'SQ', unitPrice: 460 },
+  { id: 'rc-rm-starter', description: 'Starter strip', category: 'Roofing Material', unit: 'BDL', unitPrice: 65 },
+  { id: 'rc-rm-ridgecap', description: 'Ridge cap / hip & ridge shingles', category: 'Roofing Material', unit: 'BDL', unitPrice: 85 },
+
+  // Flashing & Penetrations
+  { id: 'rc-fl-step', description: 'Step flashing kit', category: 'Flashing & Penetrations', unit: 'EA', unitPrice: 145 },
+  { id: 'rc-fl-counter', description: 'Counter-flashing', category: 'Flashing & Penetrations', unit: 'LF', unitPrice: 8.50 },
+  { id: 'rc-fl-pipeboot', description: 'Pipe boot', category: 'Flashing & Penetrations', unit: 'EA', unitPrice: 35 },
+  { id: 'rc-fl-chimney', description: 'Chimney flashing kit', category: 'Flashing & Penetrations', unit: 'EA', unitPrice: 385 },
+  { id: 'rc-fl-skylight', description: 'Skylight flashing kit', category: 'Flashing & Penetrations', unit: 'EA', unitPrice: 195 },
+
+  // Ventilation
+  { id: 'rc-vt-ridge', description: 'Ridge vent', category: 'Ventilation', unit: 'LF', unitPrice: 7.50 },
+  { id: 'rc-vt-soffit', description: 'Soffit intake vent', category: 'Ventilation', unit: 'EA', unitPrice: 12 },
+  { id: 'rc-vt-exhaust', description: 'Exhaust cap', category: 'Ventilation', unit: 'EA', unitPrice: 65 },
+  { id: 'rc-vt-power', description: 'Power vent', category: 'Ventilation', unit: 'EA', unitPrice: 385 },
+
+  // Labor — Install
+  { id: 'rc-lb-install', description: 'Install labor', category: 'Labor — Install', unit: 'SQ', unitPrice: 185 },
+  { id: 'rc-lb-equipday', description: 'Equipment day rate', category: 'Labor — Install', unit: 'DAY', unitPrice: 285 },
+  { id: 'rc-lb-2story', description: '2nd story access surcharge', category: 'Labor — Install', unit: 'LS', unitPrice: 450 },
+  { id: 'rc-lb-steep', description: 'Steep pitch surcharge (9/12+)', category: 'Labor — Install', unit: 'SQ', unitPrice: 35 },
+
+  // Cleanup & Final
+  { id: 'rc-cl-magnet', description: 'Magnet sweep & cleanup', category: 'Cleanup & Final', unit: 'LS', unitPrice: 250 },
+  { id: 'rc-cl-debris', description: 'Debris haul-away', category: 'Cleanup & Final', unit: 'LS', unitPrice: 185 },
+  { id: 'rc-cl-final-inspect', description: 'Final inspection walk-through', category: 'Cleanup & Final', unit: 'LS', unitPrice: 125 },
+
+  // Extras / Adders
+  { id: 'rc-ex-gutter-5', description: 'Gutter run (5" K-style aluminum)', category: 'Extras / Adders', unit: 'LF', unitPrice: 11.50 },
+  { id: 'rc-ex-gutter-6', description: 'Gutter run (6" K-style aluminum)', category: 'Extras / Adders', unit: 'LF', unitPrice: 14 },
+  { id: 'rc-ex-downspout', description: 'Downspout', category: 'Extras / Adders', unit: 'EA', unitPrice: 95 },
+  { id: 'rc-ex-guards', description: 'Gutter guards (micromesh)', category: 'Extras / Adders', unit: 'LF', unitPrice: 9 },
+  { id: 'rc-ex-soffit-wrap', description: 'Soffit/fascia aluminum wrap', category: 'Extras / Adders', unit: 'LF', unitPrice: 14 },
+  { id: 'rc-ex-skylight-new', description: 'New skylight installation', category: 'Extras / Adders', unit: 'EA', unitPrice: 1450 },
+  { id: 'rc-ex-skylight-replace', description: 'Skylight replacement', category: 'Extras / Adders', unit: 'EA', unitPrice: 685 },
+  { id: 'rc-ex-solar-rr', description: 'Solar panel R&R (per panel)', category: 'Extras / Adders', unit: 'EA', unitPrice: 165 },
+  { id: 'rc-ex-attic-insul', description: 'Attic insulation top-up', category: 'Extras / Adders', unit: 'SF', unitPrice: 2.25 },
+
+  // Permits & Fees
+  { id: 'rc-pf-permit', description: 'Municipal building permit', category: 'Permits & Fees', unit: 'LS', unitPrice: 185 },
+  { id: 'rc-pf-dump-permit', description: 'Dump permit', category: 'Permits & Fees', unit: 'LS', unitPrice: 35 },
+  { id: 'rc-pf-warranty', description: 'Manufacturer warranty registration', category: 'Permits & Fees', unit: 'LS', unitPrice: 0 },
+];
+
+// ── COMMERCIAL catalog ──
+const COMMERCIAL_CATALOG = [
+  // Tear-off & Disposal
+  { id: 'cc-to-labor', description: 'Membrane tear-off labor', category: 'Tear-off & Disposal', unit: 'SF', unitPrice: 1.85 },
+  { id: 'cc-to-insul-rem', description: 'Insulation removal', category: 'Tear-off & Disposal', unit: 'SF', unitPrice: 0.75 },
+  { id: 'cc-to-dump30', description: 'Dumpster (30yd)', category: 'Tear-off & Disposal', unit: 'EA', unitPrice: 650 },
+  { id: 'cc-to-lift-stage', description: 'Lift staging setup', category: 'Tear-off & Disposal', unit: 'LS', unitPrice: 485 },
+  { id: 'cc-to-tarps', description: 'Tarps & site protection', category: 'Tear-off & Disposal', unit: 'LS', unitPrice: 285 },
+
+  // Substrate Preparation
+  { id: 'cc-sp-inspect', description: 'Deck inspection', category: 'Substrate Preparation', unit: 'LS', unitPrice: 350 },
+  { id: 'cc-sp-repair', description: 'Deck repair allowance', category: 'Substrate Preparation', unit: 'SF', unitPrice: 4.50, isAllowance: true },
+  { id: 'cc-sp-moisture', description: 'Moisture core cuts', category: 'Substrate Preparation', unit: 'EA', unitPrice: 95 },
+
+  // Insulation System
+  { id: 'cc-is-polyiso', description: 'Polyiso R-20 (2-layer staggered)', category: 'Insulation System', unit: 'SF', unitPrice: 2.85 },
+  { id: 'cc-is-cover', description: '½" HD cover board', category: 'Insulation System', unit: 'SF', unitPrice: 1.45 },
+  { id: 'cc-is-adhesive', description: 'Insulation adhesive', category: 'Insulation System', unit: 'SF', unitPrice: 0.55 },
+  { id: 'cc-is-fasteners', description: 'Insulation fasteners + plates', category: 'Insulation System', unit: 'SF', unitPrice: 0.45 },
+  { id: 'cc-is-tapered', description: 'Tapered insulation for slope (allowance)', category: 'Insulation System', unit: 'SF', unitPrice: 3.25, isAllowance: true },
+
+  // Membrane System
+  { id: 'cc-ms-tpo60', description: '60-mil TPO membrane', category: 'Membrane System', unit: 'SF', unitPrice: 1.95 },
+  { id: 'cc-ms-tpo80', description: '80-mil TPO membrane', category: 'Membrane System', unit: 'SF', unitPrice: 2.45 },
+  { id: 'cc-ms-epdm60', description: '60-mil EPDM membrane', category: 'Membrane System', unit: 'SF', unitPrice: 1.85 },
+  { id: 'cc-ms-pvc60', description: '60-mil PVC membrane', category: 'Membrane System', unit: 'SF', unitPrice: 2.65 },
+  { id: 'cc-ms-bonding', description: 'Bonding adhesive', category: 'Membrane System', unit: 'SF', unitPrice: 0.65 },
+  { id: 'cc-ms-primer', description: 'Membrane primer', category: 'Membrane System', unit: 'SF', unitPrice: 0.25 },
+  { id: 'cc-ms-seam-tape', description: 'Seam tape (where applicable)', category: 'Membrane System', unit: 'LF', unitPrice: 0.85 },
+
+  // Edge Metal & Terminations
+  { id: 'cc-em-edge', description: 'Edge metal', category: 'Edge Metal & Terminations', unit: 'LF', unitPrice: 8.50 },
+  { id: 'cc-em-drip', description: 'Drip edge (commercial)', category: 'Edge Metal & Terminations', unit: 'LF', unitPrice: 5.25 },
+  { id: 'cc-em-term-bar', description: 'Termination bar', category: 'Edge Metal & Terminations', unit: 'LF', unitPrice: 4.25 },
+  { id: 'cc-em-coping', description: 'Coping cap', category: 'Edge Metal & Terminations', unit: 'LF', unitPrice: 12.50 },
+  { id: 'cc-em-counter', description: 'Counter-flashing', category: 'Edge Metal & Terminations', unit: 'LF', unitPrice: 9.50 },
+
+  // Penetrations & Flashing
+  { id: 'cc-pf-pitch', description: 'Pitch pocket', category: 'Penetrations & Flashing', unit: 'EA', unitPrice: 185 },
+  { id: 'cc-pf-pipeboot', description: 'Pipe boot (TPO)', category: 'Penetrations & Flashing', unit: 'EA', unitPrice: 85 },
+  { id: 'cc-pf-curb', description: 'Curb flashing (HVAC / equipment)', category: 'Penetrations & Flashing', unit: 'LF', unitPrice: 28 },
+  { id: 'cc-pf-parapet', description: 'Parapet wall flashing', category: 'Penetrations & Flashing', unit: 'LF', unitPrice: 24 },
+  { id: 'cc-pf-flash-mem', description: 'Membrane flashing (walls/curbs)', category: 'Penetrations & Flashing', unit: 'LF', unitPrice: 18 },
+
+  // Drainage
+  { id: 'cc-dr-drain', description: 'Roof drain assembly', category: 'Drainage', unit: 'EA', unitPrice: 485 },
+  { id: 'cc-dr-scupper', description: 'Scupper', category: 'Drainage', unit: 'EA', unitPrice: 325 },
+  { id: 'cc-dr-overflow', description: 'Overflow drain', category: 'Drainage', unit: 'EA', unitPrice: 285 },
+  { id: 'cc-dr-downspout', description: 'Downspout (commercial)', category: 'Drainage', unit: 'EA', unitPrice: 185 },
+
+  // Walkway & Protection
+  { id: 'cc-wp-pad', description: 'Walkway pad (3\'x10\')', category: 'Walkway & Protection', unit: 'EA', unitPrice: 145 },
+  { id: 'cc-wp-snowguard', description: 'Snow guard / lightning protection', category: 'Walkway & Protection', unit: 'EA', unitPrice: 95 },
+
+  // Labor — Install
+  { id: 'cc-lb-install', description: 'Install crew labor', category: 'Labor — Install', unit: 'SF', unitPrice: 2.85 },
+  { id: 'cc-lb-certified', description: 'Certified installer labor', category: 'Labor — Install', unit: 'HR', unitPrice: 145 },
+  { id: 'cc-lb-welding', description: 'Seam welding labor', category: 'Labor — Install', unit: 'SF', unitPrice: 0.95 },
+
+  // Equipment
+  { id: 'cc-eq-boom', description: 'Boom lift / crane rental', category: 'Equipment', unit: 'DAY', unitPrice: 485 },
+  { id: 'cc-eq-hoist', description: 'Material hoist', category: 'Equipment', unit: 'DAY', unitPrice: 285 },
+  { id: 'cc-eq-crane-day', description: 'Crane day rate (rooftop sets)', category: 'Equipment', unit: 'DAY', unitPrice: 2100 },
+
+  // Permits & Inspections
+  { id: 'cc-pi-permit', description: 'Municipal building permit', category: 'Permits & Inspections', unit: 'LS', unitPrice: 485 },
+  { id: 'cc-pi-pre', description: 'Manufacturer pre-install inspection', category: 'Permits & Inspections', unit: 'LS', unitPrice: 350 },
+  { id: 'cc-pi-post', description: 'Manufacturer post-install inspection (NDL)', category: 'Permits & Inspections', unit: 'LS', unitPrice: 850 },
+
+  // Cleanup & Final
+  { id: 'cc-cl-debris', description: 'Debris haul-away', category: 'Cleanup & Final', unit: 'LS', unitPrice: 485 },
+  { id: 'cc-cl-magnet', description: 'Magnetic sweep of parking lot', category: 'Cleanup & Final', unit: 'LS', unitPrice: 285 },
+  { id: 'cc-cl-protect', description: 'Site protection / re-stripe', category: 'Cleanup & Final', unit: 'LS', unitPrice: 385 },
+];
+
+// Build a LineItem from a catalog entry (or descriptor for template scaffold).
+// Stamps a fresh id, computes extension from qty * unitPrice, applies default
+// margin if not provided.
+function makeLineItem(src, qty) {
+  const quantity = Number(qty != null ? qty : src.quantity) || 0;
+  const unitPrice = Number(src.unitPrice) || 0;
+  return {
+    id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    description: src.description,
+    category: src.category,
+    quantity,
+    unit: src.unit,
+    unitPrice,
+    extension: Math.round(quantity * unitPrice * 100) / 100,
+    margin: src.margin != null ? src.margin : DEFAULT_MARGIN,
+    notes: src.notes || null,
+    isAllowance: !!src.isAllowance,
+  };
+}
+
+// Lookup helper for template scaffolds — grabs catalog entry by description
+// and instantiates a line item with the given default qty.
+function liFromCat(catalog, description, qty) {
+  const entry = catalog.find(c => c.description === description);
+  if (!entry) return makeLineItem({ description, category: 'Custom', unit: 'EA', unitPrice: 0 }, qty);
+  return makeLineItem(entry, qty);
+}
+
+// ── RESIDENTIAL template (full scaffold, in section order) ──
+function buildResidentialSections() {
+  const cat = RESIDENTIAL_CATALOG;
+  return [
+    {
+      sectionName: 'Measurements & Scope',
+      narrative: 'Squares: \nPitch: \nWaste factor: 10%\nComplexity notes: ',
+      lineItems: [],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Tear-off & Disposal',
+      narrative: 'Complete tear-off of existing roof system and disposal.',
+      lineItems: [
+        liFromCat(cat, 'Tear-off labor', 0),
+        liFromCat(cat, 'Dumpster (20yd)', 1),
+        liFromCat(cat, 'Dump fees', 2),
+        liFromCat(cat, 'Tarps & site protection', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Decking & Repair',
+      narrative: 'Replace damaged sheathing as discovered during tear-off. Allowance billed only if used.',
+      lineItems: [
+        liFromCat(cat, 'Sheathing replacement (allowance)', 4),
+        liFromCat(cat, 'Fasteners (re-nail deck)', 1),
+        liFromCat(cat, 'Structural repair labor (allowance)', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Underlayment',
+      narrative: 'Synthetic underlayment full coverage; ice & water shield at eaves and valleys; drip edge all sides.',
+      lineItems: [
+        liFromCat(cat, 'Synthetic underlayment', 0),
+        liFromCat(cat, 'Ice & water shield (eaves + valleys)', 0),
+        liFromCat(cat, 'Drip edge', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Roofing Material',
+      narrative: 'Architectural shingles (primary system), starter strip, and matched hip & ridge.',
+      lineItems: [
+        liFromCat(cat, 'Architectural shingles installed', 0),
+        liFromCat(cat, 'Starter strip', 0),
+        liFromCat(cat, 'Ridge cap / hip & ridge shingles', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Flashing & Penetrations',
+      narrative: 'Step + counter flashing at all walls; new pipe boots; chimney + skylight flashing kits as applicable.',
+      lineItems: [
+        liFromCat(cat, 'Step flashing kit', 0),
+        liFromCat(cat, 'Counter-flashing', 0),
+        liFromCat(cat, 'Pipe boot', 2),
+        liFromCat(cat, 'Chimney flashing kit', 0),
+        liFromCat(cat, 'Skylight flashing kit', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Ventilation',
+      narrative: 'Continuous ridge vent paired with soffit intake for balanced attic ventilation.',
+      lineItems: [
+        liFromCat(cat, 'Ridge vent', 0),
+        liFromCat(cat, 'Soffit intake vent', 0),
+        liFromCat(cat, 'Exhaust cap', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Labor — Install',
+      narrative: 'Shingle install labor by the square; equipment day rate covers ladders, lifts, and on-site tooling.',
+      lineItems: [
+        liFromCat(cat, 'Install labor', 0),
+        liFromCat(cat, 'Equipment day rate', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Cleanup & Final',
+      narrative: 'Full magnetic sweep and haul-off of jobsite debris. Final walk-through with homeowner.',
+      lineItems: [
+        liFromCat(cat, 'Magnet sweep & cleanup', 1),
+        liFromCat(cat, 'Debris haul-away', 1),
+        liFromCat(cat, 'Final inspection walk-through', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Extras / Adders',
+      narrative: 'Optional scope add-ons — gutters, gutter guards, soffit/fascia, skylights, solar R&R.',
+      lineItems: [],
+      optional: true, collapsed: true,
+    },
+    {
+      sectionName: 'Permits & Fees',
+      narrative: 'Municipal building permit and dump permit. Filed under the company HIC license.',
+      lineItems: [
+        liFromCat(cat, 'Municipal building permit', 1),
+        liFromCat(cat, 'Dump permit', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Warranty & Terms',
+      narrative: 'Manufacturer warranty: GAF System Plus 50-year (subject to product registration).\nWorkmanship warranty: 10 years parts + labor.\nPayment terms: 30% deposit at signing, 30% at material delivery, balance net 15 days from completion.',
+      lineItems: [],
+      optional: false, collapsed: false,
+    },
+  ];
+}
+
+// ── COMMERCIAL template (full scaffold, in section order) ──
+function buildCommercialSections() {
+  const cat = COMMERCIAL_CATALOG;
+  return [
+    {
+      sectionName: 'Measurements & Scope',
+      narrative: 'Sq ft: \nSlope: \nPenetrations count: \nCurrent system + age: \nAccess notes: ',
+      lineItems: [],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Tear-off & Disposal',
+      narrative: 'Strip existing membrane and insulation to deck. Stage and dispose responsibly.',
+      lineItems: [
+        liFromCat(cat, 'Membrane tear-off labor', 0),
+        liFromCat(cat, 'Insulation removal', 0),
+        liFromCat(cat, 'Dumpster (30yd)', 1),
+        liFromCat(cat, 'Lift staging setup', 1),
+        liFromCat(cat, 'Tarps & site protection', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Substrate Preparation',
+      narrative: 'Inspect deck condition, repair as needed (allowance), moisture core cuts at suspect areas.',
+      lineItems: [
+        liFromCat(cat, 'Deck inspection', 1),
+        liFromCat(cat, 'Deck repair allowance', 0),
+        liFromCat(cat, 'Moisture core cuts', 4),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Insulation System',
+      narrative: 'Polyiso R-20 in 2-layer staggered configuration with ½" HD cover board over deck.',
+      lineItems: [
+        liFromCat(cat, 'Polyiso R-20 (2-layer staggered)', 0),
+        liFromCat(cat, '½" HD cover board', 0),
+        liFromCat(cat, 'Insulation adhesive', 0),
+        liFromCat(cat, 'Insulation fasteners + plates', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Membrane System',
+      narrative: '60-mil TPO fully adhered membrane (primary system). Seam-welded with bonding adhesive over substrate.',
+      lineItems: [
+        liFromCat(cat, '60-mil TPO membrane', 0),
+        liFromCat(cat, 'Bonding adhesive', 0),
+        liFromCat(cat, 'Membrane primer', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Edge Metal & Terminations',
+      narrative: 'New edge metal, drip edge, termination bar at walls/curbs, coping cap on parapet walls.',
+      lineItems: [
+        liFromCat(cat, 'Edge metal', 0),
+        liFromCat(cat, 'Drip edge (commercial)', 0),
+        liFromCat(cat, 'Termination bar', 0),
+        liFromCat(cat, 'Coping cap', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Penetrations & Flashing',
+      narrative: 'Pitch pockets at penetrations; TPO pipe boots; curb + parapet flashing tied into membrane.',
+      lineItems: [
+        liFromCat(cat, 'Pitch pocket', 0),
+        liFromCat(cat, 'Pipe boot (TPO)', 0),
+        liFromCat(cat, 'Curb flashing (HVAC / equipment)', 0),
+        liFromCat(cat, 'Parapet wall flashing', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Drainage',
+      narrative: 'Re-set or replace drains as needed. Tapered insulation for proper drainage slope (allowance).',
+      lineItems: [
+        liFromCat(cat, 'Roof drain assembly', 0),
+        liFromCat(cat, 'Scupper', 0),
+        liFromCat(cat, 'Overflow drain', 0),
+        liFromCat(cat, 'Downspout (commercial)', 0),
+        liFromCat(cat, 'Tapered insulation for slope (allowance)', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Walkway & Protection',
+      narrative: 'Walkway pads at HVAC service points and high-traffic areas to protect membrane.',
+      lineItems: [
+        liFromCat(cat, 'Walkway pad (3\'x10\')', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Labor — Install',
+      narrative: 'Install crew labor by sq ft; certified installer hours; seam welding labor.',
+      lineItems: [
+        liFromCat(cat, 'Install crew labor', 0),
+        liFromCat(cat, 'Certified installer labor', 0),
+        liFromCat(cat, 'Seam welding labor', 0),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Equipment',
+      narrative: 'Boom lift for access, material hoist for staging.',
+      lineItems: [
+        liFromCat(cat, 'Boom lift / crane rental', 1),
+        liFromCat(cat, 'Material hoist', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Permits & Inspections',
+      narrative: 'Municipal commercial permit; manufacturer pre + post install inspections required for NDL warranty.',
+      lineItems: [
+        liFromCat(cat, 'Municipal building permit', 1),
+        liFromCat(cat, 'Manufacturer pre-install inspection', 1),
+        liFromCat(cat, 'Manufacturer post-install inspection (NDL)', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Cleanup & Final',
+      narrative: 'Debris haul-off, magnetic sweep of parking lot, restore site protection.',
+      lineItems: [
+        liFromCat(cat, 'Debris haul-away', 1),
+        liFromCat(cat, 'Magnetic sweep of parking lot', 1),
+        liFromCat(cat, 'Site protection / re-stripe', 1),
+      ],
+      optional: false, collapsed: false,
+    },
+    {
+      sectionName: 'Warranty & Terms',
+      narrative: 'Manufacturer NDL warranty: 20-year No Dollar Limit (TPO 60-mil, fully adhered).\nWorkmanship warranty: 2 years on labor.\nPayment terms: 25% deposit at signing, AIA G702/G703 monthly progress billing, 10% retainage released at substantial completion.',
+      lineItems: [],
+      optional: false, collapsed: false,
+    },
+  ];
+}
+
+// Materialise a fresh quote from a mode template. Stamps section + line item
+// ids, computes subtotals/total (excluding optional sections from the total),
+// and anchors to a lead or project per the target.
+function buildQuoteFromMode(mode, target) {
+  const sections = (mode === 'commercial' ? buildCommercialSections() : buildResidentialSections())
+    .map(sec => {
+      const lineItems = sec.lineItems.map(li => ({
+        ...li,
+        id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        extension: Math.round((Number(li.quantity) || 0) * (Number(li.unitPrice) || 0) * 100) / 100,
+      }));
+      const subtotal = lineItems.reduce((s, li) => s + (li.extension || 0), 0);
+      return {
+        ...sec,
+        id: `qs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        scopeId: null,
+        scopeType: sec.sectionName.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+        lineItems,
+        subtotal: Math.round(subtotal * 100) / 100,
+        isSubsection: false,
+      };
+    });
+  // Grand total excludes optional sections.
+  const subtotal = sections
+    .filter(s => !s.optional)
+    .reduce((acc, s) => acc + (s.subtotal || 0), 0);
+  const now = new Date();
+  const exp = new Date(now); exp.setDate(exp.getDate() + 30);
+  return {
+    id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    quoteNumber: generateQuoteNumber(),
+    leadId: target.kind === 'lead' ? target.id : null,
+    projectId: target.kind === 'project' ? target.id : null,
+    mode,
+    status: 'draft',
+    createdDate: now.toISOString(),
+    sentDate: null, viewedDate: null, signedDate: null,
+    expirationDate: exp.toISOString().slice(0, 10),
+    subtotal: Math.round(subtotal * 100) / 100,
+    tax: 0,
+    total: Math.round(subtotal * 100) / 100,
+    sections,
+    attachments: [], signature: null,
+    depositAmount: 0, depositPaid: false, paymentIntentId: null,
+    shareToken: generateShareToken(),
+    terms: mode === 'commercial' ? DEFAULT_TERMS_COMMERCIAL : DEFAULT_TERMS_RESIDENTIAL,
+    exclusions: mode === 'commercial' ? [...DEFAULT_EXCLUSIONS_COMMERCIAL] : [...DEFAULT_EXCLUSIONS_RESIDENTIAL],
+    included: mode === 'commercial' ? DEFAULT_INCLUDED_COMMERCIAL : DEFAULT_INCLUDED_RESIDENTIAL,
+    alternates: [],
+    paymentSchedule: [],
+    customerInteractions: [], agentConversation: [],
+    measurements: null,
+  };
+}
+
+// Blank quote — preserves the old "start from scratch" path. No sections,
+// no defaults; user builds entirely from the picker.
+function buildBlankQuote(mode, target) {
+  const now = new Date();
+  const exp = new Date(now); exp.setDate(exp.getDate() + 30);
+  return {
+    id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    quoteNumber: generateQuoteNumber(),
+    leadId: target.kind === 'lead' ? target.id : null,
+    projectId: target.kind === 'project' ? target.id : null,
+    mode,
+    status: 'draft',
+    createdDate: now.toISOString(),
+    sentDate: null, viewedDate: null, signedDate: null,
+    expirationDate: exp.toISOString().slice(0, 10),
+    subtotal: 0, tax: 0, total: 0,
+    sections: [],
+    attachments: [], signature: null,
+    depositAmount: 0, depositPaid: false, paymentIntentId: null,
+    shareToken: generateShareToken(),
+    terms: mode === 'commercial' ? DEFAULT_TERMS_COMMERCIAL : DEFAULT_TERMS_RESIDENTIAL,
+    exclusions: mode === 'commercial' ? [...DEFAULT_EXCLUSIONS_COMMERCIAL] : [...DEFAULT_EXCLUSIONS_RESIDENTIAL],
+    included: mode === 'commercial' ? DEFAULT_INCLUDED_COMMERCIAL : DEFAULT_INCLUDED_RESIDENTIAL,
+    alternates: [],
+    paymentSchedule: [],
+    customerInteractions: [], agentConversation: [],
+    measurements: null,
+  };
+}
+
+// Quote-mode picker: shown first when "+ New Quote" is tapped. Three big
+// buttons; selection triggers the right builder and pops the editor.
+function QuoteModePickerModal({ target, onPick, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '90dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 520 };
+
+  const bigBtn = (label, sub, accent, onClick) => (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', padding: '20px 18px', minHeight: 84,
+        background: accent === 'orange'
+          ? 'linear-gradient(135deg, #E8722A, #e8640c)'
+          : accent === 'blue'
+            ? 'linear-gradient(135deg, #2D5016, #3d6b1e)'
+            : 'transparent',
+        border: accent === 'ghost' ? '1px dashed rgba(255,255,255,0.22)' : 'none',
+        borderRadius: 12,
+        color: accent === 'ghost' ? '#D1D5DB' : '#FFFFFF',
+        textAlign: 'left', cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+        boxShadow: accent !== 'ghost' ? '0 4px 14px rgba(0,0,0,0.25)' : 'none',
+        display: 'flex', flexDirection: 'column', gap: 4,
+      }}
+    >
+      <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.2px' }}>{label}</span>
+      <span style={{ fontSize: 11, opacity: 0.9, fontWeight: 500 }}>{sub}</span>
+    </button>
+  );
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>What type of quote?</div>
+        <div style={{ ...S.modalSub, marginBottom: 16 }}>
+          Quoting for <strong style={{ color: '#FFFFFF' }}>{target.customerName}</strong>{target.address ? ` · ${target.address}` : ''}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {bigBtn(
+            '🏠  Residential',
+            '12 sections scaffolded — tear-off, decking, underlayment, shingles, flashing, ventilation, labor, cleanup, permits, warranty',
+            'orange',
+            () => onPick(buildQuoteFromMode('residential', target)),
+          )}
+          {bigBtn(
+            '🏢  Commercial',
+            '14 sections scaffolded — substrate prep, insulation, membrane, edge metal, drainage, walkway, equipment, inspections, warranty',
+            'blue',
+            () => onPick(buildQuoteFromMode('commercial', target)),
+          )}
+          {bigBtn(
+            '✏️  Start from scratch',
+            'Blank quote — pick everything from the catalog yourself.',
+            'ghost',
+            () => onPick(buildBlankQuote('residential', target)),
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function buildQuoteFromTemplate(template, target) {
@@ -6581,6 +7176,9 @@ function getSmartDefaultQty(item, m) {
     return 0;
   }
   if (unit === 'SQ') return Number(m.squares) || 0;
+  // Commercial pricing is per-SF. 1 square = 100 sq ft, so map squares → SF
+  // when the catalog item is SF-denominated.
+  if (unit === 'SF') return (Number(m.squares) || 0) * 100;
   if (unit === 'EA') {
     if (/pipe boot/.test(desc)) return Number(m.pipes) || 1;
     if (/(box|power|off-ridge|ridge)\s*vent/.test(desc) && !/ridge cap/.test(desc)) return Number(m.vents) || 1;
@@ -6706,7 +7304,10 @@ function MeasurementsBar({ measurements, onChange, isMobile }) {
   );
 }
 
-// ── Template picker shown when "+ New Quote" is tapped ──
+// ── Legacy template picker — superseded by QuoteModePickerModal. Kept so the
+// "Manage Templates" deep-link from the Settings flow still resolves if any
+// future surface needs to invoke the user-saved-template grid directly. ──
+// eslint-disable-next-line no-unused-vars
 function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
   useScrollLock();
   const isMobile = useMobile();
@@ -6845,100 +7446,6 @@ function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
   );
 }
 
-// ── Legacy line item catalog picker (modal) ──
-// Superseded by LineItemPickerDrawer in Session 4 of the picker-driven build.
-// Kept here in case anything else in the file still references it.
-// eslint-disable-next-line no-unused-vars
-function LineItemCatalogPicker({ mode, onPick, onClose }) {
-  useScrollLock();
-  const isMobile = useMobile();
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('all');
-  const allItems = useMemo(() => getAllLineItems(), []);
-
-  const filtered = useMemo(() => {
-    let result = allItems.filter(c => c.mode === 'both' || c.mode === mode);
-    if (category !== 'all') result = result.filter(c => c.category === category);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(c => c.description.toLowerCase().includes(q) || (c.category || '').toLowerCase().includes(q));
-    }
-    return result;
-  }, [allItems, mode, category, search]);
-
-  // Categories that exist in the current mode
-  const availableCategories = useMemo(() => {
-    const set = new Set();
-    allItems.forEach(c => { if (c.mode === 'both' || c.mode === mode) set.add(c.category); });
-    return Array.from(set).sort();
-  }, [allItems, mode]);
-
-  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
-  const modal = isMobile
-    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
-    : { ...S.modal, maxWidth: 640 };
-
-  return (
-    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div style={modal} onClick={e => e.stopPropagation()}>
-        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add line item</div>
-        <div style={S.modalSub}>Pick from the catalog or type to search.</div>
-
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search…"
-            style={{ ...FI, flex: '1 1 200px', padding: isMobile ? '11px 12px' : '9px 12px', fontSize: isMobile ? 16 : 13, minHeight: 44 }}
-            autoFocus
-          />
-          <select
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            style={{ ...FI, flex: '0 0 auto', padding: '9px 12px', fontSize: 13, minHeight: 44 }}
-          >
-            <option value="all">All categories</option>
-            {availableCategories.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-
-        <div style={{ maxHeight: isMobile ? '56dvh' : 420, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {filtered.length === 0 && (
-            <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#D1D5DB' }}>
-              No matches. Try clearing the filter or search.
-            </div>
-          )}
-          {filtered.map(item => (
-            <button
-              key={item.id}
-              onClick={() => { onPick(item); onClose(); }}
-              style={{
-                textAlign: 'left', padding: '10px 12px',
-                background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 8, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 10,
-                WebkitTapHighlightColor: 'transparent',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; }}
-            >
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, color: '#FFFFFF', fontWeight: 600, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.description}</div>
-                <div style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                  {item.category} · {item.unit}
-                </div>
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                {fmtCurrency(item.unitPrice)}<span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 500 }}> /{item.unit}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── Line Item Picker Drawer ────────────────────────────────────────────────
 // Replaces the old catalog modal. Bottom sheet on mobile, right drawer on
@@ -6954,33 +7461,25 @@ function LineItemPickerDrawer({ mode, sectionName, onPick, onClose }) {
   const [openGroups, setOpenGroups] = useState(new Set());
   const [showCustom, setShowCustom] = useState(false);
 
-  const allItems = useMemo(() => getAllLineItems().filter(c => c.mode === 'both' || c.mode === mode), [mode]);
-  const groups = mode === 'commercial' ? PICKER_GROUPS_COMMERCIAL : PICKER_GROUPS_RESIDENTIAL;
+  // Catalog is strictly mode-separated: residential quotes never see
+  // commercial items and vice versa. Source of truth is the in-file
+  // RESIDENTIAL_CATALOG / COMMERCIAL_CATALOG arrays.
+  const allItems = useMemo(
+    () => (mode === 'commercial' ? COMMERCIAL_CATALOG : RESIDENTIAL_CATALOG),
+    [mode],
+  );
 
-  // Build grouped items respecting either category match or the optional
-  // group.match predicate (used for shingle brand sub-buckets).
+  // Groups derived directly from the catalog's distinct categories — preserves
+  // the catalog's authoring order so picker accordions can't drift out of sync
+  // with what the catalog actually contains.
   const groupedItems = useMemo(() => {
-    const result = [];
-    const taken = new Set();
-    groups.forEach(g => {
-      const inGroup = allItems.filter(li => {
-        if (taken.has(li.id)) return false;
-        const catMatch = g.categories.includes(li.category);
-        if (!catMatch) return false;
-        if (g.match && !g.match(li)) return false;
-        return true;
-      });
-      inGroup.forEach(li => taken.add(li.id));
-      result.push({ ...g, items: inGroup });
+    const byCat = new Map();
+    allItems.forEach(li => {
+      if (!byCat.has(li.category)) byCat.set(li.category, { id: li.category, label: li.category, items: [] });
+      byCat.get(li.category).items.push(li);
     });
-    // Anything left over (catalog category we didn't pre-group) gets an
-    // "Other" bucket so nothing is unreachable.
-    const leftovers = allItems.filter(li => !taken.has(li.id));
-    if (leftovers.length) {
-      result.push({ id: 'other', label: 'Other', categories: [], items: leftovers });
-    }
-    return result;
-  }, [groups, allItems]);
+    return Array.from(byCat.values());
+  }, [allItems]);
 
   // Search across all items, flat.
   const searchResults = useMemo(() => {
@@ -7376,6 +7875,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
   const [showAIDraft, setShowAIDraft] = useState(false);
   const [showTemplateMgr, setShowTemplateMgr] = useState(false);
   const [showSendPreview, setShowSendPreview] = useState(false);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
   const saveTimerRef = useRef(null);
   const initialMountRef = useRef(true);
 
@@ -7396,8 +7896,13 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
   if (!quote) return null;
 
   // ── State mutators ──
+  // Grand total EXCLUDES optional sections — that's the wedge feature. Optional
+  // sections show their own subtotal in the editor (and on the PDF) but never
+  // roll into the total the customer signs against.
   const recomputeTotals = (sections, tax = quote.tax || 0) => {
-    const subtotal = sections.reduce((sum, sec) => sum + (sec.subtotal || 0), 0);
+    const subtotal = sections
+      .filter(s => !s.optional)
+      .reduce((sum, sec) => sum + (sec.subtotal || 0), 0);
     return { subtotal: Math.round(subtotal * 100) / 100, tax, total: Math.round((subtotal + tax) * 100) / 100 };
   };
   const recomputeSection = (sec) => {
@@ -7473,6 +7978,47 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
       const next = [...prev.sections];
       const [moved] = next.splice(idx, 1);
       next.splice(target, 0, moved);
+      return { ...prev, sections: next };
+    });
+  };
+  const duplicateSection = (sectionId) => {
+    setQuote(prev => {
+      const idx = prev.sections.findIndex(s => s.id === sectionId);
+      if (idx < 0) return prev;
+      const src = prev.sections[idx];
+      const dup = {
+        ...src,
+        id: `qs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        sectionName: `${src.sectionName} (copy)`,
+        lineItems: (src.lineItems || []).map(li => ({
+          ...li, id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        })),
+      };
+      const next = [...prev.sections];
+      next.splice(idx + 1, 0, dup);
+      const totals = recomputeTotals(next);
+      return { ...prev, sections: next, ...totals };
+    });
+  };
+  const addSubsectionBelow = (sectionId) => {
+    setQuote(prev => {
+      const idx = prev.sections.findIndex(s => s.id === sectionId);
+      if (idx < 0) return prev;
+      const parent = prev.sections[idx];
+      const sub = {
+        id: `qs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        scopeId: null,
+        scopeType: parent.scopeType,
+        sectionName: 'Related work',
+        narrative: '',
+        lineItems: [],
+        subtotal: 0,
+        optional: false,
+        collapsed: false,
+        isSubsection: true,
+      };
+      const next = [...prev.sections];
+      next.splice(idx + 1, 0, sub);
       return { ...prev, sections: next };
     });
   };
@@ -7595,7 +8141,7 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                 style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
               >Save now</button>
               <button
-                onClick={() => { setShowMenu(false); showToast('PDF preview coming next session.'); }}
+                onClick={() => { setShowMenu(false); setShowPdfPreview(true); }}
                 style={{ padding: '10px 12px', minHeight: 40, background: 'transparent', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
               >Preview PDF</button>
               <button
@@ -7770,6 +8316,10 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
                 onRemoveSection={() => removeSection(sec.id)}
                 onMoveUp={() => moveSection(sec.id, -1)}
                 onMoveDown={() => moveSection(sec.id, +1)}
+                onToggleOptional={() => updateSection(sec.id, { optional: !sec.optional })}
+                onToggleCollapse={() => updateSection(sec.id, { collapsed: !sec.collapsed })}
+                onDuplicate={() => duplicateSection(sec.id)}
+                onAddSubsection={() => addSubsectionBelow(sec.id)}
               />
             ))}
 
@@ -7961,15 +8511,13 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
               sectionName={sec?.sectionName || sec?.scopeType || 'section'}
               onPick={(items) => {
                 items.forEach(entry => {
-                  // entry is either a catalog row (no `id` shape compatible with
-                  // line items) or a fully-formed line item from the custom form.
-                  // Detect by presence of `extension`.
+                  // entry is either a catalog row or a fully-formed line item
+                  // from the custom form. Detect by presence of `extension`.
                   if (entry && Object.prototype.hasOwnProperty.call(entry, 'extension')) {
                     addLineItemToSection(showCatalogPicker.sectionId, entry);
                   } else {
                     const qty = getSmartDefaultQty(entry, quote.measurements);
-                    const newLi = instantiateLineItemFromCatalog(entry, qty);
-                    addLineItemToSection(showCatalogPicker.sectionId, newLi);
+                    addLineItemToSection(showCatalogPicker.sectionId, makeLineItem(entry, qty));
                   }
                 });
               }}
@@ -8044,6 +8592,13 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
             onClose={() => setShowSendPreview(false)}
           />
         )}
+        {showPdfPreview && (
+          <PdfPreviewModal
+            quote={quote}
+            target={target}
+            onClose={() => setShowPdfPreview(false)}
+          />
+        )}
       </div>
     </div>
   );
@@ -8054,6 +8609,262 @@ function QuoteDocumentEditor({ target, initialQuote, onSave, onClose, onMarkSign
 // the prospect through every step of what their customer would see: email →
 // share link → signature & deposit → lead-to-project conversion. Does not
 // actually send anything; ends with a "Close Preview" CTA.
+// ─── PDF Preview Modal ──────────────────────────────────────────────────────
+// Customer-facing PDF preview. Renders the quote document the way a customer
+// would see it: company header, bill-to, sections grouped with subtotals,
+// optional sections clearly marked + excluded from the grand total, warranty
+// and payment terms at the bottom. Margins are NEVER rendered here — they
+// only live in the editor view.
+function PdfPreviewModal({ quote, target, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+
+  const billToName = target.kind === 'lead'
+    ? (target.lead?.name || target.customerName)
+    : target.customerName;
+  const billToAddress = target.address || '';
+
+  const sections = quote.sections || [];
+  const grandTotal = sections
+    .filter(s => !s.optional)
+    .reduce((sum, sec) => sum + (sec.subtotal || 0), 0);
+  const optionalTotal = sections
+    .filter(s => s.optional)
+    .reduce((sum, sec) => sum + (sec.subtotal || 0), 0);
+  const hasOptional = sections.some(s => s.optional);
+
+  // Find a "Warranty & Terms" section so we can render its narrative at the
+  // bottom of the PDF instead of mid-document. Falls back to the quote-level
+  // terms string if no such section exists.
+  const warrantySection = sections.find(s =>
+    (s.sectionName || '').toLowerCase().includes('warranty'));
+  const renderableSections = sections.filter(s => s !== warrantySection);
+
+  const overlay = {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1200,
+    display: 'flex', alignItems: 'stretch', justifyContent: 'center', padding: 0,
+  };
+  const modal = {
+    background: '#2A2E36', width: '100%', maxWidth: 820,
+    height: '100dvh', maxHeight: '100dvh',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+  };
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        {/* Top bar */}
+        <div style={{
+          flexShrink: 0, padding: '12px 14px',
+          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 36, height: 36, padding: 0,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8, color: '#FFFFFF', fontSize: 18, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >×</button>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>Customer PDF Preview</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>This is exactly what your customer will see</div>
+          </div>
+        </div>
+
+        {/* Document body (scrollable) */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+          padding: isMobile ? '12px 10px' : '24px',
+          background: '#2A2E36',
+        }}>
+          <div style={{
+            background: '#FFFFFF', color: '#1E2329',
+            margin: '0 auto', maxWidth: 720,
+            padding: isMobile ? '20px 16px' : '36px 40px',
+            borderRadius: 4,
+            boxShadow: '0 6px 24px rgba(0,0,0,0.35)',
+          }}>
+            {/* Company header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 800, letterSpacing: '-0.5px', color: '#1E2329', marginBottom: 4 }}>
+                  {COMPANY_PROFILE.name}
+                </div>
+                <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.5 }}>
+                  {COMPANY_PROFILE.address}<br />
+                  {COMPANY_PROFILE.phone} · {COMPANY_PROFILE.email}<br />
+                  {COMPANY_PROFILE.license}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quote</div>
+                <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 800, color: '#1E2329' }}>{quote.quoteNumber}</div>
+                <div style={{ fontSize: 10, color: '#4A5568', marginTop: 4 }}>Valid through {quote.expirationDate}</div>
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', borderTop: '2px solid #1E2329', margin: '14px 0 18px' }} />
+
+            {/* Bill To */}
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Prepared For</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329' }}>{billToName}</div>
+              {billToAddress && <div style={{ fontSize: 11, color: '#4A5568' }}>{billToAddress}</div>}
+            </div>
+
+            {/* Sections */}
+            {renderableSections.map((sec, idx) => {
+              const isOptional = !!sec.optional;
+              return (
+                <div key={sec.id || idx} style={{
+                  marginBottom: 16,
+                  padding: 12,
+                  background: isOptional ? '#FBF5EE' : 'transparent',
+                  border: isOptional ? '1px dashed rgba(232,114,42,0.5)' : '1px solid rgba(30,35,41,0.1)',
+                  borderRadius: 4,
+                  marginLeft: sec.isSubsection ? 16 : 0,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#1E2329' }}>{sec.sectionName}</span>
+                      {isOptional && (
+                        <span style={{
+                          fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 4,
+                          background: 'rgba(232,114,42,0.15)', color: '#c2410c',
+                          textTransform: 'uppercase', letterSpacing: '0.4px',
+                        }}>Optional add-on</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#1E2329', whiteSpace: 'nowrap' }}>
+                      {fmtCurrency(sec.subtotal || 0)}
+                    </div>
+                  </div>
+                  {sec.narrative && (
+                    <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.55, marginBottom: 8, whiteSpace: 'pre-wrap' }}>
+                      {sec.narrative}
+                    </div>
+                  )}
+                  {(sec.lineItems || []).length > 0 && (
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+                      <tbody>
+                        {sec.lineItems.map(li => (
+                          <tr key={li.id} style={{ borderTop: '1px solid rgba(30,35,41,0.06)' }}>
+                            <td style={{ padding: '4px 6px', color: '#1E2329' }}>
+                              {li.description}
+                              {li.isAllowance && (
+                                <span style={{
+                                  fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
+                                  background: 'rgba(245,158,11,0.18)', color: '#b45309',
+                                  marginLeft: 6, letterSpacing: '0.3px',
+                                }}>Allowance</span>
+                              )}
+                            </td>
+                            <td style={{ padding: '4px 6px', textAlign: 'right', color: '#4A5568', whiteSpace: 'nowrap' }}>
+                              {Number(li.quantity) || 0} {li.unit}
+                            </td>
+                            <td style={{ padding: '4px 6px', textAlign: 'right', color: '#1E2329', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                              {fmtCurrency(li.extension || 0)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Totals */}
+            <div style={{
+              background: '#F8F4EC', border: '2px solid #1E2329',
+              borderRadius: 4, padding: '14px 16px',
+              marginTop: 18, marginBottom: 18,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: '#1E2329' }}>Total</span>
+                <span style={{ fontSize: 22, fontWeight: 800, color: '#1E2329' }}>{fmtCurrency(grandTotal)}</span>
+              </div>
+              {hasOptional && (
+                <div style={{
+                  marginTop: 8, paddingTop: 8,
+                  borderTop: '1px dashed rgba(30,35,41,0.2)',
+                  fontSize: 10, color: '#4A5568', fontStyle: 'italic', lineHeight: 1.55,
+                }}>
+                  Optional add-ons ({fmtCurrency(optionalTotal)} combined) are <strong>not included</strong> in the total above. Add any line item by signing the optional add-on rider.
+                </div>
+              )}
+            </div>
+
+            {/* Warranty & Terms at bottom */}
+            <div style={{
+              paddingTop: 14, marginTop: 14,
+              borderTop: '1px dashed rgba(30,35,41,0.25)',
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                Warranty &amp; Terms
+              </div>
+              <div style={{ fontSize: 11, color: '#1E2329', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                {warrantySection?.narrative || quote.terms || '—'}
+              </div>
+            </div>
+
+            {/* Exclusions */}
+            {(quote.exclusions || []).length > 0 && (
+              <div style={{ marginTop: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                  Not Included
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 11, color: '#4A5568', lineHeight: 1.6 }}>
+                  {quote.exclusions.map((ex, i) => <li key={i}>{ex}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {/* Signature block */}
+            <div style={{
+              marginTop: 28, paddingTop: 18,
+              borderTop: '1px dashed rgba(30,35,41,0.3)',
+              display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
+            }}>
+              <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 28 }}>Customer Signature</div>
+                <div style={{ borderTop: '1px solid #1E2329', paddingTop: 4, fontSize: 10, color: '#4A5568' }}>Sign on file</div>
+              </div>
+              <div style={{ flex: '1 1 120px', minWidth: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 28 }}>Date</div>
+                <div style={{ borderTop: '1px solid #1E2329', paddingTop: 4, fontSize: 10, color: '#4A5568' }}>{quote.signedDate ? quote.signedDate.slice(0, 10) : ''}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          flexShrink: 0, padding: 12,
+          background: '#161B22', borderTop: '1px solid rgba(255,255,255,0.08)',
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: '100%', padding: '14px', minHeight: 48,
+              background: 'linear-gradient(135deg, #E8722A, #e8640c)',
+              border: 'none', borderRadius: 8,
+              color: '#fff', fontSize: 14, fontWeight: 700,
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 10px rgba(249,115,22,0.3)',
+            }}
+          >Done</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CustomerSendPreview({ quote, target, onClose }) {
   useScrollLock();
   const isMobile = useMobile();
@@ -8328,7 +9139,7 @@ ${companyName}`}
 }
 
 // ── Section block (header + bundle pills + line-items + notes) ──
-function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput, cellInputFocus, measurements, quoteMode, onRename, onUpdateNarrative, onUpdateLineItem, onRemoveLineItem, onAddLineItem, onAddBundle, onOpenAIDraft, onRemoveSection, onMoveUp, onMoveDown }) {
+function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput, cellInputFocus, measurements, quoteMode, onRename, onUpdateNarrative, onUpdateLineItem, onRemoveLineItem, onAddLineItem, onAddBundle, onOpenAIDraft, onRemoveSection, onMoveUp, onMoveDown, onToggleOptional, onToggleCollapse, onDuplicate, onAddSubsection }) {
   const [secMenuOpen, setSecMenuOpen] = useState(false);
   const [focusedCell, setFocusedCell] = useState(null);
   const [editingLi, setEditingLi] = useState(null); // line-item being edited in card drawer
@@ -8344,14 +9155,53 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
     ? { ...cellInput, ...cellInputFocus }
     : cellInput;
 
+  const isOptional = !!section.optional;
+  const isCollapsed = !!section.collapsed;
+  const isSubsection = !!section.isSubsection;
+  const menuItem = {
+    padding: '8px 10px', background: 'transparent', border: 'none',
+    borderRadius: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+    textAlign: 'left',
+  };
+
   return (
     <div style={{
-      background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 6,
-      padding: isMobile ? 10 : 14, marginBottom: 12,
+      background: '#FFFFFF',
+      border: isOptional ? '1px dashed rgba(232,114,42,0.55)' : '1px solid #1E2329',
+      borderRadius: 6,
+      padding: isMobile ? 10 : 14,
+      marginBottom: 12,
+      marginLeft: isSubsection ? (isMobile ? 12 : 22) : 0,
       position: 'relative',
+      opacity: isOptional ? 0.92 : 1,
     }}>
       {/* Section header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: isCollapsed ? 0 : 10, flexWrap: 'wrap' }}>
+        <button
+          onClick={onToggleCollapse}
+          aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
+          style={{
+            width: 28, height: 28, padding: 0, flexShrink: 0,
+            background: 'transparent', border: 'none',
+            color: '#1E2329', fontSize: 13, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >{isCollapsed ? '▶' : '▼'}</button>
+        {isSubsection && (
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 8,
+            background: 'rgba(99,102,241,0.15)', color: '#6366f1',
+            textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0,
+          }}>Sub</span>
+        )}
+        {isOptional && (
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 8,
+            background: 'rgba(232,114,42,0.15)', color: '#E8722A',
+            textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0,
+          }}>Optional add-on</span>
+        )}
         <input
           value={section.sectionName || section.scopeType || 'Section'}
           onChange={e => onRename(e.target.value)}
@@ -8381,32 +9231,51 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
             <div style={{
               position: 'absolute', top: 'calc(100% + 4px)', right: 0,
               background: '#FFFFFF', border: '1px solid #1E2329', borderRadius: 8,
-              padding: 4, minWidth: 160, zIndex: 6,
+              padding: 4, minWidth: 200, zIndex: 6,
               boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
               display: 'flex', flexDirection: 'column', gap: 2,
             }}>
               <button
+                onClick={() => { setSecMenuOpen(false); onToggleOptional && onToggleOptional(); }}
+                style={{ ...menuItem, color: isOptional ? '#E8722A' : '#1E2329' }}
+              >{isOptional ? '✓ Marked Optional' : 'Mark Optional'}</button>
+              <button
+                onClick={() => { setSecMenuOpen(false); onDuplicate && onDuplicate(); }}
+                style={{ ...menuItem, color: '#1E2329' }}
+              >⎘ Duplicate</button>
+              <button
+                onClick={() => { setSecMenuOpen(false); onAddSubsection && onAddSubsection(); }}
+                style={{ ...menuItem, color: '#1E2329' }}
+              >+ Add sub-section</button>
+              <div style={{ height: 1, background: 'rgba(30,35,41,0.1)', margin: '4px 0' }} />
+              <button
                 disabled={index === 0}
                 onClick={() => { setSecMenuOpen(false); onMoveUp(); }}
-                style={{ padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: 4, color: index === 0 ? '#9CA3AF' : '#1E2329', fontSize: 12, fontWeight: 600, cursor: index === 0 ? 'not-allowed' : 'pointer', textAlign: 'left' }}
+                style={{ ...menuItem, color: index === 0 ? '#9CA3AF' : '#1E2329', cursor: index === 0 ? 'not-allowed' : 'pointer' }}
               >↑ Move up</button>
               <button
                 disabled={index === totalSections - 1}
                 onClick={() => { setSecMenuOpen(false); onMoveDown(); }}
-                style={{ padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: 4, color: index === totalSections - 1 ? '#9CA3AF' : '#1E2329', fontSize: 12, fontWeight: 600, cursor: index === totalSections - 1 ? 'not-allowed' : 'pointer', textAlign: 'left' }}
+                style={{ ...menuItem, color: index === totalSections - 1 ? '#9CA3AF' : '#1E2329', cursor: index === totalSections - 1 ? 'not-allowed' : 'pointer' }}
               >↓ Move down</button>
+              <div style={{ height: 1, background: 'rgba(30,35,41,0.1)', margin: '4px 0' }} />
               <button
                 onClick={() => {
                   setSecMenuOpen(false);
                   // eslint-disable-next-line no-restricted-globals
                   if (window.confirm('Delete this section?')) onRemoveSection();
                 }}
-                style={{ padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: 4, color: '#ef4444', fontSize: 12, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
+                style={{ ...menuItem, color: '#ef4444', fontWeight: 700 }}
               >× Delete section</button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Everything below the header is hidden when collapsed. Subtotal + pill
+          stay visible above so the row reads like a single-line collapsed
+          summary. */}
+      {!isCollapsed && (<>
 
       {/* Quick Bundle pills — single-tap drops a packaged set of items in */}
       {sectionBundles.length > 0 && (
@@ -8565,7 +9434,15 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
                     />
                   </td>
                   <td style={{ padding: '4px 8px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#1E2329', whiteSpace: 'nowrap' }}>
-                    {fmtCurrency(li.extension || 0)}
+                    <div>{fmtCurrency(li.extension || 0)}</div>
+                    {li.margin != null && (
+                      <div style={{
+                        fontSize: 9, fontWeight: 700, color: '#6b7280',
+                        marginTop: 2, letterSpacing: '0.3px',
+                      }} title="Internal margin — not shown on the customer PDF">
+                        m {Number(li.margin)}%
+                      </div>
+                    )}
                   </td>
                   <td style={{ padding: '4px 4px', textAlign: 'center' }}>
                     <button
@@ -8612,6 +9489,8 @@ function QuoteSectionBlock({ section, index, totalSections, isMobile, cellInput,
           }}
         />
       </div>
+
+      </>)}
 
       {editingLi && (
         <LineItemEditDrawer
@@ -8689,9 +9568,25 @@ function LineItemCard({ item, onTap, onRemove }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, color: '#1E2329', fontWeight: 600, lineHeight: 1.35, overflowWrap: 'anywhere' }}>
               {item.description || '(no description)'}
+              {item.isAllowance && (
+                <span style={{
+                  fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                  background: 'rgba(245,158,11,0.18)', color: '#b45309',
+                  textTransform: 'uppercase', letterSpacing: '0.4px', marginLeft: 6,
+                }}>Allowance</span>
+              )}
             </div>
-            <div style={{ fontSize: 11, color: '#4A5568', marginTop: 4 }}>
-              {Number(item.quantity) || 0} × ${(Number(item.unitPrice) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · {item.unit}
+            <div style={{ fontSize: 11, color: '#4A5568', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <span>{Number(item.quantity) || 0} × ${(Number(item.unitPrice) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · {item.unit}</span>
+              {item.margin != null && (
+                <span style={{
+                  fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                  background: 'rgba(30,35,41,0.07)', color: '#6b7280',
+                  letterSpacing: '0.3px',
+                }} title="Internal margin — not shown on the customer PDF">
+                  m {Number(item.margin)}%
+                </span>
+              )}
             </div>
           </div>
           <div style={{ fontSize: 13, fontWeight: 800, color: '#1E2329', whiteSpace: 'nowrap', flexShrink: 0 }}>
@@ -8712,6 +9607,7 @@ function LineItemEditDrawer({ item, onSave, onClose, onRemove }) {
     unit: item?.unit || 'EA',
     unitPrice: item?.unitPrice ?? 0,
     notes: item?.notes || '',
+    margin: item?.margin != null ? item.margin : DEFAULT_MARGIN,
   });
 
   const inputStyle = {
@@ -8797,6 +9693,16 @@ function LineItemEditDrawer({ item, onSave, onClose, onRemove }) {
               inputMode="decimal"
               value={draft.unitPrice}
               onChange={e => setDraft(p => ({ ...p, unitPrice: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <div style={label}>Internal margin %  <span style={{ color: '#9CA3AF', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }}>(never shown to customer)</span></div>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={draft.margin}
+              onChange={e => setDraft(p => ({ ...p, margin: Number(e.target.value) || 0 }))}
               style={inputStyle}
             />
           </div>
@@ -10668,7 +11574,7 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
         />
       )}
       {newQuoteFlow?.step === 'template' && newQuoteFlow.target && (
-        <QuoteTemplatePicker
+        <QuoteModePickerModal
           target={newQuoteFlow.target}
           onPick={(quote) => setNewQuoteFlow({ ...newQuoteFlow, step: 'editor', quote })}
           onClose={() => setNewQuoteFlow(null)}
@@ -11031,534 +11937,6 @@ function NewCustomerQuickForm({ onCancel, onCreate }) {
   );
 }
 
-// ─── Quote Agent (Claude-powered quote generation) ───────────────────────────
-// Retained here from Session 1; Phase 3 of the editor sprint repositions it
-// as the AI Draft side-panel tool inside QuoteDocumentEditor.
-// eslint-disable-next-line no-unused-vars
-function QuoteAgent({ project, lead, initialQuote, onSaveDraft, onMarkSigned, onConvertToProject, onClose }) {
-  useScrollLock();
-  const isMobile = useMobile();
-  const showToast = useToast();
-
-  // Normalize whichever parent was passed into a single `target` shape so the
-  // rest of the component is agnostic to lead vs project. The Save Draft path
-  // re-anchors to the right id field based on target.kind.
-  const target = lead
-    ? { kind: 'lead', id: lead.id, customerName: lead.name, address: lead.address || '' }
-    : { kind: 'project', id: project.id, customerName: project.customerName, address: project.address || '' };
-
-  const [conversation, setConversation] = useState(
-    Array.isArray(initialQuote?.agentConversation) ? initialQuote.agentConversation : []
-  );
-  const [input, setInput] = useState('');
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
-  const [quoteDraft, setQuoteDraft] = useState(() => {
-    if (!initialQuote) return null;
-    // Strip persistent quote-level fields (id, quoteNumber, status, etc.)
-    // and keep the agent-editable shape so re-merge is clean
-    return {
-      mode: initialQuote.mode,
-      sections: initialQuote.sections || [],
-      subtotal: initialQuote.subtotal || 0,
-      tax: initialQuote.tax || 0,
-      total: initialQuote.total || 0,
-      terms: initialQuote.terms || '',
-      exclusions: initialQuote.exclusions || [],
-      alternates: initialQuote.alternates || [],
-      paymentSchedule: initialQuote.paymentSchedule || [],
-    };
-  });
-  const [previewCollapsed, setPreviewCollapsed] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const convoEndRef = useRef(null);
-  const textAreaRef = useRef(null);
-  const recognitionRef = useRef(null);
-  const baseTextRef = useRef('');
-  const speechSupported = typeof window !== 'undefined'
-    && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-
-  // Tear down any active recognition on unmount so the modal closing doesn't
-  // leave the mic hot.
-  useEffect(() => {
-    return () => {
-      if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch (_e) { /* noop */ }
-        recognitionRef.current = null;
-      }
-    };
-  }, []);
-
-  const startListening = () => {
-    if (!speechSupported || isListening || sending) return;
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let rec;
-    try { rec = new SR(); } catch (_e) { return; }
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.lang = 'en-US';
-    baseTextRef.current = input.trim() ? input.trim() + ' ' : '';
-    rec.onresult = (event) => {
-      let interim = '';
-      let final = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const r = event.results[i];
-        if (r.isFinal) final += r[0].transcript;
-        else interim += r[0].transcript;
-      }
-      setInput(baseTextRef.current + final + interim);
-    };
-    rec.onerror = () => { setIsListening(false); };
-    rec.onend = () => { setIsListening(false); recognitionRef.current = null; };
-    recognitionRef.current = rec;
-    setIsListening(true);
-    try { rec.start(); } catch (_e) { setIsListening(false); recognitionRef.current = null; }
-  };
-
-  const stopListening = () => {
-    if (!recognitionRef.current) {
-      setIsListening(false);
-      return;
-    }
-    try { recognitionRef.current.stop(); } catch (_e) { /* noop */ }
-  };
-
-  useEffect(() => {
-    if (convoEndRef.current) convoEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  }, [conversation]);
-
-  const send = async () => {
-    const text = input.trim();
-    if (!text || sending) return;
-    const userTurn = { role: 'user', timestamp: new Date().toISOString(), content: text };
-    setConversation(prev => [...prev, userTurn]);
-    setInput('');
-    setSending(true);
-    setError('');
-    try {
-      const res = await fetch('/api/quote-agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectContext: {
-            customerName: target.customerName,
-            address: target.address,
-            parentKind: target.kind,
-          },
-          mode: quoteDraft?.mode || 'residential',
-          userMessage: text,
-          conversationHistory: conversation,
-          currentQuoteDraft: quoteDraft,
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError(data.error || 'AI service is temporarily unavailable.');
-        setConversation(prev => prev.slice(0, -1)); // pop the user turn so they can retry
-        setInput(text);
-        return;
-      }
-      const assistantTurn = {
-        role: 'assistant',
-        timestamp: new Date().toISOString(),
-        content: data.agentMessage || '',
-      };
-      setConversation(prev => [...prev, assistantTurn]);
-      if (data.updatedQuoteDraft) {
-        const normalized = normalizeQuoteDraft(data.updatedQuoteDraft);
-        setQuoteDraft(prev => mergeQuoteDraft(prev, normalized));
-      }
-    } catch (_e) {
-      setError("Couldn't reach the AI service. Try again.");
-      setConversation(prev => prev.slice(0, -1));
-      setInput(text);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
-  };
-
-  const handleSaveDraft = () => {
-    if (!quoteDraft || !quoteDraft.sections || quoteDraft.sections.length === 0) {
-      showToast('Describe the job first — the agent needs something to quote.');
-      return;
-    }
-    if (initialQuote && initialQuote.id) {
-      onSaveDraft({
-        ...initialQuote,
-        ...quoteDraft,
-        agentConversation: conversation,
-      });
-    } else {
-      onSaveDraft({
-        id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        quoteNumber: generateQuoteNumber(),
-        leadId: target.kind === 'lead' ? target.id : null,
-        projectId: target.kind === 'project' ? target.id : null,
-        mode: quoteDraft.mode,
-        status: 'draft',
-        createdDate: new Date().toISOString(),
-        sentDate: null, viewedDate: null, signedDate: null,
-        expirationDate: (() => { const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10); })(),
-        subtotal: quoteDraft.subtotal, tax: quoteDraft.tax, total: quoteDraft.total,
-        sections: quoteDraft.sections,
-        attachments: [], signature: null,
-        depositAmount: 0, depositPaid: false, paymentIntentId: null,
-        shareToken: generateShareToken(),
-        terms: quoteDraft.terms,
-        exclusions: quoteDraft.exclusions,
-        alternates: quoteDraft.alternates,
-        paymentSchedule: quoteDraft.paymentSchedule,
-        customerInteractions: [],
-        agentConversation: conversation,
-      });
-    }
-    showToast('Draft saved.');
-  };
-
-  const overlay = { ...S.overlay, padding: 0, alignItems: 'stretch', justifyContent: 'stretch' };
-  const modal = {
-    background: '#1E2329', border: 'none', borderRadius: 0,
-    width: '100%', height: '100dvh', maxWidth: '100vw', maxHeight: '100dvh',
-    margin: 0, padding: 0, position: 'relative',
-    display: 'flex', flexDirection: 'column', overflow: 'hidden',
-  };
-
-  return (
-    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div style={modal} onClick={e => e.stopPropagation()}>
-
-        {/* Header */}
-        <div style={{
-          flexShrink: 0, padding: '12px 14px',
-          background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.08)',
-          display: 'flex', alignItems: 'center', gap: 10,
-        }}>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            style={{
-              width: 36, height: 36, padding: 0, flexShrink: 0,
-              background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 8, color: '#FFFFFF',
-              fontSize: 18, lineHeight: 1, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >×</button>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span>Quoting for</span>
-              <span style={{
-                fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
-                background: target.kind === 'lead' ? 'rgba(232,114,42,0.18)' : 'rgba(45,80,22,0.25)',
-                color: target.kind === 'lead' ? '#E8722A' : '#7cb342',
-                letterSpacing: '0.5px',
-              }}>{target.kind.toUpperCase()}</span>
-            </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.customerName}</div>
-            <div style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.address}</div>
-          </div>
-          <button
-            onClick={handleSaveDraft}
-            style={{
-              padding: '8px 12px', minHeight: 36, flexShrink: 0,
-              background: quoteDraft && quoteDraft.sections.length > 0
-                ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'rgba(255,255,255,0.06)',
-              border: 'none', borderRadius: 8,
-              color: quoteDraft && quoteDraft.sections.length > 0 ? '#fff' : '#D1D5DB',
-              fontWeight: 700, fontSize: 12, cursor: 'pointer',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >Save Draft</button>
-        </div>
-
-        {/* Live quote preview (collapsible) */}
-        {quoteDraft && quoteDraft.sections && quoteDraft.sections.length > 0 && (
-          <div style={{ flexShrink: 0, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <div
-              onClick={() => setPreviewCollapsed(v => !v)}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
-                padding: '10px 14px', cursor: 'pointer', background: '#252b36',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                <span style={{ fontSize: 10, color: '#9CA3AF' }}>{previewCollapsed ? '▶' : '▼'}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Quote</span>
-                <span style={{
-                  fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
-                  background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
-                  textTransform: 'uppercase', letterSpacing: '0.4px',
-                }}>{quoteDraft.mode}</span>
-              </div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>{fmt(quoteDraft.total || quoteDraft.subtotal || 0)}</div>
-            </div>
-            {!previewCollapsed && (
-              <div style={{
-                padding: '10px 14px 14px', maxHeight: '32dvh', overflowY: 'auto',
-                WebkitOverflowScrolling: 'touch',
-              }}>
-                {quoteDraft.sections.map((sec) => (
-                  <div key={sec.id} style={{
-                    background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 8, padding: '10px 12px', marginBottom: 8,
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sec.scopeType}</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>{fmt(sec.subtotal || 0)}</div>
-                    </div>
-                    {sec.narrative && (
-                      <div style={{ fontSize: 11, color: '#D1D5DB', marginBottom: 8, lineHeight: 1.45 }}>{sec.narrative}</div>
-                    )}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {sec.lineItems.map(li => (
-                        <div key={li.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 11, color: '#D1D5DB' }}>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis' }}>{li.description}</div>
-                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{li.quantity} {li.unit} × {fmt(li.unitPrice)} · {li.category}</div>
-                          </div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>{fmt(li.extension)}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px 0', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }}>
-                  <span style={{ fontSize: 11, color: '#D1D5DB' }}>Subtotal</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{fmt(quoteDraft.subtotal || 0)}</span>
-                </div>
-                {quoteDraft.tax > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 4px 0' }}>
-                    <span style={{ fontSize: 11, color: '#D1D5DB' }}>Tax</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{fmt(quoteDraft.tax)}</span>
-                  </div>
-                )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 4px 0' }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>Total</span>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: '#22c55e' }}>{fmt(quoteDraft.total || quoteDraft.subtotal || 0)}</span>
-                </div>
-
-                {/* Placeholder actions for later sessions */}
-                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                  <button
-                    onClick={() => showToast('Manual editor coming next session')}
-                    style={{
-                      flex: 1, padding: '8px 10px', minHeight: 36,
-                      background: 'transparent', border: '1px solid rgba(255,255,255,0.15)',
-                      borderRadius: 7, color: '#D1D5DB', fontSize: 12, fontWeight: 600,
-                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                    }}
-                  >Edit manually</button>
-                  <button
-                    onClick={() => showToast('Review & send coming next session')}
-                    style={{
-                      flex: 1, padding: '8px 10px', minHeight: 36,
-                      background: 'linear-gradient(135deg, #E8722A, #e8640c)',
-                      border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontWeight: 700,
-                      cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                    }}
-                  >Looks good — review & send</button>
-                </div>
-
-                {/* Lead → Project conversion testing path (replaced in Session 2
-                   by the real customer-signature trigger on the share page) */}
-                {target.kind === 'lead' && initialQuote && initialQuote.id && (
-                  <div style={{
-                    marginTop: 12, paddingTop: 10,
-                    borderTop: '1px dashed rgba(255,255,255,0.1)',
-                    display: 'flex', flexDirection: 'column', gap: 6,
-                  }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      Debug — Lead → Project conversion
-                    </div>
-                    {initialQuote.status === 'draft' && (
-                      <button
-                        onClick={() => {
-                          if (onMarkSigned) {
-                            onMarkSigned({ ...initialQuote, sections: quoteDraft?.sections || initialQuote.sections, subtotal: quoteDraft?.subtotal || initialQuote.subtotal, total: quoteDraft?.total || initialQuote.total });
-                            showToast('Quote marked as signed — reopen to convert.');
-                            onClose();
-                          }
-                        }}
-                        style={{
-                          padding: '8px 12px', minHeight: 36,
-                          background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.4)',
-                          borderRadius: 7, color: '#22c55e', fontSize: 12, fontWeight: 700,
-                          cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                        }}
-                      >✓ Mark as Signed (debug)</button>
-                    )}
-                    {initialQuote.status === 'signed' && (
-                      <button
-                        onClick={() => {
-                          // eslint-disable-next-line no-restricted-globals
-                          const ok = window.confirm(
-                            'This will create a new Project from this signed quote and move the lead out of the pipeline. Proceed?'
-                          );
-                          if (!ok) return;
-                          if (onConvertToProject) onConvertToProject(lead, initialQuote);
-                        }}
-                        style={{
-                          padding: '8px 12px', minHeight: 36,
-                          background: 'linear-gradient(135deg, #2D5016, #3d6b1e)',
-                          border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontWeight: 700,
-                          cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                          boxShadow: '0 2px 8px rgba(45,80,22,0.35)',
-                        }}
-                      >→ Convert Lead to Project</button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Conversation */}
-        <div style={{
-          flex: 1, minHeight: 0, overflowY: 'auto',
-          padding: '12px 14px', WebkitOverflowScrolling: 'touch',
-        }}>
-          {conversation.length === 0 && (
-            <div style={{
-              padding: '32px 16px', textAlign: 'center',
-              color: '#D1D5DB', fontSize: 13, lineHeight: 1.5,
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>✦</div>
-              <div style={{ fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>Describe the job</div>
-              <div>Tap the mic or just type. Tell me layers, squares, pitch, materials, anything else worth pricing in — I'll draft the quote.</div>
-            </div>
-          )}
-          {conversation.map((m, i) => (
-            <div key={i} style={{
-              display: 'flex', flexDirection: 'column',
-              alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
-              marginBottom: 12,
-            }}>
-              <div style={{
-                maxWidth: '88%',
-                padding: '10px 14px', borderRadius: 12,
-                background: m.role === 'user' ? 'linear-gradient(135deg, #E8722A, #e8640c)' : '#2A3140',
-                border: m.role === 'assistant' ? '1px solid rgba(255,255,255,0.08)' : 'none',
-                color: '#FFFFFF', fontSize: 13, lineHeight: 1.5,
-                overflowWrap: 'anywhere', wordBreak: 'break-word',
-                whiteSpace: 'pre-wrap',
-              }}>{m.content}</div>
-              <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 3 }}>
-                {m.role === 'user' ? 'You' : 'Quote Agent'}
-              </div>
-            </div>
-          ))}
-          {sending && (
-            <div style={{
-              maxWidth: '88%', padding: '10px 14px', borderRadius: 12,
-              background: '#2A3140', border: '1px solid rgba(255,255,255,0.08)',
-              color: '#D1D5DB', fontSize: 13, lineHeight: 1.5,
-              display: 'flex', alignItems: 'center', gap: 8,
-            }}>
-              <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#E8722A', animation: 'ri-spin 0.8s linear infinite' }} />
-              Drafting…
-            </div>
-          )}
-          {error && (
-            <div style={{
-              padding: '10px 14px', borderRadius: 8,
-              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-              color: '#f87171', fontSize: 12, marginTop: 6,
-            }}>{error}</div>
-          )}
-          <div ref={convoEndRef} />
-        </div>
-
-        {/* Composer */}
-        <div style={{
-          flexShrink: 0, padding: '10px 12px 12px',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-          background: '#161B22',
-          display: 'flex', alignItems: 'flex-end', gap: 8,
-        }}>
-          <textarea
-            ref={textAreaRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Describe the job…"
-            rows={1}
-            disabled={sending}
-            style={{
-              flex: 1, minHeight: 44, maxHeight: 120,
-              padding: isMobile ? '11px 12px' : '8px 12px',
-              background: '#2A3140', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-              color: '#FFFFFF', fontSize: isMobile ? 16 : 13,
-              fontFamily: "'Inter', -apple-system, sans-serif",
-              lineHeight: 1.4, outline: 'none', resize: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-          {speechSupported && (
-            <button
-              type="button"
-              title={isListening ? 'Release to send' : 'Press and hold to record'}
-              aria-label="Voice input — press and hold to record"
-              aria-pressed={isListening}
-              onPointerDown={e => { e.preventDefault(); startListening(); }}
-              onPointerUp={() => stopListening()}
-              onPointerLeave={() => { if (isListening) stopListening(); }}
-              onPointerCancel={() => stopListening()}
-              disabled={sending}
-              style={{
-                width: 56, height: 56, padding: 0, flexShrink: 0,
-                background: isListening
-                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                  : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${isListening ? '#ef4444' : 'rgba(255,255,255,0.12)'}`,
-                borderRadius: '50%',
-                color: isListening ? '#fff' : '#D1D5DB',
-                fontSize: 22, lineHeight: 1,
-                cursor: sending ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                position: 'relative',
-                transition: 'background 0.15s, border-color 0.15s, color 0.15s',
-                boxShadow: isListening ? '0 0 0 4px rgba(239,68,68,0.25)' : 'none',
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'none',
-                userSelect: 'none',
-              }}
-            >
-              {isListening && (
-                <span style={{
-                  position: 'absolute', top: 6, right: 6,
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: '#fff',
-                  animation: 'ri-pulse 1.1s ease-in-out infinite',
-                }} />
-              )}
-              🎤
-            </button>
-          )}
-          <button
-            onClick={send}
-            disabled={!input.trim() || sending}
-            style={{
-              minWidth: 64, minHeight: 44, padding: '0 14px', flexShrink: 0,
-              background: input.trim() && !sending
-                ? 'linear-gradient(135deg, #E8722A, #e8640c)' : 'rgba(255,255,255,0.06)',
-              border: 'none', borderRadius: 10,
-              color: input.trim() && !sending ? '#fff' : '#D1D5DB',
-              fontSize: 13, fontWeight: 700,
-              cursor: input.trim() && !sending ? 'pointer' : 'not-allowed',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >Send</button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function JobsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms }) {
   const [selectedJob, setSelectedJob] = useState(null);
