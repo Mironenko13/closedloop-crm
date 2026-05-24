@@ -3406,7 +3406,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
   const [tradeFilter, setTradeFilter] = useState('all');
   const [dragOver, setDragOver] = useState(null);
   const [quickEditLead, setQuickEditLead] = useState(null);
-  const [quoteAgentLead, setQuoteAgentLead] = useState(null);
+  const [quoteEditLead, setQuoteEditLead] = useState(null);
   const showToast = useToast();
   const isMobile = useMobile();
 
@@ -3728,50 +3728,50 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             setQuickEditLead(null);
             if (existingQuote) {
               // Opening an existing draft → go straight to the editor
-              setQuoteAgentLead({ lead, quote: existingQuote, picker: false });
+              setQuoteEditLead({ lead, quote: existingQuote, picker: false });
             } else {
               // New quote → show template picker first
-              setQuoteAgentLead({ lead, quote: null, picker: true });
+              setQuoteEditLead({ lead, quote: null, picker: true });
             }
           }}
         />
       )}
 
-      {quoteAgentLead && quoteAgentLead.picker && (
+      {quoteEditLead && quoteEditLead.picker && (
         <QuoteModePickerModal
           target={{
-            kind: 'lead', id: quoteAgentLead.lead.id,
-            customerName: quoteAgentLead.lead.name,
-            address: quoteAgentLead.lead.address || '',
-            lead: quoteAgentLead.lead,
+            kind: 'lead', id: quoteEditLead.lead.id,
+            customerName: quoteEditLead.lead.name,
+            address: quoteEditLead.lead.address || '',
+            lead: quoteEditLead.lead,
           }}
-          onPick={(quote) => setQuoteAgentLead({ ...quoteAgentLead, quote, picker: false })}
-          onClose={() => setQuoteAgentLead(null)}
+          onPick={(quote) => setQuoteEditLead({ ...quoteEditLead, quote, picker: false })}
+          onClose={() => setQuoteEditLead(null)}
         />
       )}
 
-      {quoteAgentLead && !quoteAgentLead.picker && quoteAgentLead.quote && (
+      {quoteEditLead && !quoteEditLead.picker && quoteEditLead.quote && (
         <QuoteDocumentEditor
           target={{
-            kind: 'lead', id: quoteAgentLead.lead.id,
-            customerName: quoteAgentLead.lead.name,
-            address: quoteAgentLead.lead.address || '',
-            lead: quoteAgentLead.lead,
+            kind: 'lead', id: quoteEditLead.lead.id,
+            customerName: quoteEditLead.lead.name,
+            address: quoteEditLead.lead.address || '',
+            lead: quoteEditLead.lead,
           }}
-          initialQuote={quoteAgentLead.quote}
+          initialQuote={quoteEditLead.quote}
           onSave={(quote) => {
             if (onSaveQuote) onSaveQuote(quote);
             // Keep editor open after auto-save; just refresh local quote
-            setQuoteAgentLead(prev => prev ? { ...prev, quote } : prev);
+            setQuoteEditLead(prev => prev ? { ...prev, quote } : prev);
           }}
           onMarkSigned={(quote) => { if (onSaveQuote) onSaveQuote(quote); }}
           onConvertToProject={(lead, signedQuote) => {
             if (onConvertLead) {
               onConvertLead(lead, signedQuote);
-              setQuoteAgentLead(null);
+              setQuoteEditLead(null);
             }
           }}
-          onClose={() => setQuoteAgentLead(null)}
+          onClose={() => setQuoteEditLead(null)}
         />
       )}
     </div>
@@ -6036,7 +6036,7 @@ function deriveProjectStatusFromJobs(scopes) {
 function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, quotes, onSaveQuote }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [quoteAgentProject, setQuoteAgentProject] = useState(null);
+  const [quoteEditProject, setQuoteEditProject] = useState(null);
   const [filter, setFilter] = useState('all');
   const [tradeFilter, setTradeFilter] = useState('all');
 
@@ -6198,8 +6198,8 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
           quotes={quotes}
           onClose={() => setSelectedProject(null)}
           onSelectScope={(scope) => { setSelectedJob(scope); }}
-          onNewQuote={(project) => setQuoteAgentProject({ project, quote: null, picker: true })}
-          onOpenQuote={(quote, project) => setQuoteAgentProject({ project, quote, picker: false })}
+          onNewQuote={(project) => setQuoteEditProject({ project, quote: null, picker: true })}
+          onOpenQuote={(quote, project) => setQuoteEditProject({ project, quote, picker: false })}
         />
       )}
 
@@ -6223,33 +6223,33 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
         />
       )}
 
-      {quoteAgentProject && quoteAgentProject.picker && (
+      {quoteEditProject && quoteEditProject.picker && (
         <QuoteModePickerModal
           target={{
-            kind: 'project', id: quoteAgentProject.project.id,
-            customerName: quoteAgentProject.project.customerName,
-            address: quoteAgentProject.project.address,
-            project: quoteAgentProject.project,
+            kind: 'project', id: quoteEditProject.project.id,
+            customerName: quoteEditProject.project.customerName,
+            address: quoteEditProject.project.address,
+            project: quoteEditProject.project,
           }}
-          onPick={(quote) => setQuoteAgentProject({ ...quoteAgentProject, quote, picker: false })}
-          onClose={() => setQuoteAgentProject(null)}
+          onPick={(quote) => setQuoteEditProject({ ...quoteEditProject, quote, picker: false })}
+          onClose={() => setQuoteEditProject(null)}
         />
       )}
 
-      {quoteAgentProject && !quoteAgentProject.picker && quoteAgentProject.quote && (
+      {quoteEditProject && !quoteEditProject.picker && quoteEditProject.quote && (
         <QuoteDocumentEditor
           target={{
-            kind: 'project', id: quoteAgentProject.project.id,
-            customerName: quoteAgentProject.project.customerName,
-            address: quoteAgentProject.project.address,
-            project: quoteAgentProject.project,
+            kind: 'project', id: quoteEditProject.project.id,
+            customerName: quoteEditProject.project.customerName,
+            address: quoteEditProject.project.address,
+            project: quoteEditProject.project,
           }}
-          initialQuote={quoteAgentProject.quote}
+          initialQuote={quoteEditProject.quote}
           onSave={(quote) => {
             if (onSaveQuote) onSaveQuote(quote);
-            setQuoteAgentProject(prev => prev ? { ...prev, quote } : prev);
+            setQuoteEditProject(prev => prev ? { ...prev, quote } : prev);
           }}
-          onClose={() => setQuoteAgentProject(null)}
+          onClose={() => setQuoteEditProject(null)}
         />
       )}
     </div>
