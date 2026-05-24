@@ -6979,6 +6979,14 @@ function buildCommercialSections() {
   ];
 }
 
+// Named template constants, per the "Finish the Quote Builder" spec. These
+// expose the section-scaffold output as plain arrays so callers (or future
+// surfaces like a template editor) can introspect the section list without
+// invoking the build function. Sections themselves are still id-stamped /
+// subtotaled when materialised through buildQuoteFromMode.
+export const RESIDENTIAL_TEMPLATE = buildResidentialSections();
+export const COMMERCIAL_TEMPLATE = buildCommercialSections();
+
 // Materialise a fresh quote from a mode template. Stamps section + line item
 // ids, computes subtotals/total (excluding optional sections from the total),
 // and anchors to a lead or project per the target.
