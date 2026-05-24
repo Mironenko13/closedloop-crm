@@ -26,7 +26,6 @@ import {
   loadUserQuoteTemplates, saveUserQuoteTemplates,
   loadUserBundles, saveUserBundles,
   instantiateSectionFromTemplate,
-  instantiateQuoteFromTemplate,
   instantiateLineItemFromCatalog,
   instantiateBundle,
 } from './data/quoteLibraries';
@@ -6501,29 +6500,9 @@ function normalizeQuoteDraft(draft) {
   };
 }
 
-// eslint-disable-next-line no-unused-vars
-function mergeQuoteDraft(existing, fromAgent) {
-  if (!fromAgent) return existing;
-  if (!existing) return fromAgent;
-  return {
-    ...existing,
-    mode: fromAgent.mode,
-    sections: fromAgent.sections,
-    subtotal: fromAgent.subtotal,
-    tax: fromAgent.tax,
-    total: fromAgent.total,
-    terms: fromAgent.terms,
-    exclusions: fromAgent.exclusions,
-    alternates: fromAgent.alternates,
-    paymentSchedule: fromAgent.paymentSchedule,
-  };
-}
-
 // ─── Quote Document Editor — primary "New Quote" surface ────────────────────
-// Document-style editor. Replaces the QuoteAgent chat as the entry path for
-// "+ New Quote" (the chat agent moves to a side-panel tool in Phase 3).
-// Mobile-first; the document body scrolls vertically while the top/bottom
-// bars stay sticky.
+// Document-style editor: the document body scrolls vertically while the
+// top/bottom bars stay sticky. Mobile-first.
 
 const COMPANY_PROFILE = {
   name: 'EQUITY ROOFING',
@@ -7140,35 +7119,6 @@ function QuoteModePickerModal({ target, onPick, onClose }) {
   );
 }
 
-function buildQuoteFromTemplate(template, target) {
-  const partial = instantiateQuoteFromTemplate(template, getAllSectionTemplates());
-  const now = new Date();
-  const exp = new Date(now); exp.setDate(exp.getDate() + 30);
-  return {
-    id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    quoteNumber: generateQuoteNumber(),
-    leadId: target.kind === 'lead' ? target.id : null,
-    projectId: target.kind === 'project' ? target.id : null,
-    mode: partial.mode || 'residential',
-    status: 'draft',
-    createdDate: now.toISOString(),
-    sentDate: null, viewedDate: null, signedDate: null,
-    expirationDate: exp.toISOString().slice(0, 10),
-    subtotal: partial.subtotal, tax: partial.tax || 0, total: partial.total,
-    sections: partial.sections,
-    attachments: [], signature: null,
-    depositAmount: 0, depositPaid: false, paymentIntentId: null,
-    shareToken: generateShareToken(),
-    terms: partial.terms,
-    exclusions: partial.exclusions,
-    included: partial.included,
-    alternates: partial.alternates || [],
-    paymentSchedule: partial.paymentSchedule || [],
-    customerInteractions: [], agentConversation: [],
-    measurements: null,
-  };
-}
-
 // Smart default quantity for a line item given roof measurements. Maps
 // catalog units → measurement fields by both unit and description keywords.
 // When measurements are absent or the unit isn't measurement-driven, falls
@@ -7311,149 +7261,6 @@ function MeasurementsBar({ measurements, onChange, isMobile }) {
     </div>
   );
 }
-
-// ── Legacy template picker — superseded by QuoteModePickerModal. Kept so the
-// "Manage Templates" deep-link from the Settings flow still resolves if any
-// future surface needs to invoke the user-saved-template grid directly. ──
-// eslint-disable-next-line no-unused-vars
-function QuoteTemplatePicker({ target, onPick, onClose, onManageTemplates }) {
-  useScrollLock();
-  const isMobile = useMobile();
-  const [modeTab, setModeTab] = useState('residential');
-  const [showMgr, setShowMgr] = useState(false);
-  const [refreshTick, setRefreshTick] = useState(0);
-  const quoteTemplates = useMemo(() => getAllQuoteTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
-  const sectionTemplates = useMemo(() => getAllSectionTemplates(), [refreshTick]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const filtered = quoteTemplates.filter(t => t.mode === modeTab);
-  const sectionNamesFor = (t) => (t.defaultSections || []).map(refSec => {
-    const st = sectionTemplates.find(s => s.id === refSec.sectionTemplateId);
-    return st ? st.name : refSec.scopeType;
-  });
-
-  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
-  const modal = isMobile
-    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
-    : { ...S.modal, maxWidth: 720 };
-
-  const pickTemplate = (template) => {
-    const quote = buildQuoteFromTemplate(template, target);
-    onPick(quote);
-  };
-  const pickBlank = () => {
-    const quote = buildQuoteFromTemplate({
-      id: 'blank',
-      name: 'Blank Quote',
-      mode: modeTab,
-      defaultSections: [],
-      defaultTerms: modeTab === 'commercial' ? DEFAULT_TERMS_COMMERCIAL : DEFAULT_TERMS_RESIDENTIAL,
-      defaultExclusions: modeTab === 'commercial' ? DEFAULT_EXCLUSIONS_COMMERCIAL : DEFAULT_EXCLUSIONS_RESIDENTIAL,
-      defaultIncluded: modeTab === 'commercial' ? DEFAULT_INCLUDED_COMMERCIAL : DEFAULT_INCLUDED_RESIDENTIAL,
-    }, target);
-    onPick(quote);
-  };
-
-  return (
-    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div style={modal} onClick={e => e.stopPropagation()}>
-        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
-        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Start from template</div>
-        <div style={{ ...S.modalSub, marginBottom: 14 }}>
-          Quoting for <strong style={{ color: '#FFFFFF' }}>{target.customerName}</strong> · {target.address}
-        </div>
-
-        <div style={{ display: 'flex', gap: 6, marginBottom: 14, background: '#1E2329', borderRadius: 8, padding: 4 }}>
-          {['residential', 'commercial'].map(m => (
-            <button
-              key={m}
-              onClick={() => setModeTab(m)}
-              style={{
-                flex: 1, padding: '10px', minHeight: 40,
-                background: modeTab === m ? 'linear-gradient(135deg, #2D5016, #3d6b1e)' : 'transparent',
-                border: 'none', borderRadius: 6,
-                color: modeTab === m ? '#fff' : '#D1D5DB',
-                fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                textTransform: 'capitalize',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >{m}</button>
-          ))}
-        </div>
-
-        <div style={{
-          display: 'grid',
-          // Single column under 480px so cards fit + are scannable. 2 columns
-          // at small tablet, 3 at desktop.
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: 10, marginBottom: 14,
-        }}>
-          {filtered.map(t => {
-            const names = sectionNamesFor(t);
-            return (
-              <button
-                key={t.id}
-                onClick={() => pickTemplate(t)}
-                style={{
-                  textAlign: 'left', padding: 12,
-                  background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 10, cursor: 'pointer',
-                  transition: 'border-color 0.15s, background 0.15s',
-                  WebkitTapHighlightColor: 'transparent',
-                  color: '#FFFFFF',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#E8722A'; e.currentTarget.style.background = '#252b36'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = '#1E2329'; }}
-              >
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 6, lineHeight: 1.3 }}>{t.name}</div>
-                <div style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
-                  {(t.defaultSections || []).length} section{(t.defaultSections || []).length === 1 ? '' : 's'}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {names.slice(0, 3).map((n, i) => (
-                    <div key={i} style={{ fontSize: 11, color: '#D1D5DB', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>• {n}</div>
-                  ))}
-                </div>
-                <div style={{
-                  marginTop: 10, padding: '6px 10px',
-                  background: 'rgba(232,114,42,0.12)', border: '1px solid rgba(232,114,42,0.3)',
-                  borderRadius: 6, fontSize: 11, fontWeight: 700, color: '#E8722A',
-                  textAlign: 'center',
-                }}>Use this</div>
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          onClick={pickBlank}
-          style={{
-            width: '100%', padding: '12px', minHeight: 48,
-            background: 'transparent', border: '1px dashed rgba(255,255,255,0.18)',
-            borderRadius: 8, color: '#D1D5DB',
-            fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          + Blank Quote (start from scratch)
-        </button>
-
-        <div style={{ marginTop: 14, fontSize: 11, color: '#9CA3AF', textAlign: 'center' }}>
-          <button
-            onClick={() => { if (onManageTemplates) onManageTemplates(); else setShowMgr(true); }}
-            style={{ background: 'transparent', border: 'none', color: '#D1D5DB', textDecoration: 'underline', cursor: 'pointer', fontSize: 11 }}
-          >
-            Manage Templates →
-          </button>
-        </div>
-
-        {showMgr && (
-          <QuoteTemplateManager onClose={() => { setShowMgr(false); setRefreshTick(t => t + 1); }} />
-        )}
-      </div>
-    </div>
-  );
-}
-
 
 // ─── Line Item Picker Drawer ────────────────────────────────────────────────
 // Replaces the old catalog modal. Bottom sheet on mobile, right drawer on
@@ -16939,10 +16746,11 @@ export default function App() {
     return Array.from(byId.values());
   })();
 
-  // Lead → Project conversion handler. Called from the QuoteAgent's Convert
-  // button when a quote is in signed status and anchored to a lead. Persists
-  // the new project + scopes + updated quote + updated lead across the
-  // appropriate stores (demo overrides or user-state, depending on session).
+  // Lead → Project conversion handler. Called from the QuoteDocumentEditor's
+  // Convert button when a quote is in signed status and anchored to a lead.
+  // Persists the new project + scopes + updated quote + updated lead across
+  // the appropriate stores (demo overrides or user-state, depending on
+  // session).
   const handleConvertLead = (lead, signedQuote) => {
     let bundle;
     try {
