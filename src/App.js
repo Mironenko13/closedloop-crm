@@ -8631,14 +8631,17 @@ function PdfPreviewModal({ quote, target, onClose }) {
   const optionalTotal = sections
     .filter(s => s.optional)
     .reduce((sum, sec) => sum + (sec.subtotal || 0), 0);
-  const hasOptional = sections.some(s => s.optional);
 
   // Find a "Warranty & Terms" section so we can render its narrative at the
   // bottom of the PDF instead of mid-document. Falls back to the quote-level
   // terms string if no such section exists.
   const warrantySection = sections.find(s =>
     (s.sectionName || '').toLowerCase().includes('warranty'));
-  const renderableSections = sections.filter(s => s !== warrantySection);
+  // Required sections render up top (and roll into Grand Total). Optional
+  // sections render in a dedicated "Optional Add-Ons" group below the total
+  // so the customer reads them as add-on riders, not part of the bid.
+  const requiredSections = sections.filter(s => s !== warrantySection && !s.optional);
+  const optionalSections = sections.filter(s => s !== warrantySection && s.optional);
 
   const overlay = {
     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1200,
@@ -8717,67 +8720,10 @@ function PdfPreviewModal({ quote, target, onClose }) {
               {billToAddress && <div style={{ fontSize: 11, color: '#4A5568' }}>{billToAddress}</div>}
             </div>
 
-            {/* Sections */}
-            {renderableSections.map((sec, idx) => {
-              const isOptional = !!sec.optional;
-              return (
-                <div key={sec.id || idx} style={{
-                  marginBottom: 16,
-                  padding: 12,
-                  background: isOptional ? '#FBF5EE' : 'transparent',
-                  border: isOptional ? '1px dashed rgba(232,114,42,0.5)' : '1px solid rgba(30,35,41,0.1)',
-                  borderRadius: 4,
-                  marginLeft: sec.isSubsection ? 16 : 0,
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: '#1E2329' }}>{sec.sectionName}</span>
-                      {isOptional && (
-                        <span style={{
-                          fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 4,
-                          background: 'rgba(232,114,42,0.15)', color: '#c2410c',
-                          textTransform: 'uppercase', letterSpacing: '0.4px',
-                        }}>Optional add-on</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: '#1E2329', whiteSpace: 'nowrap' }}>
-                      {fmtCurrency(sec.subtotal || 0)}
-                    </div>
-                  </div>
-                  {sec.narrative && (
-                    <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.55, marginBottom: 8, whiteSpace: 'pre-wrap' }}>
-                      {sec.narrative}
-                    </div>
-                  )}
-                  {(sec.lineItems || []).length > 0 && (
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-                      <tbody>
-                        {sec.lineItems.map(li => (
-                          <tr key={li.id} style={{ borderTop: '1px solid rgba(30,35,41,0.06)' }}>
-                            <td style={{ padding: '4px 6px', color: '#1E2329' }}>
-                              {li.description}
-                              {li.isAllowance && (
-                                <span style={{
-                                  fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
-                                  background: 'rgba(245,158,11,0.18)', color: '#b45309',
-                                  marginLeft: 6, letterSpacing: '0.3px',
-                                }}>Allowance</span>
-                              )}
-                            </td>
-                            <td style={{ padding: '4px 6px', textAlign: 'right', color: '#4A5568', whiteSpace: 'nowrap' }}>
-                              {Number(li.quantity) || 0} {li.unit}
-                            </td>
-                            <td style={{ padding: '4px 6px', textAlign: 'right', color: '#1E2329', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                              {fmtCurrency(li.extension || 0)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-              );
-            })}
+            {/* Required sections — these roll into the Grand Total */}
+            {requiredSections.map((sec, idx) => (
+              <PdfSectionBlock key={sec.id || `req-${idx}`} sec={sec} />
+            ))}
 
             {/* Totals */}
             <div style={{
@@ -8785,20 +8731,41 @@ function PdfPreviewModal({ quote, target, onClose }) {
               borderRadius: 4, padding: '14px 16px',
               marginTop: 18, marginBottom: 18,
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <span style={{ fontSize: 14, fontWeight: 800, color: '#1E2329' }}>Total</span>
                 <span style={{ fontSize: 22, fontWeight: 800, color: '#1E2329' }}>{fmtCurrency(grandTotal)}</span>
               </div>
-              {hasOptional && (
-                <div style={{
-                  marginTop: 8, paddingTop: 8,
-                  borderTop: '1px dashed rgba(30,35,41,0.2)',
-                  fontSize: 10, color: '#4A5568', fontStyle: 'italic', lineHeight: 1.55,
-                }}>
-                  Optional add-ons ({fmtCurrency(optionalTotal)} combined) are <strong>not included</strong> in the total above. Add any line item by signing the optional add-on rider.
-                </div>
-              )}
             </div>
+
+            {/* Optional Add-Ons — grouped at the bottom, NOT in Grand Total */}
+            {optionalSections.length > 0 && (
+              <div style={{ marginBottom: 18 }}>
+                <div style={{
+                  background: 'rgba(232,114,42,0.08)',
+                  border: '1px dashed rgba(232,114,42,0.55)',
+                  borderRadius: 4, padding: '10px 14px', marginBottom: 10,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#c2410c', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                      Optional Add-Ons
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#c2410c', whiteSpace: 'nowrap' }}>
+                      {fmtCurrency(optionalTotal)} combined
+                    </div>
+                  </div>
+                </div>
+                {optionalSections.map((sec, idx) => (
+                  <PdfSectionBlock key={sec.id || `opt-${idx}`} sec={sec} optional />
+                ))}
+                <div style={{
+                  marginTop: 8, padding: '10px 14px',
+                  fontSize: 11, color: '#4A5568', fontStyle: 'italic', lineHeight: 1.55,
+                  borderTop: '1px dashed rgba(30,35,41,0.2)',
+                }}>
+                  Optional add-ons are not included in the total above. Add any item by signing the optional add-on rider below the total.
+                </div>
+              </div>
+            )}
 
             {/* Warranty & Terms at bottom */}
             <div style={{
@@ -8861,6 +8828,60 @@ function PdfPreviewModal({ quote, target, onClose }) {
           >Done</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Shared section-block renderer for the customer PDF. Used twice in
+// PdfPreviewModal: once for required sections (above the Grand Total) and
+// once for optional sections (in the "Optional Add-Ons" group below).
+function PdfSectionBlock({ sec, optional = false }) {
+  return (
+    <div style={{
+      marginBottom: 16,
+      padding: 12,
+      background: optional ? '#FBF5EE' : 'transparent',
+      border: optional ? '1px dashed rgba(232,114,42,0.5)' : '1px solid rgba(30,35,41,0.1)',
+      borderRadius: 4,
+      marginLeft: sec.isSubsection ? 16 : 0,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 13, fontWeight: 800, color: '#1E2329' }}>{sec.sectionName}</span>
+        <div style={{ fontSize: 13, fontWeight: 800, color: '#1E2329', whiteSpace: 'nowrap' }}>
+          {fmtCurrency(sec.subtotal || 0)}
+        </div>
+      </div>
+      {sec.narrative && (
+        <div style={{ fontSize: 11, color: '#4A5568', lineHeight: 1.55, marginBottom: 8, whiteSpace: 'pre-wrap' }}>
+          {sec.narrative}
+        </div>
+      )}
+      {(sec.lineItems || []).length > 0 && (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+          <tbody>
+            {sec.lineItems.map(li => (
+              <tr key={li.id} style={{ borderTop: '1px solid rgba(30,35,41,0.06)' }}>
+                <td style={{ padding: '4px 6px', color: '#1E2329' }}>
+                  {li.description}
+                  {li.isAllowance && (
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
+                      background: 'rgba(245,158,11,0.18)', color: '#b45309',
+                      marginLeft: 6, letterSpacing: '0.3px',
+                    }}>Allowance</span>
+                  )}
+                </td>
+                <td style={{ padding: '4px 6px', textAlign: 'right', color: '#4A5568', whiteSpace: 'nowrap' }}>
+                  {Number(li.quantity) || 0} {li.unit}
+                </td>
+                <td style={{ padding: '4px 6px', textAlign: 'right', color: '#1E2329', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                  {fmtCurrency(li.extension || 0)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
