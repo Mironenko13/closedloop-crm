@@ -1198,13 +1198,32 @@ function convertLeadToProject(lead, signedQuote) {
 // project-centric model. We attach a template-scaffolded `sections` array
 // scaled to each scope's value so the ProjectDetail accordion has realistic
 // section names + line items to render.
+//
+// IMPORTANT — sections is exposed via a memoized getter, NOT computed
+// eagerly. scaleScopeSections() → buildResidentialSections/buildCommercialSections
+// → reads RESIDENTIAL_CATALOG / COMMERCIAL_CATALOG. Those catalogs are
+// `const` declarations later in this file, so they're in TDZ at the point
+// where DEMO_JOBS is constructed. Eager evaluation throws "Cannot access
+// 'RESIDENTIAL_CATALOG' before initialization" at module load. The getter
+// defers the work to first read (App render time), by which time all
+// module-level consts are initialized. The Map cache keeps section ids and
+// references stable across re-renders.
+const _demoScopeSectionsCache = new Map();
+function getDemoScopeSections(scope) {
+  const cached = _demoScopeSectionsCache.get(scope.id);
+  if (cached) return cached;
+  const isCommercial = scope.phaseTemplate === 'commercial-7-phase';
+  const sections = scaleScopeSections(
+    isCommercial ? buildCommercialSections() : buildResidentialSections(),
+    scope.value || 0,
+  );
+  _demoScopeSectionsCache.set(scope.id, sections);
+  return sections;
+}
+
 const DEMO_JOBS = DEMO_SCOPES.map(s => {
   const project = getProjectById(s.projectId) || {};
   const isCommercial = s.phaseTemplate === 'commercial-7-phase';
-  const scaledSections = scaleScopeSections(
-    isCommercial ? buildCommercialSections() : buildResidentialSections(),
-    s.value || 0,
-  );
   return {
     id: s.id,
     projectId: s.projectId,
@@ -1222,7 +1241,7 @@ const DEMO_JOBS = DEMO_SCOPES.map(s => {
     currentPhase: s.currentPhase,
     completedPhases: s.completedPhases || [],
     changeOrders: s.changeOrders || [],
-    sections: scaledSections,
+    get sections() { return getDemoScopeSections(s); },
   };
 });
 
