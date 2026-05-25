@@ -16630,6 +16630,11 @@ export default function App() {
   const [demoRole, setDemoRole] = useState('owner');
   const [selectedLead, setSelectedLead] = useState(null);
   const [leadModal, setLeadModal] = useState(null); // null | 'add' | lead-object (edit)
+  const mainScrollRef = useRef(null);
+
+  useEffect(() => {
+    if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0;
+  }, [tab]);
 
   // Persistent leads for real (non-demo) users
   const [userLeads, setUserLeads] = useState(() => {
@@ -17238,7 +17243,7 @@ export default function App() {
         )}
       </header>
 
-      <main style={{
+      <main ref={mainScrollRef} style={{
         ...S.body,
         flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
         ...(isMobile ? { padding: '16px 12px', paddingBottom: 96 } : { paddingBottom: 32 }),
