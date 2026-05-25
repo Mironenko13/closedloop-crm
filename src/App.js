@@ -3765,6 +3765,7 @@ function PipelineTab({ leads, onSelectLead, onAddLead, onEditLead, onDeleteLead,
             address: quoteEditLead.lead.address || '',
             lead: quoteEditLead.lead,
           }}
+          quotes={quotes}
           onPick={(quote) => setQuoteEditLead({ ...quoteEditLead, quote, picker: false })}
           onClose={() => setQuoteEditLead(null)}
         />
@@ -6251,6 +6252,7 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
             address: quoteEditProject.project.address,
             project: quoteEditProject.project,
           }}
+          quotes={quotes}
           onPick={(quote) => setQuoteEditProject({ ...quoteEditProject, quote, picker: false })}
           onClose={() => setQuoteEditProject(null)}
         />
@@ -7013,7 +7015,7 @@ export const COMMERCIAL_TEMPLATE = buildCommercialSections();
 // Materialise a fresh quote from a mode template. Stamps section + line item
 // ids, computes subtotals/total (excluding optional sections from the total),
 // and anchors to a lead or project per the target.
-function buildQuoteFromMode(mode, target) {
+function buildQuoteFromMode(mode, target, existing) {
   const sections = (mode === 'commercial' ? buildCommercialSections() : buildResidentialSections())
     .map(sec => {
       const lineItems = sec.lineItems.map(li => ({
@@ -7040,7 +7042,7 @@ function buildQuoteFromMode(mode, target) {
   const exp = new Date(now); exp.setDate(exp.getDate() + 30);
   return {
     id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    quoteNumber: generateQuoteNumber(),
+    quoteNumber: generateQuoteNumber(existing),
     leadId: target.kind === 'lead' ? target.id : null,
     projectId: target.kind === 'project' ? target.id : null,
     mode,
@@ -7067,12 +7069,12 @@ function buildQuoteFromMode(mode, target) {
 
 // Blank quote — preserves the old "start from scratch" path. No sections,
 // no defaults; user builds entirely from the picker.
-function buildBlankQuote(mode, target) {
+function buildBlankQuote(mode, target, existing) {
   const now = new Date();
   const exp = new Date(now); exp.setDate(exp.getDate() + 30);
   return {
     id: `q-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    quoteNumber: generateQuoteNumber(),
+    quoteNumber: generateQuoteNumber(existing),
     leadId: target.kind === 'lead' ? target.id : null,
     projectId: target.kind === 'project' ? target.id : null,
     mode,
@@ -7097,7 +7099,7 @@ function buildBlankQuote(mode, target) {
 
 // Quote-mode picker: shown first when "+ New Quote" is tapped. Three big
 // buttons; selection triggers the right builder and pops the editor.
-function QuoteModePickerModal({ target, onPick, onClose }) {
+function QuoteModePickerModal({ target, onPick, onClose, quotes }) {
   useScrollLock();
   const isMobile = useMobile();
 
@@ -7143,19 +7145,19 @@ function QuoteModePickerModal({ target, onPick, onClose }) {
             '🏠  Residential',
             '12 sections scaffolded — tear-off, decking, underlayment, shingles, flashing, ventilation, labor, cleanup, permits, warranty',
             'orange',
-            () => onPick(buildQuoteFromMode('residential', target)),
+            () => onPick(buildQuoteFromMode('residential', target, quotes)),
           )}
           {bigBtn(
             '🏢  Commercial',
             '14 sections scaffolded — substrate prep, insulation, membrane, edge metal, drainage, walkway, equipment, inspections, warranty',
             'blue',
-            () => onPick(buildQuoteFromMode('commercial', target)),
+            () => onPick(buildQuoteFromMode('commercial', target, quotes)),
           )}
           {bigBtn(
             '✏️  Start from scratch',
             'Blank quote — pick everything from the catalog yourself.',
             'ghost',
-            () => onPick(buildBlankQuote('residential', target)),
+            () => onPick(buildBlankQuote('residential', target, quotes)),
           )}
         </div>
       </div>
@@ -11456,6 +11458,7 @@ function QuotesTab({ quotes, leads, jobs, onSaveQuote, onConvertLead, onAddLead,
       {newQuoteFlow?.step === 'template' && newQuoteFlow.target && (
         <QuoteModePickerModal
           target={newQuoteFlow.target}
+          quotes={quotes}
           onPick={(quote) => setNewQuoteFlow({ ...newQuoteFlow, step: 'editor', quote })}
           onClose={() => setNewQuoteFlow(null)}
         />
@@ -16765,7 +16768,12 @@ export default function App() {
     if (session && !session.isDemo) localStorage.setItem('cl_assignments', JSON.stringify(assignments));
   }, [assignments, session]);
   useEffect(() => {
-    if (session && !session.isDemo) localStorage.setItem('cl_quotes', JSON.stringify(userQuotes));
+    // Persist regardless of demo mode so generateQuoteNumber (which reads
+    // cl_quotes) sees previously-created quotes after a hard refresh and the
+    // sequence picks up where it left off. Without this, the demo session's
+    // userQuotes state evaporates on reload and every new quote re-collides
+    // on DEMO_QUOTES's max number.
+    if (session) localStorage.setItem('cl_quotes', JSON.stringify(userQuotes));
   }, [userQuotes, session]);
   useEffect(() => {
     if (session && !session.isDemo) localStorage.setItem('cl_projects', JSON.stringify(userProjects));
