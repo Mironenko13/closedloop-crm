@@ -1155,12 +1155,14 @@ function convertLeadToProject(lead, signedQuote) {
     issues: [],
   };
   const isCommercial = signedQuote.mode === 'commercial';
+  const nameTag = isCommercial ? lead.name : lastWordOf(lead.name);
   const scopeName = signedQuote.title
-    || (isCommercial ? 'Commercial roof project' : 'Residential roof project');
+    || `${isCommercial ? 'Commercial' : 'Residential'} roof — ${nameTag}`;
   const scopeSections = (signedQuote.sections || []).map(sec => ({
     id: sec.id,
     name: sec.sectionName,
     narrative: sec.narrative || '',
+    lineItems: Array.isArray(sec.lineItems) ? sec.lineItems.map(li => ({ ...li })) : [],
     subtotal: sec.subtotal || 0,
     optional: !!sec.optional,
   }));
