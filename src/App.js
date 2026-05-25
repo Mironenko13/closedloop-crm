@@ -6054,12 +6054,11 @@ function deriveProjectStatusFromJobs(scopes) {
   return 'Not Started';
 }
 
-function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, quotes, onSaveQuote }) {
+function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUnassign, onAddCrew, currentUser, demoMessages, onComplete, onUpdateSteps, onUpdateSchedule, rolePerms, quotes, onSaveQuote, onAddScope, onUpdateScope }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
   const [quoteEditProject, setQuoteEditProject] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [tradeFilter, setTradeFilter] = useState('all');
 
   const statuses = ['all', 'Scheduled', 'In Progress', 'Complete'];
 
@@ -6093,15 +6092,10 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
     }));
   }, [jobs]);
 
-  const filtered = useMemo(() => {
-    let result = filter === 'all' ? projects : projects.filter(p => p.status === filter);
-    if (tradeFilter === '__OTHER__') {
-      result = result.filter(p => p.scopes.some(j => j.trade && !TRADE_LIST.includes(j.trade)));
-    } else if (tradeFilter !== 'all') {
-      result = result.filter(p => p.scopes.some(j => j.trade === tradeFilter));
-    }
-    return result;
-  }, [projects, filter, tradeFilter]);
+  const filtered = useMemo(
+    () => filter === 'all' ? projects : projects.filter(p => p.status === filter),
+    [projects, filter]
+  );
 
   const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#8B95A1');
 
@@ -6122,36 +6116,12 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
         </div>
       </div>
 
-      <div style={S.tradeFilterRow}>
-        <button
-          style={S.tradeFilterBtn(tradeFilter === 'all', '#E8722A')}
-          onClick={() => setTradeFilter('all')}
-        >
-          All Scope Types
-        </button>
-        {TRADE_LIST.map(t => (
-          <button
-            key={t}
-            style={S.tradeFilterBtn(tradeFilter === t, TRADE_COLORS[t])}
-            onClick={() => setTradeFilter(tradeFilter === t ? 'all' : t)}
-          >
-            {t}
-          </button>
-        ))}
-        <button
-          style={S.tradeFilterBtn(tradeFilter === '__OTHER__', CUSTOM_TRADE_COLOR)}
-          onClick={() => setTradeFilter(tradeFilter === '__OTHER__' ? 'all' : '__OTHER__')}
-        >
-          Other
-        </button>
-      </div>
-
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '48px 24px' }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>🔨</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#D1D5DB', marginBottom: 4 }}>No projects match your filters</div>
-            <div style={{ fontSize: 13, color: '#D1D5DB' }}>Try adjusting the status or scope-type filter above.</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#D1D5DB', marginBottom: 4 }}>No projects match this status</div>
+            <div style={{ fontSize: 13, color: '#D1D5DB' }}>Try a different status filter or add a new project.</div>
           </div>
         )}
         {filtered.map(project => {
@@ -6172,7 +6142,16 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.customerName}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{project.customerName}</div>
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
+                      background: 'rgba(255,255,255,0.05)', color: '#9CA3AF',
+                      letterSpacing: '0.3px', flexShrink: 0,
+                    }}>
+                      {project.scopes.length} {project.scopes.length === 1 ? 'scope' : 'scopes'}
+                    </span>
+                  </div>
                   <div style={{ fontSize: 12, color: '#D1D5DB', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.address}</div>
                 </div>
                 <span style={{
@@ -6183,27 +6162,7 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
                 }}>{project.status}</span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8, minWidth: 0 }}>
-                <span style={{
-                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
-                  letterSpacing: '0.3px',
-                }}>
-                  {project.scopes.length} {project.scopes.length === 1 ? 'scope' : 'scopes'}
-                </span>
-                {project.scopes.map(s => {
-                  const c = getTradeColor(s.trade);
-                  return (
-                    <span key={s.id} style={{
-                      fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-                      background: c + '22', color: c, letterSpacing: '0.3px',
-                      maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>{s.trade}</span>
-                  );
-                })}
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#D1D5DB' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#D1D5DB', marginTop: 8 }}>
                 <span>Total: <span style={{ color: '#22c55e', fontWeight: 700 }}>{rolePerms?.seeDollars !== false ? fmt(project.totalValue) : '—'}</span></span>
                 {project.nextScheduledDate && <span>📅 {project.nextScheduledDate}</span>}
               </div>
