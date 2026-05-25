@@ -1122,10 +1122,16 @@ function deleteQuote(id, quotes) {
 
 // ─── Lead → Project conversion ───────────────────────────────────────────────
 // Called when a quote is signed. Creates a Project from the lead's customer
-// info, materialises one Scope per signed-quote section, re-anchors the quote
-// from leadId → projectId, and marks the lead as converted (preserved in the
-// system with convertedToProjectId set; never deleted, so historical pipeline
-// reporting still works).
+// info, materialises a single Scope of Work from the signed quote (with all
+// quote sections nested as billing/itemization groupings inside it), re-anchors
+// the quote from leadId → projectId, and marks the lead as converted
+// (preserved in the system with convertedToProjectId set; never deleted, so
+// historical pipeline reporting still works).
+//
+// A roof replacement is one scope of work — the quote's 12 (residential) or
+// 14 (commercial) sections are sections within that scope, not separate scopes.
+// Future multi-scope jobs (e.g., roof + gutters sold as separate work orders)
+// are a future feature; not modeled here.
 // eslint-disable-next-line no-unused-vars
 function convertLeadToProject(lead, signedQuote) {
   if (!lead || !signedQuote) throw new Error('convertLeadToProject: lead and signedQuote required.');
@@ -1148,18 +1154,32 @@ function convertLeadToProject(lead, signedQuote) {
     recentActivity: [],
     issues: [],
   };
-  const scopes = (signedQuote.sections || []).map((sec, i) => ({
-    id: Date.now() + i,
-    projectId,
-    scopeType: sec.scopeType || 'Full Replacement',
-    status: 'Scheduled',
-    value: sec.subtotal || 0,
-    completedSteps: [],
-    notes: sec.narrative || '',
-    phaseTemplate: 'residential-4-phase',
-    currentPhase: 1,
-    completedPhases: [],
+  const isCommercial = signedQuote.mode === 'commercial';
+  const scopeName = signedQuote.title
+    || (isCommercial ? 'Commercial roof project' : 'Residential roof project');
+  const scopeSections = (signedQuote.sections || []).map(sec => ({
+    id: sec.id,
+    name: sec.sectionName,
+    narrative: sec.narrative || '',
+    subtotal: sec.subtotal || 0,
+    optional: !!sec.optional,
   }));
+  const grandTotal = (signedQuote.sections || [])
+    .filter(s => !s.optional)
+    .reduce((sum, s) => sum + (s.subtotal || 0), 0);
+  const scopes = [{
+    id: `s-${projectId}-1`,
+    projectId,
+    scopeType: scopeName,
+    status: 'Pending Schedule',
+    value: grandTotal || signedQuote.total || 0,
+    completedSteps: [],
+    notes: '',
+    phaseTemplate: isCommercial ? 'commercial-7-phase' : 'residential-4-phase',
+    currentPhase: null,
+    completedPhases: [],
+    sections: scopeSections,
+  }];
   const updatedQuote = { ...signedQuote, leadId: null, projectId };
   const updatedLead = {
     ...lead,
@@ -6371,7 +6391,31 @@ function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onN
                   {scope.jobType && scope.currentPhase != null && (
                     <span>Phase {scope.currentPhase}/{scope.jobType === 'Commercial' ? 7 : 4}</span>
                   )}
+                  {Array.isArray(scope.sections) && scope.sections.length > 0 && (
+                    <span>{scope.sections.length} section{scope.sections.length === 1 ? '' : 's'}</span>
+                  )}
                 </div>
+                {Array.isArray(scope.sections) && scope.sections.length > 0 && (
+                  <div style={{
+                    marginTop: 8, paddingTop: 8,
+                    borderTop: '1px dashed rgba(255,255,255,0.08)',
+                    display: 'flex', flexDirection: 'column', gap: 4,
+                  }}>
+                    {scope.sections.map(sec => (
+                      <div key={sec.id} style={{
+                        display: 'flex', justifyContent: 'space-between', gap: 8,
+                        fontSize: 11, color: '#D1D5DB',
+                      }}>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {sec.name}{sec.optional ? ' (optional)' : ''}
+                        </span>
+                        {rolePerms?.seeDollars !== false && sec.subtotal != null && (
+                          <span style={{ color: '#9CA3AF', flexShrink: 0 }}>{fmt(sec.subtotal)}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -17030,6 +17074,7 @@ export default function App() {
       currentPhase: s.currentPhase,
       completedPhases: s.completedPhases || [],
       changeOrders: s.changeOrders || [],
+      sections: s.sections || [],
     };
   });
   const jobs = isDemo
