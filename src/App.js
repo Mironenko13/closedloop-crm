@@ -1195,9 +1195,16 @@ function convertLeadToProject(lead, signedQuote) {
 // ─── Legacy DEMO_JOBS adapter ────────────────────────────────────────────────
 // Derived from DEMO_PROJECTS + DEMO_SCOPES so existing UI keeps working
 // unchanged while subsequent commits rewire individual tabs to the new
-// project-centric model.
+// project-centric model. We attach a template-scaffolded `sections` array
+// scaled to each scope's value so the ProjectDetail accordion has realistic
+// section names + line items to render.
 const DEMO_JOBS = DEMO_SCOPES.map(s => {
   const project = getProjectById(s.projectId) || {};
+  const isCommercial = s.phaseTemplate === 'commercial-7-phase';
+  const scaledSections = scaleScopeSections(
+    isCommercial ? buildCommercialSections() : buildResidentialSections(),
+    s.value || 0,
+  );
   return {
     id: s.id,
     projectId: s.projectId,
@@ -1211,10 +1218,11 @@ const DEMO_JOBS = DEMO_SCOPES.map(s => {
     completedSteps: s.completedSteps || [],
     notes: s.notes || project.notes || '',
     duration: s.duration,
-    jobType: s.phaseTemplate === 'commercial-7-phase' ? 'Commercial' : 'Residential',
+    jobType: isCommercial ? 'Commercial' : 'Residential',
     currentPhase: s.currentPhase,
     completedPhases: s.completedPhases || [],
     changeOrders: s.changeOrders || [],
+    sections: scaledSections,
   };
 });
 
@@ -7224,6 +7232,69 @@ function buildBlankQuote(mode, target, existing) {
     customerInteractions: [], agentConversation: [],
     measurements: null,
   };
+}
+
+// Distribute a target value across a template's sections + line items.
+// Template line items mostly default to qty=0 (the editor expects the user
+// to fill quantities), so we can't just scale by the natural subtotal —
+// it'd be near-zero. Instead, allocate the target value weighted by each
+// section's line-item count, and split each section's share evenly across
+// its line items. Sections that have no line items (narrative-only ones
+// like "Measurements & Scope" and "Warranty & Terms") and optional sections
+// stay at $0 — both more realistic and easier to read in the demo.
+function scaleScopeSections(sections, targetValue) {
+  const allocatable = sections.filter(s => !s.optional && (s.lineItems || []).length > 0);
+  const weights = allocatable.map(s => s.lineItems.length);
+  const wSum = weights.reduce((a, b) => a + b, 0);
+  const subtotalByName = new Map();
+  if (wSum > 0 && targetValue > 0) {
+    let allocated = 0;
+    allocatable.forEach((s, i) => {
+      const subtotal = i === allocatable.length - 1
+        ? Math.round((targetValue - allocated) * 100) / 100
+        : Math.round((targetValue * weights[i] / wSum) * 100) / 100;
+      allocated += subtotal;
+      subtotalByName.set(s.sectionName, subtotal);
+    });
+  }
+  return sections.map(sec => {
+    const subtotal = subtotalByName.get(sec.sectionName) || 0;
+    const items = sec.lineItems || [];
+    if (items.length === 0 || subtotal === 0) {
+      return {
+        id: sec.id || `ss-${Math.random().toString(36).slice(2, 8)}`,
+        name: sec.sectionName,
+        narrative: sec.narrative || '',
+        lineItems: items.map(li => ({ ...li, extension: 0 })),
+        subtotal: 0,
+        optional: !!sec.optional,
+      };
+    }
+    const per = Math.round((subtotal / items.length) * 100) / 100;
+    let alloc = 0;
+    const lineItems = items.map((li, i) => {
+      const ext = i === items.length - 1
+        ? Math.round((subtotal - alloc) * 100) / 100
+        : per;
+      alloc += ext;
+      const qty = Math.max(Number(li.quantity) || 1, 1);
+      return {
+        ...li,
+        id: li.id || `li-${Math.random().toString(36).slice(2, 8)}`,
+        quantity: qty,
+        unitPrice: Math.round((ext / qty) * 100) / 100,
+        extension: ext,
+      };
+    });
+    return {
+      id: sec.id || `ss-${Math.random().toString(36).slice(2, 8)}`,
+      name: sec.sectionName,
+      narrative: sec.narrative || '',
+      lineItems,
+      subtotal,
+      optional: !!sec.optional,
+    };
+  });
 }
 
 // ── Scope builders (parallel to buildQuoteFromMode/buildBlankQuote) ──
