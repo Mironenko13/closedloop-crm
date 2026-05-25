@@ -6173,13 +6173,15 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
 
       {selectedProject && (
         <ProjectDetail
-          project={selectedProject}
+          project={projects.find(p => p.id === selectedProject.id) || selectedProject}
           rolePerms={rolePerms}
           quotes={quotes}
           onClose={() => setSelectedProject(null)}
           onSelectScope={(scope) => { setSelectedJob(scope); }}
           onNewQuote={(project) => setQuoteEditProject({ project, quote: null, picker: true })}
           onOpenQuote={(quote, project) => setQuoteEditProject({ project, quote, picker: false })}
+          onAddScope={onAddScope}
+          onUpdateScope={onUpdateScope}
         />
       )}
 
@@ -6238,12 +6240,18 @@ function ProjectsTab({ jobs, customChecklist, crew, assignments, onAssign, onUna
 }
 
 // ─── Project Detail Modal (lists scopes inside a project) ────────────────────
-function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onNewQuote, onOpenQuote }) {
+function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onNewQuote, onOpenQuote, onAddScope, onUpdateScope }) {
   useScrollLock();
   const isMobile = useMobile();
   const showToast = useToast();
-  const statusColor = (s) => ({ Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e' }[s] || '#8B95A1');
+  const statusColor = (s) => ({
+    Scheduled: '#6366f1', 'In Progress': '#E8722A', Complete: '#22c55e',
+    Pending: '#8B95A1', 'Pending Schedule': '#8B95A1', 'Not Started': '#8B95A1',
+  }[s] || '#8B95A1');
   const sc = statusColor(project.status);
+  const [expanded, setExpanded] = useState(() => new Set());
+  const [showOverflow, setShowOverflow] = useState(false);
+  const [showScopePicker, setShowScopePicker] = useState(false);
 
   const projectQuotes = useMemo(
     () => getQuotesForProject(project.id, quotes || DEMO_QUOTES),
@@ -6262,7 +6270,32 @@ function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onN
   const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
   const modal = isMobile
     ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '94dvh', borderRadius: '16px 16px 0 0', margin: 0 }
-    : { ...S.modal, maxWidth: 560 };
+    : { ...S.modal, maxWidth: 600 };
+
+  const toggleExpanded = (scopeId) => {
+    setExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(scopeId)) next.delete(scopeId);
+      else next.add(scopeId);
+      return next;
+    });
+  };
+
+  const overflowItem = (label, action, danger) => (
+    <button
+      onClick={() => { setShowOverflow(false); action(); }}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '10px 14px', minHeight: 40, width: '100%',
+        background: 'transparent', border: 'none',
+        color: danger ? '#ef4444' : '#D1D5DB', fontSize: 13, fontWeight: 600,
+        cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
+      {label}
+    </button>
+  );
 
   return (
     <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -6277,8 +6310,44 @@ function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onN
               background: sc + '22', color: sc,
               textTransform: 'uppercase', letterSpacing: '0.5px',
             }}>{project.status}</span>
+            <div style={{ position: 'relative', marginLeft: 'auto' }}>
+              <button
+                onClick={() => setShowOverflow(v => !v)}
+                aria-label="Project actions"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: '#D1D5DB', fontSize: 18, fontWeight: 700,
+                  cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >⋯</button>
+              {showOverflow && (
+                <div
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    position: 'absolute', top: 36, right: 0, zIndex: 10,
+                    minWidth: 200,
+                    background: '#1E2329', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    display: 'flex', flexDirection: 'column', padding: 4,
+                  }}
+                >
+                  {overflowItem('Edit Project', () => showToast('Edit Project — coming soon'))}
+                  {overflowItem('Mark Complete', () => showToast('Mark Project Complete — coming soon'))}
+                  {overflowItem('Convert to Invoice', () => showToast('Convert to Invoice — coming soon'))}
+                  {overflowItem('Delete Project', () => showToast('Delete Project — coming soon'), true)}
+                </div>
+              )}
+            </div>
           </div>
           <div style={{ fontSize: 13, color: '#D1D5DB', marginBottom: 8 }}>{project.address}</div>
+          {(project.customerPhone || project.customerEmail) && (
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>
+              {project.customerPhone && <span>📞 {project.customerPhone}</span>}
+              {project.customerEmail && <span>✉️ {project.customerEmail}</span>}
+            </div>
+          )}
 
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 18, fontSize: 12, color: '#D1D5DB' }}>
             <div>
@@ -6299,88 +6368,170 @@ function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onN
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Scopes of Work
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#D1D5DB', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>Scopes</span>
+            <span style={{
+              fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
+              background: 'rgba(255,255,255,0.06)', color: '#D1D5DB',
+            }}>{project.scopes.length}</span>
           </div>
-          <button
-            onClick={() => showToast('Add Scope flow coming next sprint')}
-            style={{
-              padding: '6px 12px', minHeight: 36,
-              background: 'rgba(232,114,42,0.12)', border: '1px solid rgba(232,114,42,0.3)',
-              borderRadius: 6, color: '#E8722A', fontSize: 11, fontWeight: 700,
-              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            + Add Scope
-          </button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {project.scopes.map(scope => {
-            const tc = getTradeColor(scope.trade);
             const ssc = statusColor(scope.status);
+            const isOpen = expanded.has(scope.id);
+            const sections = Array.isArray(scope.sections) ? scope.sections : [];
             return (
               <div
                 key={scope.id}
-                onClick={() => onSelectScope(scope)}
                 style={{
                   background: '#1E2329', border: '1px solid rgba(255,255,255,0.08)',
-                  borderLeft: `3px solid ${tc}`, borderRadius: 8, padding: '12px 14px',
-                  cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
-                  overflow: 'hidden',
+                  borderRadius: 8, overflow: 'hidden',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#1E2329'; }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
-                    background: tc + '22', color: tc,
-                    maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>{scope.trade}</span>
-                  <span style={{
-                    fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-                    background: ssc + '22', color: ssc,
-                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                  }}>{scope.status}</span>
-                  <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#22c55e' }}>
-                    {rolePerms?.seeDollars !== false ? fmt(scope.value) : '—'}
-                  </span>
+                <div
+                  onClick={() => toggleExpanded(scope.id)}
+                  style={{
+                    padding: '12px 14px', cursor: 'pointer',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#252b36'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
+                    <span style={{
+                      fontSize: 11, color: '#9CA3AF', flexShrink: 0,
+                      transition: 'transform 0.15s', display: 'inline-block',
+                      transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                    }}>▶</span>
+                    <span style={{
+                      fontSize: 13, fontWeight: 700, color: '#FFFFFF',
+                      flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>{scope.trade}</span>
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+                      background: ssc + '22', color: ssc,
+                      textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0,
+                    }}>{scope.status}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#22c55e', flexShrink: 0 }}>
+                      {rolePerms?.seeDollars !== false ? fmt(scope.value) : '—'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11, color: '#9CA3AF', marginTop: 6, marginLeft: 18, flexWrap: 'wrap' }}>
+                    {sections.length > 0 && (
+                      <span>{sections.length} section{sections.length === 1 ? '' : 's'}</span>
+                    )}
+                    {scope.scheduledDate && <span>📅 {scope.scheduledDate}</span>}
+                    {scope.jobType && scope.currentPhase != null && (
+                      <span>Phase {scope.currentPhase}/{scope.jobType === 'Commercial' ? 7 : 4}</span>
+                    )}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11, color: '#D1D5DB', flexWrap: 'wrap' }}>
-                  {scope.scheduledDate && <span>📅 {scope.scheduledDate}</span>}
-                  {scope.jobType && scope.currentPhase != null && (
-                    <span>Phase {scope.currentPhase}/{scope.jobType === 'Commercial' ? 7 : 4}</span>
-                  )}
-                  {Array.isArray(scope.sections) && scope.sections.length > 0 && (
-                    <span>{scope.sections.length} section{scope.sections.length === 1 ? '' : 's'}</span>
-                  )}
-                </div>
-                {Array.isArray(scope.sections) && scope.sections.length > 0 && (
+                {isOpen && (
                   <div style={{
-                    marginTop: 8, paddingTop: 8,
-                    borderTop: '1px dashed rgba(255,255,255,0.08)',
-                    display: 'flex', flexDirection: 'column', gap: 4,
+                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    background: 'rgba(0,0,0,0.15)', padding: '10px 14px',
                   }}>
-                    {scope.sections.map(sec => (
-                      <div key={sec.id} style={{
-                        display: 'flex', justifyContent: 'space-between', gap: 8,
-                        fontSize: 11, color: '#D1D5DB',
-                      }}>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {sec.name}{sec.optional ? ' (optional)' : ''}
-                        </span>
-                        {rolePerms?.seeDollars !== false && sec.subtotal != null && (
-                          <span style={{ color: '#9CA3AF', flexShrink: 0 }}>{fmt(sec.subtotal)}</span>
-                        )}
+                    {sections.length === 0 ? (
+                      <div style={{ fontSize: 12, color: '#9CA3AF', padding: '8px 0', textAlign: 'center' }}>
+                        No sections yet. Open a quote to scaffold this scope.
                       </div>
-                    ))}
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {sections.map(sec => {
+                          const lineItems = Array.isArray(sec.lineItems) ? sec.lineItems : [];
+                          return (
+                            <div key={sec.id} style={{
+                              background: 'rgba(255,255,255,0.03)', borderRadius: 6,
+                              padding: '8px 10px',
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: lineItems.length ? 6 : 0 }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>
+                                  {sec.name}{sec.optional ? ' (optional)' : ''}
+                                </span>
+                                {rolePerms?.seeDollars !== false && sec.subtotal != null && (
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', flexShrink: 0 }}>
+                                    {fmt(sec.subtotal)}
+                                  </span>
+                                )}
+                              </div>
+                              {lineItems.length > 0 && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                  {lineItems.map(li => (
+                                    <div key={li.id} style={{
+                                      display: 'flex', justifyContent: 'space-between', gap: 8,
+                                      fontSize: 11, color: '#9CA3AF',
+                                    }}>
+                                      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {li.description}
+                                        {(li.quantity || li.unitPrice) && (
+                                          <span style={{ color: '#6B7280' }}>
+                                            {' '}· {Number(li.quantity) || 0} {li.unit || ''} × {rolePerms?.seeDollars !== false ? fmt(li.unitPrice || 0) : '—'}
+                                          </span>
+                                        )}
+                                      </span>
+                                      {rolePerms?.seeDollars !== false && (
+                                        <span style={{ flexShrink: 0, color: '#D1D5DB' }}>{fmt(li.extension || 0)}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                      {scope.status !== 'Complete' && onUpdateScope && (
+                        <button
+                          onClick={() => {
+                            onUpdateScope({ ...scope, status: 'Complete', currentPhase: scope.jobType === 'Commercial' ? 7 : 4 });
+                            showToast('Scope marked complete.');
+                          }}
+                          style={{
+                            padding: '6px 12px', minHeight: 32,
+                            background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)',
+                            borderRadius: 6, color: '#22c55e', fontSize: 11, fontWeight: 700,
+                            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                          }}
+                        >
+                          ✓ Mark Scope Complete
+                        </button>
+                      )}
+                      {onSelectScope && (
+                        <button
+                          onClick={() => onSelectScope(scope)}
+                          style={{
+                            padding: '6px 12px', minHeight: 32,
+                            background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+                            borderRadius: 6, color: '#D1D5DB', fontSize: 11, fontWeight: 700,
+                            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                          }}
+                        >
+                          Open job details
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             );
           })}
         </div>
+
+        <button
+          onClick={() => setShowScopePicker(true)}
+          style={{
+            marginTop: 10, width: '100%', padding: '12px 14px', minHeight: 44,
+            background: 'rgba(232,114,42,0.10)', border: '1px dashed rgba(232,114,42,0.4)',
+            borderRadius: 8, color: '#E8722A', fontSize: 13, fontWeight: 700,
+            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          + Add Scope
+        </button>
 
         {/* ── Quotes section ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 22, marginBottom: 10 }}>
@@ -6460,6 +6611,23 @@ function ProjectDetail({ project, rolePerms, quotes, onClose, onSelectScope, onN
           </div>
         )}
       </div>
+      {showScopePicker && (
+        <ScopeTemplatePickerModal
+          project={project}
+          onPick={(scope) => {
+            setShowScopePicker(false);
+            if (onAddScope) {
+              onAddScope(scope);
+              setExpanded(prev => {
+                const next = new Set(prev);
+                next.add(scope.id);
+                return next;
+              });
+            }
+          }}
+          onClose={() => setShowScopePicker(false)}
+        />
+      )}
     </div>
   );
 }
@@ -7054,6 +7222,145 @@ function buildBlankQuote(mode, target, existing) {
     customerInteractions: [], agentConversation: [],
     measurements: null,
   };
+}
+
+// ── Scope builders (parallel to buildQuoteFromMode/buildBlankQuote) ──
+// "+ Add Scope" inside a project uses these. A scope is one unit of work
+// within a project (e.g. "Residential roof — Stoltzfus"); sections inside
+// the scope mirror the quote-section scaffold so estimating and execution
+// share the same vocabulary.
+function lastWordOf(name) {
+  const parts = String(name || '').trim().split(/\s+/);
+  return parts[parts.length - 1] || 'Customer';
+}
+
+function defaultScopeName(mode, customerName) {
+  const isCommercial = mode === 'commercial';
+  const tag = isCommercial ? (customerName || 'Customer') : lastWordOf(customerName);
+  return `${isCommercial ? 'Commercial' : 'Residential'} roof — ${tag}`;
+}
+
+function materializeScopeSections(mode) {
+  const raw = mode === 'commercial' ? buildCommercialSections() : buildResidentialSections();
+  return raw.map(sec => {
+    const lineItems = sec.lineItems.map(li => ({
+      ...li,
+      id: `li-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      extension: Math.round((Number(li.quantity) || 0) * (Number(li.unitPrice) || 0) * 100) / 100,
+    }));
+    const subtotal = lineItems.reduce((s, li) => s + (li.extension || 0), 0);
+    return {
+      id: `ss-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      name: sec.sectionName,
+      narrative: sec.narrative || '',
+      lineItems,
+      subtotal: Math.round(subtotal * 100) / 100,
+      optional: !!sec.optional,
+    };
+  });
+}
+
+function buildScopeFromMode(mode, project) {
+  const sections = materializeScopeSections(mode);
+  const value = sections.filter(s => !s.optional).reduce((sum, s) => sum + (s.subtotal || 0), 0);
+  const isCommercial = mode === 'commercial';
+  return {
+    id: `s-${project.id}-${Date.now().toString(36)}`,
+    projectId: project.id,
+    scopeType: defaultScopeName(mode, project.customerName),
+    status: 'Pending Schedule',
+    value: Math.round(value * 100) / 100,
+    completedSteps: [],
+    notes: '',
+    phaseTemplate: isCommercial ? 'commercial-7-phase' : 'residential-4-phase',
+    currentPhase: null,
+    completedPhases: [],
+    sections,
+  };
+}
+
+function buildBlankScope(project) {
+  return {
+    id: `s-${project.id}-${Date.now().toString(36)}`,
+    projectId: project.id,
+    scopeType: `Custom scope — ${lastWordOf(project.customerName)}`,
+    status: 'Pending Schedule',
+    value: 0,
+    completedSteps: [],
+    notes: '',
+    phaseTemplate: 'residential-4-phase',
+    currentPhase: null,
+    completedPhases: [],
+    sections: [],
+  };
+}
+
+// Template picker for "+ Add Scope" inside a project. Mirrors the quote
+// picker UX but creates a scope (with section scaffold) instead of a quote.
+function ScopeTemplatePickerModal({ project, onPick, onClose }) {
+  useScrollLock();
+  const isMobile = useMobile();
+
+  const overlay = isMobile ? { ...S.overlay, padding: 0, alignItems: 'flex-end' } : S.overlay;
+  const modal = isMobile
+    ? { ...S.modal, maxWidth: '100vw', width: '100vw', maxHeight: '90dvh', borderRadius: '16px 16px 0 0', margin: 0 }
+    : { ...S.modal, maxWidth: 520 };
+
+  const bigBtn = (label, sub, accent, onClick) => (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', padding: '20px 18px', minHeight: 84,
+        background: accent === 'orange'
+          ? 'linear-gradient(135deg, #E8722A, #e8640c)'
+          : accent === 'blue'
+            ? 'linear-gradient(135deg, #2D5016, #3d6b1e)'
+            : 'transparent',
+        border: accent === 'ghost' ? '1px dashed rgba(255,255,255,0.22)' : 'none',
+        borderRadius: 12,
+        color: accent === 'ghost' ? '#D1D5DB' : '#FFFFFF',
+        textAlign: 'left', cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+        boxShadow: accent !== 'ghost' ? '0 4px 14px rgba(0,0,0,0.25)' : 'none',
+        display: 'flex', flexDirection: 'column', gap: 4,
+      }}
+    >
+      <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.2px' }}>{label}</span>
+      <span style={{ fontSize: 11, opacity: 0.9, fontWeight: 500 }}>{sub}</span>
+    </button>
+  );
+
+  return (
+    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={modal} onClick={e => e.stopPropagation()}>
+        <button className="ri-close-btn" style={S.closeBtn} onClick={onClose}>×</button>
+        <div style={{ ...S.modalTitle, paddingRight: 48 }}>Add scope to project</div>
+        <div style={{ ...S.modalSub, marginBottom: 16 }}>
+          Adding to <strong style={{ color: '#FFFFFF' }}>{project.customerName}</strong>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {bigBtn(
+            '🏠  Residential',
+            '12 sections scaffolded — tear-off, decking, underlayment, shingles, flashing, ventilation, labor, cleanup, permits, warranty',
+            'orange',
+            () => onPick(buildScopeFromMode('residential', project)),
+          )}
+          {bigBtn(
+            '🏢  Commercial',
+            '14 sections scaffolded — substrate prep, insulation, membrane, edge metal, drainage, walkway, equipment, inspections, warranty',
+            'blue',
+            () => onPick(buildScopeFromMode('commercial', project)),
+          )}
+          {bigBtn(
+            '✏️  Start from scratch',
+            'Blank scope — add sections and line items yourself.',
+            'ghost',
+            () => onPick(buildBlankScope(project)),
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Quote-mode picker: shown first when "+ New Quote" is tapped. Three big
@@ -16793,6 +17100,19 @@ export default function App() {
     setTab('jobs');
   };
 
+  // Scope add/update — both demo and non-demo write to userScopes; the
+  // existing userScopesAsJobs adapter projects them into the jobs array that
+  // ProjectsTab consumes, so a new or updated scope appears on the right
+  // project on next render.
+  const handleAddScope = (scope) => setUserScopes(prev => [...prev, scope]);
+  const handleUpdateScope = (scope) => setUserScopes(prev => {
+    const idx = prev.findIndex(s => s.id === scope.id);
+    if (idx >= 0) {
+      const next = [...prev]; next[idx] = scope; return next;
+    }
+    return [...prev, scope];
+  });
+
   const handleAddCrew = (member) => setUserCrew(prev => [member, ...prev]);
   const handleEditCrew = (member) => setUserCrew(prev => prev.map(m => m.id === member.id ? member : m));
   const handleDeleteCrew = (id) => setUserCrew(prev => prev.filter(m => m.id !== id));
@@ -17332,6 +17652,8 @@ export default function App() {
                 rolePerms={rolePerms}
                 quotes={allQuotes}
                 onSaveQuote={handleSaveQuote}
+                onAddScope={handleAddScope}
+                onUpdateScope={handleUpdateScope}
               />
         )}
         {tab === 'calendar' && (
